@@ -1,0 +1,6 @@
+[book]
+authors = ["Rin Delahaije"]
+language = "en"
+multilingual = false
+src = "src"
+title = "rinkaku_cheatsheet"
