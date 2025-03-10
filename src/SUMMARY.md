@@ -14,3 +14,8 @@
 
 - [Database](database/README.md)
   - [PostgreSQL Local Setup Guide](database/postgres-local.md)
+
+- [Cheat Sheet](cheatsheet/README.md)
+  - [GitHub](cheatsheet/github.md)
+  - [Ruby Fundamentals](cheatsheet/ruby-basics.md)
+  - [Ruby as a Functional Language](cheatsheet/ruby-functional.md)
