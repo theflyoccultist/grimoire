@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>PostgreSQL Local Setup Guide - Debugging Grimoire</title>
+        <title>Ruby as a Functional Language - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -152,105 +152,117 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="postgresql-local-setup-guide"><a class="header" href="#postgresql-local-setup-guide">PostgreSQL Local Setup Guide</a></h1>
-<p>Use the postgres superuser to create a new user, a new database and manage their permissions. For all future database operations and for production, only use the created my_project_user.</p>
-<h2 id="step-1-login-as-superuser"><a class="header" href="#step-1-login-as-superuser">Step 1: Login as superuser</a></h2>
-<pre><code class="language-bash">sudo -u postgres psql
-</code></pre>
+                        <h2 id="1-first-class-functions-because-were-not-peasants"><a class="header" href="#1-first-class-functions-because-were-not-peasants">1. First-Class Functions (Because We’re Not Peasants)</a></h2>
+<p>In Ruby, functions are first-class citizens, which means you can:</p>
 <ul>
-<li>The default Postgres installation comes with a superuser called postgres.</li>
-<li>We use this account to set up new users and databases.</li>
+<li>Assign them to variables </li>
+<li>Pass them around like objects </li>
+<li>Return them from other functions</li>
 </ul>
-<h2 id="step-2-create-a-new-user-and-database"><a class="header" href="#step-2-create-a-new-user-and-database">Step 2: Create a New User and Database</a></h2>
-<ul>
-<li>Inside the Postgres shell (<code>psql</code>) run:</li>
-</ul>
-<pre><code class="language-sql">-- Create a database user (replace with a strong password)
+<h3 id="assigning-functions-to-variables"><a class="header" href="#assigning-functions-to-variables">Assigning Functions to Variables</a></h3>
+<pre><code class="language-ruby">def greet(name)
+  "Hello, #{name}!"
+end
 
-CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
+say_hi = method(:greet)  # Grab the method as an object
+puts say_hi.call("PwatPwat")  # =&gt; "Hello, PwatPwat!"
+</code></pre>
+<p>JS developers would be confused because their language still doesn’t know what it wants to be.</p>
+<h2 id="2-lambdas--procs-because-we-hate-boilerplate"><a class="header" href="#2-lambdas--procs-because-we-hate-boilerplate">2. Lambdas &amp; Procs (Because We Hate Boilerplate)</a></h2>
+<p>Ruby has two types of anonymous functions: lambdas and procs.</p>
+<h3 id="lambdas-strict-like-a-no-nonsense-professor"><a class="header" href="#lambdas-strict-like-a-no-nonsense-professor">Lambdas (Strict, Like a No-Nonsense Professor)</a></h3>
+<pre><code class="language-ruby">say_hello = -&gt; (name) { puts "Hello, #{name}!" }
+say_hello.call("Ruby")  # =&gt; "Hello, Ruby!"
+</code></pre>
+<ul>
+<li>Uses -&gt; for defining</li>
+<li>Checks argument count (strict like C)</li>
+</ul>
+<h3 id="procs-laid-back-like-a-sleepy-dev"><a class="header" href="#procs-laid-back-like-a-sleepy-dev">Procs (Laid-Back, Like a Sleepy Dev)</a></h3>
+<pre><code class="language-ruby">lazy_greet = Proc.new { |name| puts "Sup, #{name}." }
+lazy_greet.call("you")  # =&gt; "Sup, you."
+</code></pre>
+<ul>
+<li>Uses Proc.new</li>
+<li>Doesn’t care about missing arguments (very chill, very Ruby)</li>
+</ul>
+<h2 id="3-higher-order-functions-passing-functions-around-like-secrets"><a class="header" href="#3-higher-order-functions-passing-functions-around-like-secrets">3. Higher-Order Functions (Passing Functions Around Like Secrets)</a></h2>
+<h3 id="functions-taking-other-functions"><a class="header" href="#functions-taking-other-functions">Functions Taking Other Functions</a></h3>
+<pre><code class="language-ruby">def apply_twice(func, value)
+  func.call(func.call(value))
+end
 
--- Create the database and assign ownership to the user
+double = -&gt;(x) { x * 2 }
 
-CREATE DATABASE my_project_db OWNER my_project_user;
+puts apply_twice(double, 5)  # =&gt; 20
 </code></pre>
 <ul>
-<li>This ensures that your database is not owned by the postgres superuser.</li>
-<li>The my_project_user will have full control over my_project_db, but no power over system-wide databases.</li>
+<li>Passes the double function into apply_twice</li>
+<li>JavaScript developers sweating because they only just learned .map()</li>
 </ul>
-<h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
-<p>By default, new users can create or drop objects inside the public schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Revoke database-wide dangerous permissions
+<h2 id="4-functional-methods-on-collections-destroying-loops"><a class="header" href="#4-functional-methods-on-collections-destroying-loops">4. Functional Methods on Collections (Destroying Loops)</a></h2>
+<p>Ruby lets you replace loops with functional goodness.</p>
+<h3 id="map-instead-of-a-for-loop"><a class="header" href="#map-instead-of-a-for-loop">Map Instead of a For-Loop</a></h3>
+<pre><code class="language-ruby">numbers = [1, 2, 3, 4]
+doubled = numbers.map { |n| n * 2 }
+puts doubled.inspect  # =&gt; [2, 4, 6, 8]
+</code></pre>
+<h3 id="select-instead-of-filtering-in-loops"><a class="header" href="#select-instead-of-filtering-in-loops">Select Instead of Filtering in Loops</a></h3>
+<pre><code class="language-ruby">evens = numbers.select { |n| n.even? }
+puts evens.inspect  # =&gt; [2, 4]
+</code></pre>
+<h3 id="reduce-instead-of-ugly-accumulators"><a class="header" href="#reduce-instead-of-ugly-accumulators">Reduce Instead of Ugly Accumulators</a></h3>
+<pre><code class="language-ruby">sum = numbers.reduce(0) { |acc, num| acc + num }
+puts sum  # =&gt; 10
+</code></pre>
+<p>Node.js devs in shambles because .reduce() in JavaScript requires a PhD.</p>
+<h2 id="5-currying-because-why-not"><a class="header" href="#5-currying-because-why-not">5. Currying (Because Why Not?)</a></h2>
+<p>You can partially apply functions like a Haskell god.
+Example: Making a Curried Adder</p>
+<pre><code class="language-ruby">adder = -&gt; (x) { -&gt; (y) { x + y } }
 
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA public FROM my_project_user;
+add_five = adder.call(5)
+puts add_five.call(10)  # =&gt; 15
+</code></pre>
+<ul>
+<li>adder.call(5) returns a new function waiting for y</li>
+<li>Node.js devs still writing .bind(this)</li>
+</ul>
+<h2 id="6-composition-stacking-functions-like-a-boss"><a class="header" href="#6-composition-stacking-functions-like-a-boss">6. Composition (Stacking Functions Like a Boss)</a></h2>
+<p>Instead of nesting functions, compose them:</p>
+<pre><code class="language-ruby">def compose(f, g)
+  -&gt;(x) { f.call(g.call(x)) }
+end
 
--- Prevent automatic grants on future tables
+double = -&gt;(x) { x * 2 }
+increment = -&gt;(x) { x + 1 }
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-REVOKE CREATE ON TABLES FROM my_project_user;
+double_then_increment = compose(increment, double)
+puts double_then_increment.call(5)  # =&gt; 11
+
+# double(5) → 10
+# increment(10) → 11
 </code></pre>
 <ul>
-<li>This prevents accidental database-wide modifications.</li>
-<li>The user will still be able to read and modify existing tables.</li>
+<li>Elegant. Chaotic. Beautiful.</li>
 </ul>
-<h2 id="step-4-allow-only-crud-operations"><a class="header" href="#step-4-allow-only-crud-operations">Step 4: Allow Only CRUD Operations</a></h2>
-<pre><code class="language-sql">GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO my_project_user;
-</code></pre>
+<h2 id="final-verdict"><a class="header" href="#final-verdict">Final Verdict</a></h2>
 <ul>
-<li>This ensures the user can only perform CRUD operations, and not create/drop tables.</li>
-</ul>
-<h2 id="step-5-exit-and-verify-setup"><a class="header" href="#step-5-exit-and-verify-setup">Step 5: Exit and Verify Setup</a></h2>
-<p><code>\l</code>: List all databases</p>
-<p><code>\du</code>: List all users and their roles</p>
-<p><code>\q</code>: Exit Postgres shell</p>
-<ul>
-<li>Show a user's privilege:</li>
-</ul>
-<pre><code class="language-sql">SELECT grantee, privilege_type
-FROM information_schema.role_table-grants
-WHERE grantee='my_project_user';
-</code></pre>
-<h2 id="step-6-connect-as-the-new-user"><a class="header" href="#step-6-connect-as-the-new-user">Step 6: Connect as the New User</a></h2>
-<p>Now test logging into your database as the newly created user:</p>
-<pre><code class="language-bash">psql -U my_project_user -d my_project_db
-</code></pre>
-<h2 id="step-7-how-to-delete-the-databaseuser-if-needed"><a class="header" href="#step-7-how-to-delete-the-databaseuser-if-needed">Step 7: How to delete the Database/User (if needed)</a></h2>
-<ul>
-<li>Delete database/user (if you messed up, can happen):</li>
-</ul>
-<pre><code class="language-sql">DROP DATABASE my_project_db;
-DROP USER my_project_user;
-</code></pre>
-<ul>
-<li>If Postgres refuses to drop a database because it's in use, force disconnect users before deleting:</li>
-</ul>
-<pre><code class="language-sql">SELECT pg_terminate_backend (pid)
-FROM pg_stat_activity
-WHERE datname='my_project_db';
-</code></pre>
-<p>This correctly finds active connections and terminates them.</p>
-<h2 id="step-8-find-which-database-a-user-owns"><a class="header" href="#step-8-find-which-database-a-user-owns">Step 8: Find Which Database a User Owns</a></h2>
-<pre><code class="language-sql">SELECT datname, pg_catalog.pg_get_userbyid(datdba) AS owner
-FROM pg_database;
-</code></pre>
-<h2 id="step-9-add-the-user-to-your-env-file"><a class="header" href="#step-9-add-the-user-to-your-env-file">Step 9: Add the User to your .env File</a></h2>
-<pre><code class="language-bash">DATABASE_URL=postgres://my_project_user:supersecurepassword@localhost/my_project_db
-</code></pre>
-<ul>
-<li>This keeps credentials outside of the codebase.</li>
-<li>Use environment variables instead of hardcoding credentials.</li>
+<li>Ruby can go full functional</li>
+<li>Less boilerplate than JavaScript </li>
+<li>More readable than Haskell </li>
+<li>Shorter than Python </li>
+<li>Node.js devs now crying in async hell</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../database/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../cheatsheet/ruby-basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../cheatsheet/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -258,13 +270,10 @@ FROM pg_database;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../database/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../cheatsheet/ruby-basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../cheatsheet/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
             </nav>
 
         </div>

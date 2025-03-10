@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>PostgreSQL Local Setup Guide - Debugging Grimoire</title>
+        <title>Ruby Fundamentals - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -152,103 +152,180 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="postgresql-local-setup-guide"><a class="header" href="#postgresql-local-setup-guide">PostgreSQL Local Setup Guide</a></h1>
-<p>Use the postgres superuser to create a new user, a new database and manage their permissions. For all future database operations and for production, only use the created my_project_user.</p>
-<h2 id="step-1-login-as-superuser"><a class="header" href="#step-1-login-as-superuser">Step 1: Login as superuser</a></h2>
-<pre><code class="language-bash">sudo -u postgres psql
+                        <h2 id="1-syntax-and-data-types"><a class="header" href="#1-syntax-and-data-types">1. Syntax and Data Types</a></h2>
+<p>Ruby is elegant and readable, but its syntax can be weird if you're coming from C, C++, or Python.</p>
+<h3 id="variables-and-data-types"><a class="header" href="#variables-and-data-types">Variables and Data Types</a></h3>
+<pre><code class="language-ruby">name = "PwatPwat"  # String
+age = 1000         # Integer
+height = 5.9       # Float
+is_sassy = true    # Boolean
+languages = ["C", "Ruby", "HTMX"] # Array
+skills = { "devops" =&gt; true, "systems" =&gt; true, "webdev" =&gt; "meh" } # Hash (like a dictionary)
 </code></pre>
 <ul>
-<li>The default Postgres installation comes with a superuser called postgres.</li>
-<li>We use this account to set up new users and databases.</li>
+<li>Variables don't need types.</li>
+<li>nil is Ruby's equivalent of null.</li>
 </ul>
-<h2 id="step-2-create-a-new-user-and-database"><a class="header" href="#step-2-create-a-new-user-and-database">Step 2: Create a New User and Database</a></h2>
+<h3 id="string-interpolation-instead-of-concatenation"><a class="header" href="#string-interpolation-instead-of-concatenation">String Interpolation (Instead of Concatenation)</a></h3>
+<pre><code class="language-ruby">puts "Hello, my name is #{name} and I am #{age} years old."
+</code></pre>
 <ul>
-<li>Inside the Postgres shell (<code>psql</code>) run:</li>
+<li>#{variable} injects the value directly.</li>
+<li>No need for " + ", which is a blessing.</li>
 </ul>
-<pre><code class="language-sql">-- Create a database user (replace with a strong password)
+<h3 id="symbols-efficient-strings"><a class="header" href="#symbols-efficient-strings">Symbols (Efficient Strings)</a></h3>
+<pre><code class="language-ruby">:hello # Think of it as an immutable string
+skills = { devops: true, systems: true, webdev: false }
+puts skills[:devops] # Access a symbol key like this
+</code></pre>
+<ul>
+<li>Symbols (:something) are immutable and more memory-efficient than strings.</li>
+</ul>
+<h2 id="2-control-flow"><a class="header" href="#2-control-flow">2. Control Flow</a></h2>
+<h3 id="if-else-statements"><a class="header" href="#if-else-statements">If-Else Statements</a></h3>
+<pre><code class="language-ruby">if age &gt; 18
+  puts "You're old enough."
+elsif age == 18
+  puts "Just made it!"
+else
+  puts "Too young."
+end
+</code></pre>
+<ul>
+<li>No parentheses needed around conditions.</li>
+<li>elsif instead of elseif.</li>
+</ul>
+<h3 id="ternary-operator"><a class="header" href="#ternary-operator">Ternary Operator</a></h3>
+<pre><code class="language-ruby">puts age &gt; 18 ? "Adult" : "Minor"
+</code></pre>
+<ul>
+<li>Short and clean, just like Python’s ternary operator.</li>
+</ul>
+<h3 id="unless-because-ruby-is-dramatic"><a class="header" href="#unless-because-ruby-is-dramatic">Unless (Because Ruby is Dramatic)</a></h3>
+<pre><code class="language-ruby">unless is_sassy
+  puts "You are being too serious today."
+else
+  puts "Sass mode activated."
+end
+</code></pre>
+<ul>
+<li>Equivalent to if !is_sassy, but reads more naturally.</li>
+</ul>
+<h2 id="3-loops"><a class="header" href="#3-loops">3. Loops</a></h2>
+<h3 id="for-loop-but-you-wont-use-it"><a class="header" href="#for-loop-but-you-wont-use-it">For Loop (But You Won’t Use It)</a></h3>
+<pre><code class="language-ruby">for i in 1..5
+  puts i
+end
+</code></pre>
+<ul>
+<li>1..5 includes 5, while 1...5 excludes 5.</li>
+</ul>
+<h3 id="while-loop"><a class="header" href="#while-loop">While Loop</a></h3>
+<pre><code class="language-ruby">i = 0
+while i &lt; 5
+  puts "Iteration #{i}"
+  i += 1
+end
+</code></pre>
+<h3 id="times-loop-more-idiomatic"><a class="header" href="#times-loop-more-idiomatic">Times Loop (More Idiomatic)</a></h3>
+<pre><code class="language-ruby">5.times { |i| puts "Iteration #{i}" }
+</code></pre>
+<ul>
+<li>Instead of a for loop, Ruby prefers .times.</li>
+</ul>
+<h3 id="each-loop-preferred-over-for"><a class="header" href="#each-loop-preferred-over-for">Each Loop (Preferred Over For)</a></h3>
+<pre><code class="language-ruby">languages.each { |lang| puts "I know #{lang}" }
+</code></pre>
+<ul>
+<li>The block { |var| ... } replaces a for-loop.</li>
+</ul>
+<h3 id="map-functional-approach"><a class="header" href="#map-functional-approach">Map (Functional Approach)</a></h3>
+<pre><code class="language-ruby">squared_numbers = [1, 2, 3, 4].map { |num| num ** 2 }
+puts squared_numbers.inspect # [1, 4, 9, 16]
+</code></pre>
+<ul>
+<li>Modifies each element in the array.</li>
+</ul>
+<h2 id="4-functions-and-blocks"><a class="header" href="#4-functions-and-blocks">4. Functions and Blocks</a></h2>
+<h3 id="defining-a-function"><a class="header" href="#defining-a-function">Defining a Function</a></h3>
+<pre><code class="language-ruby">def greet(name)
+  "Hello, #{name}!"
+end
 
-CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
+puts greet("PwatPwat") # "Hello, PwatPwat!"
+</code></pre>
+<ul>
+<li>No return needed; Ruby returns the last evaluated expression automatically.</li>
+</ul>
+<h3 id="default-arguments"><a class="header" href="#default-arguments">Default Arguments</a></h3>
+<pre><code class="language-ruby">def greet(name="Guest")
+  "Hello, #{name}!"
+end
+</code></pre>
+<h3 id="lambda--proc-if-you-like-functional-stuff"><a class="header" href="#lambda--proc-if-you-like-functional-stuff">Lambda &amp; Proc (If You Like Functional Stuff)</a></h3>
+<pre><code class="language-ruby">say_hello = -&gt; { puts "Hello!" } # Lambda function
+say_hello.call
+</code></pre>
+<ul>
+<li>Similar to anonymous functions in JS.</li>
+</ul>
+<h2 id="5-file-handling"><a class="header" href="#5-file-handling">5. File Handling</a></h2>
+<h3 id="reading-a-file"><a class="header" href="#reading-a-file">Reading a File</a></h3>
+<pre><code class="language-ruby">File.open("test.txt", "r") do |file|
+  puts file.read
+end
+</code></pre>
+<h3 id="writing-to-a-file"><a class="header" href="#writing-to-a-file">Writing to a File</a></h3>
+<pre><code class="language-ruby">Copier le code
+File.open("test.txt", "w") do |file|
+  file.puts "This is a new line"
+end
+</code></pre>
+<h2 id="6-ruby-scripting-tricks"><a class="header" href="#6-ruby-scripting-tricks">6. Ruby Scripting Tricks</a></h2>
+<ul>
+<li>If you ever use Ruby for system automation, here are some neat tricks:</li>
+</ul>
+<h3 id="run-shell-commands"><a class="header" href="#run-shell-commands">Run Shell Commands</a></h3>
+<pre><code class="language-ruby">puts `ls -la`  # Runs shell command
+</code></pre>
+<h3 id="argument-parsing-if-running-a-script"><a class="header" href="#argument-parsing-if-running-a-script">Argument Parsing (if running a script)</a></h3>
+<pre><code class="language-ruby">puts "Hello, #{ARGV[0]}!" # Run as `ruby script.rb PwatPwat`
+</code></pre>
+<h3 id="simple-http-request"><a class="header" href="#simple-http-request">Simple HTTP Request</a></h3>
+<pre><code class="language-ruby">require 'net/http'
+puts Net::HTTP.get(URI("https://example.com"))
+</code></pre>
+<h2 id="7-object-oriented-ruby-if-you-like-pain"><a class="header" href="#7-object-oriented-ruby-if-you-like-pain">7. Object-Oriented Ruby (If You Like Pain)</a></h2>
+<pre><code class="language-ruby">class Person
+  attr_accessor :name, :age
 
--- Create the database and assign ownership to the user
+  def initialize(name, age)
+    @name = name
+    @age = age
+  end
 
-CREATE DATABASE my_project_db OWNER my_project_user;
-</code></pre>
-<ul>
-<li>This ensures that your database is not owned by the postgres superuser.</li>
-<li>The my_project_user will have full control over my_project_db, but no power over system-wide databases.</li>
-</ul>
-<h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
-<p>By default, new users can create or drop objects inside the public schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Revoke database-wide dangerous permissions
+  def introduce
+    "Hi, I'm #{@name} and I'm #{@age} years old."
+  end
+end
 
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA public FROM my_project_user;
-
--- Prevent automatic grants on future tables
-
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-REVOKE CREATE ON TABLES FROM my_project_user;
+pwat = Person.new("PwatPwat", 1000)
+puts pwat.introduce
 </code></pre>
 <ul>
-<li>This prevents accidental database-wide modifications.</li>
-<li>The user will still be able to read and modify existing tables.</li>
-</ul>
-<h2 id="step-4-allow-only-crud-operations"><a class="header" href="#step-4-allow-only-crud-operations">Step 4: Allow Only CRUD Operations</a></h2>
-<pre><code class="language-sql">GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO my_project_user;
-</code></pre>
-<ul>
-<li>This ensures the user can only perform CRUD operations, and not create/drop tables.</li>
-</ul>
-<h2 id="step-5-exit-and-verify-setup"><a class="header" href="#step-5-exit-and-verify-setup">Step 5: Exit and Verify Setup</a></h2>
-<p><code>\l</code>: List all databases</p>
-<p><code>\du</code>: List all users and their roles</p>
-<p><code>\q</code>: Exit Postgres shell</p>
-<ul>
-<li>Show a user's privilege:</li>
-</ul>
-<pre><code class="language-sql">SELECT grantee, privilege_type
-FROM information_schema.role_table-grants
-WHERE grantee='my_project_user';
-</code></pre>
-<h2 id="step-6-connect-as-the-new-user"><a class="header" href="#step-6-connect-as-the-new-user">Step 6: Connect as the New User</a></h2>
-<p>Now test logging into your database as the newly created user:</p>
-<pre><code class="language-bash">psql -U my_project_user -d my_project_db
-</code></pre>
-<h2 id="step-7-how-to-delete-the-databaseuser-if-needed"><a class="header" href="#step-7-how-to-delete-the-databaseuser-if-needed">Step 7: How to delete the Database/User (if needed)</a></h2>
-<ul>
-<li>Delete database/user (if you messed up, can happen):</li>
-</ul>
-<pre><code class="language-sql">DROP DATABASE my_project_db;
-DROP USER my_project_user;
-</code></pre>
-<ul>
-<li>If Postgres refuses to drop a database because it's in use, force disconnect users before deleting:</li>
-</ul>
-<pre><code class="language-sql">SELECT pg_terminate_backend (pid)
-FROM pg_stat_activity
-WHERE datname='my_project_db';
-</code></pre>
-<p>This correctly finds active connections and terminates them.</p>
-<h2 id="step-8-find-which-database-a-user-owns"><a class="header" href="#step-8-find-which-database-a-user-owns">Step 8: Find Which Database a User Owns</a></h2>
-<pre><code class="language-sql">SELECT datname, pg_catalog.pg_get_userbyid(datdba) AS owner
-FROM pg_database;
-</code></pre>
-<h2 id="step-9-add-the-user-to-your-env-file"><a class="header" href="#step-9-add-the-user-to-your-env-file">Step 9: Add the User to your .env File</a></h2>
-<pre><code class="language-bash">DATABASE_URL=postgres://my_project_user:supersecurepassword@localhost/my_project_db
-</code></pre>
-<ul>
-<li>This keeps credentials outside of the codebase.</li>
-<li>Use environment variables instead of hardcoding credentials.</li>
+<li>@name is an instance variable.</li>
+<li>attr_accessor generates getter/setter methods automatically</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../database/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../cheatsheet/github.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../cheatsheet/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../cheatsheet/ruby-functional.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -258,11 +335,11 @@ FROM pg_database;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../database/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../cheatsheet/github.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../cheatsheet/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../cheatsheet/ruby-functional.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
