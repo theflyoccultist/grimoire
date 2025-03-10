@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Debian Firewall With nftables - rinkaku_cheatsheet</title>
+        <title>Debian Firewall Configuration With nftables - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -120,7 +120,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">rinkaku_cheatsheet</h1>
+                    <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -152,7 +152,122 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="setting-up-nftables-firewall-rules-for-debian-type-distributions"><a class="header" href="#setting-up-nftables-firewall-rules-for-debian-type-distributions">Setting up nftables Firewall Rules For Debian-type Distributions</a></h1>
+<p>Before diving into configurations, you might want to check if nftables is already installed and active on your Debian system.</p>
+<ul>
+<li>Check if nftables is Installed</li>
+</ul>
+<pre><code class="language-bash">dpkg -l | grep nftables
+</code></pre>
+<ul>
+<li>If it's installed, you'll see an entry like:</li>
+</ul>
+<pre><code class="language-bash">ii  nftables   0.9.8-3    amd64    Netfilter nf_tables userspace utility
+</code></pre>
+<ul>
+<li>If it's not installed, install it using:</li>
+</ul>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install nftables
+</code></pre>
+<ul>
+<li>Check if nftables is running</li>
+</ul>
+<pre><code class="language-bash">sudo systemctl status nftables
+</code></pre>
+<p>Expected output if running:</p>
+<p><code>● nftables.service - Netfilter Tables      Loaded: loaded (/lib/systemd/system/nftables.service; enabled; vendor preset: enabled)      Active: active (exited) since … </code></p>
+<p>If it is inactive or stopped, you can start and enable it:</p>
+<pre><code class="language-bash">sudo systemctl enable --now nftables
+</code></pre>
+<h2 id="step-1-defining-a-firewall"><a class="header" href="#step-1-defining-a-firewall">Step 1: Defining a Firewall</a></h2>
+<p>These following commands will:</p>
+<ul>
+<li>
+<p>Define a Firewall</p>
+</li>
+<li>
+<p>Create a new table named <code>filter</code> in the IPv4(<code>ip</code>) family.</p>
+</li>
+<li>
+<p>Create a chain inside <code>filter</code> to process incoming traffic (<code>input</code> ).</p>
+</li>
+<li>
+<p>It sets the hook to "input" (i.e., traffic directed at this machine).</p>
+</li>
+<li>
+<p>Priority 0 means it runs after other kernel hooks.</p>
+</li>
+<li>
+<p><code>sudo nft add rule ip filter input drop</code> Drops all incoming traffic by default. This means no connections are allowed unless explicitly permitted later.</p>
+</li>
+<li>
+<p><code>sudo nft list ruleset -a</code> Displays the current ruleset, including handle numbers, which are useful if you need to modify or delete specific rules.</p>
+</li>
+<li>
+<p><code>sudo nft delete rule ip filter input handle 2</code> Deletes the rule with handle 2 (you need to check the handle number in your setup).</p>
+</li>
+</ul>
+<pre><code class="language-bash">sudo nft add table ip filter
+sudo nft add chain ip filter input {type filter hook input priority 0\;}
+sudo nft add rule ip filter input drop
+sudo nft list ruleset -a
+sudo nft delete rule ip filter input handle 2
+</code></pre>
+<h2 id="step-2-enable-specific-ports"><a class="header" href="#step-2-enable-specific-ports">Step 2: Enable Specific Ports</a></h2>
+<p>These following commands:</p>
+<ul>
+<li>Allows SSH (port 22) connections if they are:
+<ul>
+<li>New (first time a connection is made).</li>
+<li>Established (continuing an existing session).</li>
+</ul>
+</li>
+<li><code>inet</code> supports both IPv4 and IPv6 in one go.</li>
+<li>Opens ports 22 (SSH), 80 (HTTP), and 443(HTTPS).</li>
+</ul>
+<pre><code class="language-bash">sudo nft add rule inet filter input tcp dport 22 ct state new,established accept
+sudo nft add rule inet filter input tcp dport { 22, 80, 443 } ct state new,established accept
+</code></pre>
+<h2 id="step-3-save--persist-the-firewall"><a class="header" href="#step-3-save--persist-the-firewall">Step 3: Save &amp; Persist the Firewall</a></h2>
+<ul>
+<li>Save the current firewall rules into a file named <code>firewall.config</code>.</li>
+<li>Reload the firewall from the saved configurations.</li>
+</ul>
+<pre><code class="language-bash">sudo nft list ruleset &gt; firewall.config
+sudo nft -f firewall.config
+</code></pre>
+<p>Reloads the firewall from the saved configuration.</p>
+<ul>
+<li>If you want to persist the rules across reboots, enable the systemd service:</li>
+</ul>
+<pre><code class="language-bash">sudo systemctl enable nftables.service
+</code></pre>
+<h2 id="avoiding-the-network-cut-off-problem"><a class="header" href="#avoiding-the-network-cut-off-problem">Avoiding the Network Cut-off Problem</a></h2>
+<p>Firewall misconfiguration can lock you out if you're SSH-ing into a remote server. Here’s how to avoid getting locked out:</p>
+<ul>
+<li>Always Allow SSH First Before you apply the drop-all rule, make sure to allow SSH connections first:</li>
+</ul>
+<pre><code class="language-bash">sudo nft add rule inet filter input tcp dport 22 ct state new,established accept
+</code></pre>
+<p>Then you can safely run:</p>
+<pre><code class="language-bash">sudo nft add rule ip filter input drop
+</code></pre>
+<ul>
+<li>
+<p>Have a Backup Terminal</p>
+<ul>
+<li>Open a second SSH session before applying firewall rules.</li>
+<li>If something goes wrong, you can restore settings from the backup session.</li>
+</ul>
+</li>
+<li>
+<p>Use a "Grace Period" Rule Instead of locking yourself out immediately, you can set a temporary rule that auto-expires:</p>
+</li>
+</ul>
+<pre><code class="language-bash">sudo nft add rule ip filter input tcp dport 22 accept timeout 5m
+</code></pre>
+<p>This allows SSH access for 5 minutes, giving you time to fix mistakes before the rule disappears.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
