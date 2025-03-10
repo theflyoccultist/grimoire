@@ -1,7 +1,8 @@
 # Summary
+
 [Introduction](intro.md)
 
-# The Grimoire
+# Debugging Grimoire - The Tome Of Cursed Knowledge
 
 - [DevOps](devops/README.md)
   - [Setting Up SSH for GitHub](devops/github-ssh.md)
@@ -9,6 +10,7 @@
   - [Cloud Run & GitHub Actions CI/CD Setup](devops/gcloud-ci-cd.md)
 
 - [Linux](linux/README.md)
-  - [Debian Firewall With nftables](linux/debian-nftables.md)
+  - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
+
 - [Database](database/README.md)
-  - [PostgreSQL User Permissions](database/postgres-permissions.md)
+  - [PostgreSQL Local Setup Guide](database/postgres-local.md)

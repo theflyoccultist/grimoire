@@ -1,1 +1,1 @@
-### This cheatsheet will mostly cover PostgreSQL.
+### This chapter will mostly cover PostgreSQL.
