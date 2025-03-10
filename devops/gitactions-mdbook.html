@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>PostgreSQL User Permissions - rinkaku_cheatsheet</title>
+        <title>Deploying mdBook to Github Pages with GitHub Actions - rinkaku_cheatsheet</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">rinkaku_cheatsheet</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,15 +152,105 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="deploying-mdbook-to-github-pages-with-github-actions"><a class="header" href="#deploying-mdbook-to-github-pages-with-github-actions">Deploying mdBook to GitHub Pages With GitHub Actions</a></h1>
+<h2 id="step-1-setup-the-repo"><a class="header" href="#step-1-setup-the-repo">Step 1: Setup the Repo</a></h2>
+<ul>
+<li>
+<p>Create a new GitHub repo.</p>
+</li>
+<li>
+<p>Run:</p>
+</li>
+</ul>
+<pre><code class="language-sh">cargo install mdbook
+mdbook init my-docs
+cd my-docs
+</code></pre>
+<h2 id="step-2-add-github-actions-workflow"><a class="header" href="#step-2-add-github-actions-workflow">Step 2: Add GitHub Actions Workflow</a></h2>
+<ul>
+<li>Create .github/workflows/deploy.yml:</li>
+</ul>
+<pre><code class="language-yml">name: Deploy mdBook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install mdBook
+        run: cargo install mdbook
+
+      - name: Build the book
+        run: mdbook build
+
+      - name: Setup SSH Authentication
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &gt; ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book
+</code></pre>
+<p><code>SSH_PRIVATE_KEY</code> -&gt; (<code>id_ed25519</code>)
+<code>GITHUB_TOKEN</code> -&gt; GitHub adds this automatically</p>
+<h2 id="step-3-add-secrets"><a class="header" href="#step-3-add-secrets">Step 3: Add Secrets</a></h2>
+<ul>
+<li>Generate a separate SSH key for CI/CD</li>
+</ul>
+<pre><code class="language-sh">ssh-keygen -t id_ed25519 -C "GitHub Actions Deploy Key"
+</code></pre>
+<ul>
+<li>
+<p>Go to Repo -&gt; Settings -&gt; Secrets and Variables -&gt; Actions</p>
+</li>
+<li>
+<p>Add <code>SSH_PRIVATE_KEY</code> -&gt; Paste the private key (<code>id_ed25519</code>)</p>
+</li>
+<li>
+<p>Go to Repo -&gt; Settings -&gt; Deploy key</p>
+</li>
+<li>
+<p>Paste the public key (<code>id_ed25519.pub</code>)</p>
+</li>
+</ul>
+<h2 id="step-4-enable-permissions"><a class="header" href="#step-4-enable-permissions">Step 4: Enable Permissions</a></h2>
+<ul>
+<li>Go to Repo -&gt; Settings -&gt; Actions -&gt; General</li>
+<li>Under Workflow Permissions, enable:
+✅ Read and Write Permissions
+✅ Allow GitHub Actions to create and approve pull requests</li>
+</ul>
+<h2 id="step-5-push-and-deploy"><a class="header" href="#step-5-push-and-deploy">Step 5: Push and Deploy</a></h2>
+<pre><code class="language-sh">git add .
+git commit -m "Deploy Book"
+git push origin main
+</code></pre>
+<p>If it all goes well, your docs should be live.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="debian-nftables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../devops/github-ssh.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="../devops/gcloud-ci-cd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -168,10 +258,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="debian-nftables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../devops/github-ssh.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="../devops/gcloud-ci-cd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -184,13 +277,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 

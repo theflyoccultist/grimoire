@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>rinkaku_cheatsheet</title>
-        <meta name="robots" content="noindex">
+        <title>Cloud Run &amp; GitHub Actions CI/CD Setup - rinkaku_cheatsheet</title>
 
 
         <!-- Custom HTML head -->
@@ -13,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -90,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -124,7 +123,7 @@
                     <h1 class="menu-title">rinkaku_cheatsheet</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -153,164 +152,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-ssh-for-github"><a class="header" href="#setting-up-ssh-for-github">Setting Up SSH for GitHub</a></h1>
-<p>This will make GitHub stop asking you for your username and access token every time.</p>
-<h2 id="step-1-check-if-you-already-have-a-key"><a class="header" href="#step-1-check-if-you-already-have-a-key">Step 1: Check if you already have a key</a></h2>
-<ul>
-<li>Before generating a new one, check if you already have an SSH key:</li>
-</ul>
-<pre><code class="language-sh">ls -al ~/.ssh
-</code></pre>
-<p>If you see files like <code>id_rsa</code> and <code>id_rsa.pub</code> (or <code>id_ed25519</code> and <code>id_ed25519.pub</code>), you probably already have an SSH key. If not, generate one.</p>
-<h2 id="step-2-generate-a-new-ssh-key-if-needed"><a class="header" href="#step-2-generate-a-new-ssh-key-if-needed">Step 2: Generate a New SSH key (if needed)</a></h2>
-<p>If you don't have an existing SSH key, generate a new one:</p>
-<pre><code class="language-sh">ssh-keygen -t ed25519 -C "yourmail@example.com"
-</code></pre>
-<ul>
-<li>When it asks for a file location, just press Enter (this will save it in <code>~/.ssh/id_ed25519</code>).</li>
-<li>When it asks for a passphrase, you can leave it empty (or set one for extra security).</li>
-</ul>
-<h2 id="step-3-add-your-ssh-key-to-the-ssh-agent"><a class="header" href="#step-3-add-your-ssh-key-to-the-ssh-agent">Step 3: Add Your SSH Key to the SSH Agent</a></h2>
-<ul>
-<li>Now, you need to add the key to your local SSH agent so it gets used automatically:</li>
-</ul>
-<pre><code class="language-sh">eval "$(ssh-agent -s)"
-</code></pre>
-<ul>
-<li>Then add your key:</li>
-</ul>
-<pre><code class="language-sh">ssh-add ~/.ssh/id_ed25519
-</code></pre>
-<p>(If you used <code>rsa</code>, replace <code>id_ed25519</code> with <code>id_rsa</code>.)</p>
-<h2 id="step-4-copy-your-ssh-key-to-github"><a class="header" href="#step-4-copy-your-ssh-key-to-github">Step 4: Copy Your SSH Key to GitHub</a></h2>
-<p>Now, you need to add your SSH key to your GitHub account.</p>
-<ul>
-<li>Copy the key to your clipboard:</li>
-</ul>
-<pre><code class="language-sh">cat ~/.ssh/id_ed25519.pub
-</code></pre>
-<p>It will output something like:</p>
-<pre><code class="language-sh">ssh-ed25519 AAAAC3Nza...yourlongpublickeyhere yourmail@example.com
-</code></pre>
-<ul>
-<li>Go to GitHub → SSH Keys Settings</li>
-<li>Click "New SSH Key", paste your key, and give it a name.</li>
-<li>Save it.</li>
-</ul>
-<h2 id="step-5-test-the-connection"><a class="header" href="#step-5-test-the-connection">Step 5: Test the Connection</a></h2>
-<ul>
-<li>Check if GitHub recognizes your SSH key:</li>
-</ul>
-<pre><code class="language-sh">ssh -T git@github.com
-</code></pre>
-<p>If everything is set up correctly, you should see:</p>
-<pre><code class="language-sh">Hi &lt;your-github-username&gt;! You've successfully authenticated, but GitHub does not provide shell access.
-</code></pre>
-<h2 id="step-6-change-your-git-remote-to-use-ssh"><a class="header" href="#step-6-change-your-git-remote-to-use-ssh">Step 6: Change Your Git Remote to Use SSH</a></h2>
-<ul>
-<li>If your Git remote is still using HTTPS (which asks for a password), switch it to SSH:</li>
-</ul>
-<pre><code class="language-sh">git remote -v
-</code></pre>
-<p>If you see:</p>
-<pre><code class="language-sh">origin https://github.com/your-username/repository.git (fetch)
-origin https://github.com/your-username/repository.git (push)
-</code></pre>
-<ul>
-<li>Change it to SSH:</li>
-</ul>
-<pre><code class="language-sh">git remote set-url origin git@github.com:your-username/repository.git
-</code></pre>
-<p>Now, every push/pull will use SSH, and you’ll never have to enter your password again.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="deploying-mdbook-to-github-pages-with-github-actions"><a class="header" href="#deploying-mdbook-to-github-pages-with-github-actions">Deploying mdBook to GitHub Pages With GitHub Actions</a></h1>
-<h2 id="step-1-setup-the-repo"><a class="header" href="#step-1-setup-the-repo">Step 1: Setup the Repo</a></h2>
-<ul>
-<li>
-<p>Create a new GitHub repo.</p>
-</li>
-<li>
-<p>Run:</p>
-</li>
-</ul>
-<pre><code class="language-sh">cargo install mdbook
-mdbook init my-docs
-cd my-docs
-</code></pre>
-<h2 id="step-2-add-github-actions-workflow"><a class="header" href="#step-2-add-github-actions-workflow">Step 2: Add GitHub Actions Workflow</a></h2>
-<ul>
-<li>Create .github/workflows/deploy.yml:</li>
-</ul>
-<pre><code class="language-yml">name: Deploy mdBook to GitHub Pages
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install mdBook
-        run: cargo install mdbook
-
-      - name: Build the book
-        run: mdbook build
-
-      - name: Setup SSH Authentication
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &gt; ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book
-</code></pre>
-<p><code>SSH_PRIVATE_KEY</code> -&gt; (<code>id_ed25519</code>)
-<code>GITHUB_TOKEN</code> -&gt; GitHub adds this automatically</p>
-<h2 id="step-3-add-secrets"><a class="header" href="#step-3-add-secrets">Step 3: Add Secrets</a></h2>
-<ul>
-<li>Generate a separate SSH key for CI/CD</li>
-</ul>
-<pre><code class="language-sh">ssh-keygen -t id_ed25519 -C "GitHub Actions Deploy Key"
-</code></pre>
-<ul>
-<li>
-<p>Go to Repo -&gt; Settings -&gt; Secrets and Variables -&gt; Actions</p>
-</li>
-<li>
-<p>Add <code>SSH_PRIVATE_KEY</code> -&gt; Paste the private key (<code>id_ed25519</code>)</p>
-</li>
-<li>
-<p>Go to Repo -&gt; Settings -&gt; Deploy key</p>
-</li>
-<li>
-<p>Paste the public key (<code>id_ed25519.pub</code>)</p>
-</li>
-</ul>
-<h2 id="step-4-enable-permissions"><a class="header" href="#step-4-enable-permissions">Step 4: Enable Permissions</a></h2>
-<ul>
-<li>Go to Repo -&gt; Settings -&gt; Actions -&gt; General</li>
-<li>Under Workflow Permissions, enable:
-✅ Read and Write Permissions
-✅ Allow GitHub Actions to create and approve pull requests</li>
-</ul>
-<h2 id="step-5-push-and-deploy"><a class="header" href="#step-5-push-and-deploy">Step 5: Push and Deploy</a></h2>
-<pre><code class="language-sh">git add .
-git commit -m "Deploy Book"
-git push origin main
-</code></pre>
-<p>If it all goes well, your docs should be live.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="cicd-pipeline-setup-for-cloud-run"><a class="header" href="#cicd-pipeline-setup-for-cloud-run">CI/CD Pipeline Setup for Cloud Run</a></h1>
+                        <h1 id="cicd-pipeline-setup-for-cloud-run"><a class="header" href="#cicd-pipeline-setup-for-cloud-run">CI/CD Pipeline Setup for Cloud Run</a></h1>
 <p>Deploy your projects automatically with a simple git commit and git push.
 To do this, you need to <a href="https://cloud.google.com/sdk/docs/install#deb">Install the gcloud CLI</a></p>
 <h2 id="step-1-test-locally-with-docker"><a class="header" href="#step-1-test-locally-with-docker">Step 1: Test Locally with Docker</a></h2>
@@ -437,34 +279,18 @@ git commit -m "Setup GitHub Actions CI/CD"
 git push origin main
 </code></pre>
 <p>Check GitHub Actions -&gt; It should build &amp; deploy your project automatically.</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="this-cheatsheet-will-mostly-cover-postgresql"><a class="header" href="#this-cheatsheet-will-mostly-cover-postgresql">This cheatsheet will mostly cover PostgreSQL.</a></h3>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="use-the-postgres-superuser-to-create-a-new-user-a-new-database-and-manage-their-permissions"><a class="header" href="#use-the-postgres-superuser-to-create-a-new-user-a-new-database-and-manage-their-permissions">Use the postgres superuser to create a new user, a new database and manage their permissions.</a></h3>
-<p>For all future database operations and for production, only use the created my_project_user.</p>
-<p>Local setup:</p>
-<pre><code class="language-sql">-- Create the user (if not already created)
-
-CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
-
--- Create the database and assign ownership
-
-CREATE DATABASE my_project_db OWNER my_project_user;
-
--- Revoke dangerous permissions
-
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA public FROM my_project_user;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-REVOKE CREATE ON TABLES FROM my_project_user;
-
--- Allow only CRUD operations
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO my_project_user;
-</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../devops/gitactions-mdbook.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../linux/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -472,7 +298,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO my_projec
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../devops/gitactions-mdbook.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../linux/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -485,21 +317,16 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO my_projec
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 
-        <script>
-        window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
-        });
-        </script>
 
     </div>
     </body>

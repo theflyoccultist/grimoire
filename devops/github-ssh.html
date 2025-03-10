@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Debian Firewall With nftables - rinkaku_cheatsheet</title>
+        <title>Setting Up SSH for GitHub - rinkaku_cheatsheet</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">rinkaku_cheatsheet</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,16 +152,85 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="setting-up-ssh-for-github"><a class="header" href="#setting-up-ssh-for-github">Setting Up SSH for GitHub</a></h1>
+<p>This will make GitHub stop asking you for your username and access token every time.</p>
+<h2 id="step-1-check-if-you-already-have-a-key"><a class="header" href="#step-1-check-if-you-already-have-a-key">Step 1: Check if you already have a key</a></h2>
+<ul>
+<li>Before generating a new one, check if you already have an SSH key:</li>
+</ul>
+<pre><code class="language-sh">ls -al ~/.ssh
+</code></pre>
+<p>If you see files like <code>id_rsa</code> and <code>id_rsa.pub</code> (or <code>id_ed25519</code> and <code>id_ed25519.pub</code>), you probably already have an SSH key. If not, generate one.</p>
+<h2 id="step-2-generate-a-new-ssh-key-if-needed"><a class="header" href="#step-2-generate-a-new-ssh-key-if-needed">Step 2: Generate a New SSH key (if needed)</a></h2>
+<p>If you don't have an existing SSH key, generate a new one:</p>
+<pre><code class="language-sh">ssh-keygen -t ed25519 -C "yourmail@example.com"
+</code></pre>
+<ul>
+<li>When it asks for a file location, just press Enter (this will save it in <code>~/.ssh/id_ed25519</code>).</li>
+<li>When it asks for a passphrase, you can leave it empty (or set one for extra security).</li>
+</ul>
+<h2 id="step-3-add-your-ssh-key-to-the-ssh-agent"><a class="header" href="#step-3-add-your-ssh-key-to-the-ssh-agent">Step 3: Add Your SSH Key to the SSH Agent</a></h2>
+<ul>
+<li>Now, you need to add the key to your local SSH agent so it gets used automatically:</li>
+</ul>
+<pre><code class="language-sh">eval "$(ssh-agent -s)"
+</code></pre>
+<ul>
+<li>Then add your key:</li>
+</ul>
+<pre><code class="language-sh">ssh-add ~/.ssh/id_ed25519
+</code></pre>
+<p>(If you used <code>rsa</code>, replace <code>id_ed25519</code> with <code>id_rsa</code>.)</p>
+<h2 id="step-4-copy-your-ssh-key-to-github"><a class="header" href="#step-4-copy-your-ssh-key-to-github">Step 4: Copy Your SSH Key to GitHub</a></h2>
+<p>Now, you need to add your SSH key to your GitHub account.</p>
+<ul>
+<li>Copy the key to your clipboard:</li>
+</ul>
+<pre><code class="language-sh">cat ~/.ssh/id_ed25519.pub
+</code></pre>
+<p>It will output something like:</p>
+<pre><code class="language-sh">ssh-ed25519 AAAAC3Nza...yourlongpublickeyhere yourmail@example.com
+</code></pre>
+<ul>
+<li>Go to GitHub → SSH Keys Settings</li>
+<li>Click "New SSH Key", paste your key, and give it a name.</li>
+<li>Save it.</li>
+</ul>
+<h2 id="step-5-test-the-connection"><a class="header" href="#step-5-test-the-connection">Step 5: Test the Connection</a></h2>
+<ul>
+<li>Check if GitHub recognizes your SSH key:</li>
+</ul>
+<pre><code class="language-sh">ssh -T git@github.com
+</code></pre>
+<p>If everything is set up correctly, you should see:</p>
+<pre><code class="language-sh">Hi &lt;your-github-username&gt;! You've successfully authenticated, but GitHub does not provide shell access.
+</code></pre>
+<h2 id="step-6-change-your-git-remote-to-use-ssh"><a class="header" href="#step-6-change-your-git-remote-to-use-ssh">Step 6: Change Your Git Remote to Use SSH</a></h2>
+<ul>
+<li>If your Git remote is still using HTTPS (which asks for a password), switch it to SSH:</li>
+</ul>
+<pre><code class="language-sh">git remote -v
+</code></pre>
+<p>If you see:</p>
+<pre><code class="language-sh">origin https://github.com/your-username/repository.git (fetch)
+origin https://github.com/your-username/repository.git (push)
+</code></pre>
+<ul>
+<li>Change it to SSH:</li>
+</ul>
+<pre><code class="language-sh">git remote set-url origin git@github.com:your-username/repository.git
+</code></pre>
+<p>Now, every push/pull will use SSH, and you’ll never have to enter your password again.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="gcloud-ci-cd.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../devops/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="postgres-permissions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../devops/gitactions-mdbook.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -171,11 +240,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="gcloud-ci-cd.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../devops/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="postgres-permissions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../devops/gitactions-mdbook.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -190,13 +259,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 
