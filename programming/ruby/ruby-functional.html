@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub - Debugging Grimoire</title>
+        <title>Ruby as a Functional Language - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,29 +152,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
+                        <h2 id="1-first-class-functions-because-were-not-peasants"><a class="header" href="#1-first-class-functions-because-were-not-peasants">1. First-Class Functions (Because We’re Not Peasants)</a></h2>
+<p>In Ruby, functions are first-class citizens, which means you can:</p>
+<ul>
+<li>Assign them to variables </li>
+<li>Pass them around like objects </li>
+<li>Return them from other functions</li>
+</ul>
+<h3 id="assigning-functions-to-variables"><a class="header" href="#assigning-functions-to-variables">Assigning Functions to Variables</a></h3>
+<pre><code class="language-ruby">def greet(name)
+  "Hello, #{name}!"
+end
 
-git rm --cached debug.log
+say_hi = method(:greet)  # Grab the method as an object
+puts say_hi.call("PwatPwat")  # =&gt; "Hello, PwatPwat!"
+</code></pre>
+<p>JS developers would be confused because their language still doesn’t know what it wants to be.</p>
+<h2 id="2-lambdas--procs-because-we-hate-boilerplate"><a class="header" href="#2-lambdas--procs-because-we-hate-boilerplate">2. Lambdas &amp; Procs (Because We Hate Boilerplate)</a></h2>
+<p>Ruby has two types of anonymous functions: lambdas and procs.</p>
+<h3 id="lambdas-strict-like-a-no-nonsense-professor"><a class="header" href="#lambdas-strict-like-a-no-nonsense-professor">Lambdas (Strict, Like a No-Nonsense Professor)</a></h3>
+<pre><code class="language-ruby">say_hello = -&gt; (name) { puts "Hello, #{name}!" }
+say_hello.call("Ruby")  # =&gt; "Hello, Ruby!"
+</code></pre>
+<ul>
+<li>Uses -&gt; for defining</li>
+<li>Checks argument count (strict like C)</li>
+</ul>
+<h3 id="procs-laid-back-like-a-sleepy-dev"><a class="header" href="#procs-laid-back-like-a-sleepy-dev">Procs (Laid-Back, Like a Sleepy Dev)</a></h3>
+<pre><code class="language-ruby">lazy_greet = Proc.new { |name| puts "Sup, #{name}." }
+lazy_greet.call("you")  # =&gt; "Sup, you."
+</code></pre>
+<ul>
+<li>Uses Proc.new</li>
+<li>Doesn’t care about missing arguments (very chill, very Ruby)</li>
+</ul>
+<h2 id="3-higher-order-functions-passing-functions-around-like-secrets"><a class="header" href="#3-higher-order-functions-passing-functions-around-like-secrets">3. Higher-Order Functions (Passing Functions Around Like Secrets)</a></h2>
+<h3 id="functions-taking-other-functions"><a class="header" href="#functions-taking-other-functions">Functions Taking Other Functions</a></h3>
+<pre><code class="language-ruby">def apply_twice(func, value)
+  func.call(func.call(value))
+end
 
-git commit -m "Start ignoring debug.log"
+double = -&gt;(x) { x * 2 }
+
+puts apply_twice(double, 5)  # =&gt; 20
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
+<ul>
+<li>Passes the double function into apply_twice</li>
+<li>JavaScript developers sweating because they only just learned .map()</li>
+</ul>
+<h2 id="4-functional-methods-on-collections-destroying-loops"><a class="header" href="#4-functional-methods-on-collections-destroying-loops">4. Functional Methods on Collections (Destroying Loops)</a></h2>
+<p>Ruby lets you replace loops with functional goodness.</p>
+<h3 id="map-instead-of-a-for-loop"><a class="header" href="#map-instead-of-a-for-loop">Map Instead of a For-Loop</a></h3>
+<pre><code class="language-ruby">numbers = [1, 2, 3, 4]
+doubled = numbers.map { |n| n * 2 }
+puts doubled.inspect  # =&gt; [2, 4, 6, 8]
 </code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
+<h3 id="select-instead-of-filtering-in-loops"><a class="header" href="#select-instead-of-filtering-in-loops">Select Instead of Filtering in Loops</a></h3>
+<pre><code class="language-ruby">evens = numbers.select { |n| n.even? }
+puts evens.inspect  # =&gt; [2, 4]
 </code></pre>
+<h3 id="reduce-instead-of-ugly-accumulators"><a class="header" href="#reduce-instead-of-ugly-accumulators">Reduce Instead of Ugly Accumulators</a></h3>
+<pre><code class="language-ruby">sum = numbers.reduce(0) { |acc, num| acc + num }
+puts sum  # =&gt; 10
+</code></pre>
+<p>Node.js devs in shambles because .reduce() in JavaScript requires a PhD.</p>
+<h2 id="5-currying-because-why-not"><a class="header" href="#5-currying-because-why-not">5. Currying (Because Why Not?)</a></h2>
+<p>You can partially apply functions like a Haskell god.
+Example: Making a Curried Adder</p>
+<pre><code class="language-ruby">adder = -&gt; (x) { -&gt; (y) { x + y } }
+
+add_five = adder.call(5)
+puts add_five.call(10)  # =&gt; 15
+</code></pre>
+<ul>
+<li>adder.call(5) returns a new function waiting for y</li>
+<li>Node.js devs still writing .bind(this)</li>
+</ul>
+<h2 id="6-composition-stacking-functions-like-a-boss"><a class="header" href="#6-composition-stacking-functions-like-a-boss">6. Composition (Stacking Functions Like a Boss)</a></h2>
+<p>Instead of nesting functions, compose them:</p>
+<pre><code class="language-ruby">def compose(f, g)
+  -&gt;(x) { f.call(g.call(x)) }
+end
+
+double = -&gt;(x) { x * 2 }
+increment = -&gt;(x) { x + 1 }
+
+double_then_increment = compose(increment, double)
+puts double_then_increment.call(5)  # =&gt; 11
+
+# double(5) → 10
+# increment(10) → 11
+</code></pre>
+<ul>
+<li>Elegant. Chaotic. Beautiful.</li>
+</ul>
+<h2 id="final-verdict"><a class="header" href="#final-verdict">Final Verdict</a></h2>
+<ul>
+<li>Ruby can go full functional</li>
+<li>Less boilerplate than JavaScript </li>
+<li>More readable than Haskell </li>
+<li>Shorter than Python </li>
+<li>Node.js devs now crying in async hell</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../programming/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/python/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +273,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/ruby/ruby-basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../programming/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/python/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -203,13 +292,13 @@ git commit -m "Start ignoring debug.log"
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

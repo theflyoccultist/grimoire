@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub - Debugging Grimoire</title>
+        <title>PostgreSQL Production Setup on Google Cloud SQL - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -152,29 +152,81 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
-
-git rm --cached debug.log
-
-git commit -m "Start ignoring debug.log"
+                        <h1 id="set-up-postgresql-for-deployment-with-cloud-sql"><a class="header" href="#set-up-postgresql-for-deployment-with-cloud-sql">Set Up PostgreSQL for Deployment With Cloud SQL</a></h1>
+<p>✅ Go to Google Cloud Console → Create a PostgreSQL instance
+✅ Pick a region close to your Cloud Run service (to reduce latency)
+✅ Enable Automatic Backups (trust me, you’ll need them someday)
+✅ Disable public IP (we only connect through the Cloud SQL Proxy)
+2️⃣ Connect Securely (No Direct Superuser Access)</p>
+<p>🚫 No sudo -u postgres psql
+✅ Use the Cloud SQL Auth Proxy instead:</p>
+<p>gcloud auth application-default login
+gcloud sql connect my-instance --user=my_project_user</p>
+<p>1️⃣ Create a Service Account for PostgreSQL</p>
+<p>Since Google Cloud SQL supports IAM authentication, we’ll create a dedicated service account for your database.</p>
+<p>gcloud iam service-accounts create cloudsql-user <br />
+--description="Cloud SQL authentication service account" <br />
+--display-name="CloudSQL User"</p>
+<p>2️⃣ Grant Cloud SQL Permissions</p>
+<p>This gives only the required permissions to the service account—nothing more.</p>
+<p>gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID <br />
+--member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
+--role=roles/cloudsql.client</p>
+<p>gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID <br />
+--member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
+--role=roles/cloudsql.instanceUser</p>
+<p>🛑 DO NOT give roles/cloudsql.admin unless Future-You wants to cry over accidental privilege escalations.
+3️⃣ Enable IAM Authentication for Cloud SQL</p>
+<p>Cloud SQL needs to allow IAM users to authenticate instead of just using password-based logins.</p>
+<p>gcloud sql instances patch YOUR_INSTANCE_NAME <br />
+--database-flags=cloudsql.iam_authentication=on</p>
+<p>🔹 This tells Postgres to use IAM authentication for users. If this is missing, IAM-based logins will fail.
+4️⃣ Create a Cloud SQL User with IAM Authentication</p>
+<p>Now, you create a database user, but instead of a password, it will authenticate via IAM.</p>
+<p>gcloud sql users create cloudsql-user <br />
+--instance=YOUR_INSTANCE_NAME <br />
+--type=CLOUD_IAM_SERVICE_ACCOUNT <br />
+--email=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com</p>
+<p>5️⃣ Generate Credentials for Local Testing</p>
+<p>You’ll need an authentication token every time you connect to Postgres via IAM.</p>
+<p>gcloud auth application-default login
+gcloud auth print-access-token</p>
+<p>Copy the access token and use it as a password when connecting via psql.
+6️⃣ Connect to Cloud SQL Using IAM Authentication</p>
+<p>Use this instead of a password:</p>
+<p>PGPASSWORD=$(gcloud auth print-access-token) psql <br />
+"host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME <br />
+dbname=my_project_db <br />
+user=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
+sslmode=disable"</p>
+<p>🔹 This removes static passwords and forces authentication via IAM.
+7️⃣ GitHub Actions Integration (For Automated Deployments)</p>
+<p>Since you’re already storing credentials in GitHub Secrets, you’ll also need to store IAM authentication tokens.</p>
+<pre><code>Add two more secrets:
+    GCP_SQL_IAM_USER → cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com
+    GCP_SQL_INSTANCE_CONNECTION_NAME → YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
-</code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
-</code></pre>
+<p>3️⃣ Database Setup (Same as Local, But With IAM Users)</p>
+<p>For this step, you should follow the <a href="../database/postgres-local.html">PostgreSQL Local Setup Guide</a> from Step 2, as it also works for this setup.</p>
+<p>Cloud Run Deployment: The Database URL Format</p>
+<p>Instead of localhost, your .env file should have:</p>
+<p>DATABASE_URL=postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME</p>
+<p>To test manually:</p>
+<p>psql "postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME"</p>
+<p>5️⃣ Security: Avoid Paying for Google’s Mistakes</p>
+<p>🔴 Set up a billing alert. If your database starts scaling up unnecessarily, you will get charged.
+🟢 Limit instance size in the Cloud SQL settings (e.g., 1 vCPU, 2GB RAM for small apps).
+🛑 No open database connections! Use Cloud SQL Proxy instead of exposing your DB.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../devops/postgres-testing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../programming/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../linux/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +236,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../devops/postgres-testing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../programming/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../linux/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

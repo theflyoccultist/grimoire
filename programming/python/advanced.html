@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub - Debugging Grimoire</title>
+        <title>Advanced - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,29 +152,84 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
+                        <h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
+<pre><code class="language-python">from imports_mymodule import divide #or import imports_mymodule
 
-git rm --cached debug.log
+print(divide(10,2))
+</code></pre>
+<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
+<pre><code class="language-python">def divide(divident, divisor):
+    return divident/divisor
 
-git commit -m "Start ignoring debug.log"
+print("imports_mymodule.py: ", __name__)
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
+<h3 id="type-hinting-uses-type-hints-for-better-function-and-class-documentation"><a class="header" href="#type-hinting-uses-type-hints-for-better-function-and-class-documentation">Type Hinting: Uses type hints for better function and class documentation.</a></h3>
+<pre><code class="language-python">class Book:
+    TYPEZ = ("hardcover", "paperback")
+
+    def __init__(self, name: str, book_type: str, weight: int):
+        self.name = name
+        self.book_type = book_type
+        self.weight = weight
+
+    def __repr__(self) -&gt; str:
+        return f"&lt;Book {self.name}, {self.book_type}, weiging {self.weight}g&gt;"
+    
+    @classmethod
+    def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
+        return cls(name, cls.TYPEZ[0], page_weight + 100)
+    
+    @classmethod
+    def paperback(cls, name: str, page_weight: int) -&gt; "Book":
+        return cls(name, cls.TYPEZ[1], page_weight)
+     
+
+book = Book.hardcover("Laurel Hell", 1600)
+light = Book.paperback("the bottle", 400)
+
+print(book, light)
 </code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
+<h3 id="first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions"><a class="header" href="#first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions">First Class Function: Demonstrates passing functions as arguments to other functions.</a></h3>
+<pre><code class="language-python">def divide(dividend, diviser):
+    if diviser == 0:
+        raise ZeroDivisionError("DIvisor cannot be 0.")
+    
+    return dividend/diviser
+
+def calculate(*values, operator):
+    return operator(*values)
+
+result = calculate(20, 4, operator=divide)
+print(result)
+</code></pre>
+<h3 id="first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries"><a class="header" href="#first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries">First Class Function 2: Uses function arguments to search in a list of dictionaries.</a></h3>
+<pre><code class="language-python">def search(sequence, expected, finder):
+    for elem in sequence:
+        if finder(elem) == expected:
+            return elem
+    raise RuntimeError(f"Could not find an element with {expected}.")
+
+friends = [
+    {"name": "Rolf Lilia", "age": 28},
+    {"name": "Odin the Great", "age": 877},
+    {"name": "Nyarlathotep", "age": 8888811},
+]
+
+def get_friend_name(friend):
+    return friend["name"]
+
+print(search(friends, "Nyarlathotep", get_friend_name))
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/python/oop.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../programming/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/python/errors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +239,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/python/oop.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../programming/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/python/errors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -203,13 +258,13 @@ git commit -m "Start ignoring debug.log"
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

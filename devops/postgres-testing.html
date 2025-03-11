@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub - Debugging Grimoire</title>
+        <title>Set Up PostgreSQL for Testing Environments - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -152,29 +152,129 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
-
-git rm --cached debug.log
-
-git commit -m "Start ignoring debug.log"
+                        <h1 id="setup-postgresql-for-testing-environments"><a class="header" href="#setup-postgresql-for-testing-environments">Setup PostgreSQL for Testing Environments</a></h1>
+<h2 id="1-setting-up-database-env-variables-on-github"><a class="header" href="#1-setting-up-database-env-variables-on-github">1. Setting Up Database Env Variables on GitHub</a></h2>
+<ul>
+<li>Go to your GitHub repo → Settings → Secrets and variables → Actions</li>
+<li>Add your Postgres credentials as secrets </li>
+<li>In your CI/CD workflow (.github/workflows/deploy.yml), use them like this:</li>
+</ul>
+<pre><code class="language-yaml">env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
+<ul>
+<li>Now your database credentials are safe, instead of hardcoded into a .env file waiting to get leaked.</li>
+</ul>
+<h2 id="2-cloud-runs-equivalent-secret-manager--environment-variables"><a class="header" href="#2-cloud-runs-equivalent-secret-manager--environment-variables">2. Cloud Run's Equivalent: Secret Manager &amp; Environment Variables</a></h2>
+<p>Cloud Run has built-in environment variables, so you can set Postgres credentials safely.</p>
+<ul>
+<li>
+<p>Go to Google Cloud Console → Cloud Run → Your service → Edit &amp; Deploy → Variables &amp; Secrets </p>
+</li>
+<li>
+<p>Add:</p>
+</li>
+</ul>
+<pre><code>DATABASE_URL=postgres://user:password@hostname:port/dbname 
 </code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
+<ul>
+<li>
+<p>Now, when you deploy, it will automatically inject those credentials into your app. </p>
+</li>
+<li>
+<p>If you use Ruby, you can access to the database with a simple one liner:</p>
+</li>
+</ul>
+<pre><code class="language-ruby">db_url = ENV["DATABASE_URL"]
 </code></pre>
+<p>Bonus: You can also store database credentials in Secret Manager instead of Cloud Run env variables:</p>
+<pre><code class="language-bash">gcloud secrets create my-database-url \
+  --replication-policy="automatic"
+gcloud secrets versions add my-database-url --data-file=".env"
+</code></pre>
+<p>Then, pull it into Cloud Run with:</p>
+<pre><code>DATABASE_URL=$(gcloud secrets versions access latest --secret="my-database-url")
+</code></pre>
+<h2 id="3-deploying-postgres-on-cloud-run-without-losing-your-mind"><a class="header" href="#3-deploying-postgres-on-cloud-run-without-losing-your-mind">3. Deploying Postgres on Cloud Run (Without Losing Your Mind)</a></h2>
+<h3 id="option-1-the-recommended-path-google-cloud-sql"><a class="header" href="#option-1-the-recommended-path-google-cloud-sql">Option 1: The Recommended Path (Google Cloud SQL)</a></h3>
+<ul>
+<li>Best choice if you don’t want to manage Postgres manually.</li>
+<li>Google auto-manages scaling, security, and backups.</li>
+<li>Connect Cloud Run to Cloud SQL using IAM (see postgres-gcloud.md).</li>
+</ul>
+<h3 id="option-2-deploy-a-postgres-container-on-cloud-run"><a class="header" href="#option-2-deploy-a-postgres-container-on-cloud-run">Option 2: Deploy a Postgres Container on Cloud Run</a></h3>
+<p>If you want full control, deploy your own PostgreSQL container inside Cloud Run:</p>
+<pre><code class="language-yaml">services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+</code></pre>
+<p>💡 Why not use this for production?
+Cloud Run is stateless and doesn’t persist data across deployments, so Cloud SQL is the better choice.</p>
+<ol start="4">
+<li>Testing Databases Without Crying
+✔ Locally: Use docker-compose for a quick Postgres setup:</li>
+</ol>
+<pre><code class="language-yaml">version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+</code></pre>
+<p>💡 Why?</p>
+<ul>
+<li>No need to install Postgres manually on your system.</li>
+<li>Resets everything with each restart (clean test environment).</li>
+</ul>
+<h3 id="in-cicd-github-actions-use-a-temporary-postgres-instance"><a class="header" href="#in-cicd-github-actions-use-a-temporary-postgres-instance">In CI/CD (GitHub Actions): Use a temporary Postgres instance:</a></h3>
+<pre><code class="language-yaml">services:
+  postgres:
+    image: postgres
+    env:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+    ports:
+      - 5432:5432
+</code></pre>
+<ul>
+<li>Spins up a fresh test database per CI/CD run (isolated tests).</li>
+<li>Prevents side effects from shared databases.</li>
+</ul>
+<h3 id="on-cloud-run-use-a-staging-database"><a class="header" href="#on-cloud-run-use-a-staging-database">On Cloud Run: Use a Staging Database</a></h3>
+<p>Before pushing to production:</p>
+<ul>
+<li>Set up a staging Cloud SQL instance</li>
+<li>Test database migrations on staging before applying them to production</li>
+<li>Ensure IAM and permissions work as expected</li>
+</ul>
+<p>💡 Why?</p>
+<ul>
+<li>Avoids deploying untested migrations straight to prod (the ultimate mistake).</li>
+<li>Staging database = No surprises when launching in production.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../devops/gcloud-ci-cd.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../programming/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../devops/postgres-gcloud.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +284,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../devops/gcloud-ci-cd.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../programming/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../devops/postgres-gcloud.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

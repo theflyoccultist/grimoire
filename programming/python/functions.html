@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub - Debugging Grimoire</title>
+        <title>Functions - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,29 +152,142 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
+                        <h3 id="functions-with-arguments-simple-function-demonstrating-division-with-error-handling"><a class="header" href="#functions-with-arguments-simple-function-demonstrating-division-with-error-handling">Functions with Arguments: Simple function demonstrating division with error handling.</a></h3>
+<pre><code class="language-python">def divide (dividend, divisor):
+    if divisor != 0:
+        return dividend/divisor
+    else:
+        return "you fool!"
 
-git rm --cached debug.log
+divide (6, 0)
+</code></pre>
+<h3 id="functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs"><a class="header" href="#functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs">Functions with Arguments 2: Shows function parameter unpacking with *args and **kwargs.</a></h3>
+<pre><code class="language-python">def add(x, y):
+    return x + y
 
-git commit -m "Start ignoring debug.log"
+num = [3, 5]
+add(*num)
+
+numz = {"x": 15, "y": 26}
+print(add(**numz))
+
+def multiply(*argz):
+    total = 1
+    for arg in argz:
+        total = total * arg
+
+    return total
+
+def apply(*argz, operator):
+    if operator == "*":
+        return multiply(*argz)
+    elif operator == "+":
+        return sum(argz)
+    else:
+        return "no valid operator detected."
+    
+print(apply(1, 3, 5, 7, operator="+"))
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
+<h3 id="mutable-parameters-demonstrates-how-default-mutable-arguments-can-cause-issues"><a class="header" href="#mutable-parameters-demonstrates-how-default-mutable-arguments-can-cause-issues">Mutable Parameters: Demonstrates how default mutable arguments can cause issues.</a></h3>
+<pre><code class="language-python">from typing import List, Optional
+
+class Ztudent:
+    def __init__(self, name: str, grades: Optional[List[int]] = None):
+        self.name = name
+        self.grades = grades or []
+
+    def take_exam(self, result: int):
+        self.grades.append(result)
+
+bob = Ztudent("Bob")
+rolf = Ztudent("Rolf")
+bob.take_exam(90)
+print(bob.grades)
+print(rolf.grades)
 </code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
+<h3 id="lambda-demonstrates-lambda-functions-and-map"><a class="header" href="#lambda-demonstrates-lambda-functions-and-map">Lambda: Demonstrates lambda functions and map.</a></h3>
+<pre><code class="language-python">add = lambda x , y : x + y
+print(add(8,5))
+
+def double(x):
+    return x*2
+
+sequence = [1, 3, 5, 9] 
+doubled = [double(x) for x in sequence]
+doubled2 = list(map(double, sequence))
+
+print (doubled2)
+</code></pre>
+<h3 id="decorators-demonstrates-a-basic-function-decorator-for-access-control"><a class="header" href="#decorators-demonstrates-a-basic-function-decorator-for-access-control">Decorators: Demonstrates a basic function decorator for access control.</a></h3>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def get_admin_password():
+    return "1234"
+
+def make_secure(func):
+    def secure_function():
+        if user["access_level"] == "admin":
+            return func()
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+get_admin_password = make_secure(get_admin_password)
+
+print(get_admin_password())
+</code></pre>
+<h3 id="decorators-with-parameters-enhances-decorators-to-accept-parameters"><a class="header" href="#decorators-with-parameters-enhances-decorators-to-accept-parameters">Decorators With Parameters: Enhances decorators to accept parameters.</a></h3>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def make_secure(func):
+    def secure_function(*args, **kwargs):
+        if user["access_level"] == "admin":
+            return func(*args, **kwargs)
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+@make_secure
+def get_password(panel):
+    if panel == "admin":
+        return "1234"
+    elif panel == "billing":
+        return "super_secure_password"
+
+
+print(get_password("billing"))
+</code></pre>
+<h3 id="decorators--uses-the-decorator-syntax-to-apply-a-decorator"><a class="header" href="#decorators--uses-the-decorator-syntax-to-apply-a-decorator">Decorators @: Uses the @decorator syntax to apply a decorator.</a></h3>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def make_secure(func):
+    def secure_function():
+        if user["access_level"] == "admin":
+            return func()
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+@make_secure
+def get_admin_password():
+    return "1234"
+
+
+print(get_admin_password())
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/python/control_flow.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../programming/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/python/oop.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,11 +297,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/python/control_flow.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../programming/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/python/oop.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -203,13 +316,13 @@ git commit -m "Start ignoring debug.log"
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

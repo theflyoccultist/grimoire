@@ -1,0 +1,432 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>OOP - Debugging Grimoire</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Debugging Grimoire</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h3 id="a-basic-example-of-oop-in-c"><a class="header" href="#a-basic-example-of-oop-in-c">A Basic Example of OOP In C++</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Car {
+private:
+    std::string brand;
+    int speed;
+
+public:
+    // Constructor
+    Car(std::string b, int s) : brand(b), speed(s) {
+        std::cout &lt;&lt; brand &lt;&lt; " Car is being created.\n";
+    }
+
+    // Virtual destructor
+    virtual ~Car() {
+        std::cout &lt;&lt; brand &lt;&lt; " Car is being destroyed.\n";
+    }
+
+    // Method
+    void accelerate() {
+        speed += 10;
+        std::cout &lt;&lt; brand &lt;&lt; " is going " &lt;&lt; speed &lt;&lt; " km/h.\n";
+    }
+
+    // Getter for brand
+    std::string getBrand() const {
+        return brand;
+    }
+
+    // Getter for speed
+    int getSpeed() const {
+        return speed;
+    }
+
+    // Operator overloading
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const Car&amp; c) {
+        os &lt;&lt; c.brand &lt;&lt; " at " &lt;&lt; c.speed &lt;&lt; " km/h";
+        return os;
+    }
+};
+
+// Single inheritance
+class SportsCar : public Car {
+public:
+    SportsCar(std::string b, int s) : Car(b, s) {
+        std::cout &lt;&lt; b &lt;&lt; " SportsCar is being created.\n";
+    }
+
+    void turboBoost() {
+        std::cout &lt;&lt; "Boosting the " &lt;&lt; getBrand() &lt;&lt; "!\n";
+    }
+
+    // Destructor
+    ~SportsCar() {
+        std::cout &lt;&lt; getBrand() &lt;&lt; " SportsCar is being destroyed.\n";
+    }
+};
+
+int main() {
+    Car myCar("beetle", 50);
+    myCar.accelerate();
+    myCar.accelerate();
+
+    SportsCar mySportsCar("Ferrari", 100);
+    mySportsCar.accelerate();
+    mySportsCar.turboBoost();
+
+    // Using the overloaded &lt;&lt; operator to print Car objects
+    std::cout &lt;&lt; myCar &lt;&lt; std::endl;
+    std::cout &lt;&lt; mySportsCar &lt;&lt; std::endl;
+
+    return 0;
+}
+</code></pre>
+<h3 id="point"><a class="header" href="#point">Point</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class Point {
+private:
+    double x, y;
+
+public:
+    // Default constructor
+    Point() : x(0.0), y(0.0) {}
+
+    // Parameterized constructor
+    Point(double xVal, double yVal) : x(xVal), y(yVal) {}
+
+    // Getter for x
+    double getX() const {
+        return x;
+    }
+
+    // Setter for x
+    void setX(double v) {
+        x = v;
+    }
+
+    // Getter for y
+    double getY() const {
+        return y;
+    }
+
+    // Setter for y
+    void setY(double v) {
+        y = v;
+    }
+
+    // Overload the + operator
+    Point operator+ (const Point&amp; p) const {
+        return Point(x + p.x, y + p.y);
+    }
+
+    // Overload the &lt;&lt; operator for output
+    friend ostream&amp; operator &lt;&lt; (ostream&amp; out, const Point&amp; p) {
+        out &lt;&lt; "(" &lt;&lt; p.x &lt;&lt; ", " &lt;&lt; p.y &lt;&lt; ")";
+        return out;
+    }
+};
+
+int main() {
+    Point a(3.5, 2.5), b(2.5, 4.5), c;
+    cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; " b = " &lt;&lt; b &lt;&lt; endl;
+    c = a + b;
+    cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
+    return 0;
+}
+</code></pre>
+<h3 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class list_element {
+public:
+    int d;
+    list_element* next;
+
+    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
+};
+
+class list {
+public:
+    list() : head(nullptr), cursor(nullptr) {}
+    ~list();  // Destructor to free memory
+    list(const list&amp; lst);  // Copy constructor
+
+    void prepend(int n);    // Insert at front value n
+    int get_element() { return cursor-&gt;d; }
+    void advanced() { cursor = cursor-&gt;next; }
+    void print();
+
+private:
+    list_element* head;
+    list_element* cursor;
+};
+
+// Destructor implementation
+list::~list() {
+    while (head != nullptr) {
+        list_element* temp = head;
+        head = head-&gt;next;
+        delete temp;
+    }
+}
+
+// Deep copy constructor
+list::list(const list&amp; lst) {
+    if (lst.head == nullptr) {
+        head = nullptr;
+        cursor = nullptr;
+    } else {
+        cursor = lst.head;
+        list_element* h = new list_element(cursor-&gt;d);
+        list_element* previous = h;
+        head = h;
+        cursor = cursor-&gt;next;
+
+        while (cursor != nullptr) {
+            h = new list_element(cursor-&gt;d);
+            previous-&gt;next = h;
+            previous = h;
+            cursor = cursor-&gt;next;
+        }
+
+        cursor = head;
+    }
+}
+
+void list::prepend(int n) {
+    if (head == nullptr)  // empty list case
+        cursor = head = new list_element(n, head);
+    else    // add to front-chain
+        head = new list_element(n, head);
+}
+
+void list::print() {
+    list_element* h = head;
+    while (h != nullptr) {
+        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
+        h = h-&gt;next;
+    }
+    cout &lt;&lt; "###" &lt;&lt; endl;
+}
+
+int main() {
+    list a, b;
+    a.prepend(9); a.prepend(8);
+    cout &lt;&lt; "list a" &lt;&lt; endl;
+    a.print();
+
+    // Use the copy constructor
+    list c = a;
+    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
+    c.print();
+
+    for (int i = 0; i &lt; 40; ++i)
+        b.prepend(i * i);
+    cout &lt;&lt; "list b" &lt;&lt; endl;
+    b.print();
+
+    return 0;
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../programming/cpp/basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../programming/cpp/algorithms.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../programming/cpp/basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../programming/cpp/algorithms.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
