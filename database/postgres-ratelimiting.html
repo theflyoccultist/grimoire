@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>How to Setup Rate Limiting in PostgreSQL - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../../";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -152,16 +152,107 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="rate-limiting-with-postgresql"><a class="header" href="#rate-limiting-with-postgresql">Rate Limiting With PostgreSQL</a></h1>
+<p>If you have a small app, you do not need to setup an entire new Redis instance. You can instead build your own 'poor mans Redis', with unlogged tables (faster writes and no WAL overhead) and automatic cleanup with a cron job.
+In this guide, you will learn how to add a rate limiting feature directly onto PostgreSQL, which is useful to greatly reduce the risk of brute force attacks.</p>
+<p><strong>These queries are meant to be run from your backend application file, not from psql.</strong></p>
+<h3 id="language-compatibility-notice"><a class="header" href="#language-compatibility-notice">Language Compatibility Notice</a></h3>
+<ul>
+<li>This SQL syntax ($1, $2, etc...) is compatible with Ruby, JavaScript, and Go.</li>
+<li>If using Python (psycopg2), replace $1 with %s.</li>
+<li>If using Java (JDBC), use ? placeholders instead.</li>
+<li><strong>Regardless of the language, make sure to use parametrized queries</strong> to prevent SQL injection.</li>
+</ul>
+<h2 id="1-the-rate-limiting-table"><a class="header" href="#1-the-rate-limiting-table">1. The Rate-Limiting Table</a></h2>
+<p>Since this is login-related, we can use an UUID identifier and timestamps.</p>
+<pre><code class="language-sql">CREATE UNLOGGED TABLE login_attempts (
+    session_id UUID DEFAULT gen_random_uuid(),  -- Secure, unique session tracking
+    username TEXT NOT NULL,
+    attempt_count INT DEFAULT 1,
+    first_attempt TIMESTAMP DEFAULT now(),
+    PRIMARY KEY (session_id, username)  -- Prevent duplicate session-user pairs
+);
+</code></pre>
+<ul>
+<li>Unlogged -&gt; Faster writes, no WAL overhead.</li>
+<li>UUID session identifiers are more reliable than tracking IP addresses -&gt; no risk of blocking users with shared IP, or letting botnets or spoof IPs pass.</li>
+</ul>
+<h2 id="2-when-a-login-attempt-happens"><a class="header" href="#2-when-a-login-attempt-happens">2. When a Login Attempt Happens</a></h2>
+<p>Now, inserting into this table will automatically generate a secure, unique session identifier.</p>
+<pre><code class="language-sql">INSERT INTO login_attempts (username, attempt_count)
+VALUES ($1, 1)
+ON CONFLICT (username) 
+DO UPDATE SET
+  attempt_count = login_attempts.attempt_count + 1
+  first_attempt = CASE
+  WHEN login_attempts.first_attempt &lt;= now() - INTERVAL '20 minutes'
+  THEN now()
+  ELSE login_attempts.first_attempt
+END;
+</code></pre>
+<ul>
+<li>If it’s a new user, it gets inserted.</li>
+<li>If it already exists, it updates only if the time window hasn’t expired.</li>
+<li>If it has expired, the row stays the same (so it doesn’t increment forever).</li>
+</ul>
+<h2 id="3-checking-if-the-uuid-is-blocked"><a class="header" href="#3-checking-if-the-uuid-is-blocked">3. Checking If the UUID is Blocked</a></h2>
+<p>Before processing a login attempt, check if the UUID should be blocked.</p>
+<pre><code class="language-sql">SELECT attempt_count FROM login_attempts
+WHERE username = $1
+AND first_attempt &gt; now() - INTERVAL '20 minutes';
+</code></pre>
+<p>If attempt_count &gt; 5, deny the login request.</p>
+<h2 id="4-automatically-cleaning-up-old-records"><a class="header" href="#4-automatically-cleaning-up-old-records">4. Automatically Cleaning Up Old Records</a></h2>
+<ul>
+<li>Once an IP ages out of the 20-minute window, we don’t need to track it anymore.</li>
+<li>This step requires a PostgreSQL extension, pg_cron, which you can find here: <a href="https://github.com/citusdata/pg_cron">pg_cron</a></li>
+<li>Then, you might want to alter your default database configuration file (which you have hopefully created first by following <a href="postgres-local.html">this guide</a>.</li>
+</ul>
+<pre><code class="language-sql">ALTER USER my_project_user SET cron.job_run_as_owner = true;
+</code></pre>
+<ul>
+<li>Set up the pg_cron extension:</li>
+</ul>
+<pre><code class="language-sql">CREATE EXTENSION pg_cron;
+
+CREATE OR REPLACE FUNCTION cleanup_old_attempts() RETURNS VOID AS $$
+DELETE FROM login_attempts WHERE first_attempt &lt; now() - INTERVAL '20 minutes';
+$$ LANGUAGE sql;
+
+-- Auto clean up of old attempts, every 5 minutes
+SELECT cron.schedule('*/5 * * * *', $$SELECT cleanup_old_attempts()$$);
+</code></pre>
+<ul>
+<li>Keeps the table lightweight instead of storing old attempts forever.</li>
+<li>Runs every 5 minutes, but you can tweak as needed.</li>
+</ul>
+<h2 id="for-deployment"><a class="header" href="#for-deployment">For deployment</a></h2>
+<p>Google Cloud SQL supports pg_cron, but you have to manually enable it since it's disabled by default.</p>
+<ul>
+<li>Go to Google Cloud Console</li>
+<li>Navigate to your PostgreSQL instance</li>
+<li>Enable pg_cron extension
+<ul>
+<li>Go to Configuration -&gt; Flags</li>
+<li>Add a new flag:</li>
+</ul>
+<pre><code>shared_preload_libraries = 'pg_cron'
+</code></pre>
+<ul>
+<li>Click 'Save Changes &amp; Restart the instance'.</li>
+</ul>
+</li>
+</ul>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/cpp/algorithms.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../database/postgres-local.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../database/redis-setup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -171,11 +262,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/cpp/algorithms.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../database/postgres-local.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../database/redis-setup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -190,13 +281,13 @@
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 

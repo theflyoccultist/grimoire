@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>PostgreSQL Guide for Local Setup - Debugging Grimoire</title>
+        <title>PostgreSQL Local Setup Guide - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -165,16 +165,16 @@
 <p><strong>You can fill in with your own informations, store them in a file (such as <code>setup.sql</code>) and use them in production.</strong></p>
 <h2 id="step-2-create-a-new-database-two-new-users-and-a-separate-schema"><a class="header" href="#step-2-create-a-new-database-two-new-users-and-a-separate-schema">Step 2: Create a New Database, Two New Users and A Separate Schema</a></h2>
 <ul>
-<li>Inside the Postgres shell (<code>psql</code>) run:</li>
+<li>Inside the Postgres shell (<code>psql</code>) run (or better: write into your <code>setup.sql</code> file):</li>
 </ul>
-<pre><code class="language-sql">-- Create a database user and a database admin (replace with strong passwords)
+<pre><code class="language-sql">-- Create a database user (replace with a strong password) and a temporary admin
 
-CREATE USER project_admin WITH PASSWORD 'verysecurepassword';
+CREATE USER temp_admin WITH PASSWORD 'temp_admin_password';
 CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
-CREATE DATABASE my_project_db OWNER project_admin;
+CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
 -- If you want isolation from the default public schema, create a custom schema:
@@ -189,16 +189,16 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 </ul>
 <h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
 <p>By default, new users can create or drop objects inside the project schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Prevents the user from creating, dropping, or truncating tables in the project schema.
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user RESTRICT;
+<pre><code class="language-sql">-- Revoke ONLY drop and truncate, but leave CREATE intact
+REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
 
--- Ensures that my_project_user cannot create tables in the project schema, even if new ones are added.
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
-REVOKE CREATE ON TABLES FROM my_project_user;
+-- Explicitly grant back CREATE
+GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables
 REVOKE DROP ON ALL TABLES IN SCHEMA my_project_schema FROM my_project_user;
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA public REVOKE DROP ON TABLES FROM my_project_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
+REVOKE DROP ON TABLES FROM my_project_user;
 </code></pre>
 <ul>
 <li>This prevents accidental database-wide modifications.</li>
@@ -208,12 +208,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA public REVOKE DROP O
 <p>You should prevent the user from becoming a superuser, creating other databases and creating new users.</p>
 <pre><code class="language-sql">ALTER USER my_project_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE;
 </code></pre>
-<h2 id="step-5-allow-some-operations"><a class="header" href="#step-5-allow-some-operations">Step 5: Allow Some Operations</a></h2>
-<p>To know <code>my_project_schema.table1, my_project_schema.table2</code>, just add the corresponding values from your backend code.</p>
-<pre><code class="language-sql">-- You should grant CRUD operations, but only for specific tables
-GRANT SELECT, INSERT, UPDATE, DELETE ON my_project_schema.table1, my_project_schema.table2 TO my_project_user;
-
--- Make sure the user has access to future tables as well
+<h2 id="step-5-allow-crud-operations"><a class="header" href="#step-5-allow-crud-operations">Step 5: Allow CRUD Operations</a></h2>
+<pre><code class="language-sql">-- Grant CRUD operations to the user, and ensure it has access to future tables as well
 ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO my_project_user;
 </code></pre>
@@ -221,16 +217,17 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO my_project_user;
 <pre><code class="language-sql">ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO my_project_user;
 </code></pre>
-<h2 id="step-7-drop-project_admin"><a class="header" href="#step-7-drop-project_admin">Step 7: Drop project_admin</a></h2>
-<p>Since at this point, project_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it:</p>
-<pre><code class="language-sql">-- Reassign all objects owned by project_admin to my_project_user
-REASSIGN OWNED BY project_admin TO my_project_user;
+<h2 id="step-7-drop-temp_admin"><a class="header" href="#step-7-drop-temp_admin">Step 7: Drop temp_admin</a></h2>
+<p>Since at this point, temp_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it.
+If you want, you can always keep it and modify its permissions separately, but this is a pragmatic and secure solution.</p>
+<pre><code class="language-sql">-- Reassign all objects owned by temp_admin to my_project_user
+REASSIGN OWNED BY temp_admin TO my_project_user;
 
 -- Remove any remaining privileges
-DROP OWNED BY project_admin;
+DROP OWNED BY temp_admin;
 
 -- Finally, delete the user
-DROP USER project_admin;
+DROP USER temp_admin;
 </code></pre>
 <h2 id="step-8-exit-and-verify-setup"><a class="header" href="#step-8-exit-and-verify-setup">Step 8: Exit and Verify Setup</a></h2>
 <p><code>\l</code>: List all databases</p>
@@ -239,15 +236,17 @@ DROP USER project_admin;
 <ul>
 <li>Show a user's privilege:</li>
 </ul>
-<pre><code class="language-sql">SELECT grantee, privilege_type, table_schema, table_name
-FROM information_schema.role_table_grants
+<pre><code class="language-sql">SELECT * FROM information_schema.role_table_grants
 WHERE grantee='my_project_user';
 </code></pre>
 <h2 id="step-9-connect-as-the-new-user"><a class="header" href="#step-9-connect-as-the-new-user">Step 9: Connect as the New User</a></h2>
+<p>If you have created a <code>setup.sql</code> file with the informations above and filled in with your own data, you can import it into Postgres with this simple command:</p>
+<pre><code class="language-bash">psql -U postgres -f setup.sql
+</code></pre>
 <p>Now test logging into your database as the newly created user:</p>
 <pre><code class="language-bash">psql -U my_project_user -d my_project_db
 </code></pre>
-<h2 id="troubleshooting-how-to-delete-the-databaseuser-if-needed"><a class="header" href="#troubleshooting-how-to-delete-the-databaseuser-if-needed">Troubleshooting: How to delete the Database/User (if needed)</a></h2>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
 <ul>
 <li>Delete database/user (if you messed up, can happen):</li>
 </ul>
@@ -291,7 +290,7 @@ FROM pg_database;
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../cheatsheet/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../database/postgres-ratelimiting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -305,7 +304,7 @@ FROM pg_database;
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../cheatsheet/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../database/postgres-ratelimiting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

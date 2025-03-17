@@ -452,8 +452,102 @@ git commit -m "Setup GitHub Actions CI/CD"
 git push origin main
 </code></pre>
 <p>Check GitHub Actions -&gt; It should build &amp; deploy your project automatically.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="adding-a-domain-to-google-cloud-run"><a class="header" href="#adding-a-domain-to-google-cloud-run">Adding a Domain to Google Cloud Run</a></h1>
+<p>I have unfortunately decided to swallow my pride and use the Google Cloud UI for this one.</p>
+<h2 id="step-1-set-up-domain-mapping"><a class="header" href="#step-1-set-up-domain-mapping">Step 1: Set Up Domain Mapping</a></h2>
+<ul>
+<li>
+<p>Go to the google cloud console -&gt; select the Cloud Run service.</p>
+</li>
+<li>
+<p>Click <strong>"Manage custom domains"</strong></p>
+</li>
+<li>
+<p>CLick <strong>Add Mapping</strong> -&gt; <strong>"Add service domain mapping"</strong></p>
+</li>
+<li>
+<p><strong>Select the service</strong> you want to map to -&gt; select your deployed project.</p>
+</li>
+<li>
+<p><strong>Enter your domain name</strong> -&gt; Click <strong>"Continue"</strong></p>
+</li>
+<li>
+<p>Google Cloud will <strong>generate DNS records</strong> -&gt; <strong>copy these</strong></p>
+</li>
+</ul>
+<h2 id="step-2-update-dns-settings-in-your-domain-host"><a class="header" href="#step-2-update-dns-settings-in-your-domain-host">Step 2: Update DNS Settings in Your Domain Host**</a></h2>
+<ul>
+<li>
+<p><strong>Go to your domain provider</strong> (Cloudflare, Namecheap, Google Domains, etc.).</p>
+</li>
+<li>
+<p>Paste the DNS records <strong>exactly as given</strong>.</p>
+</li>
+<li>
+<p>If you are using <strong>Cloudflare</strong>, set your records to <strong>"DNS Only"</strong> (disabling proxy mode) so Google can verify them.</p>
+</li>
+</ul>
+<h2 id="step-3-verify-the-dns-changes"><a class="header" href="#step-3-verify-the-dns-changes">Step 3: Verify the DNS Changes</a></h2>
+<ul>
+<li>While waiting, feel free to test your domain name on nslookup.io.</li>
+<li>If the IPv4 and IPv6 addresses matches what Google gave you, then you're good.</li>
+</ul>
+<h2 id="bonus-enable-subdomains"><a class="header" href="#bonus-enable-subdomains">Bonus: Enable Subdomains</a></h2>
+<ul>
+<li>Bonus: in your domain host DNS settings, add * as a host, CNAME as type and ghs.googlehosted.com if you want subdomains.</li>
+</ul>
+<p>-Now any subdomain (<code>blog.yourdomain.com</code>, <code>api.yourdomain.com</code>, etc.) will automatically work.</p>
+<h1 id="fix-if-your-cloud-run-region-doesnt-support-domain-mapping"><a class="header" href="#fix-if-your-cloud-run-region-doesnt-support-domain-mapping">Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping</a></h1>
+<p>🔥 <strong>If you see:</strong></p>
+<p>❌ <em>"Domain mappings are not available in this region."</em></p>
+<p>💀 <strong>Google Cloud decided your region isn’t good enough.</strong></p>
+<ul>
+<li>
+<p><strong>Just edit the YAML file in your repository to switch to a supported one.</strong></p>
+</li>
+<li>
+<p><strong>Commit and push the change.</strong></p>
+</li>
+<li>
+<p>In your Cloud Run services, remove the old container.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-configure-google-cloud-storage-bucket-to-store-any-files"><a class="header" href="#how-to-configure-google-cloud-storage-bucket-to-store-any-files">How to configure Google Cloud Storage Bucket to store any files</a></h1>
+<ul>
+<li>Create a Google Cloud Storage Bucket. Make sure to pick a unique bucket name!</li>
+<li>Example locations: us-central1, europe-west2, asia-east1.</li>
+</ul>
+<pre><code class="language-bash">gcloud storage buckets create gs://UNIQUE_BUCKET_NAME
+--location=SERVER_LOCATION
+--uniform-bucket-level-access
+
+# Navigate to your folder path
+cd ~/Downloads
+
+# Upload the entire "public" folder
+gsutil cp -r /public gs://UNIQUE_BUCKET_NAME
+
+# Upload a single file, or an entire folder (later updates)
+gsutil cp myfile.png gs://UNIQUE_BUCKET_NAME
+gsutil cp -r myfolder gs://UNIQUE_BUCKET_NAME
+
+# Automate Upload with Wildcards (this uploads all .jpg files in the current directory)
+gsutil cp *.jpg gs://UNIQUE_BUCKET_NAME
+
+# (Optional) Make files Public. This will make the files publicly accessed via URL.
+gsutil iam ch allUsers:objectViewer gs://UNIQUE_BUCKET_NAME
+
+# Access to an image in the folder with your web browser, once uploaded.
+https://storage.googleapis.com/UNIQUE_BUCKET_NAME/your-file.jpg
+
+# List Files in the Bucket
+gsutil ls gs://UNIQUE_BUCKET_NAME
+
+# Delete Files (if needed)
+gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setup-postgresql-for-testing-environments"><a class="header" href="#setup-postgresql-for-testing-environments">Setup PostgreSQL for Testing Environments</a></h1>
-<h2 id="1-setting-up-database-env-variables-on-github"><a class="header" href="#1-setting-up-database-env-variables-on-github">1. Setting Up Database Env Variables on GitHub</a></h2>
+<h2 id="1-setting-up-postgresql-for-github-actions"><a class="header" href="#1-setting-up-postgresql-for-github-actions">1. Setting Up PostgreSQL for GitHub Actions</a></h2>
 <ul>
 <li>Go to your GitHub repo → Settings → Secrets and variables → Actions</li>
 <li>Add your Postgres credentials as secrets </li>
@@ -465,62 +559,60 @@ git push origin main
 <ul>
 <li>Now your database credentials are safe, instead of hardcoded into a .env file waiting to get leaked.</li>
 </ul>
-<h2 id="2-cloud-runs-equivalent-secret-manager--environment-variables"><a class="header" href="#2-cloud-runs-equivalent-secret-manager--environment-variables">2. Cloud Run's Equivalent: Secret Manager &amp; Environment Variables</a></h2>
-<p>Cloud Run has built-in environment variables, so you can set Postgres credentials safely.</p>
-<ul>
-<li>
-<p>Go to Google Cloud Console → Cloud Run → Your service → Edit &amp; Deploy → Variables &amp; Secrets </p>
-</li>
-<li>
-<p>Add:</p>
-</li>
-</ul>
-<pre><code>DATABASE_URL=postgres://user:password@hostname:port/dbname 
+<h2 id="2-running-postgresql-as-a-service-in-github-actions"><a class="header" href="#2-running-postgresql-as-a-service-in-github-actions">2. Running PostgreSQL as a Service in GitHub Actions:</a></h2>
+<p>Save the following YAML file inside .github/workflows/ as test-postgres.yml.</p>
+<pre><code class="language-yaml">name: Run Tests with PostgreSQL
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: &gt;-
+          --health-cmd "pg_isready -U user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up PostgreSQL
+        run: |
+          psql -h localhost -U user -d testdb -c "SELECT 'PostgreSQL is running';"
+        env:
+          PGPASSWORD: password
+
+      - name: Run Tests
+        run: ./run_tests.sh
+        env:
+          DATABASE_URL: "postgres://user:password@localhost:5432/testdb"
 </code></pre>
 <ul>
-<li>
-<p>Now, when you deploy, it will automatically inject those credentials into your app. </p>
-</li>
-<li>
-<p>If you use Ruby, you can access to the database with a simple one liner:</p>
-</li>
+<li>Spins up a fresh new Postgres instance for every GitHub Actions run, keeping tests isolated and repeatable.</li>
+<li>Prevents side effects from shared databases.</li>
 </ul>
-<pre><code class="language-ruby">db_url = ENV["DATABASE_URL"]
-</code></pre>
-<p>Bonus: You can also store database credentials in Secret Manager instead of Cloud Run env variables:</p>
-<pre><code class="language-bash">gcloud secrets create my-database-url \
-  --replication-policy="automatic"
-gcloud secrets versions add my-database-url --data-file=".env"
-</code></pre>
-<p>Then, pull it into Cloud Run with:</p>
-<pre><code>DATABASE_URL=$(gcloud secrets versions access latest --secret="my-database-url")
-</code></pre>
-<h2 id="3-deploying-postgres-on-cloud-run-without-losing-your-mind"><a class="header" href="#3-deploying-postgres-on-cloud-run-without-losing-your-mind">3. Deploying Postgres on Cloud Run (Without Losing Your Mind)</a></h2>
-<h3 id="option-1-the-recommended-path-google-cloud-sql"><a class="header" href="#option-1-the-recommended-path-google-cloud-sql">Option 1: The Recommended Path (Google Cloud SQL)</a></h3>
+<h2 id="3-local-testing-with-docker-compose-optional"><a class="header" href="#3-local-testing-with-docker-compose-optional">3. Local Testing with Docker-Compose (optional)</a></h2>
 <ul>
-<li>Best choice if you don’t want to manage Postgres manually.</li>
-<li>Google auto-manages scaling, security, and backups.</li>
-<li>Connect Cloud Run to Cloud SQL using IAM (see postgres-gcloud.md).</li>
+<li><strong>To test in a local environment.</strong></li>
+<li>Use docker-compose for quick local Postgres testing:</li>
 </ul>
-<h3 id="option-2-deploy-a-postgres-container-on-cloud-run"><a class="header" href="#option-2-deploy-a-postgres-container-on-cloud-run">Option 2: Deploy a Postgres Container on Cloud Run</a></h3>
-<p>If you want full control, deploy your own PostgreSQL container inside Cloud Run:</p>
-<pre><code class="language-yaml">services:
-  db:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
-</code></pre>
-<p>💡 Why not use this for production?
-Cloud Run is stateless and doesn’t persist data across deployments, so Cloud SQL is the better choice.</p>
-<ol start="4">
-<li>Testing Databases Without Crying
-✔ Locally: Use docker-compose for a quick Postgres setup:</li>
-</ol>
 <pre><code class="language-yaml">version: '3.8'
 services:
   db:
@@ -533,103 +625,116 @@ services:
     ports:
       - "5432:5432"
 </code></pre>
-<p>💡 Why?</p>
 <ul>
-<li>No need to install Postgres manually on your system.</li>
-<li>Resets everything with each restart (clean test environment).</li>
+<li>This lets you test locally in the same way GitHub Actions does.</li>
+<li>Resets everything with each restart, ensuring clean test environments.</li>
 </ul>
-<h3 id="in-cicd-github-actions-use-a-temporary-postgres-instance"><a class="header" href="#in-cicd-github-actions-use-a-temporary-postgres-instance">In CI/CD (GitHub Actions): Use a temporary Postgres instance:</a></h3>
-<pre><code class="language-yaml">services:
-  postgres:
-    image: postgres
-    env:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: testdb
-    ports:
-      - 5432:5432
+<div style="break-before: page; page-break-before: always;"></div><h1 id="set-up-postgresql-in-google-cloud-sql-core-setup"><a class="header" href="#set-up-postgresql-in-google-cloud-sql-core-setup">Set Up PostgreSQL in Google Cloud SQL (Core Setup)</a></h1>
+<h3 id="1-create-a-postgresql-instance"><a class="header" href="#1-create-a-postgresql-instance">1. Create a PostgreSQL Instance</a></h3>
+<ul>
+<li>Go to Google Cloud Console -&gt; Create a PostgreSQL instance</li>
+<li>Pick a region close to your Cloud Run service (to reduce latency)</li>
+<li>Enable Automatic Backups (trust me, you’ll need them someday)</li>
+<li>Disable public IP (we only connect through the Cloud SQL Proxy)</li>
+</ul>
+<h3 id="2-create-a-secure-database-user"><a class="header" href="#2-create-a-secure-database-user">2. Create a Secure Database User</a></h3>
+<pre><code class="language-bash">gcloud sql users create my_project_user \
+  --instance=YOUR_INSTANCE_NAME \
+  --password=supersecurepassword
 </code></pre>
 <ul>
-<li>Spins up a fresh test database per CI/CD run (isolated tests).</li>
-<li>Prevents side effects from shared databases.</li>
+<li>No superusers allowed</li>
+<li>No public access</li>
 </ul>
-<h3 id="on-cloud-run-use-a-staging-database"><a class="header" href="#on-cloud-run-use-a-staging-database">On Cloud Run: Use a Staging Database</a></h3>
-<p>Before pushing to production:</p>
+<h3 id="3-connect-securely-cloud-sql-proxy-and-iam"><a class="header" href="#3-connect-securely-cloud-sql-proxy-and-iam">3. Connect Securely (Cloud SQL Proxy and IAM)</a></h3>
 <ul>
-<li>Set up a staging Cloud SQL instance</li>
-<li>Test database migrations on staging before applying them to production</li>
-<li>Ensure IAM and permissions work as expected</li>
+<li>No <code>sudo -u postgres psql</code></li>
+<li>Use the Cloud SQL Proxy instead:</li>
 </ul>
-<p>💡 Why?</p>
+<pre><code class="language-bash">gcloud auth application-default login
+gcloud sql connect my-instance --user=my_project_user
+</code></pre>
 <ul>
-<li>Avoids deploying untested migrations straight to prod (the ultimate mistake).</li>
-<li>Staging database = No surprises when launching in production.</li>
+<li>Cloud SQL doesn't let you SSH like a normal Postgres setup.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="set-up-postgresql-for-deployment-with-cloud-sql"><a class="header" href="#set-up-postgresql-for-deployment-with-cloud-sql">Set Up PostgreSQL for Deployment With Cloud SQL</a></h1>
-<p>✅ Go to Google Cloud Console → Create a PostgreSQL instance
-✅ Pick a region close to your Cloud Run service (to reduce latency)
-✅ Enable Automatic Backups (trust me, you’ll need them someday)
-✅ Disable public IP (we only connect through the Cloud SQL Proxy)
-2️⃣ Connect Securely (No Direct Superuser Access)</p>
-<p>🚫 No sudo -u postgres psql
-✅ Use the Cloud SQL Auth Proxy instead:</p>
-<p>gcloud auth application-default login
-gcloud sql connect my-instance --user=my_project_user</p>
-<p>1️⃣ Create a Service Account for PostgreSQL</p>
-<p>Since Google Cloud SQL supports IAM authentication, we’ll create a dedicated service account for your database.</p>
-<p>gcloud iam service-accounts create cloudsql-user <br />
---description="Cloud SQL authentication service account" <br />
---display-name="CloudSQL User"</p>
-<p>2️⃣ Grant Cloud SQL Permissions</p>
-<p>This gives only the required permissions to the service account—nothing more.</p>
-<p>gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID <br />
---member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
---role=roles/cloudsql.client</p>
-<p>gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID <br />
---member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
---role=roles/cloudsql.instanceUser</p>
-<p>🛑 DO NOT give roles/cloudsql.admin unless Future-You wants to cry over accidental privilege escalations.
-3️⃣ Enable IAM Authentication for Cloud SQL</p>
+<h2 id="secure-authentication-iam-authentication"><a class="header" href="#secure-authentication-iam-authentication">Secure Authentication: IAM Authentication</a></h2>
+<p>Apply IAM-based authentication instead of passwords.</p>
+<h3 id="4-create-a-service-account-for-cloud-sql"><a class="header" href="#4-create-a-service-account-for-cloud-sql">4. Create a Service Account for Cloud SQL</a></h3>
+<pre><code class="language-bash">gcloud iam service-accounts create cloudsql-user \
+  --description="Cloud SQL authentication service account" \
+  --display-name="CloudSQL User"
+</code></pre>
+<h3 id="5-grant-iam-permissions"><a class="header" href="#5-grant-iam-permissions">5. Grant IAM Permissions</a></h3>
+<p>This gives only the required permissions to the service account, nothing more.</p>
+<pre><code class="language-bash">gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
+  --member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
+  --role=roles/cloudsql.client
+
+gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
+  --member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
+  --role=roles/cloudsql.instanceUser
+</code></pre>
+<ul>
+<li>DO NOT give roles/cloudsql.admin unless Future-You wants to cry over accidental privilege escalations.</li>
+</ul>
+<h3 id="6-enable-iam-authentication-for-cloud-sql"><a class="header" href="#6-enable-iam-authentication-for-cloud-sql">6. Enable IAM Authentication for Cloud SQL</a></h3>
 <p>Cloud SQL needs to allow IAM users to authenticate instead of just using password-based logins.</p>
-<p>gcloud sql instances patch YOUR_INSTANCE_NAME <br />
---database-flags=cloudsql.iam_authentication=on</p>
-<p>🔹 This tells Postgres to use IAM authentication for users. If this is missing, IAM-based logins will fail.
-4️⃣ Create a Cloud SQL User with IAM Authentication</p>
-<p>Now, you create a database user, but instead of a password, it will authenticate via IAM.</p>
-<p>gcloud sql users create cloudsql-user <br />
---instance=YOUR_INSTANCE_NAME <br />
---type=CLOUD_IAM_SERVICE_ACCOUNT <br />
---email=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com</p>
-<p>5️⃣ Generate Credentials for Local Testing</p>
-<p>You’ll need an authentication token every time you connect to Postgres via IAM.</p>
-<p>gcloud auth application-default login
-gcloud auth print-access-token</p>
-<p>Copy the access token and use it as a password when connecting via psql.
-6️⃣ Connect to Cloud SQL Using IAM Authentication</p>
-<p>Use this instead of a password:</p>
-<p>PGPASSWORD=$(gcloud auth print-access-token) psql <br />
-"host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME <br />
-dbname=my_project_db <br />
-user=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com <br />
-sslmode=disable"</p>
-<p>🔹 This removes static passwords and forces authentication via IAM.
-7️⃣ GitHub Actions Integration (For Automated Deployments)</p>
-<p>Since you’re already storing credentials in GitHub Secrets, you’ll also need to store IAM authentication tokens.</p>
-<pre><code>Add two more secrets:
-    GCP_SQL_IAM_USER → cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com
-    GCP_SQL_INSTANCE_CONNECTION_NAME → YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME
+<pre><code class="language-bash">gcloud sql instances patch YOUR_INSTANCE_NAME \
+  --database-flags=cloudsql.iam_authentication=on
 </code></pre>
-<p>3️⃣ Database Setup (Same as Local, But With IAM Users)</p>
+<ul>
+<li>This tells Postgres to use IAM authentication for users. If this is missing, IAM-based logins will fail.</li>
+</ul>
+<h3 id="7-create-a-cloud-sql-user-with-iam-authentication"><a class="header" href="#7-create-a-cloud-sql-user-with-iam-authentication">7. Create a Cloud SQL User with IAM Authentication</a></h3>
+<p>Now, you create a database user, but instead of a password, it will authenticate via IAM.</p>
+<pre><code class="language-bash">gcloud sql users create cloudsql-user \
+  --instance=YOUR_INSTANCE_NAME \
+  --type=CLOUD_IAM_SERVICE_ACCOUNT \
+  --email=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com
+</code></pre>
+<h3 id="8-connect-to-cloud-sql-using-iam-instead-of-passwords"><a class="header" href="#8-connect-to-cloud-sql-using-iam-instead-of-passwords">8. Connect to Cloud SQL Using IAM (Instead of Passwords)</a></h3>
+<pre><code class="language-bash">PGPASSWORD=$(gcloud auth print-access-token) psql \
+  "host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME \
+  dbname=my_project_db \
+  user=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
+  sslmode=disable"
+</code></pre>
+<ul>
+<li>This removes static passwords and forces authentication via IAM tokens.</li>
+</ul>
+<ol start="3">
+<li>Deploying Your App with Cloud SQL (Cloud Run &amp; GitHub Actions)</li>
+</ol>
+<h3 id="9-store-database-credentials-in-cloud-run"><a class="header" href="#9-store-database-credentials-in-cloud-run">9. Store Database Credentials in Cloud Run</a></h3>
+<ul>
+<li>Use Google Cloud Secret Manager:</li>
+</ul>
+<pre><code class="language-bash">gcloud secrets create my-database-url \
+  --replication-policy="automatic"
+gcloud secrets versions add DATABASE_URL --data-file=&lt;(echo "postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME")
+</code></pre>
+<p>Inject secrets directly into Cloud Run:</p>
+<pre><code class="language-bash">gcloud run services update my-service \
+  --update-secrets=DATABASE_URL=DATABASE_URL:latest
+</code></pre>
+<p>Use this in GitHub Actions as well to test migrations.</p>
+<h2 id="testing--local-development"><a class="header" href="#testing--local-development">Testing &amp; Local Development</a></h2>
+<h3 id="10-generate-credentials-for-local-testing"><a class="header" href="#10-generate-credentials-for-local-testing">10. Generate Credentials for Local Testing</a></h3>
+<p>You’ll need an authentication token every time you connect to Postgres via IAM.</p>
+<pre><code class="language-bash">gcloud auth application-default login
+gcloud auth print-access-token
+</code></pre>
+<h3 id="11-run-local-database-migrations-on-cloud-sql"><a class="header" href="#11-run-local-database-migrations-on-cloud-sql">11. Run Local Database Migrations on Cloud SQL</a></h3>
 <p>For this step, you should follow the <a href="devops/../database/postgres-local.html">PostgreSQL Local Setup Guide</a> from Step 2, as it also works for this setup.</p>
-<p>Cloud Run Deployment: The Database URL Format</p>
-<p>Instead of localhost, your .env file should have:</p>
-<p>DATABASE_URL=postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME</p>
-<p>To test manually:</p>
-<p>psql "postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME"</p>
-<p>5️⃣ Security: Avoid Paying for Google’s Mistakes</p>
-<p>🔴 Set up a billing alert. If your database starts scaling up unnecessarily, you will get charged.
-🟢 Limit instance size in the Cloud SQL settings (e.g., 1 vCPU, 2GB RAM for small apps).
-🛑 No open database connections! Use Cloud SQL Proxy instead of exposing your DB.</p>
+<pre><code class="language-bash">gcloud sql connect my-instance-name --user=postgres
+psql -f setup.sql
+</code></pre>
+<h3 id="security-avoid-paying-for-googles-mistakes"><a class="header" href="#security-avoid-paying-for-googles-mistakes">Security: Avoid Paying for Google’s Mistakes</a></h3>
+<ul>
+<li><strong>Set up a billing alert.</strong> If your database starts scaling up unnecessarily, you will get charged.</li>
+<li><strong>Limit instance size in the Cloud SQL settings</strong> (e.g., 1 vCPU, 2GB RAM for small apps).</li>
+<li>No open database connections! <strong>Use Cloud SQL Proxy instead of exposing your DB.</strong></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-nftables-firewall-rules-for-debian-type-distributions"><a class="header" href="#setting-up-nftables-firewall-rules-for-debian-type-distributions">Setting up nftables Firewall Rules For Debian-type Distributions</a></h1>
 <p>Before diving into configurations, you might want to check if nftables is already installed and active on your Debian system.</p>
@@ -760,16 +865,16 @@ sudo nft -f firewall.config
 <p><strong>You can fill in with your own informations, store them in a file (such as <code>setup.sql</code>) and use them in production.</strong></p>
 <h2 id="step-2-create-a-new-database-two-new-users-and-a-separate-schema"><a class="header" href="#step-2-create-a-new-database-two-new-users-and-a-separate-schema">Step 2: Create a New Database, Two New Users and A Separate Schema</a></h2>
 <ul>
-<li>Inside the Postgres shell (<code>psql</code>) run:</li>
+<li>Inside the Postgres shell (<code>psql</code>) run (or better: write into your <code>setup.sql</code> file):</li>
 </ul>
-<pre><code class="language-sql">-- Create a database user and a database admin (replace with strong passwords)
+<pre><code class="language-sql">-- Create a database user (replace with a strong password) and a temporary admin
 
-CREATE USER project_admin WITH PASSWORD 'verysecurepassword';
+CREATE USER temp_admin WITH PASSWORD 'temp_admin_password';
 CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
-CREATE DATABASE my_project_db OWNER project_admin;
+CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
 -- If you want isolation from the default public schema, create a custom schema:
@@ -784,16 +889,16 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 </ul>
 <h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
 <p>By default, new users can create or drop objects inside the project schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Prevents the user from creating, dropping, or truncating tables in the project schema.
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user RESTRICT;
+<pre><code class="language-sql">-- Revoke ONLY drop and truncate, but leave CREATE intact
+REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
 
--- Ensures that my_project_user cannot create tables in the project schema, even if new ones are added.
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
-REVOKE CREATE ON TABLES FROM my_project_user;
+-- Explicitly grant back CREATE
+GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables
 REVOKE DROP ON ALL TABLES IN SCHEMA my_project_schema FROM my_project_user;
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA public REVOKE DROP ON TABLES FROM my_project_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
+REVOKE DROP ON TABLES FROM my_project_user;
 </code></pre>
 <ul>
 <li>This prevents accidental database-wide modifications.</li>
@@ -803,12 +908,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA public REVOKE DROP O
 <p>You should prevent the user from becoming a superuser, creating other databases and creating new users.</p>
 <pre><code class="language-sql">ALTER USER my_project_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE;
 </code></pre>
-<h2 id="step-5-allow-some-operations"><a class="header" href="#step-5-allow-some-operations">Step 5: Allow Some Operations</a></h2>
-<p>To know <code>my_project_schema.table1, my_project_schema.table2</code>, just add the corresponding values from your backend code.</p>
-<pre><code class="language-sql">-- You should grant CRUD operations, but only for specific tables
-GRANT SELECT, INSERT, UPDATE, DELETE ON my_project_schema.table1, my_project_schema.table2 TO my_project_user;
-
--- Make sure the user has access to future tables as well
+<h2 id="step-5-allow-crud-operations"><a class="header" href="#step-5-allow-crud-operations">Step 5: Allow CRUD Operations</a></h2>
+<pre><code class="language-sql">-- Grant CRUD operations to the user, and ensure it has access to future tables as well
 ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO my_project_user;
 </code></pre>
@@ -816,16 +917,17 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO my_project_user;
 <pre><code class="language-sql">ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO my_project_user;
 </code></pre>
-<h2 id="step-7-drop-project_admin"><a class="header" href="#step-7-drop-project_admin">Step 7: Drop project_admin</a></h2>
-<p>Since at this point, project_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it:</p>
-<pre><code class="language-sql">-- Reassign all objects owned by project_admin to my_project_user
-REASSIGN OWNED BY project_admin TO my_project_user;
+<h2 id="step-7-drop-temp_admin"><a class="header" href="#step-7-drop-temp_admin">Step 7: Drop temp_admin</a></h2>
+<p>Since at this point, temp_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it.
+If you want, you can always keep it and modify its permissions separately, but this is a pragmatic and secure solution.</p>
+<pre><code class="language-sql">-- Reassign all objects owned by temp_admin to my_project_user
+REASSIGN OWNED BY temp_admin TO my_project_user;
 
 -- Remove any remaining privileges
-DROP OWNED BY project_admin;
+DROP OWNED BY temp_admin;
 
 -- Finally, delete the user
-DROP USER project_admin;
+DROP USER temp_admin;
 </code></pre>
 <h2 id="step-8-exit-and-verify-setup"><a class="header" href="#step-8-exit-and-verify-setup">Step 8: Exit and Verify Setup</a></h2>
 <p><code>\l</code>: List all databases</p>
@@ -834,15 +936,17 @@ DROP USER project_admin;
 <ul>
 <li>Show a user's privilege:</li>
 </ul>
-<pre><code class="language-sql">SELECT grantee, privilege_type, table_schema, table_name
-FROM information_schema.role_table_grants
+<pre><code class="language-sql">SELECT * FROM information_schema.role_table_grants
 WHERE grantee='my_project_user';
 </code></pre>
 <h2 id="step-9-connect-as-the-new-user"><a class="header" href="#step-9-connect-as-the-new-user">Step 9: Connect as the New User</a></h2>
+<p>If you have created a <code>setup.sql</code> file with the informations above and filled in with your own data, you can import it into Postgres with this simple command:</p>
+<pre><code class="language-bash">psql -U postgres -f setup.sql
+</code></pre>
 <p>Now test logging into your database as the newly created user:</p>
 <pre><code class="language-bash">psql -U my_project_user -d my_project_db
 </code></pre>
-<h2 id="troubleshooting-how-to-delete-the-databaseuser-if-needed"><a class="header" href="#troubleshooting-how-to-delete-the-databaseuser-if-needed">Troubleshooting: How to delete the Database/User (if needed)</a></h2>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
 <ul>
 <li>Delete database/user (if you messed up, can happen):</li>
 </ul>
@@ -877,6 +981,164 @@ FROM pg_database;
 <li>This keeps credentials outside of the codebase.</li>
 <li>Use environment variables instead of hardcoding credentials.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rate-limiting-with-postgresql"><a class="header" href="#rate-limiting-with-postgresql">Rate Limiting With PostgreSQL</a></h1>
+<p>If you have a small app, you do not need to setup an entire new Redis instance. You can instead build your own 'poor mans Redis', with unlogged tables (faster writes and no WAL overhead) and automatic cleanup with a cron job.
+In this guide, you will learn how to add a rate limiting feature directly onto PostgreSQL, which is useful to greatly reduce the risk of brute force attacks.</p>
+<p><strong>These queries are meant to be run from your backend application file, not from psql.</strong></p>
+<h3 id="language-compatibility-notice"><a class="header" href="#language-compatibility-notice">Language Compatibility Notice</a></h3>
+<ul>
+<li>This SQL syntax ($1, $2, etc...) is compatible with Ruby, JavaScript, and Go.</li>
+<li>If using Python (psycopg2), replace $1 with %s.</li>
+<li>If using Java (JDBC), use ? placeholders instead.</li>
+<li><strong>Regardless of the language, make sure to use parametrized queries</strong> to prevent SQL injection.</li>
+</ul>
+<h2 id="1-the-rate-limiting-table"><a class="header" href="#1-the-rate-limiting-table">1. The Rate-Limiting Table</a></h2>
+<p>Since this is login-related, we can use an UUID identifier and timestamps.</p>
+<pre><code class="language-sql">CREATE UNLOGGED TABLE login_attempts (
+    session_id UUID DEFAULT gen_random_uuid(),  -- Secure, unique session tracking
+    username TEXT NOT NULL,
+    attempt_count INT DEFAULT 1,
+    first_attempt TIMESTAMP DEFAULT now(),
+    PRIMARY KEY (session_id, username)  -- Prevent duplicate session-user pairs
+);
+</code></pre>
+<ul>
+<li>Unlogged -&gt; Faster writes, no WAL overhead.</li>
+<li>UUID session identifiers are more reliable than tracking IP addresses -&gt; no risk of blocking users with shared IP, or letting botnets or spoof IPs pass.</li>
+</ul>
+<h2 id="2-when-a-login-attempt-happens"><a class="header" href="#2-when-a-login-attempt-happens">2. When a Login Attempt Happens</a></h2>
+<p>Now, inserting into this table will automatically generate a secure, unique session identifier.</p>
+<pre><code class="language-sql">INSERT INTO login_attempts (username, attempt_count)
+VALUES ($1, 1)
+ON CONFLICT (username) 
+DO UPDATE SET
+  attempt_count = login_attempts.attempt_count + 1
+  first_attempt = CASE
+  WHEN login_attempts.first_attempt &lt;= now() - INTERVAL '20 minutes'
+  THEN now()
+  ELSE login_attempts.first_attempt
+END;
+</code></pre>
+<ul>
+<li>If it’s a new user, it gets inserted.</li>
+<li>If it already exists, it updates only if the time window hasn’t expired.</li>
+<li>If it has expired, the row stays the same (so it doesn’t increment forever).</li>
+</ul>
+<h2 id="3-checking-if-the-uuid-is-blocked"><a class="header" href="#3-checking-if-the-uuid-is-blocked">3. Checking If the UUID is Blocked</a></h2>
+<p>Before processing a login attempt, check if the UUID should be blocked.</p>
+<pre><code class="language-sql">SELECT attempt_count FROM login_attempts
+WHERE username = $1
+AND first_attempt &gt; now() - INTERVAL '20 minutes';
+</code></pre>
+<p>If attempt_count &gt; 5, deny the login request.</p>
+<h2 id="4-automatically-cleaning-up-old-records"><a class="header" href="#4-automatically-cleaning-up-old-records">4. Automatically Cleaning Up Old Records</a></h2>
+<ul>
+<li>Once an IP ages out of the 20-minute window, we don’t need to track it anymore.</li>
+<li>This step requires a PostgreSQL extension, pg_cron, which you can find here: <a href="https://github.com/citusdata/pg_cron">pg_cron</a></li>
+<li>Then, you might want to alter your default database configuration file (which you have hopefully created first by following <a href="database/postgres-local.html">this guide</a>.</li>
+</ul>
+<pre><code class="language-sql">ALTER USER my_project_user SET cron.job_run_as_owner = true;
+</code></pre>
+<ul>
+<li>Set up the pg_cron extension:</li>
+</ul>
+<pre><code class="language-sql">CREATE EXTENSION pg_cron;
+
+CREATE OR REPLACE FUNCTION cleanup_old_attempts() RETURNS VOID AS $$
+DELETE FROM login_attempts WHERE first_attempt &lt; now() - INTERVAL '20 minutes';
+$$ LANGUAGE sql;
+
+-- Auto clean up of old attempts, every 5 minutes
+SELECT cron.schedule('*/5 * * * *', $$SELECT cleanup_old_attempts()$$);
+</code></pre>
+<ul>
+<li>Keeps the table lightweight instead of storing old attempts forever.</li>
+<li>Runs every 5 minutes, but you can tweak as needed.</li>
+</ul>
+<h2 id="for-deployment"><a class="header" href="#for-deployment">For deployment</a></h2>
+<p>Google Cloud SQL supports pg_cron, but you have to manually enable it since it's disabled by default.</p>
+<ul>
+<li>Go to Google Cloud Console</li>
+<li>Navigate to your PostgreSQL instance</li>
+<li>Enable pg_cron extension
+<ul>
+<li>Go to Configuration -&gt; Flags</li>
+<li>Add a new flag:</li>
+</ul>
+<pre><code>shared_preload_libraries = 'pg_cron'
+</code></pre>
+<ul>
+<li>Click 'Save Changes &amp; Restart the instance'.</li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-boot-up-redis"><a class="header" href="#how-to-boot-up-redis">How to Boot Up Redis</a></h1>
+<h2 id="1installing-redis-on-debian"><a class="header" href="#1installing-redis-on-debian">1.Installing Redis on Debian</a></h2>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install redis-server
+</code></pre>
+<ul>
+<li>Then enable and start the service:</li>
+</ul>
+<pre><code class="language-bash">sudo systemctl enable redis
+sudo systemctl start redis
+</code></pre>
+<h2 id="2-basic-configuration-to-avoid-chaos"><a class="header" href="#2-basic-configuration-to-avoid-chaos">2. Basic Configuration (to Avoid Chaos)</a></h2>
+<ul>
+<li>Redis has a bad habit of storing everything in RAM, so if you don’t configure it properly, it could eat all your memory and crash your system. (A very unforgiving trait.)</li>
+<li>Edit /etc/redis/redis.conf and set some sanity limits:</li>
+</ul>
+<pre><code class="language-bash">maxmemory 256mb
+maxmemory-policy allkeys-lru
+</code></pre>
+<p>Explanation:</p>
+<ul>
+<li>Limits Redis to 256MB so it doesn’t consume your entire system.</li>
+<li>Uses allkeys-lru policy, meaning it will automatically remove the least recently used keys once the memory limit is reached.</li>
+</ul>
+<h2 id="3-connecting-to-redis"><a class="header" href="#3-connecting-to-redis">3. Connecting to Redis</a></h2>
+<ul>
+<li>After installing, you can test it by running:</li>
+</ul>
+<pre><code class="language-bash">redis-cli ping
+</code></pre>
+<ul>
+<li>
+<p>If it replies with PONG, congratulations—you've awakened another beast.</p>
+</li>
+<li>
+<p>Set and retrieve a value:</p>
+</li>
+</ul>
+<pre><code class="language-bash">SET spell "fireball"
+GET spell
+</code></pre>
+<p>→ Should return "fireball" (instant, no SQL involved).</p>
+<h2 id="4-securing-redis-because-it-trusts-too-much"><a class="header" href="#4-securing-redis-because-it-trusts-too-much">4. Securing Redis (Because It Trusts Too Much)</a></h2>
+<ul>
+<li>
+<p>By default, Redis binds to all interfaces, meaning anyone could connect if they know the IP. That’s bad.</p>
+</li>
+<li>
+<p>Limit Redis to localhost:
+Edit /etc/redis/redis.conf and change:</p>
+</li>
+</ul>
+<p>bind 127.0.0.1</p>
+<ul>
+<li>Set a strong password:
+Uncomment and modify this line:</li>
+</ul>
+<p>requirepass supersecurepassword</p>
+<ul>
+<li>
+<p>Now, clients must authenticate before using Redis.</p>
+</li>
+<li>
+<p>Restart Redis for changes to apply:</p>
+</li>
+</ul>
+<pre><code class="language-bash">sudo systemctl restart redis
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
 <pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
 
@@ -890,7 +1152,396 @@ git commit -m "Start ignoring debug.log"
 <p>Then, you can set it with:</p>
 <pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#a-basic-program-to-convert-miles-to-kilometers">A Basic Program to Convert Miles to Kilometers</a></h3>
+<h3 id="remove-a-git-commit-which-has-not-yet-been-pushed"><a class="header" href="#remove-a-git-commit-which-has-not-yet-been-pushed">Remove a Git commit which has not yet been pushed</a></h3>
+<pre><code class="language-bash">git reset --hard HEAD~1
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="yaml-cheatsheet"><a class="header" href="#yaml-cheatsheet">YAML Cheatsheet</a></h1>
+<h2 id="what-is-yaml"><a class="header" href="#what-is-yaml">What is YAML</a></h2>
+<ul>
+<li>Data serializaion language (like XML and JSON)</li>
+<li>Standard format to transfer data</li>
+<li>Extensions : .yaml and .yml</li>
+<li>YAML is a superset of JSON: any valid JSON file is also a valid YAML file</li>
+<li>Data structures defined in line separation and indentation</li>
+</ul>
+<h2 id="yaml-use-cases"><a class="header" href="#yaml-use-cases">YAML Use Cases</a></h2>
+<ul>
+<li>Docker-compose, Ansible, Kubernetes and many more</li>
+</ul>
+<h2 id="key-value-pairs"><a class="header" href="#key-value-pairs">Key value pairs</a></h2>
+<pre><code class="language-yml">app: user-authentication
+port: 9000
+# A comment
+version: 1.7
+# A second comment
+</code></pre>
+<ul>
+<li>For strings, you can use either double quotes, single quotes or no quotes at all. If you use \n, you have to use double quotes or YAML don't recognize it.</li>
+</ul>
+<h2 id="objects"><a class="header" href="#objects">Objects</a></h2>
+<pre><code class="language-yml">microservice:
+  app: user-authentication
+  port: 9000
+  version: 1.7
+</code></pre>
+<ul>
+<li>The space has to be the exact same for each attribute between objects. You can use an online YAML validator because it is sensitive about those spaces.</li>
+</ul>
+<h2 id="lists--boolean"><a class="header" href="#lists--boolean">Lists &amp; Boolean</a></h2>
+<pre><code class="language-yml">microservice:
+  - app: user-authentication
+    port: 9000
+    version: 1.7
+    deployed: false # yes and no, on and off works too
+    versions:
+    - 1.9
+    - 2.0
+    - 2.1 # You can use lists inside of list items, always align them.
+  - app: shopping-cart
+    port: 9002
+    versions: [2.4, 2.5, "hello"]
+    # You can use arrays instead, and have a mix of numbers and strings. 
+
+microservices: 
+  - user-authentication
+  - shopping-cart
+</code></pre>
+<h3 id="boolean-pitfalls"><a class="header" href="#boolean-pitfalls">Boolean pitfalls:</a></h3>
+<pre><code class="language-yaml">yes: true  # Interpreted as boolean true
+no: false  # Interpreted as boolean false
+on: true   # Also interpreted as true
+off: false # Also interpreted as false
+</code></pre>
+<p>If you actually want "yes", "no", "on" and "off" as strings, quote them:</p>
+<pre><code class="language-yaml">user-input: "yes"  # String, not a boolean
+</code></pre>
+<h3 id="use-str-int-and-bool-for-explicit-types"><a class="header" href="#use-str-int-and-bool-for-explicit-types">Use !!str, !!int and !!bool for Explicit Types</a></h3>
+<p>Sometimes YAML thinks it knows what you mean. Force it to behave.</p>
+<pre><code class="language-yaml">bad-example: 00123   # YAML assumes this is an octal number (!!!)
+good-example: !!str "00123"  # Now it's a string, not octal
+</code></pre>
+<h2 id="real-kubernetes-yaml-configuration-example"><a class="header" href="#real-kubernetes-yaml-configuration-example">Real Kubernetes YAML Configuration Example</a></h2>
+<ul>
+<li>Key-value pairs</li>
+<li>metadata: object</li>
+<li>labels: object</li>
+<li>spec: object</li>
+<li>containers: list of objects</li>
+<li>ports: list</li>
+<li>volumeMounts: list of objects</li>
+</ul>
+<pre><code class="language-yml">apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+  spec:
+    containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+      - containerPort: 80
+      volumeMounts:
+      - name: nginx-vol
+        mountPath: /usr/nginx/html
+    - name: sidecar-container
+      image: curlimages/curl
+      command: ["/bin/sh"]
+      args: ["-c", "echo Hello from the sidecar container; sleep 300"]
+</code></pre>
+<h2 id="multi-line-strings"><a class="header" href="#multi-line-strings">Multi Line Strings</a></h2>
+<pre><code class="language-yml">multilineString: |
+  this is a multiline String
+  and this is the next line.
+  next line
+
+singlelineString: &gt;
+  this is a single line String
+  that should be all on one line.
+  some other stuff
+</code></pre>
+<ul>
+<li>Use | pipes if you want YAML to interpret this as multi line text. The line breaks will stay.</li>
+<li>Greater than sign &gt; will be interpreted as a single line.</li>
+</ul>
+<h3 id="real-kubernetes-examples"><a class="header" href="#real-kubernetes-examples">Real Kubernetes examples</a></h3>
+<pre><code class="language-yml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquito-config-file
+data:
+  mosquito.conf: |
+    log_dest stdout
+    log_type all
+    log_timestamp true
+    listener 9001
+</code></pre>
+<ul>
+<li>You can put a whole shell script inside a YAML file.</li>
+</ul>
+<pre><code class="language-yml">command:
+  - sh
+  - -c
+  - |
+    http () {
+        local path="${1}"
+        set -- -XGET -s --fail
+        curl -k "$@" "http://localhost:5601${path}"
+    }
+    http "/app/kibana"
+</code></pre>
+<h2 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h2>
+<ul>
+<li>You can access them using a dollar sign inside your YAML configuration.</li>
+</ul>
+<pre><code class="language-yml">command:
+  - /bin/sh
+  - -ec
+  - &gt;-
+    mysql -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD -e 'SELECT 1'
+</code></pre>
+<h2 id="placeholders"><a class="header" href="#placeholders">Placeholders</a></h2>
+<ul>
+<li>Instead of directly defining values, you can put placeholders with double brackets. It gets replaced using a template generator.</li>
+</ul>
+<pre><code class="language-yml">apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+spec:
+  selector:
+    app: {{ .Values.service.app }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetport }}
+</code></pre>
+<h2 id="yaml-anchors--aliases-dry-principle"><a class="header" href="#yaml-anchors--aliases-dry-principle">YAML Anchors &amp; Aliases (DRY Principle)</a></h2>
+<p>YAML lets you reuse values using anchors (&amp;) and aliases (*)</p>
+<pre><code class="language-yaml">default-config: &amp;default
+  app: user-authentication
+  port: 9000
+  version: 1.7
+
+microservice:
+  - &lt;&lt;: *default  # Reuses the default config
+    deployed: false
+  - app: shopping-cart
+    port: 9002
+    version: 2.4
+</code></pre>
+<h3 id="merge-keys-combine-multiple-defaults"><a class="header" href="#merge-keys-combine-multiple-defaults">Merge Keys (Combine Multiple Defaults)</a></h3>
+<p>Anchors can also be merged into objects:</p>
+<pre><code class="language-yaml">common-config: &amp;common
+  logging: true
+  retries: 3
+
+extra-config:
+  &lt;&lt;: *common  # Merges the common config
+  retries: 5  # Overrides specific values
+</code></pre>
+<h2 id="multiple-yaml-documents"><a class="header" href="#multiple-yaml-documents">Multiple YAML documents</a></h2>
+<ul>
+<li>This is especially useful when you have multiple components for one service. Separate them with three dashes.</li>
+</ul>
+<pre><code class="language-yml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquito-config-file
+data:
+  mosquito.conf: |
+    log_dest stdout
+    log_type all
+    log_timestamp true
+    listener 9001
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mosquito-secret-file
+type: Opaque
+data:
+  secret.file: |
+    cbdfdfg654fgdfg6f5sb132v1f6sg854g6s8g66IYUHGFKJHGVfd21=
+</code></pre>
+<ul>
+<li>In Kubernetes, you can use both YAML or JSON, but YAML is cleaner and more readable.</li>
+</ul>
+<h2 id="yaml-linting-tools"><a class="header" href="#yaml-linting-tools">YAML Linting Tools</a></h2>
+<p>A CLI tool:
+<a href="https://github.com/adrienverge/yamllint">yamllint</a></p>
+<p><code>kubectl apply --dry-run=client -f file.yaml</code>
+(Validates YAML syntax for Kubernetes)</p>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
+<h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
+<p>C++ has multiple ways to declare variables, and some are better than others:</p>
+<pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
+int y(20);   // Constructor-style initialization
+int z{30};   // C++11 Uniform Initialization (safer, avoids narrowing conversions)
+
+std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; " " &lt;&lt; z &lt;&lt; std::endl;
+</code></pre>
+<p>Prefer {} (uniform initialization) because it avoids weird implicit conversions:</p>
+<pre><code class="language-cpp">double d{4.5};
+int i{d};  // ❌ ERROR: Narrowing conversion not allowed!
+</code></pre>
+<h2 id="2-pointers-and-references"><a class="header" href="#2-pointers-and-references">2. Pointers and References</a></h2>
+<p>C++ inherits pointers from C, but adds references to make life slightly easier:</p>
+<p>Pointers (Classic C-style)</p>
+<pre><code class="language-cpp">int a = 10;
+int* ptr = &amp;a;  // Pointer stores the memory address of 'a'
+
+std::cout &lt;&lt; *ptr &lt;&lt; std::endl;  // Dereference the pointer (output: 10)
+</code></pre>
+<p>References (C++ Feature)</p>
+<pre><code class="language-cpp">int x = 42;
+int&amp; ref = x;  // Reference to x (alias)
+
+ref = 50;  // Modifies x as well
+std::cout &lt;&lt; x &lt;&lt; std::endl;  // Output: 50
+</code></pre>
+<p>Use references instead of pointers when:</p>
+<ul>
+<li>You don’t need null values.</li>
+<li>You don’t want to manually dereference things.</li>
+</ul>
+<p>🚨 Pointers are still useful for dynamic memory allocation &amp; function arguments that can be null.</p>
+<h2 id="3-dynamic-memory-heap-allocation"><a class="header" href="#3-dynamic-memory-heap-allocation">3. Dynamic Memory (Heap Allocation)</a></h2>
+<p>C++ lets you manually allocate and deallocate memory with <code>new</code> and <code>delete</code> (but later you should use smart pointers).</p>
+<pre><code class="language-cpp">int* heapInt = new int(99);  // Allocate an int on the heap
+std::cout &lt;&lt; *heapInt &lt;&lt; std::endl;  // Output: 99
+
+delete heapInt;  // Free memory (or you'll have a memory leak)
+</code></pre>
+<p>🚨 Memory Management Rules</p>
+<ul>
+<li>Every new must have a corresponding delete.</li>
+<li>Every new[] (array allocation) must have a corresponding delete[].</li>
+</ul>
+<pre><code class="language-cpp">int* arr = new int[10];  // Allocating an array
+delete[] arr;  // Use delete[] for arrays!
+</code></pre>
+<p>In modern C++, prefer std::vector or smart pointers instead of raw new/delete.</p>
+<h2 id="4-functions-pass-by-value-reference-and-pointer"><a class="header" href="#4-functions-pass-by-value-reference-and-pointer">4. Functions: Pass by Value, Reference, and Pointer</a></h2>
+<h3 id="pass-by-value-makes-a-copy"><a class="header" href="#pass-by-value-makes-a-copy">Pass by Value (Makes a Copy)</a></h3>
+<pre><code class="language-cpp">void changeValue(int num) {
+    num = 100;  // This only changes the local copy
+}
+
+int x = 5;
+changeValue(x);
+std::cout &lt;&lt; x;  // Still 5 (copy was modified, not the original)
+</code></pre>
+<h3 id="pass-by-reference-modifies-original"><a class="header" href="#pass-by-reference-modifies-original">Pass by Reference (Modifies Original)</a></h3>
+<pre><code class="language-cpp">void changeRef(int&amp; num) {
+    num = 100;
+}
+
+int x = 5;
+changeRef(x);
+std::cout &lt;&lt; x;  // Now it's 100
+</code></pre>
+<h3 id="pass-by-pointer-also-modifies-original"><a class="header" href="#pass-by-pointer-also-modifies-original">Pass by Pointer (Also Modifies Original)</a></h3>
+<pre><code class="language-cpp">void changePointer(int* num) {
+    *num = 100;  // Dereferencing modifies the actual value
+}
+
+int x = 5;
+changePointer(&amp;x);
+std::cout &lt;&lt; x;  // Output: 100
+</code></pre>
+<ul>
+<li>Use references when modification is required.</li>
+<li>Pass by value when you want a copy (not for large objects).</li>
+<li>Use pointers when passing optional values (nullable).</li>
+</ul>
+<h2 id="5-const-read-only-safety"><a class="header" href="#5-const-read-only-safety">5. <code>const</code>: Read-Only Safety</a></h2>
+<p><code>const</code> makes sure your variables can’t be modified accidentally.</p>
+<pre><code class="language-cpp">const int a = 10;  // Can’t change a
+a = 20;  // ❌ ERROR!
+</code></pre>
+<p><code>const</code> with Pointers</p>
+<pre><code class="language-cpp">const int* ptr = &amp;a;  // Pointer to constant int (data is immutable)
+int* const ptr2 = &amp;a;  // Constant pointer (address is immutable)
+const int* const ptr3 = &amp;a;  // Both data and address are immutable
+</code></pre>
+<p>🚨 If something doesn’t need to change, mark it <code>const</code>!
+(Especially function parameters, so you don’t accidentally modify them.)</p>
+<h2 id="6-structs-vs-classes"><a class="header" href="#6-structs-vs-classes">6. Structs vs Classes</a></h2>
+<p>Structs in C++ are like classes, except their members are public by default.</p>
+<pre><code class="language-cpp">struct Point {
+    int x, y;
+};
+</code></pre>
+<pre><code class="language-cpp">class Point {
+public:
+    int x, y;
+};
+</code></pre>
+<ul>
+<li>Use struct when you just need a simple data container.</li>
+<li>Use class when you need encapsulation, methods, and complex logic.</li>
+</ul>
+<h2 id="7-enum-and-enum-class"><a class="header" href="#7-enum-and-enum-class">7. <code>enum</code> and <code>enum class</code></a></h2>
+<p>C++ has two types of enums, but only one is safe.</p>
+<h3 id="traditional-c-style-enum-unsafe"><a class="header" href="#traditional-c-style-enum-unsafe">Traditional C-style Enum (Unsafe)</a></h3>
+<pre><code class="language-cpp">enum Color { RED, GREEN, BLUE };
+Color c = RED;
+</code></pre>
+<p>🚨 Problem: Color values are just ints, so they can accidentally mix with unrelated values.</p>
+<h3 id="c11-enum-class-scoped-and-safer"><a class="header" href="#c11-enum-class-scoped-and-safer">C++11 enum class (Scoped and Safer)</a></h3>
+<pre><code class="language-cpp">enum class Color { RED, GREEN, BLUE };
+Color c = Color::RED;
+</code></pre>
+<ul>
+<li>Prevents name conflicts.</li>
+<li>Doesn’t implicitly convert to int.</li>
+</ul>
+<h2 id="8-input--output-stream-handling"><a class="header" href="#8-input--output-stream-handling">8. Input &amp; Output (Stream Handling)</a></h2>
+<h4 id="basic-io"><a class="header" href="#basic-io">Basic I/O</a></h4>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    string name;
+    cout &lt;&lt; "Enter your name: ";
+    cin &gt;&gt; name;
+    cout &lt;&lt; "Hello, " &lt;&lt; name &lt;&lt; "!" &lt;&lt; endl;
+}
+</code></pre>
+<p>🚨 Issue: cin &gt;&gt; name; only takes one word.</p>
+<h4 id="reading-full-lines"><a class="header" href="#reading-full-lines">Reading Full Lines</a></h4>
+<pre><code class="language-cpp">string fullName;
+getline(cin, fullName);
+</code></pre>
+<h2 id="9-arrays--vectors"><a class="header" href="#9-arrays--vectors">9. Arrays &amp; Vectors</a></h2>
+<h4 id="c-style-array"><a class="header" href="#c-style-array">C-Style Array</a></h4>
+<pre><code class="language-cpp">int arr[5] = {1, 2, 3, 4, 5};
+</code></pre>
+<p>🚨 Problems: No size tracking, no bounds checking.</p>
+<h4 id="modern-alternative-stdvector"><a class="header" href="#modern-alternative-stdvector">Modern Alternative: std::vector</a></h4>
+<pre><code class="language-cpp">#include &lt;vector&gt;
+std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+vec.push_back(6);
+std::cout &lt;&lt; vec[2];  // Safe indexing
+</code></pre>
+<ul>
+<li>Automatically resizes.</li>
+<li>Safer than raw arrays.</li>
+</ul>
+<h2 id="10-the-auto-keyword"><a class="header" href="#10-the-auto-keyword">10. The <code>auto</code> Keyword</a></h2>
+<p>C++ lets you infer types automatically with auto:</p>
+<pre><code class="language-cpp">auto num = 42;  // Compiler infers int
+auto pi = 3.14;  // Compiler infers double
+auto word = "hello";  // Compiler infers const char*
+</code></pre>
+<ul>
+<li>Good for readability, especially with long types.</li>
+<li>Avoid using auto everywhere, it reduces code clarity.</li>
+</ul>
+<h2 id="bonus-a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#bonus-a-basic-program-to-convert-miles-to-kilometers">Bonus: A Basic Program to Convert Miles to Kilometers</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;limits&gt;
 using namespace std;
@@ -926,7 +1577,23 @@ int main() {
     return 0;
 }
 </code></pre>
-<h3 id="a-simple-program-to-calculate-a-sum"><a class="header" href="#a-simple-program-to-calculate-a-sum">A Simple Program to Calculate A Sum</a></h3>
+<ol>
+<li><strong>cin.fail() must be explicitly checked</strong></li>
+</ol>
+<ul>
+<li>If a user enters non-numeric input, cin enters an error state and stops working.</li>
+<li>Without cin.clear() and cin.ignore(), the program will enter an infinite loop or crash.</li>
+<li>C++ doesn’t do automatic input validation, so you must babysit it manually.</li>
+</ul>
+<ol start="2">
+<li><strong>What inline really does</strong></li>
+</ol>
+<ul>
+<li>inline suggests to the compiler "hey, just copy-paste this function where it's called instead of doing a full function call."</li>
+<li>This is only useful for very small functions (like our convert() function) because function calls have a small overhead.</li>
+<li>Modern compilers already optimize this automatically, so using inline manually is usually unnecessary.</li>
+</ul>
+<h2 id="bonus-a-simple-program-to-calculate-a-sum"><a class="header" href="#bonus-a-simple-program-to-calculate-a-sum">Bonus: A Simple Program to Calculate A Sum</a></h2>
 <pre><code class="language-cpp">// C to C++ conversion
 
 #include &lt;iostream&gt;
@@ -954,63 +1621,48 @@ int main() {
     return 0;
 }
 </code></pre>
-<h3 id="example-of-template-programming"><a class="header" href="#example-of-template-programming">Example of Template Programming</a></h3>
-<pre><code class="language-cpp">// Template programming
-
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-
-const int N = 40;
-
-template &lt;typename T&gt;
-T substract(const T data[], int n, T s = 0) {
-    for (int i = 0; i &lt; n; ++i) {
-        s = s - data[i];
-    }
-    return s;
-}
-
-int main() {
-    std::cout &lt;&lt; "template for substract()" &lt;&lt; std::endl;
-
-    int a[] = {1,2,3};
-    double b[] = {2.1, 2.2, 2.3};
-
-    std::cout &lt;&lt; substract(a, 3) &lt;&lt; std::endl;
-    std::cout &lt;&lt; substract(b, 3) &lt;&lt; std::endl;
-    
-    return 0;
-}
-</code></pre>
-<h3 id="another-example-of-templating"><a class="header" href="#another-example-of-templating">Another Example Of Templating</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-
-template &lt;class T&gt;
-class Summable {
-public:
-    T sum(const T data[], int size, T s = 0) {
-        for (int i = 0; i &lt; size; ++i) {
-            s += data[i];
-        }
-        return s;
-    }
-};
-
-int main() {
-    Summable&lt;int&gt; intSummable;
-    int intData[] = {1, 2, 3, 4, 5};
-    int intSum = intSummable.sum(intData, 5);
-    std::cout &lt;&lt; "Sum of int array: " &lt;&lt; intSum &lt;&lt; std::endl;
-
-    Summable&lt;double&gt; doubleSummable;
-    double doubleData[] = {1.1, 2.2, 3.3, 4.4, 5.5};
-    double doubleSum = doubleSummable.sum(doubleData, 5);
-    std::cout &lt;&lt; "Sum of double array: " &lt;&lt; doubleSum &lt;&lt; std::endl;
-
-    return 0;
-}
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="a-basic-example-of-oop-in-c"><a class="header" href="#a-basic-example-of-oop-in-c">A Basic Example of OOP In C++</a></h3>
+<ol>
+<li><strong>Why is const int better than #define?</strong></li>
+</ol>
+<ul>
+<li>It has type safety (#define doesn’t care what type it is).</li>
+<li>It respects C++ scoping rules (macros don’t respect namespaces).</li>
+<li>Debuggers understand const variables, but they don’t track macros.</li>
+</ul>
+<ol start="2">
+<li><strong>Why use int <em>p instead of return?</em></strong></li>
+</ol>
+<ul>
+<li>This function modifies accum directly in memory via the pointer.</li>
+<li>This mimics how C functions typically modify values passed by reference.</li>
+<li>However, in modern C++, it’s cleaner to use int&amp; p instead of int* p.</li>
+</ul>
+<ol start="3">
+<li><strong>Why pass std::vector<int>&amp; d by const reference?</strong></li>
+</ol>
+<ul>
+<li>Prevents unnecessary copying of the entire vector.</li>
+<li>const ensures the function can’t modify d accidentally.</li>
+<li>Without const, passing a vector by reference (vector<int>&amp; d) allows modifications.</li>
+</ul>
+<ol start="4">
+<li><strong>Why std::vector<int> instead of a plain array?</strong></li>
+</ol>
+<ul>
+<li>No need for malloc/free like in C.</li>
+<li>Dynamic resizing (though we’re not using it here).</li>
+<li>Memory safety: avoids out-of-bounds access if used properly.</li>
+</ul>
+<ol start="5">
+<li><strong>Why do we pass &amp;accum instead of returning a value?</strong></li>
+</ol>
+<ul>
+<li>C++ style would be to return int instead of modifying via pointer.</li>
+<li>This is still very C-like, since we’re explicitly using pointer manipulation.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
+<p>C++ is not a fully object-oriented language like Java—it gives you the choice of using OOP, procedural, or even template-based metaprogramming. However, when you do use OOP, C++ expects you to take responsibility (i.e., manual memory management, virtual destructors, and explicit inheritance rules).</p>
+<h2 id="basic-oop-program"><a class="header" href="#basic-oop-program">Basic OOP Program</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 
@@ -1086,7 +1738,76 @@ int main() {
     return 0;
 }
 </code></pre>
-<h3 id="point"><a class="header" href="#point">Point</a></h3>
+<h3 id="basic-class-definition-car"><a class="header" href="#basic-class-definition-car">Basic Class Definition: Car</a></h3>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>Encapsulation</strong></li>
+</ol>
+<ul>
+<li>brand and speed are private, meaning they cannot be accessed outside of the class.</li>
+<li>Access is provided through getter functions (getBrand(), getSpeed()).</li>
+</ul>
+<ol start="2">
+<li><strong>Constructors &amp; Initialization Lists</strong></li>
+</ol>
+<ul>
+<li>Car(std::string b, int s) : brand(b), speed(s) {} → This is a constructor with an initializer list.</li>
+<li>Instead of assigning values inside {} manually, we use direct initialization, which is faster and cleaner.</li>
+</ul>
+<ol start="3">
+<li><strong>Virtual Destructor (~Car())</strong></li>
+</ol>
+<ul>
+<li>Why virtual? So that if you delete a SportsCar through a Car*, it calls the correct destructor.</li>
+<li>Without virtual, only Car's destructor would run, and SportsCar's destructor wouldn’t execute.</li>
+</ul>
+<ol start="4">
+<li><strong>Operator Overloading (&lt;&lt;)</strong></li>
+</ol>
+<ul>
+<li>We define friend std::ostream&amp; operator&lt;&lt;(...) to allow std::cout &lt;&lt; myCar.</li>
+<li>Friend functions allow non-member functions to access private class members.</li>
+</ul>
+<h3 id="inheritance-sportscar-extends-car"><a class="header" href="#inheritance-sportscar-extends-car">Inheritance: SportsCar Extends Car</a></h3>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>Single Inheritance (class SportsCar : public Car)</strong></li>
+</ol>
+<ul>
+<li>SportsCar inherits all properties of Car but can add new behavior (turboBoost()).</li>
+<li>SportsCar(std::string b, int s) : Car(b, s) calls the base class (Car) constructor.</li>
+</ul>
+<ol start="2">
+<li><strong>Destructor Handling</strong></li>
+</ol>
+<ul>
+<li>Why is the destructor not virtual? Since Car already has a virtual destructor, it ensures that deleting a SportsCar object correctly calls both destructors.</li>
+<li>Destruction order: SportsCar's destructor runs first, then Car's.</li>
+</ul>
+<h3 id="the-main-function"><a class="header" href="#the-main-function">The main() Function</a></h3>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>Automatic Object Lifetime Management</strong></li>
+</ol>
+<ul>
+<li>myCar and mySportsCar are stack-allocated.</li>
+<li>No need for delete because destructors run automatically when they go out of scope.</li>
+</ul>
+<ol start="2">
+<li><strong>Calling Methods on Objects</strong></li>
+</ol>
+<ul>
+<li>myCar.accelerate(); increases the speed by 10.</li>
+<li>mySportsCar.turboBoost(); is only available in SportsCar.</li>
+</ul>
+<ol start="3">
+<li><strong>Overloaded &lt;&lt; Operator Works as Expected</strong></li>
+</ol>
+<ul>
+<li><code>std::cout &lt;&lt; myCar &lt;&lt; std::endl;</code> → Calls the overloaded &lt;&lt; function.</li>
+</ul>
+<h2 id="oop-with-parameterized-constructors--operator-overloading-in-c"><a class="header" href="#oop-with-parameterized-constructors--operator-overloading-in-c">OOP with Parameterized Constructors &amp; Operator Overloading in C++</a></h2>
+<p>This program introduces parameterized constructors and expands on operator overloading, reinforcing core C++ OOP concepts. While it follows the same fundamental principles as the Car example, the use of constructors and the + operator overload adds complexity.</p>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
@@ -1141,7 +1862,131 @@ int main() {
     return 0;
 }
 </code></pre>
-<h3 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h3>
+<h3 id="class-definition-point"><a class="header" href="#class-definition-point">Class Definition: Point</a></h3>
+<p>Key Takeaways</p>
+<pre><code class="language-cpp">Point() : x(0.0), y(0.0) {}
+</code></pre>
+<ol>
+<li><strong>Default Constructor (Point())</strong></li>
+</ol>
+<ul>
+<li>This constructor initializes x and y to 0.0 by default.</li>
+<li>Why use an initializer list (: x(0.0), y(0.0)) instead of assignment in {}?
+<ul>
+<li>Faster: Directly initializes members instead of assigning values later.</li>
+<li>Mandatory for const or reference members (not in this example, but useful elsewhere).</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>Parameterized Constructor (Point(double xVal, double yVal))</strong></li>
+</ol>
+<pre><code class="language-cpp">Point(double xVal, double yVal) : x(xVal), y(yVal) {}
+</code></pre>
+<p>Allows creating a Point object with custom values.</p>
+<ol start="3">
+<li><strong>Getter &amp; Setter Methods</strong></li>
+</ol>
+<pre><code class="language-cpp">double getX() const { return x; }
+void setX(double v) { x = v; }
+</code></pre>
+<ul>
+<li>const after getX() → Ensures getX() does not modify the object.</li>
+<li>Setters allow modification, while getters ensure read-only access.</li>
+</ul>
+<ol start="4">
+<li><strong>Operator Overloading</strong></li>
+</ol>
+<ul>
+<li>Overloading the + Operator</li>
+</ul>
+<pre><code class="language-cpp">Point operator+ (const Point&amp; p) const {
+    return Point(x + p.x, y + p.y);
+}
+</code></pre>
+<ul>
+<li>Allows adding Point objects like a + b.</li>
+<li>Why return a Point object?
+<ul>
+<li>Instead of modifying <code>this</code>, it creates a new Point.</li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-cpp">c = a + b;
+</code></pre>
+<p>Equivalent to <code>c = Point(a.getX() + b.getX(), a.getY() + b.getY());</code></p>
+<ul>
+<li>Overloading the &lt;&lt; Operator (Friend Function)</li>
+</ul>
+<pre><code class="language-cpp">friend ostream&amp; operator &lt;&lt; (ostream&amp; out, const Point&amp; p) {
+    out &lt;&lt; "(" &lt;&lt; p.x &lt;&lt; ", " &lt;&lt; p.y &lt;&lt; ")";
+    return out;
+}
+</code></pre>
+<p>Allows printing Point objects using:</p>
+<pre><code class="language-cpp">cout &lt;&lt; a;  // Outputs (3.5, 2.5)
+</code></pre>
+<p>Why is operator&lt;&lt; a friend function?</p>
+<ul>
+<li>It needs access to private members (x and y).</li>
+<li>Cannot be a member function because the first parameter must be ostream&amp;.</li>
+</ul>
+<h3 id="the-main-function-1"><a class="header" href="#the-main-function-1">The main() Function</a></h3>
+<pre><code class="language-cpp">int main() {
+    Point a(3.5, 2.5), b(2.5, 4.5), c;
+    cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; " b = " &lt;&lt; b &lt;&lt; endl;
+    c = a + b;
+    cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
+    return 0;
+}
+</code></pre>
+<ol>
+<li>What Happens Here?</li>
+</ol>
+<ul>
+<li>Objects are created:</li>
+</ul>
+<pre><code class="language-cpp">Point a(3.5, 2.5), b(2.5, 4.5), c;
+</code></pre>
+<ul>
+<li>a is initialized with (3.5, 2.5), b with (2.5, 4.5), and c is (0.0, 0.0) by default.</li>
+</ul>
+<p>Operator overloading is used:</p>
+<pre><code class="language-cpp">c = a + b;
+</code></pre>
+<ul>
+<li>
+<p>Triggers operator+() and stores the result in c.</p>
+</li>
+<li>
+<p>Objects are printed using operator&lt;&lt;:</p>
+</li>
+</ul>
+<pre><code class="language-cpp">cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
+</code></pre>
+<ul>
+<li>Calls operator&lt;&lt;() to format the output.</li>
+</ul>
+<p>Output:</p>
+<pre><code class="language-cpp">a = (3.5, 2.5) b = (2.5, 4.5)
+sum = (6, 7)
+</code></pre>
+<h2 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h2>
+<p>C++ has a doubly linked list in the std library, but you should know how they are implemented under the hood.</p>
+<h3 id="why-do-we-need-a-deep-copy-constructor"><a class="header" href="#why-do-we-need-a-deep-copy-constructor">Why Do We Need a Deep Copy Constructor?</a></h3>
+<p>By default, when you copy an object in C++, the compiler performs a shallow copy, meaning:</p>
+<ul>
+<li>It copies the memory addresses instead of duplicating the data itself.</li>
+<li>If the copied object modifies the data, the original object also changes because they share the same memory.</li>
+<li>When one object is destroyed, the other might point to an invalid memory location (dangling pointers).</li>
+</ul>
+<p>To avoid this nightmare, we manually implement a deep copy constructor. This ensures:</p>
+<ul>
+<li>Each object gets its own separate copy of the data.</li>
+<li>Deleting one object doesn’t affect the others.</li>
+<li>No accidental shared memory corruption.</li>
+</ul>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
@@ -1236,6 +2081,305 @@ int main() {
     return 0;
 }
 </code></pre>
+<h3 id="class-definition"><a class="header" href="#class-definition">Class Definition</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class list_element {
+public:
+    int d;
+    list_element* next;
+
+    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
+};
+</code></pre>
+<p>Each list_element stores:</p>
+<ul>
+<li>d (data).</li>
+<li>next (pointer to the next element).</li>
+</ul>
+<h4 id="the-list-class"><a class="header" href="#the-list-class">The <code>list</code> class</a></h4>
+<pre><code class="language-cpp">class list {
+public:
+    list() : head(nullptr), cursor(nullptr) {}
+    ~list();  // Destructor to free memory
+    list(const list&amp; lst);  // Copy constructor
+
+    void prepend(int n);    // Insert at front value n
+    int get_element() { return cursor-&gt;d; }
+    void advanced() { cursor = cursor-&gt;next; }
+    void print();
+
+private:
+    list_element* head;
+    list_element* cursor;
+};
+</code></pre>
+<ul>
+<li>Encapsulates a linked list.</li>
+<li>Implements deep copy via list(const list&amp; lst).</li>
+<li>Destructor (~list()) manually frees memory.</li>
+</ul>
+<h3 id="destructor-preventing-memory-leaks"><a class="header" href="#destructor-preventing-memory-leaks">Destructor: Preventing Memory leaks</a></h3>
+<pre><code class="language-cpp">list::~list() {
+    while (head != nullptr) {
+        list_element* temp = head;
+        head = head-&gt;next;
+        delete temp;  // Free each element
+    }
+}
+</code></pre>
+<ul>
+<li>Ensures no memory leaks when an object is destroyed.</li>
+<li>Deletes every node one by one.</li>
+<li>Without this, dynamically allocated list_elements would never be freed.</li>
+</ul>
+<h3 id="the-deep-copy-constructor"><a class="header" href="#the-deep-copy-constructor">The Deep Copy Constructor</a></h3>
+<pre><code class="language-cpp">list::list(const list&amp; lst) {
+    if (lst.head == nullptr) {
+        head = nullptr;
+        cursor = nullptr;
+    } else {
+        cursor = lst.head;
+        list_element* h = new list_element(cursor-&gt;d);  // Create first element
+        list_element* previous = h;
+        head = h;
+        cursor = cursor-&gt;next;
+
+        while (cursor != nullptr) {
+            h = new list_element(cursor-&gt;d);  // Deep copy each node
+            previous-&gt;next = h;
+            previous = h;
+            cursor = cursor-&gt;next;
+        }
+
+        cursor = head;
+    }
+}
+</code></pre>
+<p>How It Works</p>
+<ul>
+<li>Creates a new list_element for each node in the original list.</li>
+<li>Does NOT reuse pointers from the old list.</li>
+<li>Ensures the new object is an independent copy.
+What Happens If We Didn’t Do This?</li>
+</ul>
+<pre><code class="language-cpp">list c = a;  // Calls copy constructor
+</code></pre>
+<ul>
+<li>Without a deep copy, c would just reuse a's pointers.</li>
+<li>Modifying c would modify a, which is unintended behavior.</li>
+<li>Deleting c would leave a with dangling pointers, causing undefined behavior.</li>
+</ul>
+<h3 id="other-methods"><a class="header" href="#other-methods">Other Methods</a></h3>
+<ul>
+<li><strong>Prepend (Insert at Front)</strong></li>
+</ul>
+<pre><code class="language-cpp">void list::prepend(int n) {
+    if (head == nullptr)  // Empty list case
+        cursor = head = new list_element(n, head);
+    else    // Add new element at the front
+        head = new list_element(n, head);
+}
+</code></pre>
+<ul>
+<li>
+<p>Creates a new list_element and links it to the front of the list.</p>
+</li>
+<li>
+<p>If the list is empty, initializes cursor.</p>
+</li>
+<li>
+<p><strong>Print the List</strong></p>
+</li>
+</ul>
+<pre><code class="language-cpp">void list::print() {
+    list_element* h = head;
+    while (h != nullptr) {
+        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
+        h = h-&gt;next;
+    }
+    cout &lt;&lt; "###" &lt;&lt; endl;
+}
+</code></pre>
+<ul>
+<li>
+<p>Iterates over the list and prints each value.</p>
+</li>
+<li>
+<p>Stops when nullptr is reached.</p>
+</li>
+<li>
+<p><strong>The main() Function</strong></p>
+</li>
+</ul>
+<pre><code class="language-cpp">int main() {
+    list a, b;
+    a.prepend(9); a.prepend(8);
+    cout &lt;&lt; "list a" &lt;&lt; endl;
+    a.print();
+
+    // Use the copy constructor
+    list c = a;
+    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
+    c.print();
+
+    for (int i = 0; i &lt; 40; ++i)
+        b.prepend(i * i);
+    cout &lt;&lt; "list b" &lt;&lt; endl;
+    b.print();
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Creates multiple lists (a, b, c).</li>
+<li>Copies a into c using the deep copy constructor.</li>
+<li>Adds elements to b and prints everything.</li>
+</ul>
+<h3 id="expected-output"><a class="header" href="#expected-output">Expected Output</a></h3>
+<pre><code class="language-cpp">list a
+8, 9, ###
+list c (copy of a)
+8, 9, ###
+list b
+1521, 1444, 1369, ..., 0, ###
+</code></pre>
+<p>Why is list c identical to list a?</p>
+<ul>
+<li>Because it was deep copied, not shallow copied.</li>
+<li>Modifying c will not affect a, proving that they are independent lists.</li>
+</ul>
+<p>C++ Rule of Three (or Five)</p>
+<p>If a class manages dynamic memory, you MUST define these manually:</p>
+<ul>
+<li>Copy Constructor (list(const list&amp;))</li>
+<li>Copy Assignment Operator (operator=)</li>
+<li>Destructor (~list())</li>
+<li>(Optional) Move Constructor (list(list&amp;&amp;))</li>
+<li>(Optional) Move Assignment Operator (operator=(list&amp;&amp;))</li>
+</ul>
+<p>Without these, you get shallow copies, which can lead to:</p>
+<ul>
+<li>Memory leaks</li>
+<li>Double deletion errors</li>
+<li>Undefined behavior</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-templates-in-c-"><a class="header" href="#introduction-to-templates-in-c-">Introduction to Templates in C++ 💀</a></h1>
+<p>Templates are one of C++’s most powerful and frightening features. They let you write generic code that can work with multiple data types without duplication. But they also have the potential to turn your code into an unreadable mess of cryptic compiler errors if misused.</p>
+<p>In these examples, we’ll look at two ways templates are used:</p>
+<ul>
+<li>Function Templates – Making a single function that works with multiple types.</li>
+<li>Class Templates – Making a class that can handle multiple data types dynamically.</li>
+</ul>
+<pre><code class="language-cpp">// Function templates: subtract()
+
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+const int N = 40;
+
+template &lt;typename T&gt;
+T substract(const T data[], int n, T s = 0) {
+    for (int i = 0; i &lt; n; ++i) {
+        s = s - data[i];
+    }
+    return s;
+}
+
+int main() {
+    std::cout &lt;&lt; "template for substract()" &lt;&lt; std::endl;
+
+    int a[] = {1,2,3};
+    double b[] = {2.1, 2.2, 2.3};
+
+    std::cout &lt;&lt; substract(a, 3) &lt;&lt; std::endl;
+    std::cout &lt;&lt; substract(b, 3) &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>template <typename T> – This is the template declaration.</strong></li>
+</ol>
+<ul>
+<li>T is a placeholder for any data type (int, double, float, etc.).</li>
+<li>When calling substract(), the compiler automatically replaces T with the correct type.</li>
+</ul>
+<ol start="2">
+<li><strong>Function works for multiple data types</strong></li>
+</ol>
+<ul>
+<li>substract(a, 3) works for int.</li>
+<li>substract(b, 3) works for double.</li>
+</ul>
+<ol start="3">
+<li><strong>Why templates instead of function overloading?</strong></li>
+</ol>
+<ul>
+<li>Without templates, you’d have to write separate functions for int, double, float, etc.</li>
+<li>Templates let you write the function once and use it for any compatible type.</li>
+</ul>
+<ol start="4">
+<li><strong>Is this just like inline?</strong></li>
+</ol>
+<ul>
+<li>No, but function templates can be inlined by the compiler if they are small.</li>
+<li>The compiler generates a separate function for each unique type used.</li>
+<li>This means substract<int> and substract<double> are compiled separately.</li>
+</ul>
+<h3 id="templates-part-two"><a class="header" href="#templates-part-two">Templates Part Two</a></h3>
+<pre><code class="language-cpp">// Class Templates: Summable&lt;T&gt;
+#include &lt;iostream&gt;
+
+template &lt;class T&gt;
+class Summable {
+public:
+    T sum(const T data[], int size, T s = 0) {
+        for (int i = 0; i &lt; size; ++i) {
+            s += data[i];
+        }
+        return s;
+    }
+};
+
+int main() {
+    Summable&lt;int&gt; intSummable;
+    int intData[] = {1, 2, 3, 4, 5};
+    int intSum = intSummable.sum(intData, 5);
+    std::cout &lt;&lt; "Sum of int array: " &lt;&lt; intSum &lt;&lt; std::endl;
+
+    Summable&lt;double&gt; doubleSummable;
+    double doubleData[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+    double doubleSum = doubleSummable.sum(doubleData, 5);
+    std::cout &lt;&lt; "Sum of double array: " &lt;&lt; doubleSum &lt;&lt; std::endl;
+
+    return 0;
+}
+</code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>template <class T> makes Summable<T> a generic class</strong></li>
+</ol>
+<ul>
+<li>This class works with any type that supports the += operator.</li>
+<li>We create Summable<int> and Summable<double> instances separately.</li>
+</ul>
+<ol start="2">
+<li><strong>Why use a class template instead of a function template?</strong></li>
+</ol>
+<ul>
+<li>If we only needed a single sum() function, a function template is fine.</li>
+<li>But if we wanted to add more operations (like multiplication, average, etc.), then a class template organizes everything better.</li>
+</ul>
+<ol start="3">
+<li><strong>How does the compiler handle this?</strong></li>
+</ol>
+<ul>
+<li>When you write Summable<int>, the compiler generates an int-specific version of the class.</li>
+<li>When you write Summable<double>, the compiler generates a separate double version.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="a-basic-dijkstras-algorithm-using-a-brute-force-approach"><a class="header" href="#a-basic-dijkstras-algorithm-using-a-brute-force-approach">A Basic Dijkstra's Algorithm Using a Brute Force Approach</a></h3>
 <pre><code class="language-cpp">// C++ program for Dijkstra single source shortest path algorithm.
 // source : https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
@@ -1302,7 +2446,8 @@ int main() {
     return 0;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="1-syntax-and-data-types"><a class="header" href="#1-syntax-and-data-types">1. Syntax and Data Types</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-cheat-sheet-"><a class="header" href="#ruby-cheat-sheet-">Ruby Cheat Sheet 💎</a></h1>
+<h2 id="1-syntax-and-data-types"><a class="header" href="#1-syntax-and-data-types">1. Syntax and Data Types</a></h2>
 <p>Ruby is elegant and readable, but its syntax can be weird if you're coming from C, C++, or Python.</p>
 <h3 id="variables-and-data-types"><a class="header" href="#variables-and-data-types">Variables and Data Types</a></h3>
 <pre><code class="language-ruby">name = "PwatPwat"  # String
@@ -1466,7 +2611,8 @@ puts pwat.introduce
 <li>@name is an instance variable.</li>
 <li>attr_accessor generates getter/setter methods automatically</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="1-first-class-functions-because-were-not-peasants"><a class="header" href="#1-first-class-functions-because-were-not-peasants">1. First-Class Functions (Because We’re Not Peasants)</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-functional-programming-cheat-sheet-"><a class="header" href="#ruby-functional-programming-cheat-sheet-">Ruby Functional Programming Cheat Sheet 💎</a></h1>
+<h2 id="1-first-class-functions-because-were-not-peasants"><a class="header" href="#1-first-class-functions-because-were-not-peasants">1. First-Class Functions (Because We’re Not Peasants)</a></h2>
 <p>In Ruby, functions are first-class citizens, which means you can:</p>
 <ul>
 <li>Assign them to variables </li>
@@ -1589,10 +2735,12 @@ seconds = age * 365.25 * 24 * 60
 print (f"{age} years old equals to {months} months and {seconds} seconds.")
 </code></pre>
 <h3 id="average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class">Average Grade Calculation: Calculates average grades for an individual student and a class.</a></h3>
-<pre><code class="language-python"># Create a variable called student, with a dictionary.
-# The dictionary must contain three keys: 'name', 'school', and 'grades'.
-# The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.
-student = {
+<ul>
+<li>Creates a variable called student, with a dictionary.</li>
+<li>The dictionary must contain three keys: 'name', 'school', and 'grades'.</li>
+<li>The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.</li>
+</ul>
+<pre><code class="language-python">student = {
     "name" : "Jose",
     "school" : "Computing",
     "grades" : (66, 77, 88)
@@ -1604,7 +2752,6 @@ def average_grade(data):
     grades = data["grades"]
     return sum(grades) / len(grades)
 
-# Implement the function below
 # Given a list of students (a list of dictionaries), calculate the average grade received on an exam, for the entire class
 # You must add all the grades of all the students together
 # You must also count how many grades there are in total in the entire list
@@ -1653,10 +2800,27 @@ else:
     print("Your details are incorrect.")
 </code></pre>
 <h3 id="destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Shows variable unpacking with tuples and lists.</a></h3>
-<pre><code class="language-python">perzon = ("Bob", 42, "Mechanician")
-name, _, profezzion = perzon
+<ul>
+<li>
+<p>Unpacking with <code>_</code> to ignore middle value.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail captures the rest into a list.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail (with a * splat operator) captures the rest into a list.</p>
+</li>
+</ul>
+<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
+name, _, profession = person
 
-print(name, profezzion)
+print(name, profession)
 
 head, *tail = [1,2,3,4,5]
 print(head)
@@ -1821,83 +2985,66 @@ def get_admin_password():
 
 print(get_admin_password())
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="oop-example-basic-example-of-a-class-representing-students-and-computing-grades"><a class="header" href="#oop-example-basic-example-of-a-class-representing-students-and-computing-grades">OOP Example: Basic example of a class representing students and computing grades.</a></h3>
-<pre><code class="language-python">class Student:
-    def __init__(self, name, grades):
-        self.name = name
-        self.grades = grades
-
-    def average_grade(self):
-        return sum(self.grades) / len(self.grades)
-    
-student = Student("Bob", (90, 81, 70, 44, 100))
-student2 = Student("Anya", (54, 38, 44, 80, 70))
-
-print(student.average_grade())
-print(student2.average_grade())
-</code></pre>
-<h3 id="classes-with-objects-defines-a-store-class-with-items-and-stock-price-calculation"><a class="header" href="#classes-with-objects-defines-a-store-class-with-items-and-stock-price-calculation">Classes With Objects: Defines a Store class with items and stock price calculation.</a></h3>
-<pre><code class="language-python">class Store:
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop-cheat-sheet-"><a class="header" href="#python-oop-cheat-sheet-">Python OOP Cheat Sheet 🐍</a></h1>
+<h2 id="1-classes--objects"><a class="header" href="#1-classes--objects">1. Classes &amp; Objects</a></h2>
+<p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
+<pre><code class="language-python">class MyClass:
     def __init__(self, name):
-        self.name = name
-        self.items = list()
-    
-    def add_item(self, name, price):
-        itemdict = {
-            "name" : name,
-            "price" : price
-        }
-        self.items.append(itemdict)
+        self.name = name  # `self` is Python's way of saying "this"
 
-    def stock_price(self):
-        return sum(item["price"] for item in self.items)
+    def greet(self):
+        return f"Hello, {self.name}!"
 
-# Example usage:
-store = Store("My Store")
-store.add_item("Apple", 1.0)
-store.add_item("Banana", 1.5)
-store.add_item("Orange", 2.0)
+obj = MyClass("PwatPwat")
+print(obj.greet())  # Output: Hello, PwatPwat!
 </code></pre>
-<h3 id="classes-with-inheritance-demonstrates-inheritance-with-a-device-and-printer-class"><a class="header" href="#classes-with-inheritance-demonstrates-inheritance-with-a-device-and-printer-class">Classes With Inheritance: Demonstrates inheritance with a Device and Printer class.</a></h3>
-<pre><code class="language-python">class Device:
-    def __init__(self, name, connected_by):
-        self.name = name
-        self.connected_by = connected_by
-        self.connected = True
+<h2 id="2-encapsulation-aka-hiding-your-shame"><a class="header" href="#2-encapsulation-aka-hiding-your-shame">2. Encapsulation (a.k.a Hiding Your Shame)</a></h2>
+<p>Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).</p>
+<pre><code class="language-python">class Secret:
+    def __init__(self):
+        self._semi_private = "This is a suggestion."
+        self.__truly_private = "This is a threat."
 
-    def __str__(self):
-        return f"Device {self.name!r} ({self.connected_by})"
-    
-    def disconnect(self):
-        self.connected = False
-        print("Disconnected.")
+    def reveal(self):
+        return self.__truly_private
 
-class Printer(Device):
-    def __init__(self, name, connected_by, capacity):
-        super().__init__(name, connected_by)
-        self.capacity = capacity
-        self.remaining_pages = capacity
-    
-    def __str__(self):
-        return f"{super().__str__()} ({self.remaining_pages} pages remaining)"
-    
-    def print(self, pages):
-        if not self.connected:
-            print("Your printer is not connected!")
-            return
-        print(f"Printing {pages} pages.")
-        self.remaining_pages -= pages
-
-printer = Printer("Printer", "usb", 500)
-printer.print(20)
-
-print(printer)
-
-printer.disconnect()
-
-printer.print(20)
+obj = Secret()
+print(obj._semi_private)  # Can still access
+print(obj.reveal())       # Use methods to access private attributes
 </code></pre>
-<h3 id="classes-with-composition-demonstrates-composition-with-a-bookshelf-containing-books"><a class="header" href="#classes-with-composition-demonstrates-composition-with-a-bookshelf-containing-books">Classes With Composition: Demonstrates composition with a Bookshelf containing Books.</a></h3>
+<p>Note: __truly_private gets name-mangled into _Secret__truly_private, but if you access it directly, Python will just sigh at you.</p>
+<h2 id="3-inheritance-because-writing-code-twice-is-for-losers"><a class="header" href="#3-inheritance-because-writing-code-twice-is-for-losers">3. Inheritance (Because Writing Code Twice is for Losers)</a></h2>
+<p>Python lets you inherit from multiple parents, unlike some other languages that make you jump through hoops.</p>
+<pre><code class="language-python">class Parent:
+    def speak(self):
+        return "I am the parent."
+
+class Child(Parent):
+    def cry(self):
+        return "Waaa!"
+
+kid = Child()
+print(kid.speak())  # Output: I am the parent.
+print(kid.cry())    # Output: Waaa!
+</code></pre>
+<h3 id="multiple-inheritance"><a class="header" href="#multiple-inheritance">Multiple Inheritance:</a></h3>
+<pre><code class="language-python">class Mom:
+    def trait(self):
+        return "Inherited from Mom."
+
+class Dad:
+    def trait(self):
+        return "Inherited from Dad."
+
+class Kid(Mom, Dad):  # Mom's trait will be used first
+    pass
+
+baby = Kid()
+print(baby.trait())  # Output: Inherited from Mom.
+</code></pre>
+<p>Python follows the MRO (Method Resolution Order), which basically means it checks from left to right.</p>
+<h2 id="4-composition-aka-instead-of-inheriting-just-contain-it"><a class="header" href="#4-composition-aka-instead-of-inheriting-just-contain-it">4. Composition (a.k.a "Instead of Inheriting, Just Contain It")</a></h2>
+<p>Instead of making everything an inheritance mess, composition lets you have objects inside other objects.</p>
 <pre><code class="language-python">class Bookshelf:
     def __init__(self, *books):
         self.books = books
@@ -1918,7 +3065,14 @@ shelf = Bookshelf(book, book2)
 
 print(shelf)
 </code></pre>
-<h3 id="class-statis-method-uses-class-methods-to-create-objects-in-different-ways"><a class="header" href="#class-statis-method-uses-class-methods-to-create-objects-in-different-ways">Class Statis Method: Uses class methods to create objects in different ways.</a></h3>
+<h4 id="when-to-use-composition"><a class="header" href="#when-to-use-composition">When to Use Composition?</a></h4>
+<ul>
+<li>When you need "has-a" relationships (e.g., A Bookshelf has Books).</li>
+<li>When inheritance doesn’t make sense (e.g., A Bookshelf is not a Book).</li>
+<li>When you need modularity and reusability without making a family tree out of your classes.</li>
+</ul>
+<h2 id="5-class-methods-classmethod"><a class="header" href="#5-class-methods-classmethod">5. Class Methods (<code>@classmethod</code>)</a></h2>
+<p>A class method receives the class itself (cls) as the first argument instead of an instance. This lets you create alternative constructors.</p>
 <pre><code class="language-python">class Book:
     TYPEZ = ("hardcover", "paperback")
 
@@ -1944,6 +3098,11 @@ light = Book.paperback("the bottle", 400)
 
 print(book, light)
 </code></pre>
+<h4 id="use-classmethod-when"><a class="header" href="#use-classmethod-when">Use <code>@classmethod</code> when:</a></h4>
+<ul>
+<li>You need alternative constructors (hardcover() and paperback() in this case).</li>
+<li>You want to modify class-level attributes rather than instance attributes.</li>
+</ul>
 <h3 id="class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management"><a class="header" href="#class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management">Class Statis Method 2: Demonstrates class methods and static methods in store management.</a></h3>
 <pre><code class="language-python">class Store:
     def __init__(self, name):
@@ -1986,7 +3145,29 @@ Store.franchise(store2)  # returns a Store with name "Amazon - franchise"
 Store.store_details(store)  # returns "Test, total stock price: 0"
 Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 </code></pre>
-<h3 id="str-repr-demonstrates-repr-for-debugging-and-object-representation"><a class="header" href="#str-repr-demonstrates-repr-for-debugging-and-object-representation">Str Repr: Demonstrates <strong>repr</strong> for debugging and object representation.</a></h3>
+<h2 id="6-using-super-because-you-actually-want-your-parent-class-to-do-something"><a class="header" href="#6-using-super-because-you-actually-want-your-parent-class-to-do-something">6. Using super() (Because You Actually Want Your Parent Class to Do Something)</a></h2>
+<p><code>super()</code> lets you call methods from a parent class without hardcoding the class name. This is useful when dealing with multiple levels of inheritance.</p>
+<pre><code class="language-python">class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "Some generic animal sound."
+
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)  # Calls the __init__ from Animal
+        self.breed = breed
+
+    def speak(self):
+        return "Woof!"  # Overrides the parent class method
+
+dog = Dog("Rex", "Golden Retriever")
+print(dog.name)  # Output: Rex
+print(dog.speak())  # Output: Woof!
+</code></pre>
+<h2 id="7-the-__repr__-method-for-when-you-actually-care-about-debugging"><a class="header" href="#7-the-__repr__-method-for-when-you-actually-care-about-debugging">7. The <code>__repr__</code> Method (For When You Actually Care About Debugging)</a></h2>
+<p><code>__repr__</code> is like <code>__str__</code>, but it's for developers, not users. It’s meant to return a string that recreates the object.</p>
 <pre><code class="language-python">class Person :
     def __init__(self, name, age):
         self.name = name
@@ -2002,6 +3183,29 @@ Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 katheryn = Person("Katheryn", 44)
 print(katheryn)
 </code></pre>
+<h4 id="use-__repr__-when"><a class="header" href="#use-__repr__-when">Use <code>__repr__</code> when:</a></h4>
+<ul>
+<li>You want a debugging-friendly representation of an object.</li>
+<li>You want repr(obj) to return something meaningful (instead of &lt;Person object at 0x1234&gt;).</li>
+<li>You’re passing objects around and need better logging.</li>
+</ul>
+<h2 id="8-metaclasses--decorators"><a class="header" href="#8-metaclasses--decorators">8. Metaclasses &amp; Decorators</a></h2>
+<p>Python allows modifying classes at runtime and using decorators to dynamically alter functions.</p>
+<pre><code class="language-python">def add_greeting(cls):
+    cls.greet = lambda self: f"Hello from {self.__class__.__name__}!"
+    return cls
+
+@add_greeting
+class Person:
+    pass
+
+p = Person()
+print(p.greet())  # Output: Hello from Person!
+</code></pre>
+<ul>
+<li>This injects a method into a class at runtime.</li>
+<li>Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
 <pre><code class="language-python">from imports_mymodule import divide #or import imports_mymodule
 

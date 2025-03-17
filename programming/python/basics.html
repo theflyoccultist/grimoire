@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Basics - Debugging Grimoire</title>
+        <title>Python Fundamentals - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -172,10 +172,12 @@ seconds = age * 365.25 * 24 * 60
 print (f"{age} years old equals to {months} months and {seconds} seconds.")
 </code></pre>
 <h3 id="average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class">Average Grade Calculation: Calculates average grades for an individual student and a class.</a></h3>
-<pre><code class="language-python"># Create a variable called student, with a dictionary.
-# The dictionary must contain three keys: 'name', 'school', and 'grades'.
-# The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.
-student = {
+<ul>
+<li>Creates a variable called student, with a dictionary.</li>
+<li>The dictionary must contain three keys: 'name', 'school', and 'grades'.</li>
+<li>The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.</li>
+</ul>
+<pre><code class="language-python">student = {
     "name" : "Jose",
     "school" : "Computing",
     "grades" : (66, 77, 88)
@@ -187,7 +189,6 @@ def average_grade(data):
     grades = data["grades"]
     return sum(grades) / len(grades)
 
-# Implement the function below
 # Given a list of students (a list of dictionaries), calculate the average grade received on an exam, for the entire class
 # You must add all the grades of all the students together
 # You must also count how many grades there are in total in the entire list
@@ -236,10 +237,27 @@ else:
     print("Your details are incorrect.")
 </code></pre>
 <h3 id="destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Shows variable unpacking with tuples and lists.</a></h3>
-<pre><code class="language-python">perzon = ("Bob", 42, "Mechanician")
-name, _, profezzion = perzon
+<ul>
+<li>
+<p>Unpacking with <code>_</code> to ignore middle value.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail captures the rest into a list.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail (with a * splat operator) captures the rest into a list.</p>
+</li>
+</ul>
+<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
+name, _, profession = person
 
-print(name, profezzion)
+print(name, profession)
 
 head, *tail = [1,2,3,4,5]
 print(head)
