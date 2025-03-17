@@ -25,10 +25,11 @@ print (f"{age} years old equals to {months} months and {seconds} seconds.")
 
 ### Average Grade Calculation: Calculates average grades for an individual student and a class.
 
+- Creates a variable called student, with a dictionary.
+- The dictionary must contain three keys: 'name', 'school', and 'grades'.
+- The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.
+
 ```python
-# Create a variable called student, with a dictionary.
-# The dictionary must contain three keys: 'name', 'school', and 'grades'.
-# The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.
 student = {
     "name" : "Jose",
     "school" : "Computing",
@@ -41,7 +42,6 @@ def average_grade(data):
     grades = data["grades"]
     return sum(grades) / len(grades)
 
-# Implement the function below
 # Given a list of students (a list of dictionaries), calculate the average grade received on an exam, for the entire class
 # You must add all the grades of all the students together
 # You must also count how many grades there are in total in the entire list
@@ -101,11 +101,18 @@ else:
 
 ### Destructure A Variable: Shows variable unpacking with tuples and lists.
 
-```python
-perzon = ("Bob", 42, "Mechanician")
-name, _, profezzion = perzon
+- Unpacking with `_` to ignore middle value.
+- head gets the first item.
+- *tail captures the rest into a list.
 
-print(name, profezzion)
+- head gets the first item.
+- *tail (with a * splat operator) captures the rest into a list.
+
+```python
+person = ("Bob", 42, "Mechanician")
+name, _, profession = person
+
+print(name, profession)
 
 head, *tail = [1,2,3,4,5]
 print(head)

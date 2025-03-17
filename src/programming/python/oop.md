@@ -1,89 +1,82 @@
-### OOP Example: Basic example of a class representing students and computing grades.
+# Python OOP Cheat Sheet 🐍
+
+## 1. Classes & Objects
+
+Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.
 
 ```python
-class Student:
-    def __init__(self, name, grades):
-        self.name = name
-        self.grades = grades
-
-    def average_grade(self):
-        return sum(self.grades) / len(self.grades)
-    
-student = Student("Bob", (90, 81, 70, 44, 100))
-student2 = Student("Anya", (54, 38, 44, 80, 70))
-
-print(student.average_grade())
-print(student2.average_grade())
-```
-
-### Classes With Objects: Defines a Store class with items and stock price calculation.
-
-```python
-class Store:
+class MyClass:
     def __init__(self, name):
-        self.name = name
-        self.items = list()
-    
-    def add_item(self, name, price):
-        itemdict = {
-            "name" : name,
-            "price" : price
-        }
-        self.items.append(itemdict)
+        self.name = name  # `self` is Python's way of saying "this"
 
-    def stock_price(self):
-        return sum(item["price"] for item in self.items)
+    def greet(self):
+        return f"Hello, {self.name}!"
 
-# Example usage:
-store = Store("My Store")
-store.add_item("Apple", 1.0)
-store.add_item("Banana", 1.5)
-store.add_item("Orange", 2.0)
+obj = MyClass("PwatPwat")
+print(obj.greet())  # Output: Hello, PwatPwat!
 ```
 
-### Classes With Inheritance: Demonstrates inheritance with a Device and Printer class.
+## 2. Encapsulation (a.k.a Hiding Your Shame)
+
+Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).
 
 ```python
-class Device:
-    def __init__(self, name, connected_by):
-        self.name = name
-        self.connected_by = connected_by
-        self.connected = True
+class Secret:
+    def __init__(self):
+        self._semi_private = "This is a suggestion."
+        self.__truly_private = "This is a threat."
 
-    def __str__(self):
-        return f"Device {self.name!r} ({self.connected_by})"
-    
-    def disconnect(self):
-        self.connected = False
-        print("Disconnected.")
+    def reveal(self):
+        return self.__truly_private
 
-class Printer(Device):
-    def __init__(self, name, connected_by, capacity):
-        super().__init__(name, connected_by)
-        self.capacity = capacity
-        self.remaining_pages = capacity
-    
-    def __str__(self):
-        return f"{super().__str__()} ({self.remaining_pages} pages remaining)"
-    
-    def print(self, pages):
-        if not self.connected:
-            print("Your printer is not connected!")
-            return
-        print(f"Printing {pages} pages.")
-        self.remaining_pages -= pages
-
-printer = Printer("Printer", "usb", 500)
-printer.print(20)
-
-print(printer)
-
-printer.disconnect()
-
-printer.print(20)
+obj = Secret()
+print(obj._semi_private)  # Can still access
+print(obj.reveal())       # Use methods to access private attributes
 ```
 
-### Classes With Composition: Demonstrates composition with a Bookshelf containing Books.
+Note: __truly_private gets name-mangled into _Secret__truly_private, but if you access it directly, Python will just sigh at you.
+
+## 3. Inheritance (Because Writing Code Twice is for Losers)
+
+Python lets you inherit from multiple parents, unlike some other languages that make you jump through hoops.
+
+```python
+class Parent:
+    def speak(self):
+        return "I am the parent."
+
+class Child(Parent):
+    def cry(self):
+        return "Waaa!"
+
+kid = Child()
+print(kid.speak())  # Output: I am the parent.
+print(kid.cry())    # Output: Waaa!
+```
+
+### Multiple Inheritance:
+
+```python
+class Mom:
+    def trait(self):
+        return "Inherited from Mom."
+
+class Dad:
+    def trait(self):
+        return "Inherited from Dad."
+
+class Kid(Mom, Dad):  # Mom's trait will be used first
+    pass
+
+baby = Kid()
+print(baby.trait())  # Output: Inherited from Mom.
+```
+
+Python follows the MRO (Method Resolution Order), which basically means it checks from left to right.
+
+## 4. Composition (a.k.a "Instead of Inheriting, Just Contain It")
+
+Instead of making everything an inheritance mess, composition lets you have objects inside other objects.
 
 ```python
 class Bookshelf:
@@ -107,7 +100,14 @@ shelf = Bookshelf(book, book2)
 print(shelf)
 ```
 
-### Class Statis Method: Uses class methods to create objects in different ways.
+#### When to Use Composition?
+- When you need "has-a" relationships (e.g., A Bookshelf has Books).
+- When inheritance doesn’t make sense (e.g., A Bookshelf is not a Book).
+- When you need modularity and reusability without making a family tree out of your classes.
+
+## 5. Class Methods (`@classmethod`)
+
+A class method receives the class itself (cls) as the first argument instead of an instance. This lets you create alternative constructors.
 
 ```python
 class Book:
@@ -135,6 +135,10 @@ light = Book.paperback("the bottle", 400)
 
 print(book, light)
 ```
+
+#### Use `@classmethod` when:
+- You need alternative constructors (hardcover() and paperback() in this case).
+- You want to modify class-level attributes rather than instance attributes.
 
 ### Class Statis Method 2: Demonstrates class methods and static methods in store management.
 
@@ -181,7 +185,34 @@ Store.store_details(store)  # returns "Test, total stock price: 0"
 Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 ```
 
-### Str Repr: Demonstrates __repr__ for debugging and object representation.
+## 6. Using super() (Because You Actually Want Your Parent Class to Do Something)
+
+`super()` lets you call methods from a parent class without hardcoding the class name. This is useful when dealing with multiple levels of inheritance.
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "Some generic animal sound."
+
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)  # Calls the __init__ from Animal
+        self.breed = breed
+
+    def speak(self):
+        return "Woof!"  # Overrides the parent class method
+
+dog = Dog("Rex", "Golden Retriever")
+print(dog.name)  # Output: Rex
+print(dog.speak())  # Output: Woof!
+```
+
+## 7. The `__repr__` Method (For When You Actually Care About Debugging)
+
+`__repr__` is like `__str__`, but it's for developers, not users. It’s meant to return a string that recreates the object.
 
 ```python
 class Person :
@@ -199,3 +230,28 @@ class Person :
 katheryn = Person("Katheryn", 44)
 print(katheryn)
 ```
+
+#### Use `__repr__` when:
+- You want a debugging-friendly representation of an object.
+- You want repr(obj) to return something meaningful (instead of <Person object at 0x1234>).
+- You’re passing objects around and need better logging.
+
+## 8. Metaclasses & Decorators
+
+Python allows modifying classes at runtime and using decorators to dynamically alter functions.
+
+```python
+def add_greeting(cls):
+    cls.greet = lambda self: f"Hello from {self.__class__.__name__}!"
+    return cls
+
+@add_greeting
+class Person:
+    pass
+
+p = Person()
+print(p.greet())  # Output: Hello from Person!
+```
+
+- This injects a method into a class at runtime.
+- Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).

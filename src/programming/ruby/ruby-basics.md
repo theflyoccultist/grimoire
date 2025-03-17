@@ -1,3 +1,5 @@
+# Ruby Cheat Sheet 💎
+
 ## 1. Syntax and Data Types
 
 Ruby is elegant and readable, but its syntax can be weird if you're coming from C, C++, or Python.

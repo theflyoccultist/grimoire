@@ -1,3 +1,5 @@
+# Ruby Functional Programming Cheat Sheet 💎
+
 ## 1. First-Class Functions (Because We’re Not Peasants)
 
 In Ruby, functions are first-class citizens, which means you can: 

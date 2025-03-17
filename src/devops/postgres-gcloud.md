@@ -1,29 +1,52 @@
-# Set Up PostgreSQL for Deployment With Cloud SQL
+# Set Up PostgreSQL in Google Cloud SQL (Core Setup)
 
-✅ Go to Google Cloud Console → Create a PostgreSQL instance
-✅ Pick a region close to your Cloud Run service (to reduce latency)
-✅ Enable Automatic Backups (trust me, you’ll need them someday)
-✅ Disable public IP (we only connect through the Cloud SQL Proxy)
-2️⃣ Connect Securely (No Direct Superuser Access)
+### 1. Create a PostgreSQL Instance
 
-🚫 No sudo -u postgres psql
-✅ Use the Cloud SQL Auth Proxy instead:
+- Go to Google Cloud Console -> Create a PostgreSQL instance
+- Pick a region close to your Cloud Run service (to reduce latency)
+- Enable Automatic Backups (trust me, you’ll need them someday)
+- Disable public IP (we only connect through the Cloud SQL Proxy)
 
+### 2. Create a Secure Database User
+
+```bash
+gcloud sql users create my_project_user \
+  --instance=YOUR_INSTANCE_NAME \
+  --password=supersecurepassword
+```
+
+- No superusers allowed
+- No public access
+
+### 3. Connect Securely (Cloud SQL Proxy and IAM)
+
+- No `sudo -u postgres psql`
+- Use the Cloud SQL Proxy instead:
+
+```bash
 gcloud auth application-default login
 gcloud sql connect my-instance --user=my_project_user
+```
 
-1️⃣ Create a Service Account for PostgreSQL
+- Cloud SQL doesn't let you SSH like a normal Postgres setup.
 
-Since Google Cloud SQL supports IAM authentication, we’ll create a dedicated service account for your database.
+## Secure Authentication: IAM Authentication
 
+Apply IAM-based authentication instead of passwords.
+
+### 4. Create a Service Account for Cloud SQL
+
+```bash
 gcloud iam service-accounts create cloudsql-user \
   --description="Cloud SQL authentication service account" \
   --display-name="CloudSQL User"
+```
 
-2️⃣ Grant Cloud SQL Permissions
+### 5. Grant IAM Permissions
 
-This gives only the required permissions to the service account—nothing more.
+This gives only the required permissions to the service account, nothing more.
 
+```bash
 gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
   --member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
   --role=roles/cloudsql.client
@@ -31,68 +54,87 @@ gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
 gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
   --member=serviceAccount:cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
   --role=roles/cloudsql.instanceUser
+```
 
-🛑 DO NOT give roles/cloudsql.admin unless Future-You wants to cry over accidental privilege escalations.
-3️⃣ Enable IAM Authentication for Cloud SQL
+- DO NOT give roles/cloudsql.admin unless Future-You wants to cry over accidental privilege escalations.
+
+### 6. Enable IAM Authentication for Cloud SQL
 
 Cloud SQL needs to allow IAM users to authenticate instead of just using password-based logins.
 
+```bash
 gcloud sql instances patch YOUR_INSTANCE_NAME \
   --database-flags=cloudsql.iam_authentication=on
+```
 
-🔹 This tells Postgres to use IAM authentication for users. If this is missing, IAM-based logins will fail.
-4️⃣ Create a Cloud SQL User with IAM Authentication
+- This tells Postgres to use IAM authentication for users. If this is missing, IAM-based logins will fail.
+
+### 7. Create a Cloud SQL User with IAM Authentication
 
 Now, you create a database user, but instead of a password, it will authenticate via IAM.
 
+```bash
 gcloud sql users create cloudsql-user \
   --instance=YOUR_INSTANCE_NAME \
   --type=CLOUD_IAM_SERVICE_ACCOUNT \
   --email=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com
+```
 
-5️⃣ Generate Credentials for Local Testing
+### 8. Connect to Cloud SQL Using IAM (Instead of Passwords)
 
-You’ll need an authentication token every time you connect to Postgres via IAM.
-
-gcloud auth application-default login
-gcloud auth print-access-token
-
-Copy the access token and use it as a password when connecting via psql.
-6️⃣ Connect to Cloud SQL Using IAM Authentication
-
-Use this instead of a password:
-
+```bash
 PGPASSWORD=$(gcloud auth print-access-token) psql \
   "host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME \
   dbname=my_project_db \
   user=cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com \
   sslmode=disable"
+```
 
-🔹 This removes static passwords and forces authentication via IAM.
-7️⃣ GitHub Actions Integration (For Automated Deployments)
+- This removes static passwords and forces authentication via IAM tokens.
 
-Since you’re already storing credentials in GitHub Secrets, you’ll also need to store IAM authentication tokens.
+3. Deploying Your App with Cloud SQL (Cloud Run & GitHub Actions)
 
-    Add two more secrets:
-        GCP_SQL_IAM_USER → cloudsql-user@$YOUR_PROJECT_ID.iam.gserviceaccount.com
-        GCP_SQL_INSTANCE_CONNECTION_NAME → YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME
+### 9. Store Database Credentials in Cloud Run
 
-3️⃣ Database Setup (Same as Local, But With IAM Users)
+- Use Google Cloud Secret Manager:
+
+```bash
+gcloud secrets create my-database-url \
+  --replication-policy="automatic"
+gcloud secrets versions add DATABASE_URL --data-file=<(echo "postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME")
+```
+
+Inject secrets directly into Cloud Run:
+
+```bash
+gcloud run services update my-service \
+  --update-secrets=DATABASE_URL=DATABASE_URL:latest
+```
+
+Use this in GitHub Actions as well to test migrations.
+
+## Testing & Local Development
+
+### 10. Generate Credentials for Local Testing
+
+You’ll need an authentication token every time you connect to Postgres via IAM.
+
+```bash
+gcloud auth application-default login
+gcloud auth print-access-token
+```
+
+### 11. Run Local Database Migrations on Cloud SQL
 
 For this step, you should follow the [PostgreSQL Local Setup Guide](../database/postgres-local.md) from Step 2, as it also works for this setup.
 
-Cloud Run Deployment: The Database URL Format
+```bash
+gcloud sql connect my-instance-name --user=postgres
+psql -f setup.sql
+```
 
-Instead of localhost, your .env file should have:
+### Security: Avoid Paying for Google’s Mistakes
 
-DATABASE_URL=postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME
-
-To test manually:
-
-psql "postgres://my_project_user:supersecurepassword@/my_project_db?host=/cloudsql/YOUR_PROJECT_ID:YOUR_REGION:YOUR_INSTANCE_NAME"
-
-5️⃣ Security: Avoid Paying for Google’s Mistakes
-
-🔴 Set up a billing alert. If your database starts scaling up unnecessarily, you will get charged.
-🟢 Limit instance size in the Cloud SQL settings (e.g., 1 vCPU, 2GB RAM for small apps).
-🛑 No open database connections! Use Cloud SQL Proxy instead of exposing your DB.
+- **Set up a billing alert.** If your database starts scaling up unnecessarily, you will get charged.
+- **Limit instance size in the Cloud SQL settings** (e.g., 1 vCPU, 2GB RAM for small apps).
+- No open database connections! **Use Cloud SQL Proxy instead of exposing your DB.**

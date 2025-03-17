@@ -17,17 +17,17 @@ sudo -u postgres psql
 
 ## Step 2: Create a New Database, Two New Users and A Separate Schema
 
-- Inside the Postgres shell (`psql`) run:
+- Inside the Postgres shell (`psql`) run (or better: write into your `setup.sql` file):
 
 ```sql
--- Create a database user and a database admin (replace with strong passwords)
+-- Create a database user (replace with a strong password) and a temporary admin
 
-CREATE USER project_admin WITH PASSWORD 'verysecurepassword';
+CREATE USER temp_admin WITH PASSWORD 'temp_admin_password';
 CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
-CREATE DATABASE my_project_db OWNER project_admin;
+CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
 -- If you want isolation from the default public schema, create a custom schema:
@@ -45,16 +45,16 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 By default, new users can create or drop objects inside the project schema. We don’t want that.
 
 ```sql
--- Prevents the user from creating, dropping, or truncating tables in the project schema.
-REVOKE CREATE, DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user RESTRICT;
+-- Revoke ONLY drop and truncate, but leave CREATE intact
+REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
 
--- Ensures that my_project_user cannot create tables in the project schema, even if new ones are added.
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
-REVOKE CREATE ON TABLES FROM my_project_user;
+-- Explicitly grant back CREATE
+GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables
 REVOKE DROP ON ALL TABLES IN SCHEMA my_project_schema FROM my_project_user;
-ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA public REVOKE DROP ON TABLES FROM my_project_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
+REVOKE DROP ON TABLES FROM my_project_user;
 ```
 
 - This prevents accidental database-wide modifications.
@@ -68,15 +68,10 @@ You should prevent the user from becoming a superuser, creating other databases 
 ALTER USER my_project_user WITH NOSUPERUSER NOCREATEDB NOCREATEROLE;
 ```
 
-## Step 5: Allow Some Operations
-
-To know `my_project_schema.table1, my_project_schema.table2`, just add the corresponding values from your backend code.
+## Step 5: Allow CRUD Operations
 
 ```sql
--- You should grant CRUD operations, but only for specific tables
-GRANT SELECT, INSERT, UPDATE, DELETE ON my_project_schema.table1, my_project_schema.table2 TO my_project_user;
-
--- Make sure the user has access to future tables as well
+-- Grant CRUD operations to the user, and ensure it has access to future tables as well
 ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO my_project_user;
 ```
@@ -88,19 +83,20 @@ ALTER DEFAULT PRIVILEGES FOR ROLE my_project_user IN SCHEMA my_project_schema
 GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO my_project_user;
 ```
 
-## Step 7: Drop project_admin
+## Step 7: Drop temp_admin
 
-Since at this point, project_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it:
+Since at this point, temp_admin has only been used to create a new database, it still has full ownership and is a security risk. You should reassign everything and then delete it.
+If you want, you can always keep it and modify its permissions separately, but this is a pragmatic and secure solution.
 
 ```sql
--- Reassign all objects owned by project_admin to my_project_user
-REASSIGN OWNED BY project_admin TO my_project_user;
+-- Reassign all objects owned by temp_admin to my_project_user
+REASSIGN OWNED BY temp_admin TO my_project_user;
 
 -- Remove any remaining privileges
-DROP OWNED BY project_admin;
+DROP OWNED BY temp_admin;
 
 -- Finally, delete the user
-DROP USER project_admin;
+DROP USER temp_admin;
 ```
 
 ## Step 8: Exit and Verify Setup
@@ -113,19 +109,24 @@ DROP USER project_admin;
 
 - Show a user's privilege:
 ```sql
-SELECT grantee, privilege_type, table_schema, table_name
-FROM information_schema.role_table_grants
+SELECT * FROM information_schema.role_table_grants
 WHERE grantee='my_project_user';
 ```
 
 ## Step 9: Connect as the New User
+
+If you have created a `setup.sql` file with the informations above and filled in with your own data, you can import it into Postgres with this simple command:
+
+```bash
+psql -U postgres -f setup.sql
+```
 
 Now test logging into your database as the newly created user:
 ```bash
 psql -U my_project_user -d my_project_db
 ```
 
-## Troubleshooting: How to delete the Database/User (if needed)
+## Troubleshooting 
 
 - Delete database/user (if you messed up, can happen):
 ```sql

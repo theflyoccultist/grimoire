@@ -20,3 +20,8 @@ Then, you can set it with:
 git remote set-url origin <NEW_GIT_URL_HERE>
 ```
 
+### Remove a Git commit which has not yet been pushed
+
+```bash
+git reset --hard HEAD~1
+```
