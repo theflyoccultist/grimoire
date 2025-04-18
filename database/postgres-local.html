@@ -31,10 +31,11 @@
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -156,7 +159,10 @@
 <p>Use the postgres superuser to create a new user, a new database and manage their permissions. For all future database operations and for production, only use the created my_project_user.</p>
 <p>The following guide might seem a little over-engineered for a casual app, but it will ensure a level of security conform to production level applications.</p>
 <h2 id="step-1-login-as-superuser"><a class="header" href="#step-1-login-as-superuser">Step 1: Login as superuser</a></h2>
-<pre><code class="language-bash">sudo -u postgres psql
+<pre><code class="language-bash">sudo -i -u postgres psql
+</code></pre>
+<p>if it fails, you may need to restart Postgres with:</p>
+<pre><code class="language-bash">/etc/init.d/postgresql restart
 </code></pre>
 <ul>
 <li>The default Postgres installation comes with a superuser called postgres.</li>
@@ -174,6 +180,7 @@ CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
+GRANT my_project_user TO temp_admin;
 CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
@@ -189,10 +196,7 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 </ul>
 <h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
 <p>By default, new users can create or drop objects inside the project schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Revoke ONLY drop and truncate, but leave CREATE intact
-REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
-
--- Explicitly grant back CREATE
+<pre><code class="language-sql">-- Explicitly grant CREATE on schema
 GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables

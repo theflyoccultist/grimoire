@@ -32,10 +32,11 @@
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
@@ -45,8 +46,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -60,7 +61,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -73,8 +75,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -110,6 +112,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -856,7 +859,10 @@ sudo nft -f firewall.config
 <p>Use the postgres superuser to create a new user, a new database and manage their permissions. For all future database operations and for production, only use the created my_project_user.</p>
 <p>The following guide might seem a little over-engineered for a casual app, but it will ensure a level of security conform to production level applications.</p>
 <h2 id="step-1-login-as-superuser"><a class="header" href="#step-1-login-as-superuser">Step 1: Login as superuser</a></h2>
-<pre><code class="language-bash">sudo -u postgres psql
+<pre><code class="language-bash">sudo -i -u postgres psql
+</code></pre>
+<p>if it fails, you may need to restart Postgres with:</p>
+<pre><code class="language-bash">/etc/init.d/postgresql restart
 </code></pre>
 <ul>
 <li>The default Postgres installation comes with a superuser called postgres.</li>
@@ -874,6 +880,7 @@ CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
+GRANT my_project_user TO temp_admin;
 CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
@@ -889,10 +896,7 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 </ul>
 <h2 id="step-3-restrict-dangerous-permissions"><a class="header" href="#step-3-restrict-dangerous-permissions">Step 3: Restrict Dangerous Permissions</a></h2>
 <p>By default, new users can create or drop objects inside the project schema. We don’t want that.</p>
-<pre><code class="language-sql">-- Revoke ONLY drop and truncate, but leave CREATE intact
-REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
-
--- Explicitly grant back CREATE
+<pre><code class="language-sql">-- Explicitly grant CREATE on schema
 GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables
@@ -1074,7 +1078,13 @@ SELECT cron.schedule('*/5 * * * *', $$SELECT cleanup_old_attempts()$$);
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-boot-up-redis"><a class="header" href="#how-to-boot-up-redis">How to Boot Up Redis</a></h1>
 <h2 id="1installing-redis-on-debian"><a class="header" href="#1installing-redis-on-debian">1.Installing Redis on Debian</a></h2>
-<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install redis-server
+<p>Add the repository to the APT index, update it, and install Redis:</p>
+<pre><code class="language-bash">sudo apt-get install lsb-release curl gpg
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+sudo apt-get update
+sudo apt-get install redis
 </code></pre>
 <ul>
 <li>Then enable and start the service:</li>
@@ -1123,21 +1133,27 @@ GET spell
 Edit /etc/redis/redis.conf and change:</p>
 </li>
 </ul>
-<p>bind 127.0.0.1</p>
+<pre><code class="language-bash"># bind 127.0.0.1 ::1
+</code></pre>
+<p>Keep this enabled by default</p>
+<pre><code class="language-bash">protected-mode yes
+</code></pre>
 <ul>
 <li>Set a strong password:
-Uncomment and modify this line:</li>
+Set a password (optional, overkill for local but useful for staging/prod):</li>
 </ul>
-<p>requirepass supersecurepassword</p>
+<pre><code class="language-bash">requirepass supersecurepassword
+</code></pre>
+<p>🔐 If you do this, don't forget to connect with:</p>
+<pre><code class="language-ruby">Redis.new(password: ENV['REDIS_PASSWORD'])
+</code></pre>
 <ul>
-<li>
-<p>Now, clients must authenticate before using Redis.</p>
-</li>
-<li>
-<p>Restart Redis for changes to apply:</p>
-</li>
+<li>Restart Redis for changes to apply:</li>
 </ul>
 <pre><code class="language-bash">sudo systemctl restart redis
+</code></pre>
+<p>Confirm it's only bound to localhost:</p>
+<pre><code class="language-bash">sudo ss -tlnp | grep redis
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
 <pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
@@ -1374,7 +1390,653 @@ data:
 <a href="https://github.com/adrienverge/yamllint">yamllint</a></p>
 <p><code>kubectl apply --dry-run=client -f file.yaml</code>
 (Validates YAML syntax for Kubernetes)</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="sql-cheatsheet---part-one-fundamentals"><a class="header" href="#sql-cheatsheet---part-one-fundamentals">SQL Cheatsheet - Part One (Fundamentals)</a></h1>
+<p><strong>What is SQL?</strong></p>
+<ul>
+<li>Structured Query Language</li>
+<li>A language to interact with data.</li>
+</ul>
+<p><strong>How is data saved?</strong></p>
+<ul>
+<li>In tables, within the database</li>
+</ul>
+<p><strong>Imagine the database as a library</strong></p>
+<ul>
+<li>Table: one of the bookshelves</li>
+<li>Data: A book</li>
+<li>When we want to retrieve a book, we use SQL.</li>
+</ul>
+<p><strong>Learn the SQL fundamentals properly and you will be a powerful engineer.</strong></p>
+<hr />
+<p>In PostgreSQL:</p>
+<ul>
+<li><code>"double quotes"</code> → for <strong>table and column names</strong> (identifiers)</li>
+<li><code>'single quotes'</code> → for <strong>values</strong> (string comparisons, data, etc)</li>
+</ul>
+<hr />
+<p>We will work with these two tables.</p>
+<p><code>table name: kimetsu</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kokyu</th><th style="text-align: center">feature</th></tr></thead><tbody>
+<tr><td style="text-align: center">静岡 アダメ</td><td style="text-align: center">地獄の呼吸</td><td style="text-align: center">突進</td></tr>
+<tr><td style="text-align: center">竜宮城</td><td style="text-align: center">炎の呼吸</td><td style="text-align: center">眉毛の二段</td></tr>
+<tr><td style="text-align: center">岡山 悟</td><td style="text-align: center">水の呼吸</td><td style="text-align: center">天然</td></tr>
+<tr><td style="text-align: center">大豆の子</td><td style="text-align: center"></td><td style="text-align: center">竹</td></tr>
+<tr><td style="text-align: center">鱗滝</td><td style="text-align: center">水の呼吸</td><td style="text-align: center">師匠</td></tr>
+</tbody></table>
+</div>
+<p><code>table name: eva</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">ミサト</td><td style="text-align: center">4</td><td style="text-align: center">作戦部長</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li>The entire thing: table</li>
+<li>Vertical line: a column</li>
+<li>Horizontal line: a record</li>
+</ul>
+<hr />
+<p><strong><code>SELECT</code>: displays the desired columns from the specified table</strong></p>
+<pre><code class="language-sql">SELECT "name", "feature" -- column name
+  FROM kimetsu;        -- table name
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">feature</th></tr></thead><tbody>
+<tr><td style="text-align: center">静岡 アダメ</td><td style="text-align: center">突進</td></tr>
+<tr><td style="text-align: center">竜宮城</td><td style="text-align: center">眉毛の二段</td></tr>
+<tr><td style="text-align: center">岡山 悟</td><td style="text-align: center">天然</td></tr>
+<tr><td style="text-align: center">大豆の子</td><td style="text-align: center">竹</td></tr>
+<tr><td style="text-align: center">鱗滝</td><td style="text-align: center">師匠</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>AS</code>: renames the desired columns</strong></p>
+<pre><code class="language-sql">SELECT "name" AS "名前", "feature" as "特徴"
+  FROM kimetsu;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">名前</th><th style="text-align: center">特徴</th></tr></thead><tbody>
+<tr><td style="text-align: center">静岡 アダメ</td><td style="text-align: center">突進</td></tr>
+<tr><td style="text-align: center">竜宮城</td><td style="text-align: center">眉毛の二段</td></tr>
+<tr><td style="text-align: center">岡山 悟</td><td style="text-align: center">天然</td></tr>
+<tr><td style="text-align: center">大豆の子</td><td style="text-align: center">竹</td></tr>
+<tr><td style="text-align: center">鱗滝</td><td style="text-align: center">師匠</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong>When you don’t have the energy to type out column names (but still want results fast). Only do this on small tables unless you hate your DBA</strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM kimetsu;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kokyu</th><th style="text-align: center">feature</th></tr></thead><tbody>
+<tr><td style="text-align: center">静岡 アダメ</td><td style="text-align: center">地獄の呼吸</td><td style="text-align: center">突進</td></tr>
+<tr><td style="text-align: center">竜宮城</td><td style="text-align: center">炎の呼吸</td><td style="text-align: center">眉毛の二段</td></tr>
+<tr><td style="text-align: center">岡山 悟</td><td style="text-align: center">水の呼吸</td><td style="text-align: center">天然</td></tr>
+<tr><td style="text-align: center">大豆の子</td><td style="text-align: center"></td><td style="text-align: center">竹</td></tr>
+<tr><td style="text-align: center">鱗滝</td><td style="text-align: center">水の呼吸</td><td style="text-align: center">師匠</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>DISTINCT</code>: How to hide duplicate data within a column</strong></p>
+<pre><code class="language-sql">SELECT "kokyu"
+  FROM kimetsu;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">kokyu</th></tr></thead><tbody>
+<tr><td style="text-align: center">地獄の呼吸</td></tr>
+<tr><td style="text-align: center">炎の呼吸</td></tr>
+<tr><td style="text-align: center">水の呼吸</td></tr>
+<tr><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">水の呼吸</td></tr>
+</tbody></table>
+</div>
+<pre><code class="language-sql">SELECT DISTINCT "kokyu"
+  FROM kimetsu;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">kokyu</th></tr></thead><tbody>
+<tr><td style="text-align: center">地獄の呼吸</td></tr>
+<tr><td style="text-align: center">炎の呼吸</td></tr>
+<tr><td style="text-align: center">水の呼吸</td></tr>
+<tr><td style="text-align: center"></td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>WHERE</code>: Retrieve entries where kawaii is more than 5</strong></p>
+<ul>
+<li>(Remember, kawaii is subjective, and only a personal opinion.)</li>
+<li><code>WHERE</code> works with records.</li>
+</ul>
+<pre><code class="language-sql">SELECT "name", "kawaii"
+  FROM eva
+WHERE "kawaii" &gt; 5;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td></tr>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>AND</code>: Add more conditions to your <code>WHERE</code> record query</strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "kawaii" &gt; 5 AND "role" = 'パイロット';
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>OR</code>: The record appeals to either those conditions</strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "kawaii" &gt; 5 OR "role" = 'パイロット';
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>BETWEEN</code></strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "kawaii" BETWEEN 4 AND 6;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">ミサト</td><td style="text-align: center">4</td><td style="text-align: center">作戦部長</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>IN</code>, <code>NOT IN</code></strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "role" IN ('パイロット', '作戦部長');
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">ミサト</td><td style="text-align: center">4</td><td style="text-align: center">作戦部長</td></tr>
+</tbody></table>
+</div>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "role" NOT IN ('パイロット', '作戦部長');
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>LIKE</code>: For Searching Data</strong></p>
+<ul>
+<li>This matches anything starting with ア.</li>
+</ul>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "name" LIKE 'ア%';
+</code></pre>
+<ul>
+<li>Full pattern matching:</li>
+</ul>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+WHERE "name" LIKE 'アス_';  -- _ matches a single character
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>IS NULL</code>/ <code>IS NOT NULL</code>: Look For Empty Data / Not Empty Data</strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+ WHERE "role" IS NULL;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>LIMIT</code>: When You Don't Want To Query The Entire Column</strong></p>
+<ul>
+<li>SQL result rows start at 1 when displayed, but <code>LIMIT</code> and <code>OFFSET</code> are 0-based. So <code>LIMIT 2 OFFSET 0</code> returns the first 2 rows.</li>
+<li>When there is a lot of data in the column, SQL will slow down or freeze. Use LIMIT to avoid that.</li>
+</ul>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+LIMIT 2;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>ORDER BY</code>: Sort</strong></p>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+ORDER BY "kawaii";
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">ミサト</td><td style="text-align: center">4</td><td style="text-align: center">作戦部長</td></tr>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+</tbody></table>
+</div>
+<pre><code class="language-sql">SELECT *
+  FROM eva
+ORDER BY "kawaii" DESC;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">kawaii</th><th style="text-align: center">role</th></tr></thead><tbody>
+<tr><td style="text-align: center">レイ</td><td style="text-align: center">10</td><td style="text-align: center">パイロット</td></tr>
+<tr><td style="text-align: center">ゆい</td><td style="text-align: center">6</td><td style="text-align: center"></td></tr>
+<tr><td style="text-align: center">ミサト</td><td style="text-align: center">4</td><td style="text-align: center">作戦部長</td></tr>
+<tr><td style="text-align: center">アスカ</td><td style="text-align: center">3</td><td style="text-align: center">パイロット</td></tr>
+</tbody></table>
+</div>
+<hr />
+<ul>
+<li>SQL queries can be written in lowercase, but prefer uppercase to differenciate between keywords and column / table names. It will reduce errors.</li>
+<li>Insert a new line after each query to improve readability.</li>
+<li>Always use <code>LIMIT</code> in prod, instead of asterisks, for faster queries and to reduce server load.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="sql-cheatsheet---part-two-group-by"><a class="header" href="#sql-cheatsheet---part-two-group-by">SQL Cheatsheet - Part Two (<code>GROUP BY</code>)</a></h1>
+<ul>
+<li><code>GROUP BY</code> is fundamental to perform aggregation functions (集計関数)</li>
+<li>When it throws an error, it's scary</li>
+<li>When it works for some unknown reason, it's even scarier</li>
+<li><strong>Always wrap your aggregation targets in parentheses.</strong>
+<code>AVG("age")</code>, not <code>AVG "age"</code>. PostgreSQL will absolutely lose it otherwise.</li>
+</ul>
+<p>We will work with this table</p>
+<p><code>table name: members</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">created_day</th><th style="text-align: center">channel</th><th style="text-align: center">age</th></tr></thead><tbody>
+<tr><td style="text-align: center">エレン</td><td style="text-align: center">2021-02-13</td><td style="text-align: center">web</td><td style="text-align: center">27</td></tr>
+<tr><td style="text-align: center">こういち</td><td style="text-align: center">2021-02-13</td><td style="text-align: center">ad</td><td style="text-align: center">27</td></tr>
+<tr><td style="text-align: center">さゆり</td><td style="text-align: center">2021-02-15</td><td style="text-align: center">ad</td><td style="text-align: center">27</td></tr>
+<tr><td style="text-align: center">上谷</td><td style="text-align: center">2021-02-15</td><td style="text-align: center">ad</td><td style="text-align: center">33</td></tr>
+<tr><td style="text-align: center">あかり</td><td style="text-align: center">2021-02-16</td><td style="text-align: center">web</td><td style="text-align: center">24</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>COUNT</code>: Counts The Number of Records</strong></p>
+<pre><code class="language-sql">SELECT COUNT("name")
+  FROM members
+WHERE "created_day" = '2021-02-13';
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">count</th></tr></thead><tbody>
+<tr><td style="text-align: center">2</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>GROUP BY</code>: Groups the same records together</strong></p>
+<pre><code class="language-sql">SELECT "created_day", COUNT("name")
+  FROM members
+GROUP BY "created_day";
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">created_day</th><th style="text-align: center">count</th></tr></thead><tbody>
+<tr><td style="text-align: center">2021-02-13</td><td style="text-align: center">2</td></tr>
+<tr><td style="text-align: center">2021-02-15</td><td style="text-align: center">2</td></tr>
+<tr><td style="text-align: center">2021-02-16</td><td style="text-align: center">1</td></tr>
+</tbody></table>
+</div>
+<pre><code class="language-sql">SELECT "created_day", "channel", COUNT("name")
+  FROM members
+GROUP BY "created_day";
+</code></pre>
+<p>This will throw an error, because the system doesn't know if <code>2021-02-13</code> in <code>created_day</code> corresponds to <code>ad</code>, or <code>web</code> in the column <code>channel</code>.</p>
+<pre><code class="language-sql">SELECT "created_day", "channel", COUNT("name")
+  FROM members
+GROUP BY "created_day", "channel";
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">created_day</th><th style="text-align: center">channel</th><th style="text-align: center">count</th></tr></thead><tbody>
+<tr><td style="text-align: center">2021-02-13</td><td style="text-align: center">web</td><td style="text-align: center">1</td></tr>
+<tr><td style="text-align: center">2021-02-13</td><td style="text-align: center">ad</td><td style="text-align: center">1</td></tr>
+<tr><td style="text-align: center">2021-02-15</td><td style="text-align: center">ad</td><td style="text-align: center">2</td></tr>
+<tr><td style="text-align: center">2021-02-16</td><td style="text-align: center">web</td><td style="text-align: center">1</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong>Aggregation functions: (集計関数)</strong></p>
+<p>Aggregates values</p>
+<ul>
+<li><code>COUNT</code>: number of records</li>
+<li><code>AVG</code>: the average value</li>
+<li><code>MAX</code>: the maximum</li>
+<li><code>MIN</code>: the minimum</li>
+<li><code>SUM</code>: the total</li>
+</ul>
+<pre><code class="language-sql">SELECT "created_day", AVG("age"), MAX("age")
+  FROM members
+GROUP BY "created_day";
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">created_day</th><th style="text-align: center">avg</th><th style="text-align: center">max</th></tr></thead><tbody>
+<tr><td style="text-align: center">2021-02-13</td><td style="text-align: center">27</td><td style="text-align: center">27</td></tr>
+<tr><td style="text-align: center">2021-02-15</td><td style="text-align: center">30</td><td style="text-align: center">33</td></tr>
+<tr><td style="text-align: center">2021-02-16</td><td style="text-align: center">24</td><td style="text-align: center">24</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="sql-fundamentals---part-three-join"><a class="header" href="#sql-fundamentals---part-three-join">SQL Fundamentals - Part Three (<code>JOIN</code>)</a></h1>
+<ul>
+<li>How to retrieve data from several tables?</li>
+<li>The solution is to use table joins (テーブル結合)</li>
+<li>Scary, but very important: since a lot of the times in prod, data is stored between multiple tables</li>
+<li>Know the difference between <code>INNER JOIN</code>/<code>OUTER JOIN</code></li>
+</ul>
+<hr />
+<p>In the future, when civilizations will live between several planets of the Solar System and exchange overwhelming amounts of data between each other, you won't be able to survive without knowing SQL.</p>
+<p>We will work with those tables</p>
+<p><code>table name: martians</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">id</th><th style="text-align: center">name</th></tr></thead><tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">ハリー</td></tr>
+<tr><td style="text-align: center">2</td><td style="text-align: center">ハーマイオニー</td></tr>
+<tr><td style="text-align: center">3</td><td style="text-align: center">ロン</td></tr>
+<tr><td style="text-align: center">4</td><td style="text-align: center">ダンブルドア</td></tr>
+<tr><td style="text-align: center">5</td><td style="text-align: center">ヴォルデモート</td></tr>
+</tbody></table>
+</div>
+<p><code>table name: histories</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">id</th><th style="text-align: center">martians_id</th><th style="text-align: center">planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">3</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">2</td><td style="text-align: center">1</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">3</td><td style="text-align: center">4</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">4</td><td style="text-align: center">5</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong><code>INNER JOIN</code>: Assemble two tables into one</strong></p>
+<ul>
+<li>Use table aliases (<code>AS m</code>, <code>AS h</code>) to keep it classy.</li>
+</ul>
+<pre><code class="language-sql">SELECT *
+  FROM martians
+ AS m
+INNER JOIN "histories" AS h
+ON m.id = h.martians_id;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">id</th><th style="text-align: center">name</th><th style="text-align: center">id</th><th style="text-align: center">martians_id</th><th style="text-align: center">planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">ハリー</td><td style="text-align: center">2</td><td style="text-align: center">1</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">3</td><td style="text-align: center">ロン</td><td style="text-align: center">1</td><td style="text-align: center">3</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">4</td><td style="text-align: center">ダンブルドア</td><td style="text-align: center">3</td><td style="text-align: center">4</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">5</td><td style="text-align: center">ヴォルデモート</td><td style="text-align: center">4</td><td style="text-align: center">5</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong>Using <code>SELECT</code>, only keep the columns you need</strong></p>
+<pre><code class="language-sql">SELECT m.name, h.planet
+  FROM martians
+ AS m
+INNER JOIN "histories" AS h
+ON m.id = h.martians_id;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">m.name</th><th style="text-align: center">h.planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">ハリー</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">ロン</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">ダンブルドア</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">ヴォルデモート</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<p>If your actual column names include uppercase, spaces, or non-ASCII characters: wrap them in "quotes" to avoid the wrath of PostgreSQL.</p>
+<pre><code class="language-sql">SELECT m."名前", h."惑星"
+</code></pre>
+<hr />
+<p><strong><code>LEFT OUTER JOIN</code></strong></p>
+<p><strong>Beware</strong>: when performing a <code>JOIN</code> operation, unmatching records will dissapear.</p>
+<p>This is what you should do instead:</p>
+<pre><code class="language-sql">SELECT m.name, h.planet
+  FROM martians
+ AS m
+LEFT OUTER JOIN "histories" AS h
+  ON m.id = h.martians_id;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">m.name</th><th style="text-align: center">h.planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">ハリー</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">ハーマイオニー</td><td style="text-align: center">NULL</td></tr>
+<tr><td style="text-align: center">ロン</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">ダンブルドア</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">ヴォルデモート</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<p>This will add a null value to unmatched values.</p>
+<ul>
+<li>NULL values will break WHERE conditions unless you explicitly use IS NULL.</li>
+<li>If your query drops records like it’s ghosting you, check your join type. <code>INNER JOIN</code> only loves perfect matches. <code>LEFT OUTER JOIN</code> accepts everyone, even if they’re broken (NULLs and all).</li>
+<li>In a real environment, <code>INNER JOIN</code> is used more often to avoid querying noise and null values.</li>
+</ul>
+<hr />
+<p><code>RIGHT OUTER JOIN</code></p>
+<p>Return all rows from the right table, and the matching rows from the left. If there's no match, left table values become NULL.</p>
+<pre><code class="language-sql">SELECT m.name, h.planet
+  FROM martians
+ AS m
+RIGHT OUTER JOIN "histories" AS h
+  ON m.id = h.martians_id;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">m.name</th><th style="text-align: center">h.planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">ハリー</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">ロン</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">ダンブルドア</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">ヴォルデモート</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<p>In this example, it gives the same result as <code>INNER JOIN</code> because all martians_id values match an existing martian.</p>
+<p>To really see the effect of <code>RIGHT OUTER JOIN</code>, you’d need a record in <code>"histories"</code> with a <code>martians_id</code> that doesn’t exist in <code>"martians"</code>.</p>
+<hr />
+<p><code>FULL OUTER JOIN</code></p>
+<p>Return all rows from both tables, matching where possible, and filling in <code>NULL</code> where not.</p>
+<pre><code class="language-sql">SELECT m.name, h.planet
+  FROM martians
+ AS m
+FULL OUTER JOIN "histories" AS h
+  ON m.id = h.martians_id;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">m.name</th><th style="text-align: center">h.planet</th></tr></thead><tbody>
+<tr><td style="text-align: center">ハリー</td><td style="text-align: center">木星</td></tr>
+<tr><td style="text-align: center">ハーマイオニー</td><td style="text-align: center">NULL</td></tr>
+<tr><td style="text-align: center">ロン</td><td style="text-align: center">地球</td></tr>
+<tr><td style="text-align: center">ダンブルドア</td><td style="text-align: center">土星</td></tr>
+<tr><td style="text-align: center">ヴォルデモート</td><td style="text-align: center">海王星</td></tr>
+</tbody></table>
+</div>
+<p>This behaves exactly like <code>LEFT OUTER JOIN</code> here because histories doesn’t contain any records without a matching <code>martians_id</code>. Add a rogue one to see <code>NULL</code> in <code>m.name</code>.</p>
+<p>💡 JOIN ORACLE SAYS:</p>
+<ul>
+<li><code>INNER JOIN</code>: only love with conditions.</li>
+<li><code>LEFT OUTER JOIN</code>: keeps left table's ghosts.</li>
+<li><code>RIGHT OUTER JOIN</code>: brings right table’s strays.</li>
+<li><code>FULL OUTER JOIN</code>: a big weird family reunion where nobody’s left out.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="sql-fundamentals---part-three-case"><a class="header" href="#sql-fundamentals---part-three-case">SQL Fundamentals - Part Three (<code>CASE</code>)</a></h1>
+<ul>
+<li>What if you wanted logical operators in SQL, like in every other programming language? (<code>if... else</code>)</li>
+<li>Knowing how to use this is what differenciates newbies and pros.</li>
+</ul>
+<p>We will work with this table</p>
+<p><code>table name: populations</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">pref_name</th><th style="text-align: center">population</th></tr></thead><tbody>
+<tr><td style="text-align: center">京都</td><td style="text-align: center">300</td></tr>
+<tr><td style="text-align: center">大阪</td><td style="text-align: center">900</td></tr>
+<tr><td style="text-align: center">福岡</td><td style="text-align: center">500</td></tr>
+<tr><td style="text-align: center">佐賀</td><td style="text-align: center">100</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li>Do not underestimate SQL, do not resort to using Excel for your tables. SQL has everything you need, and you just have skill issues.</li>
+</ul>
+<hr />
+<p><strong>How to use:</strong></p>
+<pre><code class="language-sql">SELECT CASE WHEN condition THEN value
+       WHEN condition THEN value
+       ELSE value END
+  FROM table_name
+</code></pre>
+<p>For these operations, it's important to think of these operations as having two steps (or more)</p>
+<hr />
+<p><strong>Use case:</strong></p>
+<pre><code class="language-sql">-- Step 1
+SELECT
+  CASE WHEN "pref_name" IN ('京都', '大阪') THEN '関西'
+  WHEN "pref_name" IN ('福岡', '佐賀') THEN '九州'
+  ELSE NULL
+  END AS "district",
+  SUM("population")
+FROM populations
+
+
+-- Step 2
+GROUP BY
+  CASE WHEN "pref_name" IN ('京都', '大阪') THEN '関西'
+  WHEN "pref_name" IN ('福岡', '佐賀') THEN '九州'
+  ELSE NULL
+  END;
+</code></pre>
+<p>Step 1:</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">district</th><th style="text-align: center">population</th></tr></thead><tbody>
+<tr><td style="text-align: center">関西</td><td style="text-align: center">300</td></tr>
+<tr><td style="text-align: center">関西</td><td style="text-align: center">900</td></tr>
+<tr><td style="text-align: center">九州</td><td style="text-align: center">500</td></tr>
+<tr><td style="text-align: center">九州</td><td style="text-align: center">100</td></tr>
+</tbody></table>
+</div>
+<p>Step 2:</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">district</th><th style="text-align: center">population</th></tr></thead><tbody>
+<tr><td style="text-align: center">関西</td><td style="text-align: center">1200</td></tr>
+<tr><td style="text-align: center">九州</td><td style="text-align: center">600</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li>With this, you can use SQL like a real programming language</li>
+<li>Using <code>GROUP BY</code> and <code>SUM</code> together: very powerful</li>
+<li>You are no more a database newbie, you will be intermediate.</li>
+</ul>
+<hr />
+<p><strong>Window Functions</strong></p>
+<ul>
+<li>Let you perform calculations across rows related to the current row, without collapsing them like GROUP BY.</li>
+</ul>
+<p><strong>Example: Ranking cities by population without losing the full dataset</strong></p>
+<pre><code class="language-sql">SELECT 
+  "pref_name",
+  "population",
+  RANK() OVER (ORDER BY "population" DESC) AS "rank"
+FROM populations
+;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">pref_name</th><th style="text-align: center">population</th><th style="text-align: center">rank</th></tr></thead><tbody>
+<tr><td style="text-align: center">大阪</td><td style="text-align: center">900</td><td style="text-align: center">1</td></tr>
+<tr><td style="text-align: center">福岡</td><td style="text-align: center">500</td><td style="text-align: center">2</td></tr>
+<tr><td style="text-align: center">京都</td><td style="text-align: center">300</td><td style="text-align: center">3</td></tr>
+<tr><td style="text-align: center">佐賀</td><td style="text-align: center">100</td><td style="text-align: center">4</td></tr>
+</tbody></table>
+</div>
+<p>Notice: No GROUP BY, no data loss, just vibes and rankings.</p>
+<hr />
+<p><strong>CTEs (Common Table Expressions)</strong></p>
+<ul>
+<li>Think of them like temporary named subqueries—great for breaking down complex queries or recursive stuff.</li>
+</ul>
+<p><strong>Example: Clean up a <code>CASE</code>mess first using a CTE</strong></p>
+<pre><code class="language-sql">WITH regional_pop AS (
+  SELECT
+    CASE 
+      WHEN "pref_name" IN ('京都', '大阪') THEN '関西'
+      WHEN "pref_name" IN ('福岡', '佐賀') THEN '九州'
+      ELSE '不明'
+    END AS "region",
+    "population"
+  FROM populations
+
+)
+SELECT "region", SUM("population") AS "total_population"
+FROM regional_pop
+GROUP BY "region";
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="sql-fundamentals---part-five-subqueries"><a class="header" href="#sql-fundamentals---part-five-subqueries">SQL Fundamentals - Part Five (subqueries)</a></h1>
+<ul>
+<li>A subquery is a query inside of a query.</li>
+<li>Ever wanted to perform a <code>SELECT</code> inside of a <code>SELECT</code>? Well, you actually can.</li>
+<li>You start becoming a query magician.</li>
+</ul>
+<p>We will work with this table</p>
+<p><code>table name: items</code></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">category</th><th style="text-align: center">price</th></tr></thead><tbody>
+<tr><td style="text-align: center">iPhone 12</td><td style="text-align: center">スマホ</td><td style="text-align: center">100000</td></tr>
+<tr><td style="text-align: center">Pixel 5</td><td style="text-align: center">スマホ</td><td style="text-align: center">80000</td></tr>
+<tr><td style="text-align: center">Xperia 511</td><td style="text-align: center">スマホ</td><td style="text-align: center">90000</td></tr>
+<tr><td style="text-align: center">ルンバ980</td><td style="text-align: center">掃除機</td><td style="text-align: center">50000</td></tr>
+<tr><td style="text-align: center">Dyson V10</td><td style="text-align: center">掃除機</td><td style="text-align: center">40000</td></tr>
+<tr><td style="text-align: center">バルミューダC</td><td style="text-align: center">掃除機</td><td style="text-align: center">60000</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><strong>Display items where the price is higher than average</strong></p>
+<pre><code class="language-sql">SELECT AVG("price")
+  FROM items
+;
+-- 70000
+
+SELECT *
+    FROM items
+
+  WHERE "price" &gt;= 70000;
+</code></pre>
+<p>This is fine, but it can be done in a single query like this:</p>
+<pre><code class="language-sql">SELECT *
+    FROM items
+
+  WHERE price &gt;= (SELECT AVG("price")
+                    FROM items
+);
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">category</th><th style="text-align: center">price</th></tr></thead><tbody>
+<tr><td style="text-align: center">iPhone 12</td><td style="text-align: center">スマホ</td><td style="text-align: center">100000</td></tr>
+<tr><td style="text-align: center">Pixel 5</td><td style="text-align: center">スマホ</td><td style="text-align: center">80000</td></tr>
+<tr><td style="text-align: center">Xperia 511</td><td style="text-align: center">スマホ</td><td style="text-align: center">90000</td></tr>
+</tbody></table>
+</div>
+<p>Yeah, we are querying a <code>SELECT</code> inside of a <code>SELECT</code>. That's what a subquery is.</p>
+<hr />
+<p><strong>Display items where the price is higher than average, but for each category</strong></p>
+<pre><code class="language-sql">SELECT *
+    FROM items
+
+  WHERE price &gt;= (SELECT AVG("price")
+                    FROM items
+
+                    GROUP BY "category");
+</code></pre>
+<p>This will return an error, because it will return two averages. The solution is to use aliases to discern them.</p>
+<pre><code class="language-sql">SELECT *
+    FROM items
+ AS i1
+  WHERE i1."price" &gt;= (
+		SELECT AVG(i2."price")
+                    FROM items
+ AS i2
+                    WHERE i1."category" = i2."category"
+  );
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">name</th><th style="text-align: center">category</th><th style="text-align: center">price</th></tr></thead><tbody>
+<tr><td style="text-align: center">iPhone 12</td><td style="text-align: center">スマホ</td><td style="text-align: center">100000</td></tr>
+<tr><td style="text-align: center">Xperia 511</td><td style="text-align: center">スマホ</td><td style="text-align: center">90000</td></tr>
+<tr><td style="text-align: center">ルンバ980</td><td style="text-align: center">掃除機</td><td style="text-align: center">50000</td></tr>
+<tr><td style="text-align: center">バルミューダC</td><td style="text-align: center">掃除機</td><td style="text-align: center">60000</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li>Subqueries will make your life easier, otherwise you have to write queries one by one.</li>
+</ul>
+<p>🧠 Subquery Tips:</p>
+<ul>
+<li>Use subqueries when filtering against <strong>aggregated</strong> or <strong>correlated</strong> data.</li>
+<li>Correlated subqueries reference the outer query—use aliases to stay sane.</li>
+<li>Subqueries inside <code>WHERE</code>, <code>SELECT</code>, or even <code>FROM</code> are all valid and powerful.</li>
+<li>Avoid unnecessary subqueries in production—they can destroy performance.</li>
+<li>If you are getting errors, try writing the function without subqueries.</li>
+<li>SQL: Practice makes muscle memory.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
 <h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
 <p>C++ has multiple ways to declare variables, and some are better than others:</p>
 <pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
@@ -2446,7 +3108,13 @@ int main() {
     return 0;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-cheat-sheet-"><a class="header" href="#ruby-cheat-sheet-">Ruby Cheat Sheet 💎</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
+<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
+<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
+<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
+<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
+<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-cheat-sheet-"><a class="header" href="#ruby-cheat-sheet-">Ruby Cheat Sheet 💎</a></h1>
 <h2 id="1-syntax-and-data-types"><a class="header" href="#1-syntax-and-data-types">1. Syntax and Data Types</a></h2>
 <p>Ruby is elegant and readable, but its syntax can be weird if you're coming from C, C++, or Python.</p>
 <h3 id="variables-and-data-types"><a class="header" href="#variables-and-data-types">Variables and Data Types</a></h3>

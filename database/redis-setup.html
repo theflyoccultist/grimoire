@@ -31,10 +31,11 @@
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -154,7 +157,13 @@
                     <main>
                         <h1 id="how-to-boot-up-redis"><a class="header" href="#how-to-boot-up-redis">How to Boot Up Redis</a></h1>
 <h2 id="1installing-redis-on-debian"><a class="header" href="#1installing-redis-on-debian">1.Installing Redis on Debian</a></h2>
-<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install redis-server
+<p>Add the repository to the APT index, update it, and install Redis:</p>
+<pre><code class="language-bash">sudo apt-get install lsb-release curl gpg
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+sudo apt-get update
+sudo apt-get install redis
 </code></pre>
 <ul>
 <li>Then enable and start the service:</li>
@@ -203,21 +212,27 @@ GET spell
 Edit /etc/redis/redis.conf and change:</p>
 </li>
 </ul>
-<p>bind 127.0.0.1</p>
+<pre><code class="language-bash"># bind 127.0.0.1 ::1
+</code></pre>
+<p>Keep this enabled by default</p>
+<pre><code class="language-bash">protected-mode yes
+</code></pre>
 <ul>
 <li>Set a strong password:
-Uncomment and modify this line:</li>
+Set a password (optional, overkill for local but useful for staging/prod):</li>
 </ul>
-<p>requirepass supersecurepassword</p>
+<pre><code class="language-bash">requirepass supersecurepassword
+</code></pre>
+<p>🔐 If you do this, don't forget to connect with:</p>
+<pre><code class="language-ruby">Redis.new(password: ENV['REDIS_PASSWORD'])
+</code></pre>
 <ul>
-<li>
-<p>Now, clients must authenticate before using Redis.</p>
-</li>
-<li>
-<p>Restart Redis for changes to apply:</p>
-</li>
+<li>Restart Redis for changes to apply:</li>
 </ul>
 <pre><code class="language-bash">sudo systemctl restart redis
+</code></pre>
+<p>Confirm it's only bound to localhost:</p>
+<pre><code class="language-bash">sudo ss -tlnp | grep redis
 </code></pre>
 
                     </main>

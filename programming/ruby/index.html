@@ -31,10 +31,11 @@
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc.js"></script>
@@ -44,8 +45,8 @@
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +60,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,8 +74,8 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -109,6 +111,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -152,7 +155,13 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
+<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
+<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
+<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
+<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
+<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
