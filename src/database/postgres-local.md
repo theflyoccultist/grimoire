@@ -7,7 +7,12 @@ The following guide might seem a little over-engineered for a casual app, but it
 ## Step 1: Login as superuser
 
 ```bash
-sudo -u postgres psql
+sudo -i -u postgres psql
+```
+
+if it fails, you may need to restart Postgres with:
+```bash
+/etc/init.d/postgresql restart
 ```
 
 - The default Postgres installation comes with a superuser called postgres.
@@ -27,6 +32,7 @@ CREATE USER my_project_user WITH PASSWORD 'supersecurepassword';
 
 -- Create the database and assign ownership to the user
 
+GRANT my_project_user TO temp_admin;
 CREATE DATABASE my_project_db OWNER temp_admin;
 GRANT CONNECT ON DATABASE my_project_db TO my_project_user;
 
@@ -45,10 +51,7 @@ GRANT USAGE ON SCHEMA my_project_schema TO my_project_user;
 By default, new users can create or drop objects inside the project schema. We don’t want that.
 
 ```sql
--- Revoke ONLY drop and truncate, but leave CREATE intact
-REVOKE DROP, TRUNCATE ON SCHEMA my_project_schema FROM my_project_user;
-
--- Explicitly grant back CREATE
+-- Explicitly grant CREATE on schema
 GRANT CREATE ON SCHEMA my_project_schema TO my_project_user;
 
 -- Explicitly remove DROP privileges on existing tables

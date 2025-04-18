@@ -14,7 +14,7 @@
   - [PostgreSQL Production Setup on Google Cloud SQL](devops/postgres-gcloud.md)
 
 - [Linux](linux/README.md)
-  - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
+  - [Debian Firewall Configuration With nftables](linux/debian-nftables.md) 
 
 - [Database](database/README.md)
   - [PostgreSQL Local Setup Guide](database/postgres-local.md)
@@ -26,6 +26,12 @@
   - [YAML Cheat Sheet](cheatsheet/yaml-cheatsheet.md)
 
 - [Programming Languages](programming/README.md)
+  - [SQL 📊](programming/sql/README.md)
+    - [Part 1 - Fundamentals](programming/sql/pt1-fundamentals.md)
+    - [Part 2 - GROUP BY](programming/sql/pt2-GROUPBY.md)
+    - [Part 3 - JOIN](programming/sql/pt3-JOIN.md)
+    - [Part 4 - CASE](programming/sql/pt4-CASE.md)
+    - [Part 5 - Subqueries](programming/sql/pt5-subqueries.md)
   - [C++ 💀](programming/cpp/README.md)
     - [C++ Fundamentals](programming/cpp/basics.md)
     - [OOP](programming/cpp/oop.md)

@@ -2,8 +2,15 @@
 
 ## 1.Installing Redis on Debian
 
+Add the repository to the APT index, update it, and install Redis:
+
 ```bash
-sudo apt update && sudo apt install redis-server
+sudo apt-get install lsb-release curl gpg
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+sudo apt-get update
+sudo apt-get install redis
 ```
 
 - Then enable and start the service:
@@ -53,16 +60,38 @@ GET spell
 - Limit Redis to localhost:
 Edit /etc/redis/redis.conf and change:
 
-bind 127.0.0.1
+```bash
+# bind 127.0.0.1 ::1
+```
+
+Keep this enabled by default
+
+```bash
+protected-mode yes
+```
 
 - Set a strong password:
-Uncomment and modify this line:
+Set a password (optional, overkill for local but useful for staging/prod):
 
+```bash
 requirepass supersecurepassword
+```
 
-- Now, clients must authenticate before using Redis.
+🔐 If you do this, don't forget to connect with:
+
+```ruby
+Redis.new(password: ENV['REDIS_PASSWORD'])
+```
 
 - Restart Redis for changes to apply:
+
 ```bash
 sudo systemctl restart redis
 ```
+
+Confirm it's only bound to localhost:
+
+```bash
+sudo ss -tlnp | grep redis
+```
+
