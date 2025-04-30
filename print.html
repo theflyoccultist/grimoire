@@ -241,6 +241,81 @@ origin https://github.com/your-username/repository.git (push)
 <pre><code class="language-sh">git remote set-url origin git@github.com:your-username/repository.git
 </code></pre>
 <p>Now, every push/pull will use SSH, and you’ll never have to enter your password again.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-skinny-ruby-queen-minimal-dockerfile-for-production"><a class="header" href="#the-skinny-ruby-queen-minimal-dockerfile-for-production">The Skinny Ruby Queen: Minimal Dockerfile for Production</a></h1>
+<p>---- Build Stage ----</p>
+<h1 id="were-building-in-style-baby-ruby--alpine--skinny-legend"><a class="header" href="#were-building-in-style-baby-ruby--alpine--skinny-legend">We're building in style, baby. Ruby + Alpine = skinny legend</a></h1>
+<pre><code class="language-Dockerfile">FROM ruby:3.3-alpine AS build
+</code></pre>
+<h1 id="install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land"><a class="header" href="#install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land">Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</a></h1>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache build-base
+</code></pre>
+<h1 id="set-the-working-directoryaka-the-sacred-ground-where-it-all-happens"><a class="header" href="#set-the-working-directoryaka-the-sacred-ground-where-it-all-happens">Set the working directory—aka the sacred ground where it all happens</a></h1>
+<pre><code class="language-Dockerfile">WORKDIR /usr/src/app
+</code></pre>
+<h1 id="copy-only-gemfile-and-lockfile-first-layer-caching-magic"><a class="header" href="#copy-only-gemfile-and-lockfile-first-layer-caching-magic">Copy only Gemfile and lockfile first (layer caching magic)</a></h1>
+<pre><code class="language-Dockerfile">COPY Gemfile Gemfile.lock ./
+</code></pre>
+<h1 id="configure-bundler-to-install-gems-locally-under-vendorbundle"><a class="header" href="#configure-bundler-to-install-gems-locally-under-vendorbundle">Configure bundler to install gems locally under vendor/bundle</a></h1>
+<h1 id="this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact"><a class="header" href="#this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact">This will be copied over to the final image later like a blessed artifact</a></h1>
+<pre><code class="language-Dockerfile">RUN bundle config set --local path 'vendor/bundle' \
+  &amp;&amp; bundle install
+</code></pre>
+<h1 id="copy-the-rest-of-your-applicationcode-chaos-and-all"><a class="header" href="#copy-the-rest-of-your-applicationcode-chaos-and-all">Copy the rest of your application—code, chaos, and all</a></h1>
+<pre><code class="language-Dockerfile">COPY . .
+</code></pre>
+<h1 id="-----final-stage-----"><a class="header" href="#-----final-stage-----">---- Final Stage ----</a></h1>
+<h1 id="a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light"><a class="header" href="#a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light">A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></a></h1>
+<pre><code class="language-Dockerfile">FROM ruby:3.3-alpine
+</code></pre>
+<h1 id="set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life"><a class="header" href="#set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life">Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</a></h1>
+<pre><code class="language-Dockerfile">WORKDIR /usr/src/app
+</code></pre>
+<h1 id="copy-everything-from-the-build-stage-including-those-precious-compiled-gems"><a class="header" href="#copy-everything-from-the-build-stage-including-those-precious-compiled-gems">Copy everything from the build stage, including those precious compiled gems</a></h1>
+<pre><code class="language-Dockerfile">COPY --from=build /usr/src/app /usr/src/app
+</code></pre>
+<h1 id="let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it"><a class="header" href="#let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it">Let Ruby know where the gems are—because it forgets if you don’t tell it</a></h1>
+<pre><code class="language-Dockerfile">ENV GEM_PATH=/usr/src/app/vendor/bundle/ruby/3.3.0
+ENV PATH=$GEM_PATH/bin:$PATH
+</code></pre>
+<h1 id="install-only-the-runtime-dependencies-needed-for-your-app-to-vibe"><a class="header" href="#install-only-the-runtime-dependencies-needed-for-your-app-to-vibe">Install only the runtime dependencies needed for your app to vibe</a></h1>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache \
+        libstdc++ \       # C++ runtime
+        libffi \          # Needed by some gems (e.g., FFI, psych)
+        yaml \            # YAML parsing
+        zlib \            # Compression stuff
+        openssl \         # HTTPS, TLS, etc.
+        tzdata            # So your logs don’t think it's 1970
+</code></pre>
+<h1 id="declare-yourself-prod-mode-on"><a class="header" href="#declare-yourself-prod-mode-on">Declare yourself: prod mode on</a></h1>
+<pre><code class="language-Dockerfile">ENV RACK_ENV=production
+ENV PORT=8080
+EXPOSE 8080
+</code></pre>
+<h1 id="finally-launch-the-ruby-app-like-the-main-character-it-is"><a class="header" href="#finally-launch-the-ruby-app-like-the-main-character-it-is">Finally, launch the Ruby app like the main character it is</a></h1>
+<pre><code class="language-Dockerfile">CMD ["ruby", "server.rb"]
+</code></pre>
+<p>Some useful commands:</p>
+<pre><code class="language-bash">docker build -t your-image-name .
+
+docker images
+
+docker run -p 8080:8080 your-image-id
+
+docker rmi your-image-id
+
+docker container prune
+</code></pre>
+<p>Pro Tips from the Underworld:
+If you're using gems that compile C extensions (like pg, nokogiri, ffi), you’ll likely need additional Alpine dependencies, e.g.:</p>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache build-base libxml2-dev libxslt-dev postgresql-dev
+</code></pre>
+<p>For scripts that are long-running, consider using:</p>
+<pre><code class="language-Dockerfile">CMD ["ruby", "start.rb"]
+</code></pre>
+<p>Or even:</p>
+<pre><code class="language-Dockerfile">ENTRYPOINT ["bundle", "exec"]
+CMD ["ruby", "start.rb"]
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="deploying-mdbook-to-github-pages-with-github-actions"><a class="header" href="#deploying-mdbook-to-github-pages-with-github-actions">Deploying mdBook to GitHub Pages With GitHub Actions</a></h1>
 <h2 id="step-1-setup-the-repo"><a class="header" href="#step-1-setup-the-repo">Step 1: Setup the Repo</a></h2>
 <ul>
@@ -2036,7 +2111,73 @@ SELECT *
 <li>If you are getting errors, try writing the function without subqueries.</li>
 <li>SQL: Practice makes muscle memory.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
+<h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
+<ul>
+<li>
+<p>You already know the girl. She’s protective, loud, and dragging every invalid memory access by its wig.</p>
+</li>
+<li>
+<p>Just compile with:</p>
+</li>
+</ul>
+<pre><code class="language-bash">g++ -fsanitize=address -g -O1 your_code.cpp -o output
+</code></pre>
+<h2 id="-2-valgrind-the-classic-queen"><a class="header" href="#-2-valgrind-the-classic-queen">🔥 2. Valgrind (The Classic Queen)</a></h2>
+<ul>
+<li>
+<p>She’s slower, but ultra-detailed. Great for memory leaks, use-after-free, uninitialized memory reads.</p>
+</li>
+<li>
+<p>Use like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">valgrind ./output
+</code></pre>
+<p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
+<h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
+<ul>
+<li>Not flashy, but powerful. If you need to pause execution mid-Dijkstra and stare at your pointers like a disappointed parent:</li>
+</ul>
+<pre><code class="language-bash">g++ -g your_code.cpp -o output
+gdb ./output
+</code></pre>
+<p>Then in GDB:</p>
+<pre><code class="language-bash">run
+bt        # Backtrace on crash
+info locals
+</code></pre>
+<ul>
+<li>Common Commands:
+<ul>
+<li>run – start execution</li>
+<li>break main – set breakpoint</li>
+<li>next, step – step through code</li>
+<li>print var, info locals – inspect variables</li>
+<li>bt – backtrace after crash</li>
+</ul>
+</li>
+</ul>
+<h2 id="-4-godbolt-optional-but-very-nerdy"><a class="header" href="#-4-godbolt-optional-but-very-nerdy">🌈 4. Godbolt (Optional, but Very Nerdy)</a></h2>
+<ul>
+<li>Not for runtime bugs, but if you ever want to see how your C++ compiles to assembly, or compare optimizations. It’s fun for algorithm analysis.</li>
+</ul>
+<h2 id="-5-clang-tidy"><a class="header" href="#-5-clang-tidy">🚀 5. Clang-Tidy</a></h2>
+<ul>
+<li>
+<p>For static analysis. Lints C++ code and catches suspicious patterns before they explode.</p>
+</li>
+<li>
+<p>Run like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">clang-tidy your_code.cpp -- -std=c++17
+</code></pre>
+<h2 id="bonus-compilation-flags"><a class="header" href="#bonus-compilation-flags">Bonus: Compilation Flags</a></h2>
+<ul>
+<li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
 <h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
 <p>C++ has multiple ways to declare variables, and some are better than others:</p>
 <pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
@@ -3042,70 +3183,134 @@ int main() {
 <li>When you write Summable<int>, the compiler generates an int-specific version of the class.</li>
 <li>When you write Summable<double>, the compiler generates a separate double version.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="a-basic-dijkstras-algorithm-using-a-brute-force-approach"><a class="header" href="#a-basic-dijkstras-algorithm-using-a-brute-force-approach">A Basic Dijkstra's Algorithm Using a Brute Force Approach</a></h3>
-<pre><code class="language-cpp">// C++ program for Dijkstra single source shortest path algorithm.
-// source : https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
-
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
+<p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
+<hr />
+<h2 id="-key-concepts"><a class="header" href="#-key-concepts">💻 Key Concepts</a></h2>
+<ul>
+<li><strong>Graph Structure</strong>: <code>std::vector&lt;Edge&gt;</code> with an <code>Edge</code> struct holding source, destination, and weight.</li>
+<li><strong>Dijkstra’s Algorithm</strong>: Classic implementation using a <code>distances[]</code> array and a greedy loop with <code>minDistance()</code> helper.</li>
+<li><strong>Random Graph Generation</strong>: Custom <code>generateRandomGraph()</code> function adds edges based on a given density (e.g. 20% or 40%).</li>
+</ul>
+<hr />
+<h2 id="the-code"><a class="header" href="#the-code">The Code</a></h2>
+<pre><code class="language-cpp">#include &lt;ctime&gt;
 #include &lt;iostream&gt;
-#include &lt;limits.h&gt;
-using namespace std;
+#include &lt;limits&gt;
+#include &lt;random&gt;
+#include &lt;set&gt;
+#include &lt;vector&gt;
 
-const int V = 9;
+const int INF = std::numeric_limits&lt;int&gt;::max();
 
-int minDistance(int dist[], bool sptset[]) {
-    int min = INT_MAX, min_index;
+struct Edge {
+  int source;
+  int destination;
+  int weight;
 
-    for (int v = 0; v &lt; V; ++v)
-        if (sptset[v] == false &amp;&amp; dist[v] &lt;= min)
-            min = dist[v], min_index = v;
+  Edge(int s, int d, int w) : source(s), destination(d), weight(w) {}
+};
 
-    return min_index;
-}
+class Graph {
+public:
+  Graph(int vertices) : vertices(vertices) {}
 
-void printSolution(int dist[]) {
-    cout &lt;&lt; "Vertex \t Distance from Source\n";
-    for (int i = 0; i &lt; V; ++i)
-        cout &lt;&lt; i &lt;&lt; "\t\t\t" &lt;&lt; dist[i] &lt;&lt; "\n";
-}
+  void addEdge(int source, int destination, int weight) {
+    edges.emplace_back(source, destination, weight);
+    edges.emplace_back(destination, source, weight);
+  }
 
-void dijkstra(int graph[V][V], int src) {
-    int dist[V];
-    bool sptset[V];
+  int getVertices() const { return vertices; }
+  const std::vector&lt;Edge&gt; &amp;getEdges() const { return edges; }
 
-    for (int i = 0; i &lt; V; ++i)
-        dist[i] = INT_MAX, sptset[i] = false;
+  std::vector&lt;int&gt; Dijkstra(int source) {
+    std::vector&lt;int&gt; distances(vertices, INF);
+    std::vector&lt;int&gt; visited(vertices, 0);
 
-    dist[src] = 0;
+    distances[source] = 0;
 
-    for (int count = 0; count &lt; V - 1; ++count) {
-        int u = minDistance(dist, sptset);
+    for (int i = 0; i &lt; vertices - 1; ++i) {
+      int u = minDistance(distances, visited);
+      if (u == -1)
+        break;
 
-        sptset[u] = true;
+      visited[u] = 1;
 
-        for (int v = 0; v &lt; V; ++v)
-            if (!sptset[v] &amp;&amp; graph[u][v]
-                &amp;&amp; dist[u] != INT_MAX
-                &amp;&amp; dist[u] + graph[u][v] &lt; dist[v])
-                dist[v] = dist[u] + graph[u][v];
+      for (const auto &amp;edge : edges) {
+        if (!visited[edge.destination] &amp;&amp; edge.source == u) {
+          int newDistance = distances[u] + edge.weight;
+          if (newDistance &lt; distances[edge.destination]) {
+            distances[edge.destination] = newDistance;
+          }
+        }
+      }
     }
 
-    printSolution(dist);
+    return distances;
+  }
+
+private:
+  int vertices;
+  std::vector&lt;Edge&gt; edges;
+
+  int minDistance(const std::vector&lt;int&gt; &amp;distances,
+                  const std::vector&lt;int&gt; &amp;visited) {
+    int minDist = INF;
+    int minIndex = -1;
+
+    for (int v = 0; v &lt; vertices; ++v) {
+      if (!visited[v] &amp;&amp; distances[v] &lt;= minDist) {
+        minDist = distances[v];
+        minIndex = v;
+      }
+    }
+    return minIndex;
+  }
+};
+
+void generateRandomGraph(Graph &amp;g, int vertices, double density, int minWeight,
+                         int maxWeight) {
+  int maxEdges = vertices * (vertices - 1) / 2;
+  int targetEdges = static_cast&lt;int&gt;(density * maxEdges);
+
+  std::mt19937 rng(static_cast&lt;unsigned int&gt;(time(nullptr)));
+  std::uniform_int_distribution&lt;int&gt; vertexDist(0, vertices - 1);
+  std::uniform_int_distribution&lt;int&gt; weightDist(minWeight, maxWeight);
+
+  std::set&lt;std::pair&lt;int, int&gt;&gt; existingEdges;
+
+  while (static_cast&lt;int&gt;(existingEdges.size()) &lt; targetEdges) {
+    int u = vertexDist(rng);
+    int v = vertexDist(rng);
+
+    if (u != v &amp;&amp; existingEdges.find({u, v}) == existingEdges.end() &amp;&amp;
+        existingEdges.find({u, v}) == existingEdges.end()) {
+      int weight = weightDist(rng);
+      g.addEdge(u, v, weight);
+      existingEdges.insert({u, v});
+    }
+  }
 }
 
 int main() {
-    int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-                        { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-                        { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-                        { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-                        { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-                        { 0, 0, 4, 14, 10, 0, 2, 0, 0 },
-                        { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
-                        { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-                        { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-    
-    dijkstra(graph, 0);
+  int vertices = 50;
+  Graph g(vertices);
 
-    return 0;
+  double density = 0.2;
+  generateRandomGraph(g, vertices, density, 1, 10);
+
+  std::vector&lt;int&gt; distances = g.Dijkstra(0);
+
+  int sum = 0;
+
+  for (int i = 1; i &lt; vertices; ++i) {
+    std::cout &lt;&lt; "Distance from 0 to " &lt;&lt; i &lt;&lt; ": " &lt;&lt; distances[i] &lt;&lt; "\n";
+    sum += distances[i];
+  }
+
+  std::cout &lt;&lt; "Average Path : " &lt;&lt; static_cast&lt;float&gt;(sum) / 49.0 &lt;&lt; "\n";
+
+  return 0;
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>

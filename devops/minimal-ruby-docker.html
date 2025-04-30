@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Deploying mdBook to Github Pages with GitHub Actions - Debugging Grimoire</title>
+        <title>Minimal Docker Image for Ruby - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,103 +155,91 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="deploying-mdbook-to-github-pages-with-github-actions"><a class="header" href="#deploying-mdbook-to-github-pages-with-github-actions">Deploying mdBook to GitHub Pages With GitHub Actions</a></h1>
-<h2 id="step-1-setup-the-repo"><a class="header" href="#step-1-setup-the-repo">Step 1: Setup the Repo</a></h2>
-<ul>
-<li>
-<p>Create a new GitHub repo.</p>
-</li>
-<li>
-<p>Run:</p>
-</li>
-</ul>
-<pre><code class="language-sh">cargo install mdbook
-mdbook init my-docs
-cd my-docs
+                        <h1 id="the-skinny-ruby-queen-minimal-dockerfile-for-production"><a class="header" href="#the-skinny-ruby-queen-minimal-dockerfile-for-production">The Skinny Ruby Queen: Minimal Dockerfile for Production</a></h1>
+<p>---- Build Stage ----</p>
+<h1 id="were-building-in-style-baby-ruby--alpine--skinny-legend"><a class="header" href="#were-building-in-style-baby-ruby--alpine--skinny-legend">We're building in style, baby. Ruby + Alpine = skinny legend</a></h1>
+<pre><code class="language-Dockerfile">FROM ruby:3.3-alpine AS build
 </code></pre>
-<h2 id="step-2-add-github-actions-workflow"><a class="header" href="#step-2-add-github-actions-workflow">Step 2: Add GitHub Actions Workflow</a></h2>
-<ul>
-<li>Create .github/workflows/deploy.yml:</li>
-</ul>
-<pre><code class="language-yml">name: Deploy mdBook to GitHub Pages
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install mdBook
-        run: cargo install mdbook
-
-      - name: Build the book
-        run: mdbook build
-
-      - name: Setup SSH Authentication
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &gt; ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book
+<h1 id="install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land"><a class="header" href="#install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land">Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</a></h1>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache build-base
 </code></pre>
-<p><code>SSH_PRIVATE_KEY</code> -&gt; (<code>id_ed25519</code>)
-<code>GITHUB_TOKEN</code> -&gt; GitHub adds this automatically</p>
-<h2 id="step-3-add-secrets"><a class="header" href="#step-3-add-secrets">Step 3: Add Secrets</a></h2>
-<ul>
-<li>Generate a separate SSH key for CI/CD</li>
-</ul>
-<pre><code class="language-sh">ssh-keygen -t id_ed25519 -C "GitHub Actions Deploy Key"
+<h1 id="set-the-working-directoryaka-the-sacred-ground-where-it-all-happens"><a class="header" href="#set-the-working-directoryaka-the-sacred-ground-where-it-all-happens">Set the working directory—aka the sacred ground where it all happens</a></h1>
+<pre><code class="language-Dockerfile">WORKDIR /usr/src/app
 </code></pre>
-<ul>
-<li>
-<p>Go to Repo -&gt; Settings -&gt; Secrets and Variables -&gt; Actions</p>
-</li>
-<li>
-<p>Add <code>SSH_PRIVATE_KEY</code> -&gt; Paste the private key (<code>id_ed25519</code>)</p>
-</li>
-<li>
-<p>Go to Repo -&gt; Settings -&gt; Deploy key</p>
-</li>
-<li>
-<p>Paste the public key (<code>id_ed25519.pub</code>)</p>
-</li>
-</ul>
-<h2 id="step-4-enable-permissions"><a class="header" href="#step-4-enable-permissions">Step 4: Enable Permissions</a></h2>
-<ul>
-<li>Go to Repo -&gt; Settings -&gt; Actions -&gt; General</li>
-<li>Under Workflow Permissions, enable:
-✅ Read and Write Permissions
-✅ Allow GitHub Actions to create and approve pull requests</li>
-</ul>
-<h2 id="step-5-push-and-deploy"><a class="header" href="#step-5-push-and-deploy">Step 5: Push and Deploy</a></h2>
-<pre><code class="language-sh">git add .
-git commit -m "Deploy Book"
-git push origin main
+<h1 id="copy-only-gemfile-and-lockfile-first-layer-caching-magic"><a class="header" href="#copy-only-gemfile-and-lockfile-first-layer-caching-magic">Copy only Gemfile and lockfile first (layer caching magic)</a></h1>
+<pre><code class="language-Dockerfile">COPY Gemfile Gemfile.lock ./
 </code></pre>
-<p>If it all goes well, your docs should be live.</p>
+<h1 id="configure-bundler-to-install-gems-locally-under-vendorbundle"><a class="header" href="#configure-bundler-to-install-gems-locally-under-vendorbundle">Configure bundler to install gems locally under vendor/bundle</a></h1>
+<h1 id="this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact"><a class="header" href="#this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact">This will be copied over to the final image later like a blessed artifact</a></h1>
+<pre><code class="language-Dockerfile">RUN bundle config set --local path 'vendor/bundle' \
+  &amp;&amp; bundle install
+</code></pre>
+<h1 id="copy-the-rest-of-your-applicationcode-chaos-and-all"><a class="header" href="#copy-the-rest-of-your-applicationcode-chaos-and-all">Copy the rest of your application—code, chaos, and all</a></h1>
+<pre><code class="language-Dockerfile">COPY . .
+</code></pre>
+<h1 id="-----final-stage-----"><a class="header" href="#-----final-stage-----">---- Final Stage ----</a></h1>
+<h1 id="a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light"><a class="header" href="#a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light">A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></a></h1>
+<pre><code class="language-Dockerfile">FROM ruby:3.3-alpine
+</code></pre>
+<h1 id="set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life"><a class="header" href="#set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life">Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</a></h1>
+<pre><code class="language-Dockerfile">WORKDIR /usr/src/app
+</code></pre>
+<h1 id="copy-everything-from-the-build-stage-including-those-precious-compiled-gems"><a class="header" href="#copy-everything-from-the-build-stage-including-those-precious-compiled-gems">Copy everything from the build stage, including those precious compiled gems</a></h1>
+<pre><code class="language-Dockerfile">COPY --from=build /usr/src/app /usr/src/app
+</code></pre>
+<h1 id="let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it"><a class="header" href="#let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it">Let Ruby know where the gems are—because it forgets if you don’t tell it</a></h1>
+<pre><code class="language-Dockerfile">ENV GEM_PATH=/usr/src/app/vendor/bundle/ruby/3.3.0
+ENV PATH=$GEM_PATH/bin:$PATH
+</code></pre>
+<h1 id="install-only-the-runtime-dependencies-needed-for-your-app-to-vibe"><a class="header" href="#install-only-the-runtime-dependencies-needed-for-your-app-to-vibe">Install only the runtime dependencies needed for your app to vibe</a></h1>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache \
+        libstdc++ \       # C++ runtime
+        libffi \          # Needed by some gems (e.g., FFI, psych)
+        yaml \            # YAML parsing
+        zlib \            # Compression stuff
+        openssl \         # HTTPS, TLS, etc.
+        tzdata            # So your logs don’t think it's 1970
+</code></pre>
+<h1 id="declare-yourself-prod-mode-on"><a class="header" href="#declare-yourself-prod-mode-on">Declare yourself: prod mode on</a></h1>
+<pre><code class="language-Dockerfile">ENV RACK_ENV=production
+ENV PORT=8080
+EXPOSE 8080
+</code></pre>
+<h1 id="finally-launch-the-ruby-app-like-the-main-character-it-is"><a class="header" href="#finally-launch-the-ruby-app-like-the-main-character-it-is">Finally, launch the Ruby app like the main character it is</a></h1>
+<pre><code class="language-Dockerfile">CMD ["ruby", "server.rb"]
+</code></pre>
+<p>Some useful commands:</p>
+<pre><code class="language-bash">docker build -t your-image-name .
+
+docker images
+
+docker run -p 8080:8080 your-image-id
+
+docker rmi your-image-id
+
+docker container prune
+</code></pre>
+<p>Pro Tips from the Underworld:
+If you're using gems that compile C extensions (like pg, nokogiri, ffi), you’ll likely need additional Alpine dependencies, e.g.:</p>
+<pre><code class="language-Dockerfile">RUN apk add --no-cache build-base libxml2-dev libxslt-dev postgresql-dev
+</code></pre>
+<p>For scripts that are long-running, consider using:</p>
+<pre><code class="language-Dockerfile">CMD ["ruby", "start.rb"]
+</code></pre>
+<p>Or even:</p>
+<pre><code class="language-Dockerfile">ENTRYPOINT ["bundle", "exec"]
+CMD ["ruby", "start.rb"]
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../devops/minimal-ruby-docker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../devops/github-ssh.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../devops/gcloud-ci-cd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../devops/gitactions-mdbook.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -261,11 +249,11 @@ git push origin main
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../devops/minimal-ruby-docker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../devops/github-ssh.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../devops/gcloud-ci-cd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../devops/gitactions-mdbook.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
