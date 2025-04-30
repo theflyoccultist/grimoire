@@ -1,68 +1,136 @@
-### A Basic Dijkstra's Algorithm Using a Brute Force Approach
+# Dijkstra's Algorithm with Edge List (C++ Edition)
+
+The graph is represented using an **edge list**, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.
+
+---
+
+## 💻 Key Concepts
+
+- **Graph Structure**: `std::vector<Edge>` with an `Edge` struct holding source, destination, and weight.
+- **Dijkstra’s Algorithm**: Classic implementation using a `distances[]` array and a greedy loop with `minDistance()` helper.
+- **Random Graph Generation**: Custom `generateRandomGraph()` function adds edges based on a given density (e.g. 20% or 40%).
+
+---
+
+## The Code
 
 ```cpp
-// C++ program for Dijkstra single source shortest path algorithm.
-// source : https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
-
+#include <ctime>
 #include <iostream>
-#include <limits.h>
-using namespace std;
+#include <limits>
+#include <random>
+#include <set>
+#include <vector>
 
-const int V = 9;
+const int INF = std::numeric_limits<int>::max();
 
-int minDistance(int dist[], bool sptset[]) {
-    int min = INT_MAX, min_index;
+struct Edge {
+  int source;
+  int destination;
+  int weight;
 
-    for (int v = 0; v < V; ++v)
-        if (sptset[v] == false && dist[v] <= min)
-            min = dist[v], min_index = v;
+  Edge(int s, int d, int w) : source(s), destination(d), weight(w) {}
+};
 
-    return min_index;
-}
+class Graph {
+public:
+  Graph(int vertices) : vertices(vertices) {}
 
-void printSolution(int dist[]) {
-    cout << "Vertex \t Distance from Source\n";
-    for (int i = 0; i < V; ++i)
-        cout << i << "\t\t\t" << dist[i] << "\n";
-}
+  void addEdge(int source, int destination, int weight) {
+    edges.emplace_back(source, destination, weight);
+    edges.emplace_back(destination, source, weight);
+  }
 
-void dijkstra(int graph[V][V], int src) {
-    int dist[V];
-    bool sptset[V];
+  int getVertices() const { return vertices; }
+  const std::vector<Edge> &getEdges() const { return edges; }
 
-    for (int i = 0; i < V; ++i)
-        dist[i] = INT_MAX, sptset[i] = false;
+  std::vector<int> Dijkstra(int source) {
+    std::vector<int> distances(vertices, INF);
+    std::vector<int> visited(vertices, 0);
 
-    dist[src] = 0;
+    distances[source] = 0;
 
-    for (int count = 0; count < V - 1; ++count) {
-        int u = minDistance(dist, sptset);
+    for (int i = 0; i < vertices - 1; ++i) {
+      int u = minDistance(distances, visited);
+      if (u == -1)
+        break;
 
-        sptset[u] = true;
+      visited[u] = 1;
 
-        for (int v = 0; v < V; ++v)
-            if (!sptset[v] && graph[u][v]
-                && dist[u] != INT_MAX
-                && dist[u] + graph[u][v] < dist[v])
-                dist[v] = dist[u] + graph[u][v];
+      for (const auto &edge : edges) {
+        if (!visited[edge.destination] && edge.source == u) {
+          int newDistance = distances[u] + edge.weight;
+          if (newDistance < distances[edge.destination]) {
+            distances[edge.destination] = newDistance;
+          }
+        }
+      }
     }
 
-    printSolution(dist);
+    return distances;
+  }
+
+private:
+  int vertices;
+  std::vector<Edge> edges;
+
+  int minDistance(const std::vector<int> &distances,
+                  const std::vector<int> &visited) {
+    int minDist = INF;
+    int minIndex = -1;
+
+    for (int v = 0; v < vertices; ++v) {
+      if (!visited[v] && distances[v] <= minDist) {
+        minDist = distances[v];
+        minIndex = v;
+      }
+    }
+    return minIndex;
+  }
+};
+
+void generateRandomGraph(Graph &g, int vertices, double density, int minWeight,
+                         int maxWeight) {
+  int maxEdges = vertices * (vertices - 1) / 2;
+  int targetEdges = static_cast<int>(density * maxEdges);
+
+  std::mt19937 rng(static_cast<unsigned int>(time(nullptr)));
+  std::uniform_int_distribution<int> vertexDist(0, vertices - 1);
+  std::uniform_int_distribution<int> weightDist(minWeight, maxWeight);
+
+  std::set<std::pair<int, int>> existingEdges;
+
+  while (static_cast<int>(existingEdges.size()) < targetEdges) {
+    int u = vertexDist(rng);
+    int v = vertexDist(rng);
+
+    if (u != v && existingEdges.find({u, v}) == existingEdges.end() &&
+        existingEdges.find({u, v}) == existingEdges.end()) {
+      int weight = weightDist(rng);
+      g.addEdge(u, v, weight);
+      existingEdges.insert({u, v});
+    }
+  }
 }
 
 int main() {
-    int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-                        { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-                        { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-                        { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-                        { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-                        { 0, 0, 4, 14, 10, 0, 2, 0, 0 },
-                        { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
-                        { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-                        { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-    
-    dijkstra(graph, 0);
+  int vertices = 50;
+  Graph g(vertices);
 
-    return 0;
+  double density = 0.2;
+  generateRandomGraph(g, vertices, density, 1, 10);
+
+  std::vector<int> distances = g.Dijkstra(0);
+
+  int sum = 0;
+
+  for (int i = 1; i < vertices; ++i) {
+    std::cout << "Distance from 0 to " << i << ": " << distances[i] << "\n";
+    sum += distances[i];
+  }
+
+  std::cout << "Average Path : " << static_cast<float>(sum) / 49.0 << "\n";
+
+  return 0;
 }
 ```
