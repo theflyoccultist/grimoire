@@ -1,3 +1,35 @@
+### Connect to a new repository
+
+1. Open a Terminal
+
+    Navigate to the directory where you want to clone the repository.
+    
+    ```bash
+    cd /path/to/your/directory
+    ```
+
+2. Clone the Repository
+
+    Run the following command:
+
+    ```bash
+    git clone https://github.com/theflyoccultist/kepler-rss-feed.git
+    ```
+
+    Or, if using SSH:
+
+    ```bash
+    git clone git@github.com:theflyoccultist/kepler-rss-feed.git
+    ```
+
+3. Navigate into the Repository
+
+    After cloning, navigate into the repository folder:
+
+    ```bash
+    cd kepler-rss-feed
+    ```
+
 ### .gitignore a file that has already been pushed
 
 ```bash
