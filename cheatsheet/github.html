@@ -155,7 +155,31 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
+                        <h3 id="connect-to-a-new-repository"><a class="header" href="#connect-to-a-new-repository">Connect to a new repository</a></h3>
+<ol>
+<li>
+<p>Open a Terminal</p>
+<p>Navigate to the directory where you want to clone the repository.</p>
+<pre><code class="language-bash">cd /path/to/your/directory
+</code></pre>
+</li>
+<li>
+<p>Clone the Repository</p>
+<p>Run the following command:</p>
+<pre><code class="language-bash">git clone https://github.com/theflyoccultist/kepler-rss-feed.git
+</code></pre>
+<p>Or, if using SSH:</p>
+<pre><code class="language-bash">git clone git@github.com:theflyoccultist/kepler-rss-feed.git
+</code></pre>
+</li>
+<li>
+<p>Navigate into the Repository</p>
+<p>After cloning, navigate into the repository folder:</p>
+<pre><code class="language-bash">cd kepler-rss-feed
+</code></pre>
+</li>
+</ol>
+<h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
 <pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
 
 git rm --cached debug.log

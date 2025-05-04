@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>C++ 💀 - Debugging Grimoire</title>
+        <title>Bash Completion Tool - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,16 +155,44 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <ul>
+<li>How to test if your rate limiting works:</li>
+</ul>
+<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
+</code></pre>
+<p>1..200: number of requests
+http://localhost:4567: the URL that needs to be tested</p>
+<hr />
+<h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
+<p>Verify the package is installed:</p>
+<pre><code class="language-bash">dpkg -l | grep bash-completion
+</code></pre>
+<p>If nothing shows up:</p>
+<pre><code class="language-bash">
+sudo apt install bash-completion
+</code></pre>
+<p>Reload your .bashrc:</p>
+<pre><code class="language-bash">source ~/.bashrc
+</code></pre>
+<p>Test it:
+Try typing something like:</p>
+<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
+</code></pre>
+<p>You should see suggestions like checkout, cherry-pick, etc.</p>
+<p>Or try:</p>
+<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
+</code></pre>
+<p>And see if it lists known hosts.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/raindrops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/cpp/debugging-tools.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/bash/raindrops.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -174,11 +202,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/raindrops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/cpp/debugging-tools.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/bash/raindrops.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>C++ 💀 - Debugging Grimoire</title>
+        <title>Fizzbuzz but cursed - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,16 +155,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h2 id="-bash-week--fizzbuzz-but-cursed-plingplangplong-edition"><a class="header" href="#-bash-week--fizzbuzz-but-cursed-plingplangplong-edition">🐚 Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)</a></h2>
+<p>This is an advanced FizzBuzz-style exercise, adapted for Bash with <strong>O(1)</strong> performance.
+No loops. No Python crutches. Just raw shell logic.</p>
+<h3 id="description"><a class="header" href="#description">Description:</a></h3>
+<p>For a given input, if it's divisible by:</p>
+<ul>
+<li>3 → output "Pling"</li>
+<li>5 → output "Plang"</li>
+<li>7 → output "Plong"</li>
+</ul>
+<p>If none of the above, print the number itself.</p>
+<h3 id="initial-logic"><a class="header" href="#initial-logic">Initial logic:</a></h3>
+<p>This simple program checks if the input number is equal to a modulo of either 3, 5 or 7. This operation however does not take the case where there's several true cases.</p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+if [ $(("$1" % 3)) -eq 0 ]; then
+  echo "Pling"
+elif [ $(("$1" % 5)) -eq 0 ]; then
+  echo "Plang"
+elif [ $(("$1" % 7)) -eq 0 ]; then
+  echo "Plong"
+else
+  echo "$1"
+fi
+</code></pre>
+<h3 id="new-version"><a class="header" href="#new-version">New Version:</a></h3>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+sound=""
+(($1 % 3 == 0)) &amp;&amp; sound+="Pling"
+(($1 % 5 == 0)) &amp;&amp; sound+="Plang"
+(($1 % 7 == 0)) &amp;&amp; sound+="Plong"
+
+echo "${sound:-$1}"
+</code></pre>
+<p>Notes:</p>
+<pre><code>Uses string concatenation to combine results from multiple modulo checks.
+
+Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.
+</code></pre>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/raindrops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/bash/bash-completion.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/cpp/debugging-tools.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/cpp/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -174,11 +214,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/raindrops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/bash/bash-completion.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/cpp/debugging-tools.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/cpp/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
