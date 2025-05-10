@@ -12,10 +12,14 @@
   - [How to Use Google Cloud Domain Mapping to setup a Custom Domain to your container](devops/gcloud-domain.md)
   - [How to Host Images (or other files) on Google Cloud Storage](devops/gcloud-host-files.md)
   - [Set Up PostgreSQL for Testing Environments](devops/postgres-testing.md) 
-  - [PostgreSQL Production Setup on Google Cloud SQL](devops/postgres-gcloud.md)
+
+- [Virtualization](virtualization/README.md)
+  - [Set Up PostgreSQL in a Google Cloud VM using Docker Compose](virtualization/postgres-gcloud-vm.md)
+  - [Create an HMAC Server API for the VM](virtualization/postgres-gcloud-vm2.md)
 
 - [Linux](linux/README.md)
-  - [Debian Firewall Configuration With nftables](linux/debian-nftables.md) 
+  - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
+  - [Linux Process Management](linux/linux-proc-mgmt.md)
 
 - [Database](database/README.md)
   - [PostgreSQL Local Setup Guide](database/postgres-local.md)
@@ -33,18 +37,26 @@
     - [Part 3 - JOIN](programming/sql/pt3-JOIN.md)
     - [Part 4 - CASE](programming/sql/pt4-CASE.md)
     - [Part 5 - Subqueries](programming/sql/pt5-subqueries.md)
+
   - [Bash 🐚](programming/bash/README.md)
     - [Bash Completion Tool](programming/bash/bash-completion.md)
     - [Fizzbuzz but cursed](programming/bash/raindrops.md)
+    - [DNA Hamming](programming/bash/hamming.md)
+
   - [C++ 💀](programming/cpp/README.md)
     - [Debugging Tools](programming/cpp/debugging-tools.md)
     - [C++ Fundamentals](programming/cpp/basics.md)
     - [OOP](programming/cpp/oop.md)
     - [Templates](programming/cpp/templates.md)
-    - [Dijkstra's algorithm using Edge Lists](programming/cpp/algorithms.md)
+    - [Dijkstra's algorithm using Edge Lists](programming/cpp/algorithms.md)    
+    - [Output a Random Graph](programming/cpp/generate-graph.md)
+
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
     - [Ruby as a Functional Language](programming/ruby/ruby-functional.md)
+    - [Setup a Redis Rate Limiter Middleware in Ruby](programming/ruby/setup_redis_ruby.md)
+    - [Use SQLite as Your Rate Limiter in Ruby](programming/ruby/sqlite_ratelimit_ruby.md)
+
   - [Python 🐍](programming/python/README.md)
     - [Python Fundamentals](programming/python/basics.md)
     - [Control Flow](programming/python/control_flow.md)

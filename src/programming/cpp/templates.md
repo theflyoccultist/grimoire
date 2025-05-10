@@ -6,9 +6,9 @@ In these examples, we’ll look at two ways templates are used:
 - Function Templates – Making a single function that works with multiple types.
 - Class Templates – Making a class that can handle multiple data types dynamically.
 
-```cpp
-// Function templates: subtract()
 
+// Function templates: subtract()
+```cpp
 #include <iostream>
 #include <vector>
 

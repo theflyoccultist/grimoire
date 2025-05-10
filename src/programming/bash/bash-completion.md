@@ -1,4 +1,4 @@
-- How to test if your rate limiting works:
+### How to test if your rate limiting works:
 
 ```bash
 for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done

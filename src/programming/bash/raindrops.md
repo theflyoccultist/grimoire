@@ -39,12 +39,23 @@ sound=""
 (($1 % 5 == 0)) && sound+="Plang"
 (($1 % 7 == 0)) && sound+="Plong"
 
-echo "${sound:-$1}"
+echo "${sound:-$1}
 ```
 
 Notes:
 
-    Uses string concatenation to combine results from multiple modulo checks.
+- Uses string concatenation to combine results from multiple modulo checks.
+- Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.
 
-    Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.
+```bash
+echo "${sound: -$1}"
+```
 
+- It’s Bash's way of saying: “If sound is unset or null, use $1 instead.”
+- It’s lazy evaluation like Python’s x if x else y, but uglier and more prone to being misread after midnight.
+
+- C equivalent:
+
+```c
+x ? x : y
+```

@@ -1,4 +1,4 @@
-# Set Up PostgreSQL in Google Cloud using Docker Compose
+# Set Up PostgreSQL in a Google Cloud VM using Docker Compose
 
 ### 1. Google Cloud Prep
 

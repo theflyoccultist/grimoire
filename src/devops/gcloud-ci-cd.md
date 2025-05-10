@@ -15,6 +15,22 @@ docker run -p 8080:8080 my-portfolio
 
 ## Step 2: Set Up Google Cloud
 
+- Before running these commands, be sure to:
+  - Check current GCP project:
+  ```bash
+  gcloud config list project
+  ```
+
+  - Set active project
+  ```bash
+  gcloud config set project YOUR_PROJECT_ID
+  ```
+
+  - You can also view all projects your account can access:
+  ```bash
+  gcloud projects list
+  ```
+
 - Enable the required APIs (run these in your terminal):
 ```sh
 gcloud services enable \
@@ -28,7 +44,7 @@ This ensures Google Cloud has all necessary services activated.
 ```sh
 gcloud artifacts repositories create portfolio-repo \
   --repository-format=docker \
-  --location=europe-west2 \
+  --location=europe-west1 \
   --description="Docker repository for portfolio deployment"
 ```
 This stores your container images so Cloud Run can pull them.
@@ -68,7 +84,7 @@ This creates key.json, which contains the credentials.
 
 ### Add Secrets to GitHub
 - Go to your GitHub repo -> Settings -> Secrets and Variables -> Actions
-- Add two secrets:
+- Add two secrets in Secrets -> repository secrets:
 
   1.GCP_SERVICE_ACCOUNT_KEY → Copy & paste the full contents of key.json.
 
@@ -107,15 +123,15 @@ jobs:
 
       - name: Build and push Docker Image
         run: |
-          docker build -t europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
-          docker push europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
+          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
+          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy portfolio-site \
-          --image europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
+          --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
           --platform managed \
-          --region europe-west2 \
+          --region europe-west1 \
           --allow-unauthenticated
 ```
 Now, every push to ``main`` will automatically deploy to Cloud Run.
