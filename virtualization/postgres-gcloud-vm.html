@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Linux - Debugging Grimoire</title>
+        <title>Set Up PostgreSQL in a Google Cloud VM using Docker Compose - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,17 +155,130 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
+                        <h1 id="set-up-postgresql-in-a-google-cloud-vm-using-docker-compose"><a class="header" href="#set-up-postgresql-in-a-google-cloud-vm-using-docker-compose">Set Up PostgreSQL in a Google Cloud VM using Docker Compose</a></h1>
+<h3 id="1-google-cloud-prep"><a class="header" href="#1-google-cloud-prep">1. Google Cloud Prep</a></h3>
+<ul>
+<li>Make sure you have a Google Cloud Project set up.</li>
+<li>Enable Billing, Compute Engine, and Cloud SQL Admin API.</li>
+<li>Create a VM instance (Debian, obviously).</li>
+</ul>
+<h3 id="2-generate-ssh-key-locally"><a class="header" href="#2-generate-ssh-key-locally">2. Generate SSH key locally:</a></h3>
+<pre><code class="language-bash">ssh-keygen -t rsa -b 4096 -C "pwatpwat@yourdomain.dev"
+</code></pre>
+<p>Hit Enter a few times to use default paths (<code>~/.ssh/id_rsa</code>).</p>
+<h3 id="3-connect-to-the-vm-instance"><a class="header" href="#3-connect-to-the-vm-instance">3. Connect to the VM instance</a></h3>
+<h4 id="connect"><a class="header" href="#connect">Connect</a></h4>
+<pre><code class="language-bash">gcloud config set project pwatgres
+</code></pre>
+<p>pwatgres = project name.</p>
+<ul>
+<li>Check if the first connection worked:</li>
+</ul>
+<pre><code class="language-bash">gcloud config list
+</code></pre>
+<ul>
+<li>Add your SSH key to the project:</li>
+</ul>
+<pre><code class="language-bash">gcloud compute os-login ssh-keys add --key-file=~/.ssh/id_rsa.pub
+</code></pre>
+<ul>
+<li>Confirm access:</li>
+</ul>
+<pre><code class="language-bash">gcloud compute ssh pwat-db-vm --zone=europe-west1-b
+</code></pre>
+<h4 id="basic-post-boot-hardening"><a class="header" href="#basic-post-boot-hardening">Basic Post-Boot Hardening</a></h4>
+<p>Firewall with ufw:</p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo apt install ufw -y
+sudo ufw allow OpenSSH
+sudo ufw enable
+</code></pre>
+<p>Fail2Ban (basic brute-force protection)</p>
+<pre><code class="language-bash">sudo apt install fail2ban -y
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+</code></pre>
+<h3 id="4-docker-setup"><a class="header" href="#4-docker-setup">4. Docker Setup</a></h3>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+</code></pre>
+<ul>
+<li>Test if the daemon hears your call:</li>
+</ul>
+<pre><code class="language-bash">docker --version
+</code></pre>
+<ul>
+<li>Install Docker Compose:</li>
+</ul>
+<pre><code class="language-bash">sudo apt install docker-compose -y
+docker-compose --version
+</code></pre>
+<ul>
+<li>Let Yourself Command the Docker Army</li>
+</ul>
+<pre><code class="language-bash">sudo usermod -aG docker $USER
+newgrp docker
+</code></pre>
+<p>You now have Docker privileges without needing sudo every time like a mortal.</p>
+<h3 id="5-create-docker-compose-project"><a class="header" href="#5-create-docker-compose-project">5. Create Docker Compose Project</a></h3>
+<pre><code class="language-bash">mkdir ~/pwatgres &amp;&amp; cd ~/pwatgres
+nano docker-compose.yml
+</code></pre>
+<pre><code class="language-yml">version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    container_name: pwatgres
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+</code></pre>
+<ul>
+<li>Create the .env file</li>
+</ul>
+<p>Inside <code>~/pwatgres/</code>:</p>
+<pre><code class="language-bash">nano .env
+</code></pre>
+<p>Example contents:</p>
+<pre><code>POSTGRES_DB=mydb
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=changemepls
+</code></pre>
+<p>Save and close. DO NOT commit this if you ever sync this repo.</p>
+<p>You can lock this .env file down with:</p>
+<pre><code class="language-bash">chmod 600 .env
+</code></pre>
+<p>Deploy that beast</p>
+<pre><code class="language-bash">docker-compose up -d
+</code></pre>
+<h4 id="misc"><a class="header" href="#misc">Misc</a></h4>
+<ul>
+<li>To shut down gracefully:</li>
+</ul>
+<pre><code class="language-bash">sudo shutdown +1 "The API layer dreams tonight. Goodnight, sweet daemon."
+</code></pre>
+<h3 id="security-avoid-paying-for-googles-mistakes"><a class="header" href="#security-avoid-paying-for-googles-mistakes">Security: Avoid Paying for Google’s Mistakes</a></h3>
+<ul>
+<li><strong>Set up a billing alert.</strong> If your database starts scaling up unnecessarily, you will get charged.</li>
+<li><strong>Limit instance size in Compute Engine</strong> (e.g., ec2-nano).</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../virtualization/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../linux/debian-nftables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../virtualization/postgres-gcloud-vm2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -175,11 +288,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../virtualization/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../linux/debian-nftables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../virtualization/postgres-gcloud-vm2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

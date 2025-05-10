@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Linux - Debugging Grimoire</title>
+        <title>Linux Process Management - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,17 +155,59 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
+                        <h2 id="-cli-tools-to-see-background-services-the-cool-girl-terminal-way"><a class="header" href="#-cli-tools-to-see-background-services-the-cool-girl-terminal-way">🔍 CLI Tools to See Background Services (the Cool Girl Terminal Way)</a></h2>
+<p>🧙‍♀️ <code>ps aux</code></p>
+<p>This is the classic spell for peeking into the underworld of processes.</p>
+<pre><code class="language-bash">ps aux
+</code></pre>
+<ul>
+<li>Lists all processes.</li>
+<li>USER, PID, %CPU, %MEM, and the command path.</li>
+<li>Pipe it to less or grep for sanity.</li>
+</ul>
+<p><strong>Example:</strong> See what’s using Postgres</p>
+<pre><code class="language-bash">ps aux | grep postgres
+</code></pre>
+<hr />
+<p><code>top</code> / <code>htop</code> (More Visual)</p>
+<p><code>top</code>: Built-in, real-time process overview.</p>
+<p><code>htop</code>: Fancy, colored, scrollable version. (You will want this.)</p>
+<pre><code class="language-bash">htop
+</code></pre>
+<p>Install it with:</p>
+<pre><code class="language-bash">sudo apt install htop  # Debian-based
+# or
+sudo xbps-install -S htop  # Void Linux
+</code></pre>
+<p>Use F10 to exit, arrow keys to scroll, and F9 to send kill signals like a Linux grim reaper.</p>
+<hr />
+<h2 id="-list-only-services"><a class="header" href="#-list-only-services">🧼 List Only Services</a></h2>
+<p><strong>🚫 systemd:</strong></p>
+<p>If you're on a systemd-based distro (not Void, so skip this if you're on musl Void), use:</p>
+<pre><code class="language-bash">systemctl list-units --type=service
+</code></pre>
+<p><strong>☠️ runit (Void Linux)</strong></p>
+<p>If you're using Void: you’re blessed. You get runit, not that systemd drama.</p>
+<p>To list services:</p>
+<pre><code class="language-bash">sv status /var/service/*
+</code></pre>
+<p>Each service will say <code>run</code> if active.</p>
+<p>You can stop services with:</p>
+<pre><code class="language-bash">sudo sv stop &lt;service&gt;
+</code></pre>
+<p>Start them:</p>
+<pre><code class="language-bash">sudo sv start &lt;service&gt;
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../linux/debian-nftables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../linux/debian-nftables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../database/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -175,11 +217,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../linux/debian-nftables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../linux/debian-nftables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../database/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

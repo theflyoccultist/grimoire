@@ -188,12 +188,27 @@ sound=""
 (($1 % 5 == 0)) &amp;&amp; sound+="Plang"
 (($1 % 7 == 0)) &amp;&amp; sound+="Plong"
 
-echo "${sound:-$1}"
+echo "${sound:-$1}
 </code></pre>
 <p>Notes:</p>
-<pre><code>Uses string concatenation to combine results from multiple modulo checks.
-
-Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.
+<ul>
+<li>Uses string concatenation to combine results from multiple modulo checks.</li>
+<li>Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.</li>
+</ul>
+<pre><code class="language-bash">echo "${sound: -$1}"
+</code></pre>
+<ul>
+<li>
+<p>It’s Bash's way of saying: “If sound is unset or null, use $1 instead.”</p>
+</li>
+<li>
+<p>It’s lazy evaluation like Python’s x if x else y, but uglier and more prone to being misread after midnight.</p>
+</li>
+<li>
+<p>C equivalent:</p>
+</li>
+</ul>
+<pre><code class="language-c">x ? x : y
 </code></pre>
 
                     </main>
@@ -204,7 +219,7 @@ Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/cpp/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/bash/hamming.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -218,7 +233,7 @@ Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/cpp/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/bash/hamming.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

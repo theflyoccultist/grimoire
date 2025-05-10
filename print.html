@@ -242,42 +242,63 @@ origin https://github.com/your-username/repository.git (push)
 </code></pre>
 <p>Now, every push/pull will use SSH, and you’ll never have to enter your password again.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-skinny-ruby-queen-minimal-dockerfile-for-production"><a class="header" href="#the-skinny-ruby-queen-minimal-dockerfile-for-production">The Skinny Ruby Queen: Minimal Dockerfile for Production</a></h1>
-<p>---- Build Stage ----</p>
-<h1 id="were-building-in-style-baby-ruby--alpine--skinny-legend"><a class="header" href="#were-building-in-style-baby-ruby--alpine--skinny-legend">We're building in style, baby. Ruby + Alpine = skinny legend</a></h1>
+<h2 id="1-build-stage"><a class="header" href="#1-build-stage">1. Build Stage</a></h2>
+<ul>
+<li>We're building in style. Ruby + Alpine = skinny legend</li>
+</ul>
 <pre><code class="language-Dockerfile">FROM ruby:3.3-alpine AS build
 </code></pre>
-<h1 id="install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land"><a class="header" href="#install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land">Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</a></h1>
+<ul>
+<li>Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN apk add --no-cache build-base
 </code></pre>
-<h1 id="set-the-working-directoryaka-the-sacred-ground-where-it-all-happens"><a class="header" href="#set-the-working-directoryaka-the-sacred-ground-where-it-all-happens">Set the working directory—aka the sacred ground where it all happens</a></h1>
+<ul>
+<li>Set the working directory—aka the sacred ground where it all happens</li>
+</ul>
 <pre><code class="language-Dockerfile">WORKDIR /usr/src/app
 </code></pre>
-<h1 id="copy-only-gemfile-and-lockfile-first-layer-caching-magic"><a class="header" href="#copy-only-gemfile-and-lockfile-first-layer-caching-magic">Copy only Gemfile and lockfile first (layer caching magic)</a></h1>
+<ul>
+<li>Copy only Gemfile and lockfile first (layer caching magic)</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY Gemfile Gemfile.lock ./
 </code></pre>
-<h1 id="configure-bundler-to-install-gems-locally-under-vendorbundle"><a class="header" href="#configure-bundler-to-install-gems-locally-under-vendorbundle">Configure bundler to install gems locally under vendor/bundle</a></h1>
-<h1 id="this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact"><a class="header" href="#this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact">This will be copied over to the final image later like a blessed artifact</a></h1>
+<ul>
+<li>Configure bundler to install gems locally under vendor/bundle. This will be copied over to the final image later like a blessed artifact</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN bundle config set --local path 'vendor/bundle' \
   &amp;&amp; bundle install
 </code></pre>
-<h1 id="copy-the-rest-of-your-applicationcode-chaos-and-all"><a class="header" href="#copy-the-rest-of-your-applicationcode-chaos-and-all">Copy the rest of your application—code, chaos, and all</a></h1>
+<ul>
+<li>Copy the rest of your application—code, chaos, and all</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY . .
 </code></pre>
-<h1 id="-----final-stage-----"><a class="header" href="#-----final-stage-----">---- Final Stage ----</a></h1>
-<h1 id="a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light"><a class="header" href="#a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light">A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></a></h1>
+<h2 id="2-final-stage"><a class="header" href="#2-final-stage">2. Final Stage</a></h2>
+<ul>
+<li>A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></li>
+</ul>
 <pre><code class="language-Dockerfile">FROM ruby:3.3-alpine
 </code></pre>
-<h1 id="set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life"><a class="header" href="#set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life">Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</a></h1>
+<ul>
+<li>Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</li>
+</ul>
 <pre><code class="language-Dockerfile">WORKDIR /usr/src/app
 </code></pre>
-<h1 id="copy-everything-from-the-build-stage-including-those-precious-compiled-gems"><a class="header" href="#copy-everything-from-the-build-stage-including-those-precious-compiled-gems">Copy everything from the build stage, including those precious compiled gems</a></h1>
+<ul>
+<li>Copy everything from the build stage, including those precious compiled gems</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY --from=build /usr/src/app /usr/src/app
 </code></pre>
-<h1 id="let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it"><a class="header" href="#let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it">Let Ruby know where the gems are—because it forgets if you don’t tell it</a></h1>
+<ul>
+<li>Let Ruby know where the gems are—because it forgets if you don’t tell it</li>
+</ul>
 <pre><code class="language-Dockerfile">ENV GEM_PATH=/usr/src/app/vendor/bundle/ruby/3.3.0
 ENV PATH=$GEM_PATH/bin:$PATH
 </code></pre>
-<h1 id="install-only-the-runtime-dependencies-needed-for-your-app-to-vibe"><a class="header" href="#install-only-the-runtime-dependencies-needed-for-your-app-to-vibe">Install only the runtime dependencies needed for your app to vibe</a></h1>
+<ul>
+<li>Install only the runtime dependencies needed for your app to vibe</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN apk add --no-cache \
         libstdc++ \       # C++ runtime
         libffi \          # Needed by some gems (e.g., FFI, psych)
@@ -286,15 +307,19 @@ ENV PATH=$GEM_PATH/bin:$PATH
         openssl \         # HTTPS, TLS, etc.
         tzdata            # So your logs don’t think it's 1970
 </code></pre>
-<h1 id="declare-yourself-prod-mode-on"><a class="header" href="#declare-yourself-prod-mode-on">Declare yourself: prod mode on</a></h1>
+<ul>
+<li>Declare yourself: prod mode on</li>
+</ul>
 <pre><code class="language-Dockerfile">ENV RACK_ENV=production
 ENV PORT=8080
 EXPOSE 8080
 </code></pre>
-<h1 id="finally-launch-the-ruby-app-like-the-main-character-it-is"><a class="header" href="#finally-launch-the-ruby-app-like-the-main-character-it-is">Finally, launch the Ruby app like the main character it is</a></h1>
+<ul>
+<li>Finally, launch the Ruby app like the main character it is</li>
+</ul>
 <pre><code class="language-Dockerfile">CMD ["ruby", "server.rb"]
 </code></pre>
-<p>Some useful commands:</p>
+<h2 id="some-useful-commands"><a class="header" href="#some-useful-commands">Some useful commands:</a></h2>
 <pre><code class="language-bash">docker build -t your-image-name .
 
 docker images
@@ -313,8 +338,7 @@ If you're using gems that compile C extensions (like pg, nokogiri, ffi), you’l
 <pre><code class="language-Dockerfile">CMD ["ruby", "start.rb"]
 </code></pre>
 <p>Or even:</p>
-<pre><code class="language-Dockerfile">ENTRYPOINT ["bundle", "exec"]
-CMD ["ruby", "start.rb"]
+<pre><code class="language-Dockerfile">CMD ["rackup", "--host", "0.0.0.0", "--port", "8080"]
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="deploying-mdbook-to-github-pages-with-github-actions"><a class="header" href="#deploying-mdbook-to-github-pages-with-github-actions">Deploying mdBook to GitHub Pages With GitHub Actions</a></h1>
 <h2 id="step-1-setup-the-repo"><a class="header" href="#step-1-setup-the-repo">Step 1: Setup the Repo</a></h2>
@@ -417,7 +441,27 @@ docker run -p 8080:8080 my-portfolio
 </ul>
 <h2 id="step-2-set-up-google-cloud"><a class="header" href="#step-2-set-up-google-cloud">Step 2: Set Up Google Cloud</a></h2>
 <ul>
-<li>Enable the required APIs (run these in your terminal):</li>
+<li>
+<p>Before running these commands, be sure to:</p>
+<ul>
+<li>Check current GCP project:</li>
+</ul>
+<pre><code class="language-bash">gcloud config list project
+</code></pre>
+<ul>
+<li>Set active project</li>
+</ul>
+<pre><code class="language-bash">gcloud config set project YOUR_PROJECT_ID
+</code></pre>
+<ul>
+<li>You can also view all projects your account can access:</li>
+</ul>
+<pre><code class="language-bash">gcloud projects list
+</code></pre>
+</li>
+<li>
+<p>Enable the required APIs (run these in your terminal):</p>
+</li>
 </ul>
 <pre><code class="language-sh">gcloud services enable \
   cloudbuild.googleapis.com \
@@ -430,7 +474,7 @@ docker run -p 8080:8080 my-portfolio
 </ul>
 <pre><code class="language-sh">gcloud artifacts repositories create portfolio-repo \
   --repository-format=docker \
-  --location=europe-west2 \
+  --location=europe-west1 \
   --description="Docker repository for portfolio deployment"
 </code></pre>
 <p>This stores your container images so Cloud Run can pull them.</p>
@@ -472,7 +516,7 @@ gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
 <p>Go to your GitHub repo -&gt; Settings -&gt; Secrets and Variables -&gt; Actions</p>
 </li>
 <li>
-<p>Add two secrets:</p>
+<p>Add two secrets in Secrets -&gt; repository secrets:</p>
 <p>1.GCP_SERVICE_ACCOUNT_KEY → Copy &amp; paste the full contents of key.json.</p>
 <p>2.GCP_PROJECT_ID → Your Google Cloud project ID.</p>
 </li>
@@ -509,15 +553,15 @@ jobs:
 
       - name: Build and push Docker Image
         run: |
-          docker build -t europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
-          docker push europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
+          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
+          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy portfolio-site \
-          --image europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
+          --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
           --platform managed \
-          --region europe-west2 \
+          --region europe-west1 \
           --allow-unauthenticated
 </code></pre>
 <p>Now, every push to <code>main</code> will automatically deploy to Cloud Run.</p>
@@ -707,7 +751,189 @@ services:
 <li>This lets you test locally in the same way GitHub Actions does.</li>
 <li>Resets everything with each restart, ensuring clean test environments.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="postgresql-production-setup-on-google-cloud-sql"><a class="header" href="#postgresql-production-setup-on-google-cloud-sql">PostgreSQL Production Setup on Google Cloud SQL</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="set-up-postgresql-in-a-google-cloud-vm-using-docker-compose"><a class="header" href="#set-up-postgresql-in-a-google-cloud-vm-using-docker-compose">Set Up PostgreSQL in a Google Cloud VM using Docker Compose</a></h1>
+<h3 id="1-google-cloud-prep"><a class="header" href="#1-google-cloud-prep">1. Google Cloud Prep</a></h3>
+<ul>
+<li>Make sure you have a Google Cloud Project set up.</li>
+<li>Enable Billing, Compute Engine, and Cloud SQL Admin API.</li>
+<li>Create a VM instance (Debian, obviously).</li>
+</ul>
+<h3 id="2-generate-ssh-key-locally"><a class="header" href="#2-generate-ssh-key-locally">2. Generate SSH key locally:</a></h3>
+<pre><code class="language-bash">ssh-keygen -t rsa -b 4096 -C "pwatpwat@yourdomain.dev"
+</code></pre>
+<p>Hit Enter a few times to use default paths (<code>~/.ssh/id_rsa</code>).</p>
+<h3 id="3-connect-to-the-vm-instance"><a class="header" href="#3-connect-to-the-vm-instance">3. Connect to the VM instance</a></h3>
+<h4 id="connect"><a class="header" href="#connect">Connect</a></h4>
+<pre><code class="language-bash">gcloud config set project pwatgres
+</code></pre>
+<p>pwatgres = project name.</p>
+<ul>
+<li>Check if the first connection worked:</li>
+</ul>
+<pre><code class="language-bash">gcloud config list
+</code></pre>
+<ul>
+<li>Add your SSH key to the project:</li>
+</ul>
+<pre><code class="language-bash">gcloud compute os-login ssh-keys add --key-file=~/.ssh/id_rsa.pub
+</code></pre>
+<ul>
+<li>Confirm access:</li>
+</ul>
+<pre><code class="language-bash">gcloud compute ssh pwat-db-vm --zone=europe-west1-b
+</code></pre>
+<h4 id="basic-post-boot-hardening"><a class="header" href="#basic-post-boot-hardening">Basic Post-Boot Hardening</a></h4>
+<p>Firewall with ufw:</p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo apt install ufw -y
+sudo ufw allow OpenSSH
+sudo ufw enable
+</code></pre>
+<p>Fail2Ban (basic brute-force protection)</p>
+<pre><code class="language-bash">sudo apt install fail2ban -y
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+</code></pre>
+<h3 id="4-docker-setup"><a class="header" href="#4-docker-setup">4. Docker Setup</a></h3>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+</code></pre>
+<ul>
+<li>Test if the daemon hears your call:</li>
+</ul>
+<pre><code class="language-bash">docker --version
+</code></pre>
+<ul>
+<li>Install Docker Compose:</li>
+</ul>
+<pre><code class="language-bash">sudo apt install docker-compose -y
+docker-compose --version
+</code></pre>
+<ul>
+<li>Let Yourself Command the Docker Army</li>
+</ul>
+<pre><code class="language-bash">sudo usermod -aG docker $USER
+newgrp docker
+</code></pre>
+<p>You now have Docker privileges without needing sudo every time like a mortal.</p>
+<h3 id="5-create-docker-compose-project"><a class="header" href="#5-create-docker-compose-project">5. Create Docker Compose Project</a></h3>
+<pre><code class="language-bash">mkdir ~/pwatgres &amp;&amp; cd ~/pwatgres
+nano docker-compose.yml
+</code></pre>
+<pre><code class="language-yml">version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    container_name: pwatgres
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+</code></pre>
+<ul>
+<li>Create the .env file</li>
+</ul>
+<p>Inside <code>~/pwatgres/</code>:</p>
+<pre><code class="language-bash">nano .env
+</code></pre>
+<p>Example contents:</p>
+<pre><code>POSTGRES_DB=mydb
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=changemepls
+</code></pre>
+<p>Save and close. DO NOT commit this if you ever sync this repo.</p>
+<p>You can lock this .env file down with:</p>
+<pre><code class="language-bash">chmod 600 .env
+</code></pre>
+<p>Deploy that beast</p>
+<pre><code class="language-bash">docker-compose up -d
+</code></pre>
+<h4 id="misc"><a class="header" href="#misc">Misc</a></h4>
+<ul>
+<li>To shut down gracefully:</li>
+</ul>
+<pre><code class="language-bash">sudo shutdown +1 "The API layer dreams tonight. Goodnight, sweet daemon."
+</code></pre>
+<h3 id="security-avoid-paying-for-googles-mistakes"><a class="header" href="#security-avoid-paying-for-googles-mistakes">Security: Avoid Paying for Google’s Mistakes</a></h3>
+<ul>
+<li><strong>Set up a billing alert.</strong> If your database starts scaling up unnecessarily, you will get charged.</li>
+<li><strong>Limit instance size in Compute Engine</strong> (e.g., ec2-nano).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="create-an-hmac-server-api-with-python"><a class="header" href="#create-an-hmac-server-api-with-python">Create an HMAC Server API with Python</a></h2>
+<pre><code class="language-python">from fastapi import FastAPI, Request, HTTPException
+import hmac
+import hashlib
+
+app = FastAPI()
+
+
+def calc_digest(key, message):
+    key = bytes(key, 'utf-8')
+    message = bytes(message, 'utf-8')
+    dig = hmac.new(key, message, hashlib.sha256)
+    return dig.hexdigest()
+
+# HMAC Server
+@app.post("/verify")
+async def verify_signature(request: Request):
+    body = await request.json()
+    recieved_mac = request.headers.get("X-HMAC-Signature")
+
+    if not recieved_mac:
+        raise HTTPException(status_code=400, detail="Missing HMAC header")
+
+    msg_string = f"{body['mac_address']}:{body['timestamp']}"
+    expected_mac = calc_digest('secret-key', msg_string)
+
+    if not hmac.compare_digest(recieved_mac, expected_mac):
+        raise HTTPException(status_code=403, detail="Invalid signature")
+
+    return {"status": "Verified"}
+</code></pre>
+<h2 id="testing-hmac-protected-endpoints-with-curl-bash-script"><a class="header" href="#testing-hmac-protected-endpoints-with-curl-bash-script">Testing HMAC Protected Endpoints with curl (Bash Script)</a></h2>
+<pre><code class="language-bash">#!/bin/bash
+
+MESSAGE='{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}'
+SIGNATURE=$(echo -n '{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}' |
+  openssl dgst -sha256 -hmac "secret-key" | sed 's/^.* //')
+
+curl -X POST http://127.0.0.1:8000/verify \
+  -H "Content-Type: application/json" \
+  -H "X-HMAC-Signature: $SIGNATURE" \
+  -d "$MESSAGE"
+</code></pre>
+<h2 id="establish-connection-with-an-hmac-client-for-example-with-ruby"><a class="header" href="#establish-connection-with-an-hmac-client-for-example-with-ruby">Establish connection with an HMAC client (for example, with Ruby)</a></h2>
+<pre><code class="language-ruby">require 'openssl/hmac'
+require 'mac-address'
+
+# HMAC Client
+class Hmac
+  def self.call
+    key = secret_key
+    mac_address = MacAddress.address
+    halt 404, 'Mac Address not found' if mac_address.nil?
+
+    timestamp = Time.now.to_i
+    message = "#{mac_address}:#{timestamp}"
+    mac = calc_digest(key, message)
+    { signature: mac, timestamp: timestamp, mac_address: mac_address }
+  end
+
+  def self.secret_key
+    ENV['API_DB_KEY'] || raise('Missing API_DB_KEY')
+  end
+
+  def self.calc_digest(key, message)
+    OpenSSL::HMAC.hexdigest('sha256', key, message)
+  end
+end
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-nftables-firewall-rules-for-debian-type-distributions"><a class="header" href="#setting-up-nftables-firewall-rules-for-debian-type-distributions">Setting up nftables Firewall Rules For Debian-type Distributions</a></h1>
 <p>Before diving into configurations, you might want to check if nftables is already installed and active on your Debian system.</p>
@@ -824,6 +1050,49 @@ sudo nft -f firewall.config
 <pre><code class="language-bash">sudo nft add rule ip filter input tcp dport 22 accept timeout 5m
 </code></pre>
 <p>This allows SSH access for 5 minutes, giving you time to fix mistakes before the rule disappears.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-cli-tools-to-see-background-services-the-cool-girl-terminal-way"><a class="header" href="#-cli-tools-to-see-background-services-the-cool-girl-terminal-way">🔍 CLI Tools to See Background Services (the Cool Girl Terminal Way)</a></h2>
+<p>🧙‍♀️ <code>ps aux</code></p>
+<p>This is the classic spell for peeking into the underworld of processes.</p>
+<pre><code class="language-bash">ps aux
+</code></pre>
+<ul>
+<li>Lists all processes.</li>
+<li>USER, PID, %CPU, %MEM, and the command path.</li>
+<li>Pipe it to less or grep for sanity.</li>
+</ul>
+<p><strong>Example:</strong> See what’s using Postgres</p>
+<pre><code class="language-bash">ps aux | grep postgres
+</code></pre>
+<hr />
+<p><code>top</code> / <code>htop</code> (More Visual)</p>
+<p><code>top</code>: Built-in, real-time process overview.</p>
+<p><code>htop</code>: Fancy, colored, scrollable version. (You will want this.)</p>
+<pre><code class="language-bash">htop
+</code></pre>
+<p>Install it with:</p>
+<pre><code class="language-bash">sudo apt install htop  # Debian-based
+# or
+sudo xbps-install -S htop  # Void Linux
+</code></pre>
+<p>Use F10 to exit, arrow keys to scroll, and F9 to send kill signals like a Linux grim reaper.</p>
+<hr />
+<h2 id="-list-only-services"><a class="header" href="#-list-only-services">🧼 List Only Services</a></h2>
+<p><strong>🚫 systemd:</strong></p>
+<p>If you're on a systemd-based distro (not Void, so skip this if you're on musl Void), use:</p>
+<pre><code class="language-bash">systemctl list-units --type=service
+</code></pre>
+<p><strong>☠️ runit (Void Linux)</strong></p>
+<p>If you're using Void: you’re blessed. You get runit, not that systemd drama.</p>
+<p>To list services:</p>
+<pre><code class="language-bash">sv status /var/service/*
+</code></pre>
+<p>Each service will say <code>run</code> if active.</p>
+<p>You can stop services with:</p>
+<pre><code class="language-bash">sudo sv stop &lt;service&gt;
+</code></pre>
+<p>Start them:</p>
+<pre><code class="language-bash">sudo sv start &lt;service&gt;
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-postgresql"><a class="header" href="#this-chapter-will-mostly-cover-postgresql">This chapter will mostly cover PostgreSQL.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="postgresql-local-setup-guide"><a class="header" href="#postgresql-local-setup-guide">PostgreSQL Local Setup Guide</a></h1>
 <p>Use the postgres superuser to create a new user, a new database and manage their permissions. For all future database operations and for production, only use the created my_project_user.</p>
@@ -2030,9 +2299,7 @@ SELECT *
 <li>If you are getting errors, try writing the function without subqueries.</li>
 <li>SQL: Practice makes muscle memory.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><ul>
-<li>How to test if your rate limiting works:</li>
-</ul>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h3>
 <pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
 </code></pre>
 <p>1..200: number of requests
@@ -2091,13 +2358,59 @@ sound=""
 (($1 % 5 == 0)) &amp;&amp; sound+="Plang"
 (($1 % 7 == 0)) &amp;&amp; sound+="Plong"
 
-echo "${sound:-$1}"
+echo "${sound:-$1}
 </code></pre>
 <p>Notes:</p>
-<pre><code>Uses string concatenation to combine results from multiple modulo checks.
-
-Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.
+<ul>
+<li>Uses string concatenation to combine results from multiple modulo checks.</li>
+<li>Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.</li>
+</ul>
+<pre><code class="language-bash">echo "${sound: -$1}"
 </code></pre>
+<ul>
+<li>
+<p>It’s Bash's way of saying: “If sound is unset or null, use $1 instead.”</p>
+</li>
+<li>
+<p>It’s lazy evaluation like Python’s x if x else y, but uglier and more prone to being misread after midnight.</p>
+</li>
+<li>
+<p>C equivalent:</p>
+</li>
+</ul>
+<pre><code class="language-c">x ? x : y
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-bash-week--hamming-distance-spell-char-by-char-comparison-final-form"><a class="header" href="#-bash-week--hamming-distance-spell-char-by-char-comparison-final-form">🧪 Bash Week — Hamming Distance Spell (Char-by-Char Comparison, Final Form)</a></h2>
+<p>It calculates the Hamming distance (number of differing characters) between two equal-length strings.</p>
+<h3 id="bash-spell"><a class="header" href="#bash-spell">Bash Spell:</a></h3>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+if [[ $# -ne 2 ]]; then
+  echo "Usage: $0 &lt;string1&gt; &lt;string2&gt;"
+  exit 1
+elif [[ ${#1} -ne ${#2} ]]; then
+  echo "strands must be of equal length"
+  exit 1
+else
+  count=0
+  for ((i = 0; i &lt; ${#1}; i++)); do
+    a="${1:$i:1}"
+    b="${2:$i:1}"
+
+    if [[ "$a" != "$b" ]]; then
+      ((count++))
+    fi
+  done
+  echo "$count"
+fi
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Input validation ensures exactly two args and equal string length.</li>
+<li>Uses Bash string slicing to compare characters by index.</li>
+<li>Avoids off-by-one or miscounting bugs from early exits.</li>
+<li>Ideal for scripting challenges, interviews, or shell-based logic tasks.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
@@ -3062,9 +3375,8 @@ list b
 <li>Function Templates – Making a single function that works with multiple types.</li>
 <li>Class Templates – Making a class that can handle multiple data types dynamically.</li>
 </ul>
-<pre><code class="language-cpp">// Function templates: subtract()
-
-#include &lt;iostream&gt;
+<p>// Function templates: subtract()</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 
 const int N = 40;
@@ -3298,6 +3610,107 @@ int main() {
   std::cout &lt;&lt; "Average Path : " &lt;&lt; static_cast&lt;float&gt;(sum) / 49.0 &lt;&lt; "\n";
 
   return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="output-a-random-graph-in-c"><a class="header" href="#output-a-random-graph-in-c">Output a Random Graph in C++</a></h1>
+<p>Context: Refactor of an instructor-provided codebase to generate a random undirected graph with cost and color data. Original code was a memory-leaking, segfault-happy mess.</p>
+<p>Generate a random graph using a 2D adjacency matrix, apply weights (cost) and labels (color) to edges, and export the result to a .txt file.</p>
+<p>💥 Original Problems</p>
+<ul>
+<li>Used raw pointers (<code>new[]</code>) without any <code>delete[]</code>: memory leak central.</li>
+<li>No structure—everything shoved into <code>main()</code>.</li>
+</ul>
+<p>🔧 Refactor Goals</p>
+<ul>
+<li>Encapsulate logic in a Graph class.</li>
+<li>Use <code>std::vector&lt;std::vector&lt;T&gt;&gt;</code> for memory safety and clarity.</li>
+<li>Organize code: generation, cost assignment, and file output as clean methods.</li>
+<li>Eliminate leaks and crashes; run clean under Valgrind.</li>
+</ul>
+<p>⚙️ Inputs</p>
+<ul>
+<li><code>int size</code>: graph size (number of nodes)</li>
+<li><code>double density</code>: probability of edge existence between nodes</li>
+<li><code>std::string filename</code>: output filename for the graph data</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;ctime&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Graph {
+private:
+  double prob() { return (static_cast&lt;double&gt;(rand()) / RAND_MAX); }
+
+public:
+  // Constructor
+  std::vector&lt;std::vector&lt;bool&gt;&gt; graph;
+  std::vector&lt;std::vector&lt;int&gt;&gt; color;
+  std::vector&lt;std::vector&lt;int&gt;&gt; cost;
+  int size;
+  double density;
+
+  Graph(int s, double d) : size(s), density(d) {
+    graph.resize(size, std::vector&lt;bool&gt;(size, false));
+    color.resize(size, std::vector&lt;int&gt;(size, 0));
+    cost.resize(size, std::vector&lt;int&gt;(size, 0));
+  }
+
+  // generate graph
+  void generate_graph() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (i == j)
+          graph[i][j] = false;
+        else
+          graph[i][j] = graph[j][i] = (prob() &lt; density);
+  }
+
+  // generate cost and color
+  void cost_and_color() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (graph[i][j]) {
+          color[i][j] = color[j][i] = rand() % 3;
+          cost[i][j] = cost[j][i] = prob() * 30;
+        }
+  }
+
+  // write to a txt file
+  void output_file(const std::string &amp;filename) {
+    std::ofstream outp(filename);
+    outp &lt;&lt; size &lt;&lt; "\n";
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = 0; j &lt; size; ++j) {
+        if (graph[i][j])
+          outp &lt;&lt; i &lt;&lt; '\t' &lt;&lt; j &lt;&lt; '\t' &lt;&lt; cost[i][j] &lt;&lt; '\t' &lt;&lt; color[i][j]
+               &lt;&lt; '\n';
+      }
+  }
+};
+
+int main(void) {
+  int size;
+  double density;
+  std::string filename;
+
+  // User input
+  std::cout &lt;&lt; "graph size?" &lt;&lt; "\n";
+  std::cin &gt;&gt; size;
+  std::cout &lt;&lt; "graph density (0,1)?" &lt;&lt; "\n";
+  std::cin &gt;&gt; density;
+
+  Graph g(size, density);
+  g.generate_graph();
+  g.cost_and_color();
+
+  std::cout &lt;&lt; "file name?" &lt;&lt; "\n";
+  std::cin &gt;&gt; filename;
+  g.output_file(filename);
+  std::cout &lt;&lt; "done." &lt;&lt; "\n";
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
@@ -3574,6 +3987,81 @@ puts double_then_increment.call(5)  # =&gt; 11
 <li>Shorter than Python </li>
 <li>Node.js devs now crying in async hell</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="setup-a-redis-rate-limiter-with-ruby"><a class="header" href="#setup-a-redis-rate-limiter-with-ruby">Setup a Redis Rate Limiter with Ruby</a></h1>
+<p>The @limit and @period instance variables specify the maximum number of requests and the time period, respectively.
+We use the redis gem to create a new Redis client and increment the request count for each client.</p>
+<pre><code class="language-ruby">class RateLimiter
+  def initialize(app, limit:, period:)
+    @app = app
+    @limit = limit
+    @period = period
+    @redis = Redis.new(password: ENV['REDIS_PASSWORD'])
+  end
+
+  def call(env)
+    req = Rack::Request.new(env)
+    ip = req.ip
+    key = "rate-limit:#{ip}"
+    count = @redis.incr(key)
+    @redis.expire(key, @period) if count == 1
+
+    return [429, { 'Content-Type' =&gt; 'text/plain' }, ['Rate Limit exceeded']] if count &gt; @limit
+
+    @app.call(env)
+  end
+end
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="use-sqlite3-as-your-ratelimiter-in-ruby"><a class="header" href="#use-sqlite3-as-your-ratelimiter-in-ruby">Use SQLite3 as Your RateLimiter in Ruby</a></h1>
+<p>Sometimes, your project is small, scalability is a problem for later and you can't afford to deploy Redis separately either. In that case, you can always rely on SQLite3 to gatekeep users that might be making too many requests.</p>
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+require 'dotenv/load'
+require 'sqlite3'
+
+# The @limit and @period instance variables specify
+# the maximum number of requests and the time period,
+# respectively.
+class RateLimiter
+  def initialize(app, limit:, period:, db_path: 'data/rate-limiter.db')
+    @app = app
+    @limit = limit
+    @period = period
+
+    @db = SQLite3::Database.new(db_path)
+    create_table
+  end
+
+  def call(env)
+    req = Rack::Request.new(env)
+    ip = req.ip
+
+    current_time = Time.now.to_i
+    window_start = current_time - @period
+
+    @db.execute('DELETE FROM rate_limits WHERE timestamp &lt; ?', window_start)
+
+    count = @db.get_first_value('SELECT COUNT(*) FROM rate_limits WHERE ip = ?', ip)
+
+    return [429, { 'content-type' =&gt; 'text/plain' }, ['rate limit exceeded']] if count &gt; @limit
+
+    @db.execute('INSERT INTO rate_limits (ip, timestamp) VALUES (?, ?)', [ip, current_time])
+
+    @app.call(env)
+  end
+
+  private
+
+  def create_table
+    @db.execute &lt;&lt;-SQL
+      CREATE TABLE IF NOT EXISTS rate_limits (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ip TEXT NOT NULL,
+        timestamp INTEGER NOT NULL
+      );
+    SQL
+  end
+end
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
 <pre><code class="language-python">number = 7

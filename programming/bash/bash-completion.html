@@ -155,9 +155,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <ul>
-<li>How to test if your rate limiting works:</li>
-</ul>
+                        <h3 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h3>
 <pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
 </code></pre>
 <p>1..200: number of requests

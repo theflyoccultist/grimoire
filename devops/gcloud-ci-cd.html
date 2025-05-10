@@ -169,7 +169,27 @@ docker run -p 8080:8080 my-portfolio
 </ul>
 <h2 id="step-2-set-up-google-cloud"><a class="header" href="#step-2-set-up-google-cloud">Step 2: Set Up Google Cloud</a></h2>
 <ul>
-<li>Enable the required APIs (run these in your terminal):</li>
+<li>
+<p>Before running these commands, be sure to:</p>
+<ul>
+<li>Check current GCP project:</li>
+</ul>
+<pre><code class="language-bash">gcloud config list project
+</code></pre>
+<ul>
+<li>Set active project</li>
+</ul>
+<pre><code class="language-bash">gcloud config set project YOUR_PROJECT_ID
+</code></pre>
+<ul>
+<li>You can also view all projects your account can access:</li>
+</ul>
+<pre><code class="language-bash">gcloud projects list
+</code></pre>
+</li>
+<li>
+<p>Enable the required APIs (run these in your terminal):</p>
+</li>
 </ul>
 <pre><code class="language-sh">gcloud services enable \
   cloudbuild.googleapis.com \
@@ -182,7 +202,7 @@ docker run -p 8080:8080 my-portfolio
 </ul>
 <pre><code class="language-sh">gcloud artifacts repositories create portfolio-repo \
   --repository-format=docker \
-  --location=europe-west2 \
+  --location=europe-west1 \
   --description="Docker repository for portfolio deployment"
 </code></pre>
 <p>This stores your container images so Cloud Run can pull them.</p>
@@ -224,7 +244,7 @@ gcloud projects add-iam-policy-binding $YOUR_PROJECT_ID \
 <p>Go to your GitHub repo -&gt; Settings -&gt; Secrets and Variables -&gt; Actions</p>
 </li>
 <li>
-<p>Add two secrets:</p>
+<p>Add two secrets in Secrets -&gt; repository secrets:</p>
 <p>1.GCP_SERVICE_ACCOUNT_KEY → Copy &amp; paste the full contents of key.json.</p>
 <p>2.GCP_PROJECT_ID → Your Google Cloud project ID.</p>
 </li>
@@ -261,15 +281,15 @@ jobs:
 
       - name: Build and push Docker Image
         run: |
-          docker build -t europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
-          docker push europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
+          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio .
+          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy portfolio-site \
-          --image europe-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
+          --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio-repo/portfolio \
           --platform managed \
-          --region europe-west2 \
+          --region europe-west1 \
           --allow-unauthenticated
 </code></pre>
 <p>Now, every push to <code>main</code> will automatically deploy to Cloud Run.</p>

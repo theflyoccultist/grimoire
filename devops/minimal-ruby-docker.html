@@ -156,42 +156,63 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="the-skinny-ruby-queen-minimal-dockerfile-for-production"><a class="header" href="#the-skinny-ruby-queen-minimal-dockerfile-for-production">The Skinny Ruby Queen: Minimal Dockerfile for Production</a></h1>
-<p>---- Build Stage ----</p>
-<h1 id="were-building-in-style-baby-ruby--alpine--skinny-legend"><a class="header" href="#were-building-in-style-baby-ruby--alpine--skinny-legend">We're building in style, baby. Ruby + Alpine = skinny legend</a></h1>
+<h2 id="1-build-stage"><a class="header" href="#1-build-stage">1. Build Stage</a></h2>
+<ul>
+<li>We're building in style. Ruby + Alpine = skinny legend</li>
+</ul>
 <pre><code class="language-Dockerfile">FROM ruby:3.3-alpine AS build
 </code></pre>
-<h1 id="install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land"><a class="header" href="#install-a-full-dev-toolchain-to-compile-native-gems-yes-ruby-still-lives-in-c-land">Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</a></h1>
+<ul>
+<li>Install a full dev toolchain to compile native gems (yes, Ruby still lives in C land)</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN apk add --no-cache build-base
 </code></pre>
-<h1 id="set-the-working-directoryaka-the-sacred-ground-where-it-all-happens"><a class="header" href="#set-the-working-directoryaka-the-sacred-ground-where-it-all-happens">Set the working directory—aka the sacred ground where it all happens</a></h1>
+<ul>
+<li>Set the working directory—aka the sacred ground where it all happens</li>
+</ul>
 <pre><code class="language-Dockerfile">WORKDIR /usr/src/app
 </code></pre>
-<h1 id="copy-only-gemfile-and-lockfile-first-layer-caching-magic"><a class="header" href="#copy-only-gemfile-and-lockfile-first-layer-caching-magic">Copy only Gemfile and lockfile first (layer caching magic)</a></h1>
+<ul>
+<li>Copy only Gemfile and lockfile first (layer caching magic)</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY Gemfile Gemfile.lock ./
 </code></pre>
-<h1 id="configure-bundler-to-install-gems-locally-under-vendorbundle"><a class="header" href="#configure-bundler-to-install-gems-locally-under-vendorbundle">Configure bundler to install gems locally under vendor/bundle</a></h1>
-<h1 id="this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact"><a class="header" href="#this-will-be-copied-over-to-the-final-image-later-like-a-blessed-artifact">This will be copied over to the final image later like a blessed artifact</a></h1>
+<ul>
+<li>Configure bundler to install gems locally under vendor/bundle. This will be copied over to the final image later like a blessed artifact</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN bundle config set --local path 'vendor/bundle' \
   &amp;&amp; bundle install
 </code></pre>
-<h1 id="copy-the-rest-of-your-applicationcode-chaos-and-all"><a class="header" href="#copy-the-rest-of-your-applicationcode-chaos-and-all">Copy the rest of your application—code, chaos, and all</a></h1>
+<ul>
+<li>Copy the rest of your application—code, chaos, and all</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY . .
 </code></pre>
-<h1 id="-----final-stage-----"><a class="header" href="#-----final-stage-----">---- Final Stage ----</a></h1>
-<h1 id="a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light"><a class="header" href="#a-clean-alpine-base-with-ruby-and-none-of-that-build-baggage-we-like-our-containers-light">A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></a></h1>
+<h2 id="2-final-stage"><a class="header" href="#2-final-stage">2. Final Stage</a></h2>
+<ul>
+<li>A clean Alpine base with Ruby and none of that build baggage. We like our containers <em>light.</em></li>
+</ul>
 <pre><code class="language-Dockerfile">FROM ruby:3.3-alpine
 </code></pre>
-<h1 id="set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life"><a class="header" href="#set-the-working-dir-again-yes-you-need-to-re-declare-itdocker-has-no-memory-of-its-past-life">Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</a></h1>
+<ul>
+<li>Set the working dir again (yes, you need to re-declare it—Docker has no memory of its past life)</li>
+</ul>
 <pre><code class="language-Dockerfile">WORKDIR /usr/src/app
 </code></pre>
-<h1 id="copy-everything-from-the-build-stage-including-those-precious-compiled-gems"><a class="header" href="#copy-everything-from-the-build-stage-including-those-precious-compiled-gems">Copy everything from the build stage, including those precious compiled gems</a></h1>
+<ul>
+<li>Copy everything from the build stage, including those precious compiled gems</li>
+</ul>
 <pre><code class="language-Dockerfile">COPY --from=build /usr/src/app /usr/src/app
 </code></pre>
-<h1 id="let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it"><a class="header" href="#let-ruby-know-where-the-gems-arebecause-it-forgets-if-you-dont-tell-it">Let Ruby know where the gems are—because it forgets if you don’t tell it</a></h1>
+<ul>
+<li>Let Ruby know where the gems are—because it forgets if you don’t tell it</li>
+</ul>
 <pre><code class="language-Dockerfile">ENV GEM_PATH=/usr/src/app/vendor/bundle/ruby/3.3.0
 ENV PATH=$GEM_PATH/bin:$PATH
 </code></pre>
-<h1 id="install-only-the-runtime-dependencies-needed-for-your-app-to-vibe"><a class="header" href="#install-only-the-runtime-dependencies-needed-for-your-app-to-vibe">Install only the runtime dependencies needed for your app to vibe</a></h1>
+<ul>
+<li>Install only the runtime dependencies needed for your app to vibe</li>
+</ul>
 <pre><code class="language-Dockerfile">RUN apk add --no-cache \
         libstdc++ \       # C++ runtime
         libffi \          # Needed by some gems (e.g., FFI, psych)
@@ -200,15 +221,19 @@ ENV PATH=$GEM_PATH/bin:$PATH
         openssl \         # HTTPS, TLS, etc.
         tzdata            # So your logs don’t think it's 1970
 </code></pre>
-<h1 id="declare-yourself-prod-mode-on"><a class="header" href="#declare-yourself-prod-mode-on">Declare yourself: prod mode on</a></h1>
+<ul>
+<li>Declare yourself: prod mode on</li>
+</ul>
 <pre><code class="language-Dockerfile">ENV RACK_ENV=production
 ENV PORT=8080
 EXPOSE 8080
 </code></pre>
-<h1 id="finally-launch-the-ruby-app-like-the-main-character-it-is"><a class="header" href="#finally-launch-the-ruby-app-like-the-main-character-it-is">Finally, launch the Ruby app like the main character it is</a></h1>
+<ul>
+<li>Finally, launch the Ruby app like the main character it is</li>
+</ul>
 <pre><code class="language-Dockerfile">CMD ["ruby", "server.rb"]
 </code></pre>
-<p>Some useful commands:</p>
+<h2 id="some-useful-commands"><a class="header" href="#some-useful-commands">Some useful commands:</a></h2>
 <pre><code class="language-bash">docker build -t your-image-name .
 
 docker images
@@ -227,8 +252,7 @@ If you're using gems that compile C extensions (like pg, nokogiri, ffi), you’l
 <pre><code class="language-Dockerfile">CMD ["ruby", "start.rb"]
 </code></pre>
 <p>Or even:</p>
-<pre><code class="language-Dockerfile">ENTRYPOINT ["bundle", "exec"]
-CMD ["ruby", "start.rb"]
+<pre><code class="language-Dockerfile">CMD ["rackup", "--host", "0.0.0.0", "--port", "8080"]
 </code></pre>
 
                     </main>
