@@ -42,6 +42,9 @@
     - [Bash Completion Tool](programming/bash/bash-completion.md)
     - [Fizzbuzz but cursed](programming/bash/raindrops.md)
     - [DNA Hamming](programming/bash/hamming.md)
+    - [Bob](programming/bash/bob.md)
+    - [Scrabble Score Counter](programming/bash/scrabble.md)
+    - [Armstrong Numbers](programming/bash/armstrong.md)
 
   - [C++ 💀](programming/cpp/README.md)
     - [Debugging Tools](programming/cpp/debugging-tools.md)
@@ -50,6 +53,7 @@
     - [Templates](programming/cpp/templates.md)
     - [Dijkstra's algorithm using Edge Lists](programming/cpp/algorithms.md)    
     - [Output a Random Graph](programming/cpp/generate-graph.md)
+    - [Kruskal's algorithm, MST for an Inputted Graph](programming/cpp/kruskal-mst.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
