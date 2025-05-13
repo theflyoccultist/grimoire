@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>Armstrong Numbers - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,22 +155,36 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
-<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
-<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
-<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
-<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
-<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+                        <h2 id="bash-week---armstrong-numbers"><a class="header" href="#bash-week---armstrong-numbers">Bash Week - Armstrong Numbers</a></h2>
+<p>An Armstrong number is a number that is the sum of its own digits each raised to the power of the number of digits.</p>
+<p>For example:</p>
+<pre><code>9 is an Armstrong number, because 9 = 9^1 = 9
+10 is not an Armstrong number, because 10 != 1^2 + 0^2 = 1
+153 is an Armstrong number, because: 153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153
+154 is not an Armstrong number, because: 154 != 1^3 + 5^3 + 4^3 = 1 + 125 + 64 = 190
+</code></pre>
+<p>There are no ternary operators in Bash like there can be in C. In the code below, there is an alternate way to write them, while respecting bash's syntax.</p>
+<pre><code class="language-Bash">#!/usr/bin/bash
+
+result=0
+
+for ((i = 0; i &lt; ${#1}; i++)); do
+  power=$((${1:i:1} ** ${#1}))
+  result=$((result + power))
+done
+
+[ "$1" == "$result" ] &amp;&amp; echo true || echo false
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/cpp/kruskal-mst.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/bash/scrabble.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/cpp/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -180,11 +194,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/cpp/kruskal-mst.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/bash/scrabble.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/cpp/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

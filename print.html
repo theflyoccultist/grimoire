@@ -2411,6 +2411,108 @@ fi
 <li>Avoids off-by-one or miscounting bugs from early exits.</li>
 <li>Ideal for scripting challenges, interviews, or shell-based logic tasks.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="bash-week---bobs-invocation-with-regular-expressions"><a class="header" href="#bash-week---bobs-invocation-with-regular-expressions">Bash Week - Bob's Invocation (with Regular Expressions)</a></h2>
+<p>This is basically a primitive version of an AI, with a different output depending on the text being inputted. It works as follows:</p>
+<ul>
+<li>The input ends with a question mark: answers: "Sure."</li>
+<li>The input is in uppercase: answers "Whoa, chill out!"</li>
+<li>The input is silence (either nothing or spaces): answers "Fine, be that way!"</li>
+<li>The input is both a question and in uppercase: answers "Calm down, I know what I'm doing!"</li>
+</ul>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+input="$1"
+trimmed_input="${input//[^a-zA-Z]/}"
+trimmed_input2=$(tr -d ' \t\r' &lt;&lt;&lt;"$input")
+
+is_uppercase=false
+is_question=false
+is_silence=false
+
+if [[ "$trimmed_input" =~ ^[[:upper:]]+$ ]]; then
+  is_uppercase=true
+fi
+
+if [[ "$trimmed_input2" == *\? ]]; then
+  is_question=true
+fi
+
+if [[ -z "$trimmed_input2" ]]; then
+  is_silence=true
+fi
+
+if [[ "$is_silence" == true ]]; then
+  echo "Fine. Be that way!"
+elif [[ "$is_uppercase" == true &amp;&amp; "$is_question" == true ]]; then
+  echo "Calm down, I know what I'm doing!"
+elif [[ "$is_uppercase" == true ]]; then
+  echo "Whoa, chill out!"
+elif [[ "$is_question" == true ]]; then
+  echo "Sure."
+else
+  echo "Whatever."
+fi
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="bash-week---scrabble-score-counter"><a class="header" href="#bash-week---scrabble-score-counter">Bash Week - Scrabble Score Counter</a></h2>
+<p>Using cases, this will take a word as an input and calculate its value if played in Scrabble.
+Handles edge cases like any non alphabetic characters: in that case, no point is counted.</p>
+<p>For example, the word "cabbage" is worth 14 points:</p>
+<pre><code>3 points for C
+1 point for A
+3 points for B
+3 points for B
+1 point for A
+2 points for G
+1 point for E
+</code></pre>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+i=${1,,}
+
+if [[ ! "$i" =~ [a-z] ]]; then
+  echo 0
+  exit 0
+fi
+
+total=0
+
+for ((j = 0; j &lt; ${#i}; j++)); do
+  char="${i:j:1}"
+  case "$char" in
+  [aeioulnrst]) ((total += 1)) ;;
+  [dg]) ((total += 2)) ;;
+  [bcmp]) ((total += 3)) ;;
+  [fhvwy]) ((total += 4)) ;;
+  [k]) ((total += 5)) ;;
+  [jx]) ((total += 8)) ;;
+  [qz]) ((total += 10)) ;;
+  *) ((total += 0)) ;;
+  esac
+done
+
+echo "$total"
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="bash-week---armstrong-numbers"><a class="header" href="#bash-week---armstrong-numbers">Bash Week - Armstrong Numbers</a></h2>
+<p>An Armstrong number is a number that is the sum of its own digits each raised to the power of the number of digits.</p>
+<p>For example:</p>
+<pre><code>9 is an Armstrong number, because 9 = 9^1 = 9
+10 is not an Armstrong number, because 10 != 1^2 + 0^2 = 1
+153 is an Armstrong number, because: 153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153
+154 is not an Armstrong number, because: 154 != 1^3 + 5^3 + 4^3 = 1 + 125 + 64 = 190
+</code></pre>
+<p>There are no ternary operators in Bash like there can be in C. In the code below, there is an alternate way to write them, while respecting bash's syntax.</p>
+<pre><code class="language-Bash">#!/usr/bin/bash
+
+result=0
+
+for ((i = 0; i &lt; ${#1}; i++)); do
+  power=$((${1:i:1} ** ${#1}))
+  result=$((result + power))
+done
+
+[ "$1" == "$result" ] &amp;&amp; echo true || echo false
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
@@ -3712,6 +3814,147 @@ int main(void) {
   g.output_file(filename);
   std::cout &lt;&lt; "done." &lt;&lt; "\n";
 }
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
+<p>A Minimum Spanning Tree (MST) of a connected weighted undirected graph is a sub graph that connects all the vertices while minimizing the total edge weight. It has the following properties:</p>
+<ul>
+<li>It spans all vertices of the original graph.</li>
+<li>It contains no cycles.</li>
+<li>The sum of its edge weights is minimal among all spanning trees.</li>
+</ul>
+<p>Key points about MST:</p>
+<ul>
+<li>It provides a way to connect all nodes in a network with the least amount of wire/cable.</li>
+<li>In computer networks, it helps in designing efficient communication networks.</li>
+<li>In transportation systems, it aids in finding the shortest path between multiple destinations.</li>
+</ul>
+<h3 id="history-of-kruskals-algorithm"><a class="header" href="#history-of-kruskals-algorithm">History of Kruskal's Algorithm</a></h3>
+<p>Kruskal's algorithm was developed by Joseph Kruskal in 1956. It was one of the first algorithms to solve the Minimum Spanning Tree problem efficiently.</p>
+<ul>
+<li>Initially, it was designed for electrical engineering applications but later found widespread use in computer science.</li>
+</ul>
+<h3 id="my-implementation"><a class="header" href="#my-implementation">My Implementation</a></h3>
+<p>To achieve this, I was given a pseudocode to start with.</p>
+<ul>
+<li>Create a forest F (set of trees) where each vertex in the graph is a separate tree.</li>
+<li>Create a set S containing all the edges in the graph.
+While S is nonempty and F is not yet spanning:
+<ul>
+<li>remove an edge with minimum weight from S</li>
+<li>if that edge connects two different trees, then add it to the forest, combining two trees into a single tree</li>
+<li>otherwise discard that edge.</li>
+</ul>
+</li>
+<li>at the termination of the algorithm, the forest has only one component and forms a minimum spanning tree of the graph.</li>
+</ul>
+<p>I have tried to keep the approach structured with class constructors, while the functions <code>KruskalMST()</code>, <code>add_edge()</code> and <code>computeMST()</code> serves to execute them. The results are shown at the end thanks to the <code>printMST()</code> function. The <code>main()</code> function is just there to route it all together.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+// Initialize edges and operator overloading
+struct Edge {
+  int u, v, weight;
+  bool operator&lt;(const Edge &amp;other) const { return weight &lt; other.weight; }
+};
+
+class KruskalMST {
+public:
+  // Constructor declarations
+  KruskalMST(int n);
+  void add_edge(int u, int v, int weight);
+  void computeMST();
+  void printMST();
+
+private:
+  // Build trees
+  std::vector&lt;Edge&gt; edges;
+  std::vector&lt;Edge&gt; mst;
+  std::vector&lt;int&gt; parent, rank;
+  int num_vertices;
+
+  // Initialization
+  void make_set(int v) {
+    parent[v] = v;
+    rank[v] = 0;
+  }
+
+  // Path compression
+  int find_set(int v) {
+    if (v == parent[v])
+      return v;
+    return parent[v] = find_set(parent[v]);
+  }
+
+  // Union by rank
+  void union_sets(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+      if (rank[a] &lt; rank[b])
+        std::swap(a, b);
+      parent[b] = a;
+      if (rank[a] == rank[b])
+        rank[a]++;
+    }
+  }
+};
+
+void KruskalMST::add_edge(int u, int v, int weight) {
+  edges.push_back({u, v, weight});
+
+  if (u &gt;= num_vertices || v &gt;= num_vertices) {
+    std::cerr &lt;&lt; "Invalid edge: " &lt;&lt; u &lt;&lt; " - " &lt;&lt; v &lt;&lt; "\n";
+    return;
+  }
+}
+
+void KruskalMST::computeMST() {
+  std::sort(edges.begin(), edges.end());
+
+  for (Edge e : edges) {
+    if (find_set(e.u) != find_set(e.v)) {
+      mst.push_back(e);
+      union_sets(e.u, e.v);
+    }
+  }
+}
+// Executing the algorithm itself
+KruskalMST::KruskalMST(int n) {
+  num_vertices = n;
+  parent.resize(n);
+  rank.resize(n);
+
+  for (int i = 0; i &lt; n; ++i)
+    make_set(i);
+}
+
+// Function to print results
+void KruskalMST::printMST() {
+  int tot_weight = 0;
+
+  std::cout &lt;&lt; "Edges in the MST are \n";
+  for (const Edge &amp;e : mst) {
+    std::cout &lt;&lt; e.u &lt;&lt; "--" &lt;&lt; e.v &lt;&lt; " : " &lt;&lt; e.weight &lt;&lt; "\n";
+    tot_weight += e.weight;
+  }
+
+  std::cout &lt;&lt; "\nTotal weight is: " &lt;&lt; tot_weight &lt;&lt; "\n";
+};
+
+// Testing above functions
+int main() {
+  KruskalMST graph(9);
+
+  graph.add_edge(0, 3, 8);
+  graph.add_edge(2, 5, 5);
+  graph.add_edge(6, 1, 7);
+
+  graph.computeMST();
+  graph.printMST();
+
+  return 0;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
