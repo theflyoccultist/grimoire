@@ -1,0 +1,688 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Doubly Linked List and Palindrome Checker - Debugging Grimoire</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Debugging Grimoire</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="doubly-linked-list-and-palindrome-checker-in-go"><a class="header" href="#doubly-linked-list-and-palindrome-checker-in-go"><strong>Doubly Linked List and Palindrome Checker in Go</strong></a></h2>
+<pre><code class="language-go">// Doubly linked list to store a sequence of characters and determine if it is a palindrome
+
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+type ListElement struct {
+	data rune         // data of the element
+	next *ListElement // pointer to the next element
+	prev *ListElement // pointer to the previous element
+}
+
+func createListElement(data rune, ptr *ListElement) *ListElement {
+	var element ListElement
+	element.data = data
+	element.next = ptr
+	if ptr != nil {
+		element.prev = ptr.prev
+	}
+	return &amp;element
+}
+
+func (h *ListElement) PrintList() {
+	if h == nil {
+		fmt.Println("List is empty")
+		return
+	}
+	fmt.Printf("%c -&gt; ", h.data)
+	h.next.PrintList()
+}
+
+func AddToFront(dataSlice []rune, h **ListElement) {
+	head := *h
+	for _, v := range dataSlice {
+		head = createListElement(v, head)
+	}
+	*h = head
+}
+
+func AddToRear(dataSlice []rune, h **ListElement) {
+	head := *h
+	for _, v := range dataSlice {
+		newElement := createListElement(v, nil)
+		if head != nil {
+			head.next = newElement
+		}
+		head = newElement
+	}
+}
+
+func DeleteFront(h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	*h = head.next
+	if head.next != nil {
+		head.next.prev = nil
+	}
+}
+
+func DeleteRear(h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	for head.next != nil {
+		head = head.next
+	}
+	if head.prev != nil {
+		head.prev.next = nil
+	} else {
+		*h = nil
+	}
+}
+
+func FindValue(value rune, h *ListElement) *ListElement {
+	if h == nil {
+		return nil
+	}
+	if h.data == value {
+		return h
+	}
+	return FindValue(value, h.next)
+}
+
+func DeleteValue(value rune, h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	if head.data == value {
+		DeleteFront(h)
+		return
+	}
+	for head.next != nil {
+		if head.next.data == value {
+			head.next = head.next.next
+			if head.next != nil {
+				head.next.prev = head
+			}
+			return
+		}
+		head = head.next
+	}
+}
+
+func IsEmpty(h *ListElement) bool {
+	if h == nil {
+		return true
+	}
+	return false
+}
+
+func FindLength(h *ListElement) int {
+	if h == nil {
+		return 0
+	}
+	return 1 + FindLength(h.next)
+}
+
+func InsertPosition(value rune, position int, h **ListElement) {
+	head := *h
+	if position &lt; 0 {
+		return
+	}
+	if position == 0 {
+		*h = createListElement(value, head)
+		return
+	}
+	for i := 0; i &lt; position-1; i++ {
+		if head == nil {
+			return
+		}
+		head = head.next
+	}
+	if head == nil {
+		return
+	}
+	head.next = createListElement(value, head.next)
+}
+
+func DeletePosition(position int, h **ListElement) {
+	head := *h
+	if position &lt; 0 {
+		return
+	}
+	if position == 0 {
+		DeleteFront(h)
+		return
+	}
+	for i := 0; i &lt; position-1; i++ {
+		if head == nil {
+			return
+		}
+		head = head.next
+	}
+	if head == nil {
+		return
+	}
+	head.next = head.next.next
+	if head.next != nil {
+		head.next.prev = head
+	}
+}
+
+func IsPalindrome(h *ListElement) bool {
+	if h == nil {
+		return false
+	}
+
+	// Find the tail of the List
+	tail := h
+	for tail.next != nil {
+		tail = tail.next
+	}
+
+	// Iterate from both ends towards the middle
+	for h != nil &amp;&amp; tail != nil &amp;&amp; h != tail &amp;&amp; h.prev != tail {
+		if h.data != tail.data {
+			return false
+		}
+		h = h.next
+		tail = tail.prev
+	}
+
+	return true
+}
+
+func main() {
+	var head *ListElement
+
+	fmt.Print("Type a word into the terminal to check if it is a palindrome: \n")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input")
+		return
+	}
+	input = strings.TrimSpace(input)
+
+	// Convert the input string to a slice of runes
+	dataslice := ([]rune)(input)
+
+	// Add the input to the front of the doubly linked list
+	AddToFront(dataslice, &amp;head)
+	fmt.Println("Added to front")
+	head.PrintList()
+	fmt.Println()
+
+	// Test if the input is a palindrome
+	fmt.Println("Is the input a palindrome? ")
+	fmt.Println(IsPalindrome(head))
+	fmt.Println()
+
+	// Test the other doubly linked list functions
+	fmt.Println("Testing the doubly linked list functions")
+
+	AddToRear(dataslice, &amp;head)
+	fmt.Println("Added to rear")
+	head.PrintList()
+	fmt.Println()
+
+	FindValue('a', head)
+	if FindValue('a', head) != nil {
+		fmt.Println("Value 'a' found")
+	} else {
+		fmt.Println("Value 'a' not found")
+	}
+	head.PrintList()
+	fmt.Println()
+
+	if FindValue('a', head) != nil {
+		fmt.Println("Deleted value 'a'")
+		DeleteValue('a', &amp;head)
+	} else {
+		fmt.Println("Value 'a' not found and not deleted")
+	}
+
+	IsEmpty(head)
+	if IsEmpty(head) {
+		fmt.Println("List is empty")
+	} else {
+		fmt.Println("List is not empty")
+	}
+
+	fmt.Println()
+	FindLength(head)
+	fmt.Println("Length of the list is: ", FindLength(head))
+
+	InsertPosition('a', 0, &amp;head)
+	fmt.Println("Inserted 'a' at position 0")
+	head.PrintList()
+	fmt.Println()
+
+	DeletePosition(0, &amp;head)
+	fmt.Println("Deleted position 0")
+	head.PrintList()
+	fmt.Println()
+
+	DeleteFront(&amp;head)
+	fmt.Println("Deleted front element")
+	head.PrintList()
+	fmt.Println()
+
+	DeleteRear(&amp;head)
+	fmt.Println("Deleted rear element")
+	head.PrintList()
+	fmt.Println()
+}
+</code></pre>
+<h4 id="key-concepts-in-go"><a class="header" href="#key-concepts-in-go"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example showcases:</p>
+<ol>
+<li><strong>Doubly Linked List Implementation</strong>:
+<ul>
+<li>A doubly linked list is a data structure where each element (node) contains pointers to both its previous and next elements.</li>
+<li>The list supports operations such as insertion, deletion, traversal, and searching.</li>
+</ul>
+</li>
+<li><strong>Palindrome Detection</strong>:
+<ul>
+<li>Checks whether a word reads the same forwards and backwards using the doubly linked list.</li>
+</ul>
+</li>
+<li><strong>Error Handling</strong>:
+<ul>
+<li>Handles potential errors gracefully, such as invalid input or operations on an empty list.</li>
+</ul>
+</li>
+<li><strong>Recursive and Iterative Approaches</strong>:
+<ul>
+<li>Functions like <code>PrintList</code> use recursion, while others like <code>DeleteRear</code> use iteration.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program"><a class="header" href="#overview-of-the-program"><strong>Overview of the Program</strong></a></h4>
+<p>The program implements a doubly linked list to:</p>
+<ol>
+<li>Store a sequence of characters (as <code>rune</code> data type).</li>
+<li>Perform various linked list operations such as adding, deleting, searching, and inserting nodes.</li>
+<li>Check if an input word is a palindrome using the doubly linked list.</li>
+</ol>
+<hr />
+<h4 id="real-world-applications"><a class="header" href="#real-world-applications"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>String Manipulation</strong>:
+<ul>
+<li>Palindrome detection is often used in text processing and cryptography.</li>
+</ul>
+</li>
+<li><strong>Data Structure Learning</strong>:
+<ul>
+<li>Doubly linked lists are fundamental data structures used in memory management, undo/redo operations, and navigation systems.</li>
+</ul>
+</li>
+<li><strong>Error-Resilient Algorithms</strong>:
+<ul>
+<li>Demonstrates how to handle edge cases like empty structures and invalid operations.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation"><a class="header" href="#code-explanation"><strong>Code Explanation</strong></a></h4>
+<ol>
+<li>
+<p><strong>Struct Definition</strong>:</p>
+<pre><code class="language-go">type ListElement struct {
+    data rune         // data of the element
+    next *ListElement // pointer to the next element
+    prev *ListElement // pointer to the previous element
+}
+</code></pre>
+<ul>
+<li>Defines the structure for each node in the doubly linked list.</li>
+</ul>
+</li>
+<li>
+<p><strong>Core Linked List Functions</strong>:</p>
+<ul>
+<li>
+<p><strong>Adding to Front</strong>:</p>
+<pre><code class="language-go">func AddToFront(dataSlice []rune, h **ListElement) {
+    head := *h
+    for _, v := range dataSlice {
+        head = createListElement(v, head)
+    }
+    *h = head
+}
+</code></pre>
+<ul>
+<li>Iterates through the input data and adds each character to the front of the list.</li>
+</ul>
+</li>
+<li>
+<p><strong>Deleting from Rear</strong>:</p>
+<pre><code class="language-go">func DeleteRear(h **ListElement) {
+    head := *h
+    if head == nil {
+        return
+    }
+    for head.next != nil {
+        head = head.next
+    }
+    if head.prev != nil {
+        head.prev.next = nil
+    } else {
+        *h = nil
+    }
+}
+</code></pre>
+<ul>
+<li>Traverses to the end of the list and removes the last element.</li>
+</ul>
+</li>
+<li>
+<p><strong>Palindrome Check</strong>:</p>
+<pre><code class="language-go">func IsPalindrome(h *ListElement) bool {
+    if h == nil {
+        return false
+    }
+    tail := h
+    for tail.next != nil {
+        tail = tail.next
+    }
+    for h != nil &amp;&amp; tail != nil &amp;&amp; h != tail &amp;&amp; h.prev != tail {
+        if h.data != tail.data {
+            return false
+        }
+        h = h.next
+        tail = tail.prev
+    }
+    return true
+}
+</code></pre>
+<ul>
+<li>Compares characters from both ends of the list to determine if the word is a palindrome.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Error Handling</strong>:</p>
+<ul>
+<li>Handles invalid input gracefully:
+<pre><code class="language-go">reader := bufio.NewReader(os.Stdin)
+input, err := reader.ReadString('\n')
+if err != nil {
+    fmt.Println("Error reading input")
+    return
+}
+</code></pre>
+</li>
+<li>Checks for empty lists in operations like <code>DeleteFront</code> and <code>DeleteRear</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<ul>
+<li>Accepts user input and checks if the word is a palindrome:
+<pre><code class="language-go">fmt.Print("Type a word into the terminal to check if it is a palindrome: \n")
+input = strings.TrimSpace(input)
+dataslice := ([]rune)(input)
+AddToFront(dataslice, &amp;head)
+fmt.Println("Is the input a palindrome? ")
+fmt.Println(IsPalindrome(head))
+</code></pre>
+</li>
+<li>Tests various linked list operations to verify their correctness.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run"><a class="header" href="#how-to-run"><strong>How to Run</strong></a></h4>
+<ul>
+<li>Enter a word when prompted to check if it is a palindrome:
+<pre><code>Type a word into the terminal to check if it is a palindrome: 
+racecar
+</code></pre>
+</li>
+<li>Example output:
+<pre><code>Added to front
+r -&gt; a -&gt; c -&gt; e -&gt; c -&gt; a -&gt; r -&gt; 
+Is the input a palindrome? 
+true
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="extensions"><a class="header" href="#extensions"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Error Reporting</strong>:
+<ul>
+<li>Add more informative error messages for invalid operations.</li>
+</ul>
+</li>
+<li><strong>Enhanced Palindrome Check</strong>:
+<ul>
+<li>Ignore spaces, punctuation, and capitalization when checking for palindromes.</li>
+</ul>
+</li>
+<li><strong>Performance Improvements</strong>:
+<ul>
+<li>Optimize functions like <code>FindLength</code> to avoid redundant calculations.</li>
+</ul>
+</li>
+<li><strong>Interactive CLI</strong>:
+<ul>
+<li>Allow users to perform linked list operations interactively.</li>
+</ul>
+</li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../programming/go/poker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../programming/go/interfaces.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../programming/go/poker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../programming/go/interfaces.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

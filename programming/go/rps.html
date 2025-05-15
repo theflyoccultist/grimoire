@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Errors - Debugging Grimoire</title>
+        <title>Rock Paper Scissors - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,64 +155,293 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
-<pre><code class="language-python">def divide(dividend, divisor):
-    if divisor == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend / divisor
+                        <h2 id="rock-paper-scissors-game-in-go"><a class="header" href="#rock-paper-scissors-game-in-go"><strong>Rock-Paper-Scissors Game in Go</strong></a></h2>
+<pre><code class="language-go">package main
 
-grades = []
+import (
+	"bufio"
+	"fmt"
+	"math/rand"
+	"os"
+	"strings"
+	"time"
+)
 
-print("Welcome to the average grade program.")
-try:
-    average = divide(sum(grades), len(grades))
-except ZeroDivisionError:
-    print("There are no grades yet in your lizt.")
-else:
-    print(f"THe average grade is {average}.")
-finally:
-    print("Thank you!")
+func main() {
+	var move, machineMove, prevMove int
+	const (
+		rock     = 0
+		paper    = 1
+		scissors = 2
+	)
+	const (
+		cRock     = 'R'
+		cPaper    = 'P'
+		cScissors = 'S'
+	)
+	var cMove string
+	var draws, wins, machineWins int
+	var rounds int
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("How many rounds do you want to play? ")
+	fmt.Scanf("%d", &amp;rounds)
+	reader.ReadString('\n') // Clear the newline character from the input buffer
+
+	var rockCounter, scissorCounter, paperCounter int
+
+	// Initialize prevMove to an invalid value
+	prevMove = -1
+
+	for i := 0; i &lt; rounds; i++ {
+
+		// Player move
+		fmt.Println("\nRound ", i+1, ": Choose either R, P or S")
+		cMove, _ = reader.ReadString('\n')
+		cMove = strings.TrimSpace(cMove)
+
+		if cMove == "R" {
+			move = rock
+			rockCounter++
+		} else if cMove == "P" {
+			move = paper
+			paperCounter++
+		} else if cMove == "S" {
+			move = scissors
+			scissorCounter++
+		} else {
+			fmt.Println("-&gt; Illegal move")
+			i--
+			continue // Go back to the top of the loop
+		}
+
+		// Reset counter if player changes their move
+		if prevMove != -1 {
+			if move != prevMove {
+				// fmt.Println("-&gt; You played a different move than the previous round")
+				rockCounter = 0
+				scissorCounter = 0
+				paperCounter = 0
+			}
+		}
+
+		// Set machine move based on counters
+		if rockCounter &gt;= 10 {
+			machineMove = paper
+		} else if scissorCounter &gt;= 10 {
+			machineMove = rock
+		} else if paperCounter &gt;= 10 {
+			machineMove = scissors
+		} else {
+			// Random Move
+			source := rand.NewSource(time.Now().UnixNano())
+			rng := rand.New(source)
+			machineMove = rng.Intn(3)
+		}
+
+		// Determine the result using switch
+		switch move {
+		case rock:
+			if machineMove == rock {
+				fmt.Println("-&gt; draw")
+				draws++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			} else {
+				fmt.Println("-&gt; you win")
+				wins++
+			}
+		case paper:
+			if machineMove == rock {
+				fmt.Println("-&gt; you win")
+				wins++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; draw")
+				draws++
+			} else {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			}
+		case scissors:
+			if machineMove == rock {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; you win")
+				wins++
+			} else {
+				fmt.Println("-&gt; draw")
+				draws++
+			}
+		}
+
+		// Update previous move
+		prevMove = move
+	}
+	fmt.Println("\nAfter", rounds, "rounds:\n",
+		"you win: ", wins,
+		" machine wins ", machineWins,
+		", with ", draws, "draws")
+}
 </code></pre>
-<h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
-<pre><code class="language-python">class TooManyPagesError(ValueError):
-    pass
-
-class Book:
-    def __init__(self, name: str, page_count: int):
-        self.name = name
-        self.page_count = page_count
-        self.pages_read = 0
-
-    def __repr__(self):
-        return (
-            f"&lt;Book {self.name}, read {self.pages_read} out of {self.page_count}&gt;"
-        )
-    
-    def read(self, pages: int):
-        if self.pages_read + pages &gt; self.page_count:
-            raise TooManyPagesError(
-                f"You tried to read {self.pages_read + pages} pages, but this book only has {self.page_count} pages."
-            )
-        self.pages_read += pages
-        print(f"you have now read {self.pages_read} pages out of {self.page_count}.")
-
-try:
-    pout = Book("pout guide", 70)
-    pout.read(80)
-except TooManyPagesError as e:
-    print(e)
+<h4 id="key-concepts-in-go"><a class="header" href="#key-concepts-in-go"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces several important features of Go:</p>
+<ol>
+<li><strong>CLI Tool Development</strong>: Learn how to create an interactive Command Line Interface (CLI) application.</li>
+<li><strong>Switch Statements</strong>: See how Go handles multiple cases with <code>switch</code> for decision-making.</li>
+<li><strong>Randomization</strong>: The use of <code>math/rand</code> to introduce randomness.</li>
+<li><strong>User Input</strong>: Using <code>bufio.NewReader</code> and <code>os.Stdin</code> for user interaction.</li>
+<li><strong>Basic State Tracking</strong>: Demonstrates counters to track repeated behavior.</li>
+<li><strong>Logic for Adaptation</strong>: Implements a simple rule-based system, hinting at machine learning concepts.</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-game"><a class="header" href="#overview-of-the-game"><strong>Overview of the Game</strong></a></h4>
+<p>This implementation of Rock-Paper-Scissors is a CLI-based game where:</p>
+<ul>
+<li>The <strong>player</strong> chooses a move: Rock (<code>R</code>), Paper (<code>P</code>), or Scissors (<code>S</code>).</li>
+<li>The <strong>machine</strong> plays either:
+<ul>
+<li><strong>Randomly</strong>, for most of the game.</li>
+<li><strong>Predictively</strong>, if the player repeats the same move ten times, the machine adapts to counter it.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="real-world-applications"><a class="header" href="#real-world-applications"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Game Design</strong>:
+<ul>
+<li>This example can be extended to learn game mechanics or simulate AI players.</li>
+</ul>
+</li>
+<li><strong>Machine Learning Basics</strong>:
+<ul>
+<li>Introduces the concept of leveraging historical data (player's repeated moves) to predict and counter future moves.</li>
+</ul>
+</li>
+<li><strong>CLI-Based Tools</strong>:
+<ul>
+<li>A foundation for creating interactive command-line programs, useful in automation or user interaction in terminals.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation"><a class="header" href="#code-explanation"><strong>Code Explanation</strong></a></h4>
+<p>The code can be broken down into key sections:</p>
+<ol>
+<li>
+<p><strong>Player Input and Move Validation</strong>:</p>
+<pre><code class="language-go">reader := bufio.NewReader(os.Stdin)
+cMove, _ = reader.ReadString('\n')
+cMove = strings.TrimSpace(cMove)
 </code></pre>
+<ul>
+<li>Accepts and trims the user's input.</li>
+<li>Validates the move (<code>R</code>, <code>P</code>, or <code>S</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>Machine Move Logic</strong>:</p>
+<ul>
+<li><strong>Random Move</strong>:
+<pre><code class="language-go">source := rand.NewSource(time.Now().UnixNano())
+rng := rand.New(source)
+machineMove = rng.Intn(3)
+</code></pre>
+<ul>
+<li>Generates a random move for the machine.</li>
+</ul>
+</li>
+<li><strong>Adaptive Move</strong>:
+<pre><code class="language-go">if rockCounter &gt;= 10 {
+    machineMove = paper
+} else if scissorCounter &gt;= 10 {
+    machineMove = rock
+} else if paperCounter &gt;= 10 {
+    machineMove = scissors
+}
+</code></pre>
+<ul>
+<li>Tracks repeated moves by the player and adapts to counter them.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Game Outcome</strong>:</p>
+<ul>
+<li>Uses a <code>switch</code> to determine the result:
+<pre><code class="language-go">switch move {
+case rock:
+    if machineMove == rock { /* draw logic */ }
+    else if machineMove == paper { /* machine wins */ }
+    else { /* player wins */ }
+}
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Result Summary</strong>:</p>
+<pre><code class="language-go">fmt.Println("\nAfter", rounds, "rounds:\n",
+    "you win: ", wins,
+    " machine wins ", machineWins,
+    ", with ", draws, "draws")
+</code></pre>
+<ul>
+<li>Provides a game summary after all rounds are played.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run"><a class="header" href="#how-to-run"><strong>How to Run</strong></a></h4>
+<p>To play the game:</p>
+<ol>
+<li>Save the file as <code>rps.go</code>.</li>
+<li>Run the program with:
+<pre><code class="language-bash">go run rps.go
+</code></pre>
+</li>
+<li>Input the number of rounds you'd like to play.</li>
+<li>Play by entering your move (<code>R</code>, <code>P</code>, or <code>S</code>) when prompted.</li>
+</ol>
+<p>Example run:</p>
+<pre><code>How many rounds do you want to play? 3
+
+Round 1: Choose either R, P or S
+R
+-&gt; draw
+
+Round 2: Choose either R, P or S
+P
+-&gt; machine wins
+
+Round 3: Choose either R, P or S
+P
+-&gt; you win
+
+After 3 rounds:
+ you win:  1  machine wins  1 , with  1 draws
+</code></pre>
+<hr />
+<h4 id="extensions"><a class="header" href="#extensions"><strong>Extensions</strong></a></h4>
+<ol>
+<li>Add more moves like <strong>Lizard</strong> and <strong>Spock</strong> to make it more challenging.</li>
+<li>Implement <strong>machine learning</strong> to predict player moves based on historical patterns.</li>
+<li>Build a <strong>graphical user interface (GUI)</strong> for a more interactive experience.</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/python/advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/go/birthday.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/go/employee.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -222,11 +451,11 @@ except TooManyPagesError as e:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/python/advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/go/birthday.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/go/employee.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

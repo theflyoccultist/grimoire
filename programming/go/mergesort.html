@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Errors - Debugging Grimoire</title>
+        <title>Mergesort Algorithm - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,64 +155,230 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
-<pre><code class="language-python">def divide(dividend, divisor):
-    if divisor == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend / divisor
+                        <h3 id="mergesort-algorithm-in-go"><a class="header" href="#mergesort-algorithm-in-go"><strong>MergeSort Algorithm in Go</strong></a></h3>
+<pre><code class="language-go">package main
 
-grades = []
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
-print("Welcome to the average grade program.")
-try:
-    average = divide(sum(grades), len(grades))
-except ZeroDivisionError:
-    print("There are no grades yet in your lizt.")
-else:
-    print(f"THe average grade is {average}.")
-finally:
-    print("Thank you!")
+func merge(sortedSlice1 []int, sortedSlice2 []int) []int {
+	mergedSlice := make([]int, 0, len(sortedSlice1)+len(sortedSlice2))
+	var index1, index2 int
+	for index1 &lt; len(sortedSlice1) &amp;&amp; index2 &lt; len(sortedSlice2) {
+		if sortedSlice1[index1] &lt; sortedSlice2[index2] {
+			mergedSlice = append(mergedSlice, sortedSlice1[index1])
+			index1++
+		} else {
+			mergedSlice = append(mergedSlice, sortedSlice2[index2])
+			index2++
+		}
+	}
+	mergedSlice = append(mergedSlice, sortedSlice1[index1:]...)
+	mergedSlice = append(mergedSlice, sortedSlice2[index2:]...)
+	return mergedSlice
+}
+
+func mergeSort(items []int) []int {
+	if len(items) &lt; 2 {
+		return items
+	}
+	mid := len(items) / 2
+	first := mergeSort(items[:mid])
+	second := mergeSort(items[mid:])
+	return merge(first, second)
+}
+
+func main() {
+	const nElements = 10000
+	unsortedSlice := make([]int, nElements)
+
+	// generate numbers
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	for i := 0; i &lt; nElements; i++ {
+		unsortedSlice[i] = rng.Intn(10000)
+	}
+
+	sorted := mergeSort(unsortedSlice)
+
+	fmt.Println(sorted[:100])
+}
 </code></pre>
-<h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
-<pre><code class="language-python">class TooManyPagesError(ValueError):
-    pass
-
-class Book:
-    def __init__(self, name: str, page_count: int):
-        self.name = name
-        self.page_count = page_count
-        self.pages_read = 0
-
-    def __repr__(self):
-        return (
-            f"&lt;Book {self.name}, read {self.pages_read} out of {self.page_count}&gt;"
-        )
-    
-    def read(self, pages: int):
-        if self.pages_read + pages &gt; self.page_count:
-            raise TooManyPagesError(
-                f"You tried to read {self.pages_read + pages} pages, but this book only has {self.page_count} pages."
-            )
-        self.pages_read += pages
-        print(f"you have now read {self.pages_read} pages out of {self.page_count}.")
-
-try:
-    pout = Book("pout guide", 70)
-    pout.read(80)
-except TooManyPagesError as e:
-    print(e)
+<h4 id="key-concepts-in-go"><a class="header" href="#key-concepts-in-go"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example demonstrates:</p>
+<ol>
+<li><strong>Recursive Functions</strong>:
+<ul>
+<li>The <code>mergeSort</code> function showcases how recursion can simplify divide-and-conquer algorithms like MergeSort.</li>
+</ul>
+</li>
+<li><strong>Slices in Go</strong>:
+<ul>
+<li>Efficiently splits and merges slices in a type-safe manner.</li>
+</ul>
+</li>
+<li><strong>Custom Slice Operations</strong>:
+<ul>
+<li>Implements a <code>merge</code> function to combine two sorted slices.</li>
+</ul>
+</li>
+<li><strong>Random Number Generation</strong>:
+<ul>
+<li>Uses <code>math/rand</code> to generate a large dataset for sorting.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-mergesort"><a class="header" href="#overview-of-mergesort"><strong>Overview of MergeSort</strong></a></h4>
+<p>MergeSort is a <strong>divide-and-conquer algorithm</strong> that:</p>
+<ol>
+<li><strong>Divides</strong> the input array into two halves recursively.</li>
+<li><strong>Conquers</strong> by sorting each half.</li>
+<li><strong>Merges</strong> the two sorted halves into a single sorted array.</li>
+</ol>
+<p>It has a time complexity of (O(n \log n)), which makes it efficient for sorting large datasets.</p>
+<p><strong>Why a Go Implementation?</strong>
+While MergeSort is traditionally implemented in lower-level languages like C for performance, the Go implementation focuses on:</p>
+<ul>
+<li><strong>Readability</strong>: The recursive approach and slice operations make the code easy to understand.</li>
+<li><strong>Ease of Use</strong>: Go's built-in slice handling eliminates the need for manual memory management.</li>
+</ul>
+<hr />
+<h4 id="real-world-applications"><a class="header" href="#real-world-applications"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Database Systems</strong>:
+<ul>
+<li>Efficiently sorts large datasets stored in external memory (e.g., disk or SSD).</li>
+</ul>
+</li>
+<li><strong>Parallel Computing</strong>:
+<ul>
+<li>Its divide-and-conquer nature makes it suitable for parallelization.</li>
+</ul>
+</li>
+<li><strong>Merging Sorted Data</strong>:
+<ul>
+<li>Combines multiple sorted data streams in distributed systems.</li>
+</ul>
+</li>
+<li><strong>Sorting Algorithms in Libraries</strong>:
+<ul>
+<li>Often used as a fallback for sorting libraries when data size is too large for in-place algorithms like QuickSort.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation"><a class="header" href="#code-explanation"><strong>Code Explanation</strong></a></h4>
+<p>The code can be divided into logical sections:</p>
+<ol>
+<li>
+<p><strong>Merge Function</strong>:</p>
+<pre><code class="language-go">func merge(sortedSlice1 []int, sortedSlice2 []int) []int {
+    mergedSlice := make([]int, 0, len(sortedSlice1)+len(sortedSlice2))
+    var index1, index2 int
+    for index1 &lt; len(sortedSlice1) &amp;&amp; index2 &lt; len(sortedSlice2) {
+        if sortedSlice1[index1] &lt; sortedSlice2[index2] {
+            mergedSlice = append(mergedSlice, sortedSlice1[index1])
+            index1++
+        } else {
+            mergedSlice = append(mergedSlice, sortedSlice2[index2])
+            index2++
+        }
+    }
+    mergedSlice = append(mergedSlice, sortedSlice1[index1:]...)
+    mergedSlice = append(mergedSlice, sortedSlice2[index2:]...)
+    return mergedSlice
+}
 </code></pre>
+<ul>
+<li>Combines two sorted slices (<code>sortedSlice1</code> and <code>sortedSlice2</code>) into a single sorted slice.</li>
+<li>Maintains stability, meaning the order of equal elements is preserved.</li>
+</ul>
+</li>
+<li>
+<p><strong>MergeSort Function</strong>:</p>
+<pre><code class="language-go">func mergeSort(items []int) []int {
+    if len(items) &lt; 2 {
+        return items
+    }
+    mid := len(items) / 2
+    first := mergeSort(items[:mid])
+    second := mergeSort(items[mid:])
+    return merge(first, second)
+}
+</code></pre>
+<ul>
+<li>Recursively divides the input slice into halves until each slice contains one or zero elements.</li>
+<li>Merges the sorted halves back together using the <code>merge</code> function.</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<pre><code class="language-go">func main() {
+    const nElements = 10000
+    unsortedSlice := make([]int, nElements)
+
+    source := rand.NewSource(time.Now().UnixNano())
+    rng := rand.New(source)
+
+    for i := 0; i &lt; nElements; i++ {
+        unsortedSlice[i] = rng.Intn(10000)
+    }
+
+    sorted := mergeSort(unsortedSlice)
+
+    fmt.Println(sorted[:100])
+}
+</code></pre>
+<ul>
+<li>Generates a slice of 10,000 random integers.</li>
+<li>Sorts the slice using the <code>mergeSort</code> function.</li>
+<li>Prints the first 100 sorted elements for verification.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="example-output"><a class="header" href="#example-output">Example output:</a></h4>
+<pre><code>[0 5 12 16 21 ... 9876 9999]
+</code></pre>
+<hr />
+<h4 id="extensions"><a class="header" href="#extensions"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Parallelization</strong>:
+<ul>
+<li>Use goroutines to parallelize the sorting of the two halves.</li>
+</ul>
+</li>
+<li><strong>Custom Comparators</strong>:
+<ul>
+<li>Modify the <code>merge</code> function to support custom sorting criteria (e.g., descending order or by specific object attributes).</li>
+</ul>
+</li>
+<li><strong>Benchmarking</strong>:
+<ul>
+<li>Compare the performance of this implementation with Go's built-in <code>sort</code> package.</li>
+</ul>
+</li>
+<li><strong>Visualization</strong>:
+<ul>
+<li>Create a graphical representation of how MergeSort works step-by-step.</li>
+</ul>
+</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/python/advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/go/employee.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/go/poker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -222,11 +388,11 @@ except TooManyPagesError as e:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/python/advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/go/employee.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/go/poker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

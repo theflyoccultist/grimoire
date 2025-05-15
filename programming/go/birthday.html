@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GitHub Cheat Sheet - Debugging Grimoire</title>
+        <title>The Birthday Paradox - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -91,7 +91,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -126,7 +126,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -155,65 +155,112 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="create-a-new-repository-from-the-command-line"><a class="header" href="#create-a-new-repository-from-the-command-line">Create a new repository from the command line</a></h3>
-<pre><code class="language-bash">echo "# http_server" &gt;&gt; README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin git@github.com:theflyoccultist/http_server.git
-git push -u origin main
-</code></pre>
-<h3 id="connect-to-a-new-repository"><a class="header" href="#connect-to-a-new-repository">Connect to a new repository</a></h3>
-<ol>
-<li>
-<p>Open a Terminal</p>
-<p>Navigate to the directory where you want to clone the repository.</p>
-<pre><code class="language-bash">cd /path/to/your/directory
-</code></pre>
-</li>
-<li>
-<p>Clone the Repository</p>
-<p>Run the following command:</p>
-<pre><code class="language-bash">git clone https://github.com/theflyoccultist/kepler-rss-feed.git
-</code></pre>
-<p>Or, if using SSH:</p>
-<pre><code class="language-bash">git clone git@github.com:theflyoccultist/kepler-rss-feed.git
-</code></pre>
-</li>
-<li>
-<p>Navigate into the Repository</p>
-<p>After cloning, navigate into the repository folder:</p>
-<pre><code class="language-bash">cd kepler-rss-feed
-</code></pre>
-</li>
-</ol>
-<h3 id="gitignore-a-file-that-has-already-been-pushed"><a class="header" href="#gitignore-a-file-that-has-already-been-pushed">.gitignore a file that has already been pushed</a></h3>
-<pre><code class="language-bash">echo debug.log &gt;&gt; .gitignore
+                        <h2 id="birthday-paradox-in-go"><a class="header" href="#birthday-paradox-in-go"><strong>Birthday Paradox in Go</strong></a></h2>
+<pre><code class="language-go">package main
 
-git rm --cached debug.log
+import "fmt"
 
-git commit -m "Start ignoring debug.log"
+func birthdayProbability(n int) float64 {
+	probability := 1.0
+
+	for i := 0; i &lt; n; i++ {
+		probability *= float64(365-i) / 365
+	}
+
+	return 1 - probability
+}
+
+func main() {
+	const iterations = 10000
+	fmt.Printf("People in the room \t Probability of 2 (or more) having the same birthday\n")
+
+	for n := 10; n &lt;= 100; n += 10 {
+		totalProbability := 0.0
+
+		for i := 0; i &lt; iterations; i++ {
+			totalProbability += birthdayProbability(n)
+		}
+
+		averageProbability := totalProbability / iterations
+		fmt.Printf("\t%d\t\t\t%f\n", n, averageProbability)
+	}
+
+	fmt.Printf("Total number of iterations : %d\n", iterations)
+}
 </code></pre>
-<h3 id="change-the-url-of-a-repository"><a class="header" href="#change-the-url-of-a-repository">Change the URL of a repository:</a></h3>
-<pre><code class="language-bash">git remote -v
+<h4 id="key-concepts-in-go"><a class="header" href="#key-concepts-in-go"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces:</p>
+<ul>
+<li><strong>Loops</strong>: Both <code>for</code> loops are used for iterative calculations (one to compute probabilities and another for multiple iterations).</li>
+<li><strong>Floating-point Arithmetic</strong>: Calculations involve <code>float64</code> for precise probability computation.</li>
+<li><strong>Modularity</strong>: The function <code>birthdayProbability</code> is separated from the main logic for clarity and reusability.</li>
+</ul>
+<hr />
+<h4 id="overview-of-the-birthday-paradox"><a class="header" href="#overview-of-the-birthday-paradox"><strong>Overview of the Birthday Paradox</strong></a></h4>
+<p>The "birthday paradox" refers to the counterintuitive probability that in a group of just 23 people, there’s a greater than 50% chance that at least two of them share the same birthday.</p>
+<hr />
+<h4 id="real-world-applications"><a class="header" href="#real-world-applications"><strong>Real-World Applications</strong></a></h4>
+<ul>
+<li><strong>Cryptography</strong>:
+<ul>
+<li>Hash collisions: The birthday paradox helps understand the likelihood of two different inputs producing the same hash.</li>
+</ul>
+</li>
+<li><strong>Simulation Models</strong>:
+<ul>
+<li>Event overlaps in large datasets.</li>
+<li>Predicting collisions in distributed systems.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="code-explanation"><a class="header" href="#code-explanation"><strong>Code Explanation</strong></a></h4>
+<pre><code class="language-go">func birthdayProbability(n int) float64 {
+	probability := 1.0
+
+	for i := 0; i &lt; n; i++ {
+		probability *= float64(365-i) / 365
+	}
+
+	return 1 - probability
+}
 </code></pre>
-<p>Then, you can set it with:</p>
-<pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
+<ul>
+<li>This function calculates the probability of at least two people having the same birthday in a group of size <code>n</code>.</li>
+</ul>
+<pre><code class="language-go">for n := 10; n &lt;= 100; n += 10 {
+	totalProbability := 0.0
+
+	for i := 0; i &lt; iterations; i++ {
+		totalProbability += birthdayProbability(n)
+	}
+
+	averageProbability := totalProbability / iterations
+	fmt.Printf("\t%d\t\t\t%f\n", n, averageProbability)
+}
 </code></pre>
-<h3 id="remove-a-git-commit-which-has-not-yet-been-pushed"><a class="header" href="#remove-a-git-commit-which-has-not-yet-been-pushed">Remove a Git commit which has not yet been pushed</a></h3>
-<pre><code class="language-bash">git reset --hard HEAD~1
+<ul>
+<li>The outer loop iterates through different group sizes (<code>n</code>).</li>
+<li>The inner loop computes the probability multiple times (<code>iterations</code>) to average out randomness.</li>
+</ul>
+<hr />
+<h3 id="example-output"><a class="header" href="#example-output">Example output:</a></h3>
+<pre><code>People in the room 	 Probability of 2 (or more) having the same birthday
+	10				0.116948
+	20				0.411438
+	30				0.706316
+	...
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cheatsheet/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/go/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../cheatsheet/yaml-cheatsheet.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/go/rps.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -223,11 +270,11 @@ git commit -m "Start ignoring debug.log"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cheatsheet/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/go/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../cheatsheet/yaml-cheatsheet.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/go/rps.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -242,13 +289,13 @@ git commit -m "Start ignoring debug.log"
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

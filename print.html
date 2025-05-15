@@ -1394,7 +1394,16 @@ Set a password (optional, overkill for local but useful for staging/prod):</li>
 <p>Confirm it's only bound to localhost:</p>
 <pre><code class="language-bash">sudo ss -tlnp | grep redis
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="connect-to-a-new-repository"><a class="header" href="#connect-to-a-new-repository">Connect to a new repository</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="create-a-new-repository-from-the-command-line"><a class="header" href="#create-a-new-repository-from-the-command-line">Create a new repository from the command line</a></h3>
+<pre><code class="language-bash">echo "# http_server" &gt;&gt; README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:theflyoccultist/http_server.git
+git push -u origin main
+</code></pre>
+<h3 id="connect-to-a-new-repository"><a class="header" href="#connect-to-a-new-repository">Connect to a new repository</a></h3>
 <ol>
 <li>
 <p>Open a Terminal</p>
@@ -6914,6 +6923,2570 @@ try:
 except TooManyPagesError as e:
     print(e)
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="birthday-paradox-in-go"><a class="header" href="#birthday-paradox-in-go"><strong>Birthday Paradox in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func birthdayProbability(n int) float64 {
+	probability := 1.0
+
+	for i := 0; i &lt; n; i++ {
+		probability *= float64(365-i) / 365
+	}
+
+	return 1 - probability
+}
+
+func main() {
+	const iterations = 10000
+	fmt.Printf("People in the room \t Probability of 2 (or more) having the same birthday\n")
+
+	for n := 10; n &lt;= 100; n += 10 {
+		totalProbability := 0.0
+
+		for i := 0; i &lt; iterations; i++ {
+			totalProbability += birthdayProbability(n)
+		}
+
+		averageProbability := totalProbability / iterations
+		fmt.Printf("\t%d\t\t\t%f\n", n, averageProbability)
+	}
+
+	fmt.Printf("Total number of iterations : %d\n", iterations)
+}
+</code></pre>
+<h4 id="key-concepts-in-go"><a class="header" href="#key-concepts-in-go"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces:</p>
+<ul>
+<li><strong>Loops</strong>: Both <code>for</code> loops are used for iterative calculations (one to compute probabilities and another for multiple iterations).</li>
+<li><strong>Floating-point Arithmetic</strong>: Calculations involve <code>float64</code> for precise probability computation.</li>
+<li><strong>Modularity</strong>: The function <code>birthdayProbability</code> is separated from the main logic for clarity and reusability.</li>
+</ul>
+<hr />
+<h4 id="overview-of-the-birthday-paradox"><a class="header" href="#overview-of-the-birthday-paradox"><strong>Overview of the Birthday Paradox</strong></a></h4>
+<p>The "birthday paradox" refers to the counterintuitive probability that in a group of just 23 people, there’s a greater than 50% chance that at least two of them share the same birthday.</p>
+<hr />
+<h4 id="real-world-applications"><a class="header" href="#real-world-applications"><strong>Real-World Applications</strong></a></h4>
+<ul>
+<li><strong>Cryptography</strong>:
+<ul>
+<li>Hash collisions: The birthday paradox helps understand the likelihood of two different inputs producing the same hash.</li>
+</ul>
+</li>
+<li><strong>Simulation Models</strong>:
+<ul>
+<li>Event overlaps in large datasets.</li>
+<li>Predicting collisions in distributed systems.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="code-explanation-3"><a class="header" href="#code-explanation-3"><strong>Code Explanation</strong></a></h4>
+<pre><code class="language-go">func birthdayProbability(n int) float64 {
+	probability := 1.0
+
+	for i := 0; i &lt; n; i++ {
+		probability *= float64(365-i) / 365
+	}
+
+	return 1 - probability
+}
+</code></pre>
+<ul>
+<li>This function calculates the probability of at least two people having the same birthday in a group of size <code>n</code>.</li>
+</ul>
+<pre><code class="language-go">for n := 10; n &lt;= 100; n += 10 {
+	totalProbability := 0.0
+
+	for i := 0; i &lt; iterations; i++ {
+		totalProbability += birthdayProbability(n)
+	}
+
+	averageProbability := totalProbability / iterations
+	fmt.Printf("\t%d\t\t\t%f\n", n, averageProbability)
+}
+</code></pre>
+<ul>
+<li>The outer loop iterates through different group sizes (<code>n</code>).</li>
+<li>The inner loop computes the probability multiple times (<code>iterations</code>) to average out randomness.</li>
+</ul>
+<hr />
+<h3 id="example-output-3"><a class="header" href="#example-output-3">Example output:</a></h3>
+<pre><code>People in the room 	 Probability of 2 (or more) having the same birthday
+	10				0.116948
+	20				0.411438
+	30				0.706316
+	...
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="rock-paper-scissors-game-in-go"><a class="header" href="#rock-paper-scissors-game-in-go"><strong>Rock-Paper-Scissors Game in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import (
+	"bufio"
+	"fmt"
+	"math/rand"
+	"os"
+	"strings"
+	"time"
+)
+
+func main() {
+	var move, machineMove, prevMove int
+	const (
+		rock     = 0
+		paper    = 1
+		scissors = 2
+	)
+	const (
+		cRock     = 'R'
+		cPaper    = 'P'
+		cScissors = 'S'
+	)
+	var cMove string
+	var draws, wins, machineWins int
+	var rounds int
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("How many rounds do you want to play? ")
+	fmt.Scanf("%d", &amp;rounds)
+	reader.ReadString('\n') // Clear the newline character from the input buffer
+
+	var rockCounter, scissorCounter, paperCounter int
+
+	// Initialize prevMove to an invalid value
+	prevMove = -1
+
+	for i := 0; i &lt; rounds; i++ {
+
+		// Player move
+		fmt.Println("\nRound ", i+1, ": Choose either R, P or S")
+		cMove, _ = reader.ReadString('\n')
+		cMove = strings.TrimSpace(cMove)
+
+		if cMove == "R" {
+			move = rock
+			rockCounter++
+		} else if cMove == "P" {
+			move = paper
+			paperCounter++
+		} else if cMove == "S" {
+			move = scissors
+			scissorCounter++
+		} else {
+			fmt.Println("-&gt; Illegal move")
+			i--
+			continue // Go back to the top of the loop
+		}
+
+		// Reset counter if player changes their move
+		if prevMove != -1 {
+			if move != prevMove {
+				// fmt.Println("-&gt; You played a different move than the previous round")
+				rockCounter = 0
+				scissorCounter = 0
+				paperCounter = 0
+			}
+		}
+
+		// Set machine move based on counters
+		if rockCounter &gt;= 10 {
+			machineMove = paper
+		} else if scissorCounter &gt;= 10 {
+			machineMove = rock
+		} else if paperCounter &gt;= 10 {
+			machineMove = scissors
+		} else {
+			// Random Move
+			source := rand.NewSource(time.Now().UnixNano())
+			rng := rand.New(source)
+			machineMove = rng.Intn(3)
+		}
+
+		// Determine the result using switch
+		switch move {
+		case rock:
+			if machineMove == rock {
+				fmt.Println("-&gt; draw")
+				draws++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			} else {
+				fmt.Println("-&gt; you win")
+				wins++
+			}
+		case paper:
+			if machineMove == rock {
+				fmt.Println("-&gt; you win")
+				wins++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; draw")
+				draws++
+			} else {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			}
+		case scissors:
+			if machineMove == rock {
+				fmt.Println("-&gt; machine wins")
+				machineWins++
+			} else if machineMove == paper {
+				fmt.Println("-&gt; you win")
+				wins++
+			} else {
+				fmt.Println("-&gt; draw")
+				draws++
+			}
+		}
+
+		// Update previous move
+		prevMove = move
+	}
+	fmt.Println("\nAfter", rounds, "rounds:\n",
+		"you win: ", wins,
+		" machine wins ", machineWins,
+		", with ", draws, "draws")
+}
+</code></pre>
+<h4 id="key-concepts-in-go-1"><a class="header" href="#key-concepts-in-go-1"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces several important features of Go:</p>
+<ol>
+<li><strong>CLI Tool Development</strong>: Learn how to create an interactive Command Line Interface (CLI) application.</li>
+<li><strong>Switch Statements</strong>: See how Go handles multiple cases with <code>switch</code> for decision-making.</li>
+<li><strong>Randomization</strong>: The use of <code>math/rand</code> to introduce randomness.</li>
+<li><strong>User Input</strong>: Using <code>bufio.NewReader</code> and <code>os.Stdin</code> for user interaction.</li>
+<li><strong>Basic State Tracking</strong>: Demonstrates counters to track repeated behavior.</li>
+<li><strong>Logic for Adaptation</strong>: Implements a simple rule-based system, hinting at machine learning concepts.</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-game"><a class="header" href="#overview-of-the-game"><strong>Overview of the Game</strong></a></h4>
+<p>This implementation of Rock-Paper-Scissors is a CLI-based game where:</p>
+<ul>
+<li>The <strong>player</strong> chooses a move: Rock (<code>R</code>), Paper (<code>P</code>), or Scissors (<code>S</code>).</li>
+<li>The <strong>machine</strong> plays either:
+<ul>
+<li><strong>Randomly</strong>, for most of the game.</li>
+<li><strong>Predictively</strong>, if the player repeats the same move ten times, the machine adapts to counter it.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="real-world-applications-1"><a class="header" href="#real-world-applications-1"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Game Design</strong>:
+<ul>
+<li>This example can be extended to learn game mechanics or simulate AI players.</li>
+</ul>
+</li>
+<li><strong>Machine Learning Basics</strong>:
+<ul>
+<li>Introduces the concept of leveraging historical data (player's repeated moves) to predict and counter future moves.</li>
+</ul>
+</li>
+<li><strong>CLI-Based Tools</strong>:
+<ul>
+<li>A foundation for creating interactive command-line programs, useful in automation or user interaction in terminals.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation-4"><a class="header" href="#code-explanation-4"><strong>Code Explanation</strong></a></h4>
+<p>The code can be broken down into key sections:</p>
+<ol>
+<li>
+<p><strong>Player Input and Move Validation</strong>:</p>
+<pre><code class="language-go">reader := bufio.NewReader(os.Stdin)
+cMove, _ = reader.ReadString('\n')
+cMove = strings.TrimSpace(cMove)
+</code></pre>
+<ul>
+<li>Accepts and trims the user's input.</li>
+<li>Validates the move (<code>R</code>, <code>P</code>, or <code>S</code>).</li>
+</ul>
+</li>
+<li>
+<p><strong>Machine Move Logic</strong>:</p>
+<ul>
+<li><strong>Random Move</strong>:
+<pre><code class="language-go">source := rand.NewSource(time.Now().UnixNano())
+rng := rand.New(source)
+machineMove = rng.Intn(3)
+</code></pre>
+<ul>
+<li>Generates a random move for the machine.</li>
+</ul>
+</li>
+<li><strong>Adaptive Move</strong>:
+<pre><code class="language-go">if rockCounter &gt;= 10 {
+    machineMove = paper
+} else if scissorCounter &gt;= 10 {
+    machineMove = rock
+} else if paperCounter &gt;= 10 {
+    machineMove = scissors
+}
+</code></pre>
+<ul>
+<li>Tracks repeated moves by the player and adapts to counter them.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Game Outcome</strong>:</p>
+<ul>
+<li>Uses a <code>switch</code> to determine the result:
+<pre><code class="language-go">switch move {
+case rock:
+    if machineMove == rock { /* draw logic */ }
+    else if machineMove == paper { /* machine wins */ }
+    else { /* player wins */ }
+}
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Result Summary</strong>:</p>
+<pre><code class="language-go">fmt.Println("\nAfter", rounds, "rounds:\n",
+    "you win: ", wins,
+    " machine wins ", machineWins,
+    ", with ", draws, "draws")
+</code></pre>
+<ul>
+<li>Provides a game summary after all rounds are played.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run"><a class="header" href="#how-to-run"><strong>How to Run</strong></a></h4>
+<p>To play the game:</p>
+<ol>
+<li>Save the file as <code>rps.go</code>.</li>
+<li>Run the program with:
+<pre><code class="language-bash">go run rps.go
+</code></pre>
+</li>
+<li>Input the number of rounds you'd like to play.</li>
+<li>Play by entering your move (<code>R</code>, <code>P</code>, or <code>S</code>) when prompted.</li>
+</ol>
+<p>Example run:</p>
+<pre><code>How many rounds do you want to play? 3
+
+Round 1: Choose either R, P or S
+R
+-&gt; draw
+
+Round 2: Choose either R, P or S
+P
+-&gt; machine wins
+
+Round 3: Choose either R, P or S
+P
+-&gt; you win
+
+After 3 rounds:
+ you win:  1  machine wins  1 , with  1 draws
+</code></pre>
+<hr />
+<h4 id="extensions"><a class="header" href="#extensions"><strong>Extensions</strong></a></h4>
+<ol>
+<li>Add more moves like <strong>Lizard</strong> and <strong>Spock</strong> to make it more challenging.</li>
+<li>Implement <strong>machine learning</strong> to predict player moves based on historical patterns.</li>
+<li>Build a <strong>graphical user interface (GUI)</strong> for a more interactive experience.</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="employee-salary-parser-in-go"><a class="header" href="#employee-salary-parser-in-go"><strong>Employee Salary Parser in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+func main() {
+	// Open the file for reading
+	f, err := os.Open("employee.txt")
+	check(err)
+	defer f.Close()
+
+	// Read the file line by line
+	scanner := bufio.NewScanner(f)
+
+	// Declare slices
+	var fullNames []string
+	var salaries []uint32
+
+	// Add data to the corresponding slice
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Fields(line)
+
+		if len(parts) == 3 {
+			fullName := parts[0] + " " + parts[1]
+			fullNames = append(fullNames, fullName)
+			salary, err := strconv.ParseUint(parts[2], 10, 32)
+			check(err)
+			salaries = append(salaries, uint32(salary))
+		} else {
+			fmt.Println("-&gt; Invalid line format")
+		}
+	}
+
+	// Error handling
+	if err := scanner.Err(); err != nil {
+		check(err)
+	}
+
+	//Find the employee with the smallest salary
+	minSalary := salaries[0]
+	minIndex := 0
+	for i, salary := range salaries {
+		if salary &lt; minSalary {
+			minSalary = salary
+			minIndex = i
+		}
+	}
+
+	//Find the employee with the largest salary
+	maxSalary := salaries[0]
+	maxIndex := 0
+	for i, salary := range salaries {
+		if salary &gt; maxSalary {
+			maxSalary = salary
+			maxIndex = i
+		}
+	}
+
+	//Find the average salary
+	var totalSalary uint32
+	for _, salary := range salaries {
+		totalSalary += salary
+	}
+	averageSalary := float64(totalSalary) / float64(len(salaries))
+
+	fmt.Printf("Company's smallest salary: %s, with: %v\n", fullNames[minIndex], minSalary)
+	fmt.Printf("Company's largest salary: %s, with: %v\n", fullNames[maxIndex], maxSalary)
+	fmt.Printf("Company's average salary: %.2f", averageSalary)
+}
+</code></pre>
+<h4 id="key-concepts-in-go-2"><a class="header" href="#key-concepts-in-go-2"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces:</p>
+<ol>
+<li><strong>File Handling</strong>:
+<ul>
+<li>Using <code>os.Open</code> to read files and <code>bufio.Scanner</code> to process them line by line.</li>
+</ul>
+</li>
+<li><strong>Error Handling</strong>:
+<ul>
+<li>The <code>check</code> function demonstrates a simple way of handling errors.</li>
+</ul>
+</li>
+<li><strong>String and Slice Operations</strong>:
+<ul>
+<li>Parsing strings with <code>strings.Fields</code> and managing dynamic collections with slices.</li>
+</ul>
+</li>
+<li><strong>Numeric Conversions</strong>:
+<ul>
+<li>Converting string data to unsigned integers with <code>strconv.ParseUint</code>.</li>
+</ul>
+</li>
+<li><strong>Basic Algorithms</strong>:
+<ul>
+<li>Finding minimum, maximum, and average values in a dataset.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program"><a class="header" href="#overview-of-the-program"><strong>Overview of the Program</strong></a></h4>
+<p>The program reads a file (<code>employee.txt</code>) containing employee data in the format:</p>
+<pre><code>FirstName LastName Salary
+</code></pre>
+<ul>
+<li><strong>Example Content</strong>:
+<pre><code>John Doe 5000
+Jane Smith 7500
+Alice Johnson 4000
+Bob Brown 8000
+</code></pre>
+</li>
+<li>It processes this data to:
+<ol>
+<li>Find the employee with the smallest salary.</li>
+<li>Find the employee with the largest salary.</li>
+<li>Calculate the average salary across all employees.</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h4 id="real-world-applications-2"><a class="header" href="#real-world-applications-2"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Payroll Management</strong>:
+<ul>
+<li>This example can form the basis of more comprehensive payroll systems, such as generating reports or filtering employees by salary range.</li>
+</ul>
+</li>
+<li><strong>Data Analytics</strong>:
+<ul>
+<li>Parsing and analyzing structured text data for insights.</li>
+</ul>
+</li>
+<li><strong>File Processing</strong>:
+<ul>
+<li>A starting point for building tools to process large datasets.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation-5"><a class="header" href="#code-explanation-5"><strong>Code Explanation</strong></a></h4>
+<p>The code can be divided into key steps:</p>
+<ol>
+<li>
+<p><strong>Reading and Parsing the File</strong>:</p>
+<pre><code class="language-go">f, err := os.Open("employee.txt")
+check(err)
+defer f.Close()
+scanner := bufio.NewScanner(f)
+</code></pre>
+<ul>
+<li>Opens the file and initializes a scanner to read it line by line.</li>
+</ul>
+</li>
+<li>
+<p><strong>Processing Each Line</strong>:</p>
+<pre><code class="language-go">parts := strings.Fields(line)
+if len(parts) == 3 {
+    fullName := parts[0] + " " + parts[1]
+    salary, err := strconv.ParseUint(parts[2], 10, 32)
+    check(err)
+    fullNames = append(fullNames, fullName)
+    salaries = append(salaries, uint32(salary))
+} else {
+    fmt.Println("-&gt; Invalid line format")
+}
+</code></pre>
+<ul>
+<li>Splits each line into parts: first and last name, and salary.</li>
+<li>Validates the format and appends data to slices.</li>
+</ul>
+</li>
+<li>
+<p><strong>Finding Minimum and Maximum Salaries</strong>:</p>
+<pre><code class="language-go">minSalary := salaries[0]
+minIndex := 0
+for i, salary := range salaries {
+    if salary &lt; minSalary {
+        minSalary = salary
+        minIndex = i
+    }
+}
+</code></pre>
+<ul>
+<li>Iterates through the <code>salaries</code> slice to find the smallest and largest values and their indices.</li>
+</ul>
+</li>
+<li>
+<p><strong>Calculating the Average Salary</strong>:</p>
+<pre><code class="language-go">var totalSalary uint32
+for _, salary := range salaries {
+    totalSalary += salary
+}
+averageSalary := float64(totalSalary) / float64(len(salaries))
+</code></pre>
+<ul>
+<li>Computes the total salary and divides it by the number of employees.</li>
+</ul>
+</li>
+<li>
+<p><strong>Displaying Results</strong>:</p>
+<pre><code class="language-go">fmt.Printf("Company's smallest salary: %s, with: %v\n", fullNames[minIndex], minSalary)
+fmt.Printf("Company's largest salary: %s, with: %v\n", fullNames[maxIndex], maxSalary)
+fmt.Printf("Company's average salary: %.2f", averageSalary)
+</code></pre>
+<ul>
+<li>Outputs the results with appropriate formatting.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run-1"><a class="header" href="#how-to-run-1"><strong>How to Run</strong></a></h4>
+<ul>
+<li>Example output:
+<pre><code>Company's smallest salary: Alice Johnson, with: 4000
+Company's largest salary: Bob Brown, with: 8000
+Company's average salary: 6125.00
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="extensions-1"><a class="header" href="#extensions-1"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Input Validation</strong>:
+<ul>
+<li>Add checks for negative salaries or invalid characters.</li>
+</ul>
+</li>
+<li><strong>Additional Analytics</strong>:
+<ul>
+<li>Include features like median salary or salary distribution.</li>
+</ul>
+</li>
+<li><strong>Dynamic Input</strong>:
+<ul>
+<li>Allow the filename to be passed as a command-line argument.</li>
+</ul>
+</li>
+<li><strong>Database Integration</strong>:
+<ul>
+<li>Replace file-based storage with database queries for scalability.</li>
+</ul>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="mergesort-algorithm-in-go"><a class="header" href="#mergesort-algorithm-in-go"><strong>MergeSort Algorithm in Go</strong></a></h3>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func merge(sortedSlice1 []int, sortedSlice2 []int) []int {
+	mergedSlice := make([]int, 0, len(sortedSlice1)+len(sortedSlice2))
+	var index1, index2 int
+	for index1 &lt; len(sortedSlice1) &amp;&amp; index2 &lt; len(sortedSlice2) {
+		if sortedSlice1[index1] &lt; sortedSlice2[index2] {
+			mergedSlice = append(mergedSlice, sortedSlice1[index1])
+			index1++
+		} else {
+			mergedSlice = append(mergedSlice, sortedSlice2[index2])
+			index2++
+		}
+	}
+	mergedSlice = append(mergedSlice, sortedSlice1[index1:]...)
+	mergedSlice = append(mergedSlice, sortedSlice2[index2:]...)
+	return mergedSlice
+}
+
+func mergeSort(items []int) []int {
+	if len(items) &lt; 2 {
+		return items
+	}
+	mid := len(items) / 2
+	first := mergeSort(items[:mid])
+	second := mergeSort(items[mid:])
+	return merge(first, second)
+}
+
+func main() {
+	const nElements = 10000
+	unsortedSlice := make([]int, nElements)
+
+	// generate numbers
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	for i := 0; i &lt; nElements; i++ {
+		unsortedSlice[i] = rng.Intn(10000)
+	}
+
+	sorted := mergeSort(unsortedSlice)
+
+	fmt.Println(sorted[:100])
+}
+</code></pre>
+<h4 id="key-concepts-in-go-3"><a class="header" href="#key-concepts-in-go-3"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example demonstrates:</p>
+<ol>
+<li><strong>Recursive Functions</strong>:
+<ul>
+<li>The <code>mergeSort</code> function showcases how recursion can simplify divide-and-conquer algorithms like MergeSort.</li>
+</ul>
+</li>
+<li><strong>Slices in Go</strong>:
+<ul>
+<li>Efficiently splits and merges slices in a type-safe manner.</li>
+</ul>
+</li>
+<li><strong>Custom Slice Operations</strong>:
+<ul>
+<li>Implements a <code>merge</code> function to combine two sorted slices.</li>
+</ul>
+</li>
+<li><strong>Random Number Generation</strong>:
+<ul>
+<li>Uses <code>math/rand</code> to generate a large dataset for sorting.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-mergesort"><a class="header" href="#overview-of-mergesort"><strong>Overview of MergeSort</strong></a></h4>
+<p>MergeSort is a <strong>divide-and-conquer algorithm</strong> that:</p>
+<ol>
+<li><strong>Divides</strong> the input array into two halves recursively.</li>
+<li><strong>Conquers</strong> by sorting each half.</li>
+<li><strong>Merges</strong> the two sorted halves into a single sorted array.</li>
+</ol>
+<p>It has a time complexity of (O(n \log n)), which makes it efficient for sorting large datasets.</p>
+<p><strong>Why a Go Implementation?</strong>
+While MergeSort is traditionally implemented in lower-level languages like C for performance, the Go implementation focuses on:</p>
+<ul>
+<li><strong>Readability</strong>: The recursive approach and slice operations make the code easy to understand.</li>
+<li><strong>Ease of Use</strong>: Go's built-in slice handling eliminates the need for manual memory management.</li>
+</ul>
+<hr />
+<h4 id="real-world-applications-3"><a class="header" href="#real-world-applications-3"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Database Systems</strong>:
+<ul>
+<li>Efficiently sorts large datasets stored in external memory (e.g., disk or SSD).</li>
+</ul>
+</li>
+<li><strong>Parallel Computing</strong>:
+<ul>
+<li>Its divide-and-conquer nature makes it suitable for parallelization.</li>
+</ul>
+</li>
+<li><strong>Merging Sorted Data</strong>:
+<ul>
+<li>Combines multiple sorted data streams in distributed systems.</li>
+</ul>
+</li>
+<li><strong>Sorting Algorithms in Libraries</strong>:
+<ul>
+<li>Often used as a fallback for sorting libraries when data size is too large for in-place algorithms like QuickSort.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation-6"><a class="header" href="#code-explanation-6"><strong>Code Explanation</strong></a></h4>
+<p>The code can be divided into logical sections:</p>
+<ol>
+<li>
+<p><strong>Merge Function</strong>:</p>
+<pre><code class="language-go">func merge(sortedSlice1 []int, sortedSlice2 []int) []int {
+    mergedSlice := make([]int, 0, len(sortedSlice1)+len(sortedSlice2))
+    var index1, index2 int
+    for index1 &lt; len(sortedSlice1) &amp;&amp; index2 &lt; len(sortedSlice2) {
+        if sortedSlice1[index1] &lt; sortedSlice2[index2] {
+            mergedSlice = append(mergedSlice, sortedSlice1[index1])
+            index1++
+        } else {
+            mergedSlice = append(mergedSlice, sortedSlice2[index2])
+            index2++
+        }
+    }
+    mergedSlice = append(mergedSlice, sortedSlice1[index1:]...)
+    mergedSlice = append(mergedSlice, sortedSlice2[index2:]...)
+    return mergedSlice
+}
+</code></pre>
+<ul>
+<li>Combines two sorted slices (<code>sortedSlice1</code> and <code>sortedSlice2</code>) into a single sorted slice.</li>
+<li>Maintains stability, meaning the order of equal elements is preserved.</li>
+</ul>
+</li>
+<li>
+<p><strong>MergeSort Function</strong>:</p>
+<pre><code class="language-go">func mergeSort(items []int) []int {
+    if len(items) &lt; 2 {
+        return items
+    }
+    mid := len(items) / 2
+    first := mergeSort(items[:mid])
+    second := mergeSort(items[mid:])
+    return merge(first, second)
+}
+</code></pre>
+<ul>
+<li>Recursively divides the input slice into halves until each slice contains one or zero elements.</li>
+<li>Merges the sorted halves back together using the <code>merge</code> function.</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<pre><code class="language-go">func main() {
+    const nElements = 10000
+    unsortedSlice := make([]int, nElements)
+
+    source := rand.NewSource(time.Now().UnixNano())
+    rng := rand.New(source)
+
+    for i := 0; i &lt; nElements; i++ {
+        unsortedSlice[i] = rng.Intn(10000)
+    }
+
+    sorted := mergeSort(unsortedSlice)
+
+    fmt.Println(sorted[:100])
+}
+</code></pre>
+<ul>
+<li>Generates a slice of 10,000 random integers.</li>
+<li>Sorts the slice using the <code>mergeSort</code> function.</li>
+<li>Prints the first 100 sorted elements for verification.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="example-output-4"><a class="header" href="#example-output-4">Example output:</a></h4>
+<pre><code>[0 5 12 16 21 ... 9876 9999]
+</code></pre>
+<hr />
+<h4 id="extensions-2"><a class="header" href="#extensions-2"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Parallelization</strong>:
+<ul>
+<li>Use goroutines to parallelize the sorting of the two halves.</li>
+</ul>
+</li>
+<li><strong>Custom Comparators</strong>:
+<ul>
+<li>Modify the <code>merge</code> function to support custom sorting criteria (e.g., descending order or by specific object attributes).</li>
+</ul>
+</li>
+<li><strong>Benchmarking</strong>:
+<ul>
+<li>Compare the performance of this implementation with Go's built-in <code>sort</code> package.</li>
+</ul>
+</li>
+<li><strong>Visualization</strong>:
+<ul>
+<li>Create a graphical representation of how MergeSort works step-by-step.</li>
+</ul>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="poker-straight-flush-probability-simulation-in-go"><a class="header" href="#poker-straight-flush-probability-simulation-in-go"><strong>Poker Straight Flush Probability Simulation in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sort"
+	"time"
+)
+
+type Suit int
+type Pip int
+
+const (
+	club Suit = iota
+	diamond
+	heart
+	spade
+)
+
+type Card struct {
+	s   Suit
+	pip Pip
+}
+
+func shuffle(d *[]Card) {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(*d), func(i, j int) {
+		(*d)[i], (*d)[j] = (*d)[j], (*d)[i]
+	})
+}
+
+func isStraightFlush(h []Card) bool {
+	var ccount, dcount, hcount, scount int
+	var sameSuitCards []Card
+
+	for _, v := range h {
+		switch v.s {
+		case club:
+			ccount++
+		case diamond:
+			dcount++
+		case heart:
+			hcount++
+		case spade:
+			scount++
+		}
+	}
+
+	// Step 1 : Check if all cards are of the same suit
+	if ccount &gt;= 5 || dcount &gt;= 5 || hcount &gt;= 5 || scount &gt;= 5 {
+		// Collect all cards of the same suit
+		for _, v := range h {
+			if (ccount &gt;= 5 &amp;&amp; v.s == club) ||
+				(dcount &gt;= 5 &amp;&amp; v.s == diamond) ||
+				(hcount &gt;= 5 &amp;&amp; v.s == heart) ||
+				(scount &gt;= 5 &amp;&amp; v.s == spade) {
+				sameSuitCards = append(sameSuitCards, v)
+			}
+		}
+
+		// Step 2 : Sort the cards by pip value
+		sort.Slice(sameSuitCards, func(i, j int) bool {
+			return sameSuitCards[i].pip &lt; sameSuitCards[j].pip
+		})
+
+		// Step 3 : Check if all cards are in sequence
+		consecutive := 1
+		for i := 1; i &lt; len(sameSuitCards); i++ {
+			if sameSuitCards[i].pip == sameSuitCards[i-1].pip+1 {
+				consecutive++
+				if consecutive == 5 {
+					return true
+				}
+			} else if sameSuitCards[i].pip == sameSuitCards[i-1].pip {
+				consecutive = 1
+			}
+		}
+	}
+
+	return false
+}
+
+func main() {
+	deck := make([]Card, 52)
+	var sfcount int // number of straight flushes
+	var totcnt int  // Number of trials
+
+	fmt.Print("Enter the number of trials: ")
+	_, err := fmt.Scanln(&amp;totcnt)
+	if err != nil {
+		fmt.Println("Invalid input. Please enter a valid number.")
+		return
+	}
+
+	// Initialize the deck
+	for i := 0; i &lt; 13; i++ {
+		deck[i] = Card{club, Pip(i + 1)}
+		deck[i+13] = Card{diamond, Pip(i + 1)}
+		deck[i+26] = Card{heart, Pip(i + 1)}
+		deck[i+39] = Card{spade, Pip(i + 1)}
+	}
+
+	// Run the trials
+	for i := 0; i &lt; totcnt; i++ {
+		shuffle(&amp;deck)
+		hand := deck[:7]
+
+		if isStraightFlush(hand) {
+			sfcount++
+		}
+	}
+
+	fmt.Printf("\nStraight flushes for %d trials: %d \n", totcnt, sfcount)
+	fmt.Printf("Probability of straight flush: %.8f\n", float64(sfcount)/float64(totcnt))
+}
+</code></pre>
+<h4 id="key-concepts-in-go-4"><a class="header" href="#key-concepts-in-go-4"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example introduces:</p>
+<ol>
+<li>
+<p><strong>Enumerated Types with <code>iota</code></strong>:</p>
+<ul>
+<li>Go uses the <code>iota</code> keyword to simplify the declaration of constants. It automatically increments for each line in the <code>const</code> block.</li>
+</ul>
+<pre><code class="language-go">const (
+    club Suit = iota
+    diamond
+    heart
+    spade
+)
+</code></pre>
+<ul>
+<li>Here, <code>club</code> is assigned <code>0</code>, <code>diamond</code> is <code>1</code>, <code>heart</code> is <code>2</code>, and <code>spade</code> is <code>3</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>The <code>for _,</code> Loop</strong>:</p>
+<ul>
+<li>Go uses the <code>for</code> loop for all iterations, replacing <code>while</code> and <code>do-while</code> loops in C.</li>
+<li>The <code>_</code> is a placeholder when you don’t need the index from the loop.</li>
+</ul>
+<pre><code class="language-go">for _, v := range h {
+    switch v.s {
+    case club:
+        ccount++
+    case diamond:
+        dcount++
+    case heart:
+        hcount++
+    case spade:
+        scount++
+    }
+}
+</code></pre>
+<ul>
+<li>Here, the loop iterates through the <code>h</code> slice, and <code>v</code> holds each element of the slice.</li>
+</ul>
+</li>
+<li>
+<p><strong>Slices and Sorting</strong>:</p>
+<ul>
+<li>Slices in Go allow dynamic resizing. The <code>sort.Slice</code> function sorts slices based on a custom comparison.</li>
+</ul>
+<pre><code class="language-go">sort.Slice(sameSuitCards, func(i, j int) bool {
+    return sameSuitCards[i].pip &lt; sameSuitCards[j].pip
+})
+</code></pre>
+</li>
+<li>
+<p><strong>Randomization</strong>:</p>
+<ul>
+<li>The <code>rand.Shuffle</code> function shuffles the deck using a time-based seed for randomness.</li>
+</ul>
+</li>
+<li>
+<p><strong>Probability Estimation</strong>:</p>
+<ul>
+<li>The program calculates the probability of a straight flush by dividing the number of straight flushes by the total number of trials.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-1"><a class="header" href="#overview-of-the-program-1"><strong>Overview of the Program</strong></a></h4>
+<p>This program simulates the probability of getting a <strong>straight flush</strong> in a 7-card hand from a shuffled deck. It involves:</p>
+<ol>
+<li><strong>User Input</strong>:
+<ul>
+<li>The user provides the number of trials to simulate.</li>
+</ul>
+</li>
+<li><strong>Deck Initialization</strong>:
+<ul>
+<li>A standard 52-card deck is created, with each card represented by a <code>Suit</code> and a <code>Pip</code> (rank).</li>
+</ul>
+</li>
+<li><strong>Shuffling and Hand Selection</strong>:
+<ul>
+<li>The deck is shuffled, and the top 7 cards form the hand.</li>
+</ul>
+</li>
+<li><strong>Straight Flush Detection</strong>:
+<ul>
+<li>The hand is analyzed to check if it contains a straight flush.</li>
+</ul>
+</li>
+<li><strong>Probability Calculation</strong>:
+<ul>
+<li>The program calculates the percentage of hands containing a straight flush after all trials.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="real-world-applications-4"><a class="header" href="#real-world-applications-4"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>Game Theory and Probability</strong>:
+<ul>
+<li>This program demonstrates the mathematical principles behind poker probabilities.</li>
+</ul>
+</li>
+<li><strong>Monte Carlo Simulations</strong>:
+<ul>
+<li>Randomized simulations like this are used in fields ranging from finance to physics to model complex systems.</li>
+</ul>
+</li>
+<li><strong>Card Game Algorithms</strong>:
+<ul>
+<li>Understanding the odds of different hands helps in designing and balancing card games.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation-7"><a class="header" href="#code-explanation-7"><strong>Code Explanation</strong></a></h4>
+<p>The code can be broken down into key sections:</p>
+<ol>
+<li>
+<p><strong>Deck Initialization</strong>:</p>
+<pre><code class="language-go">for i := 0; i &lt; 13; i++ {
+    deck[i] = Card{club, Pip(i + 1)}
+    deck[i+13] = Card{diamond, Pip(i + 1)}
+    deck[i+26] = Card{heart, Pip(i + 1)}
+    deck[i+39] = Card{spade, Pip(i + 1)}
+}
+</code></pre>
+<ul>
+<li>Creates a 52-card deck with 13 ranks (<code>1-13</code>) for each suit.</li>
+</ul>
+</li>
+<li>
+<p><strong>Shuffling</strong>:</p>
+<pre><code class="language-go">func shuffle(d *[]Card) {
+    rand.Seed(time.Now().UnixNano())
+    rand.Shuffle(len(*d), func(i, j int) {
+        (*d)[i], (*d)[j] = (*d)[j], (*d)[i]
+    })
+}
+</code></pre>
+<ul>
+<li>Shuffles the deck in place using the <code>rand.Shuffle</code> function.</li>
+</ul>
+</li>
+<li>
+<p><strong>Straight Flush Detection</strong>:</p>
+<ul>
+<li>The <code>isStraightFlush</code> function checks if the hand contains a straight flush:
+<ul>
+<li>Counts cards of each suit.</li>
+<li>Collects cards of the same suit.</li>
+<li>Sorts the cards by rank (<code>pip</code>).</li>
+<li>Checks if the sorted cards form a sequence of 5 consecutive ranks:
+<pre><code class="language-go">consecutive := 1
+for i := 1; i &lt; len(sameSuitCards); i++ {
+    if sameSuitCards[i].pip == sameSuitCards[i-1].pip+1 {
+        consecutive++
+        if consecutive == 5 {
+            return true
+        }
+    } else if sameSuitCards[i].pip == sameSuitCards[i-1].pip {
+        consecutive = 1
+    }
+}
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<ul>
+<li>Runs the simulation:
+<pre><code class="language-go">for i := 0; i &lt; totcnt; i++ {
+    shuffle(&amp;deck)
+    hand := deck[:7]
+
+    if isStraightFlush(hand) {
+        sfcount++
+    }
+}
+</code></pre>
+</li>
+<li>Calculates and prints the probability:
+<pre><code class="language-go">fmt.Printf("Probability of straight flush: %.8f\n", float64(sfcount)/float64(totcnt))
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run-2"><a class="header" href="#how-to-run-2"><strong>How to Run</strong></a></h4>
+<ol start="3">
+<li>Enter the number of trials when prompted:
+<pre><code>Enter the number of trials: 10000
+</code></pre>
+</li>
+<li>Example output:
+<pre><code>Straight flushes for 10000 trials: 12 
+Probability of straight flush: 0.00120000
+</code></pre>
+</li>
+</ol>
+<hr />
+<h4 id="extensions-3"><a class="header" href="#extensions-3"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Additional Hands</strong>:
+<ul>
+<li>Extend the program to detect and calculate probabilities for other poker hands (e.g., four of a kind, full house).</li>
+</ul>
+</li>
+<li><strong>Parallelization</strong>:
+<ul>
+<li>Use goroutines to run multiple trials in parallel for faster simulations.</li>
+</ul>
+</li>
+<li><strong>Graphical Analysis</strong>:
+<ul>
+<li>Visualize the probabilities of different hands using a library like <code>gonum/plot</code>.</li>
+</ul>
+</li>
+<li><strong>Card Representation</strong>:
+<ul>
+<li>Add a string representation for cards to display the hands more clearly.</li>
+</ul>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="doubly-linked-list-and-palindrome-checker-in-go"><a class="header" href="#doubly-linked-list-and-palindrome-checker-in-go"><strong>Doubly Linked List and Palindrome Checker in Go</strong></a></h2>
+<pre><code class="language-go">// Doubly linked list to store a sequence of characters and determine if it is a palindrome
+
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+type ListElement struct {
+	data rune         // data of the element
+	next *ListElement // pointer to the next element
+	prev *ListElement // pointer to the previous element
+}
+
+func createListElement(data rune, ptr *ListElement) *ListElement {
+	var element ListElement
+	element.data = data
+	element.next = ptr
+	if ptr != nil {
+		element.prev = ptr.prev
+	}
+	return &amp;element
+}
+
+func (h *ListElement) PrintList() {
+	if h == nil {
+		fmt.Println("List is empty")
+		return
+	}
+	fmt.Printf("%c -&gt; ", h.data)
+	h.next.PrintList()
+}
+
+func AddToFront(dataSlice []rune, h **ListElement) {
+	head := *h
+	for _, v := range dataSlice {
+		head = createListElement(v, head)
+	}
+	*h = head
+}
+
+func AddToRear(dataSlice []rune, h **ListElement) {
+	head := *h
+	for _, v := range dataSlice {
+		newElement := createListElement(v, nil)
+		if head != nil {
+			head.next = newElement
+		}
+		head = newElement
+	}
+}
+
+func DeleteFront(h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	*h = head.next
+	if head.next != nil {
+		head.next.prev = nil
+	}
+}
+
+func DeleteRear(h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	for head.next != nil {
+		head = head.next
+	}
+	if head.prev != nil {
+		head.prev.next = nil
+	} else {
+		*h = nil
+	}
+}
+
+func FindValue(value rune, h *ListElement) *ListElement {
+	if h == nil {
+		return nil
+	}
+	if h.data == value {
+		return h
+	}
+	return FindValue(value, h.next)
+}
+
+func DeleteValue(value rune, h **ListElement) {
+	head := *h
+	if head == nil {
+		return
+	}
+	if head.data == value {
+		DeleteFront(h)
+		return
+	}
+	for head.next != nil {
+		if head.next.data == value {
+			head.next = head.next.next
+			if head.next != nil {
+				head.next.prev = head
+			}
+			return
+		}
+		head = head.next
+	}
+}
+
+func IsEmpty(h *ListElement) bool {
+	if h == nil {
+		return true
+	}
+	return false
+}
+
+func FindLength(h *ListElement) int {
+	if h == nil {
+		return 0
+	}
+	return 1 + FindLength(h.next)
+}
+
+func InsertPosition(value rune, position int, h **ListElement) {
+	head := *h
+	if position &lt; 0 {
+		return
+	}
+	if position == 0 {
+		*h = createListElement(value, head)
+		return
+	}
+	for i := 0; i &lt; position-1; i++ {
+		if head == nil {
+			return
+		}
+		head = head.next
+	}
+	if head == nil {
+		return
+	}
+	head.next = createListElement(value, head.next)
+}
+
+func DeletePosition(position int, h **ListElement) {
+	head := *h
+	if position &lt; 0 {
+		return
+	}
+	if position == 0 {
+		DeleteFront(h)
+		return
+	}
+	for i := 0; i &lt; position-1; i++ {
+		if head == nil {
+			return
+		}
+		head = head.next
+	}
+	if head == nil {
+		return
+	}
+	head.next = head.next.next
+	if head.next != nil {
+		head.next.prev = head
+	}
+}
+
+func IsPalindrome(h *ListElement) bool {
+	if h == nil {
+		return false
+	}
+
+	// Find the tail of the List
+	tail := h
+	for tail.next != nil {
+		tail = tail.next
+	}
+
+	// Iterate from both ends towards the middle
+	for h != nil &amp;&amp; tail != nil &amp;&amp; h != tail &amp;&amp; h.prev != tail {
+		if h.data != tail.data {
+			return false
+		}
+		h = h.next
+		tail = tail.prev
+	}
+
+	return true
+}
+
+func main() {
+	var head *ListElement
+
+	fmt.Print("Type a word into the terminal to check if it is a palindrome: \n")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input")
+		return
+	}
+	input = strings.TrimSpace(input)
+
+	// Convert the input string to a slice of runes
+	dataslice := ([]rune)(input)
+
+	// Add the input to the front of the doubly linked list
+	AddToFront(dataslice, &amp;head)
+	fmt.Println("Added to front")
+	head.PrintList()
+	fmt.Println()
+
+	// Test if the input is a palindrome
+	fmt.Println("Is the input a palindrome? ")
+	fmt.Println(IsPalindrome(head))
+	fmt.Println()
+
+	// Test the other doubly linked list functions
+	fmt.Println("Testing the doubly linked list functions")
+
+	AddToRear(dataslice, &amp;head)
+	fmt.Println("Added to rear")
+	head.PrintList()
+	fmt.Println()
+
+	FindValue('a', head)
+	if FindValue('a', head) != nil {
+		fmt.Println("Value 'a' found")
+	} else {
+		fmt.Println("Value 'a' not found")
+	}
+	head.PrintList()
+	fmt.Println()
+
+	if FindValue('a', head) != nil {
+		fmt.Println("Deleted value 'a'")
+		DeleteValue('a', &amp;head)
+	} else {
+		fmt.Println("Value 'a' not found and not deleted")
+	}
+
+	IsEmpty(head)
+	if IsEmpty(head) {
+		fmt.Println("List is empty")
+	} else {
+		fmt.Println("List is not empty")
+	}
+
+	fmt.Println()
+	FindLength(head)
+	fmt.Println("Length of the list is: ", FindLength(head))
+
+	InsertPosition('a', 0, &amp;head)
+	fmt.Println("Inserted 'a' at position 0")
+	head.PrintList()
+	fmt.Println()
+
+	DeletePosition(0, &amp;head)
+	fmt.Println("Deleted position 0")
+	head.PrintList()
+	fmt.Println()
+
+	DeleteFront(&amp;head)
+	fmt.Println("Deleted front element")
+	head.PrintList()
+	fmt.Println()
+
+	DeleteRear(&amp;head)
+	fmt.Println("Deleted rear element")
+	head.PrintList()
+	fmt.Println()
+}
+</code></pre>
+<h4 id="key-concepts-in-go-5"><a class="header" href="#key-concepts-in-go-5"><strong>Key Concepts in Go</strong></a></h4>
+<p>This example showcases:</p>
+<ol>
+<li><strong>Doubly Linked List Implementation</strong>:
+<ul>
+<li>A doubly linked list is a data structure where each element (node) contains pointers to both its previous and next elements.</li>
+<li>The list supports operations such as insertion, deletion, traversal, and searching.</li>
+</ul>
+</li>
+<li><strong>Palindrome Detection</strong>:
+<ul>
+<li>Checks whether a word reads the same forwards and backwards using the doubly linked list.</li>
+</ul>
+</li>
+<li><strong>Error Handling</strong>:
+<ul>
+<li>Handles potential errors gracefully, such as invalid input or operations on an empty list.</li>
+</ul>
+</li>
+<li><strong>Recursive and Iterative Approaches</strong>:
+<ul>
+<li>Functions like <code>PrintList</code> use recursion, while others like <code>DeleteRear</code> use iteration.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-2"><a class="header" href="#overview-of-the-program-2"><strong>Overview of the Program</strong></a></h4>
+<p>The program implements a doubly linked list to:</p>
+<ol>
+<li>Store a sequence of characters (as <code>rune</code> data type).</li>
+<li>Perform various linked list operations such as adding, deleting, searching, and inserting nodes.</li>
+<li>Check if an input word is a palindrome using the doubly linked list.</li>
+</ol>
+<hr />
+<h4 id="real-world-applications-5"><a class="header" href="#real-world-applications-5"><strong>Real-World Applications</strong></a></h4>
+<ol>
+<li><strong>String Manipulation</strong>:
+<ul>
+<li>Palindrome detection is often used in text processing and cryptography.</li>
+</ul>
+</li>
+<li><strong>Data Structure Learning</strong>:
+<ul>
+<li>Doubly linked lists are fundamental data structures used in memory management, undo/redo operations, and navigation systems.</li>
+</ul>
+</li>
+<li><strong>Error-Resilient Algorithms</strong>:
+<ul>
+<li>Demonstrates how to handle edge cases like empty structures and invalid operations.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="code-explanation-8"><a class="header" href="#code-explanation-8"><strong>Code Explanation</strong></a></h4>
+<ol>
+<li>
+<p><strong>Struct Definition</strong>:</p>
+<pre><code class="language-go">type ListElement struct {
+    data rune         // data of the element
+    next *ListElement // pointer to the next element
+    prev *ListElement // pointer to the previous element
+}
+</code></pre>
+<ul>
+<li>Defines the structure for each node in the doubly linked list.</li>
+</ul>
+</li>
+<li>
+<p><strong>Core Linked List Functions</strong>:</p>
+<ul>
+<li>
+<p><strong>Adding to Front</strong>:</p>
+<pre><code class="language-go">func AddToFront(dataSlice []rune, h **ListElement) {
+    head := *h
+    for _, v := range dataSlice {
+        head = createListElement(v, head)
+    }
+    *h = head
+}
+</code></pre>
+<ul>
+<li>Iterates through the input data and adds each character to the front of the list.</li>
+</ul>
+</li>
+<li>
+<p><strong>Deleting from Rear</strong>:</p>
+<pre><code class="language-go">func DeleteRear(h **ListElement) {
+    head := *h
+    if head == nil {
+        return
+    }
+    for head.next != nil {
+        head = head.next
+    }
+    if head.prev != nil {
+        head.prev.next = nil
+    } else {
+        *h = nil
+    }
+}
+</code></pre>
+<ul>
+<li>Traverses to the end of the list and removes the last element.</li>
+</ul>
+</li>
+<li>
+<p><strong>Palindrome Check</strong>:</p>
+<pre><code class="language-go">func IsPalindrome(h *ListElement) bool {
+    if h == nil {
+        return false
+    }
+    tail := h
+    for tail.next != nil {
+        tail = tail.next
+    }
+    for h != nil &amp;&amp; tail != nil &amp;&amp; h != tail &amp;&amp; h.prev != tail {
+        if h.data != tail.data {
+            return false
+        }
+        h = h.next
+        tail = tail.prev
+    }
+    return true
+}
+</code></pre>
+<ul>
+<li>Compares characters from both ends of the list to determine if the word is a palindrome.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Error Handling</strong>:</p>
+<ul>
+<li>Handles invalid input gracefully:
+<pre><code class="language-go">reader := bufio.NewReader(os.Stdin)
+input, err := reader.ReadString('\n')
+if err != nil {
+    fmt.Println("Error reading input")
+    return
+}
+</code></pre>
+</li>
+<li>Checks for empty lists in operations like <code>DeleteFront</code> and <code>DeleteRear</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<ul>
+<li>Accepts user input and checks if the word is a palindrome:
+<pre><code class="language-go">fmt.Print("Type a word into the terminal to check if it is a palindrome: \n")
+input = strings.TrimSpace(input)
+dataslice := ([]rune)(input)
+AddToFront(dataslice, &amp;head)
+fmt.Println("Is the input a palindrome? ")
+fmt.Println(IsPalindrome(head))
+</code></pre>
+</li>
+<li>Tests various linked list operations to verify their correctness.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="how-to-run-3"><a class="header" href="#how-to-run-3"><strong>How to Run</strong></a></h4>
+<ul>
+<li>Enter a word when prompted to check if it is a palindrome:
+<pre><code>Type a word into the terminal to check if it is a palindrome: 
+racecar
+</code></pre>
+</li>
+<li>Example output:
+<pre><code>Added to front
+r -&gt; a -&gt; c -&gt; e -&gt; c -&gt; a -&gt; r -&gt; 
+Is the input a palindrome? 
+true
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="extensions-4"><a class="header" href="#extensions-4"><strong>Extensions</strong></a></h4>
+<ol>
+<li><strong>Error Reporting</strong>:
+<ul>
+<li>Add more informative error messages for invalid operations.</li>
+</ul>
+</li>
+<li><strong>Enhanced Palindrome Check</strong>:
+<ul>
+<li>Ignore spaces, punctuation, and capitalization when checking for palindromes.</li>
+</ul>
+</li>
+<li><strong>Performance Improvements</strong>:
+<ul>
+<li>Optimize functions like <code>FindLength</code> to avoid redundant calculations.</li>
+</ul>
+</li>
+<li><strong>Interactive CLI</strong>:
+<ul>
+<li>Allow users to perform linked list operations interactively.</li>
+</ul>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="3d-volume-calculator-using-interfaces-in-go"><a class="header" href="#3d-volume-calculator-using-interfaces-in-go"><strong>3D Volume Calculator Using Interfaces in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import (
+	"bufio"
+	"fmt"
+	"math"
+	"os"
+	"strconv"
+	"strings"
+)
+
+type Solid interface {
+	Volume() float64
+}
+
+type Sphere struct {
+	radius float64
+}
+
+type Cube struct {
+	length float64
+}
+
+type Pyramid struct {
+	base   float64
+	height float64
+}
+
+func (s Sphere) Volume() float64 {
+	return 4 * math.Pi * math.Pow(s.radius, 3) / 3
+}
+
+func (l Cube) Volume() float64 {
+	return math.Pow(l.length, 3)
+}
+
+func (p Pyramid) Volume() float64 {
+	return math.Pow(p.base, 2) * p.height / 3
+}
+
+func main() {
+	fmt.Println("Reading data.txt")
+	file, err := os.Open("data.txt")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	var solids []Solid
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Fields(line)
+		if len(parts) != 3 {
+			fmt.Println("Invalid line format: ", line)
+			continue
+		}
+
+		shapeType := parts[0]
+		dimension1, err1 := strconv.ParseFloat(parts[1], 64)
+		dimension2, err2 := strconv.ParseFloat(parts[2], 64)
+		if err1 != nil || err2 != nil {
+			fmt.Println("Invalid number format in line:", line)
+			continue
+		}
+
+		switch shapeType {
+		case "S":
+			solids = append(solids, Sphere{radius: dimension1})
+		case "C":
+			solids = append(solids, Cube{length: dimension1})
+		case "P":
+			solids = append(solids, Pyramid{base: dimension1, height: dimension2})
+		default:
+			fmt.Println("Unknown shape type in line:", line)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading file", err)
+	}
+
+	for _, solid := range solids {
+		fmt.Printf("Volume: %.2f\n", solid.Volume())
+	}
+}
+</code></pre>
+<h4 id="key-concepts-in-go-6"><a class="header" href="#key-concepts-in-go-6"><strong>Key Concepts in Go</strong></a></h4>
+<ol>
+<li>
+<p><strong>Interfaces</strong></p>
+<ul>
+<li>An interface defines a set of method signatures. Any type that implements those methods satisfies the interface.</li>
+<li>Here, the <code>Solid</code> interface requires the <code>Volume() float64</code> method.</li>
+<li>This allows different shapes (Sphere, Cube, Pyramid) to be treated uniformly when calculating volume.</li>
+</ul>
+</li>
+<li>
+<p><strong>Structs and Methods</strong></p>
+<ul>
+<li><code>Sphere</code>, <code>Cube</code>, and <code>Pyramid</code> are struct types, each with their own fields and a <code>Volume()</code> method matching the <code>Solid</code> interface.</li>
+</ul>
+</li>
+<li>
+<p><strong>Input Parsing and File Handling</strong></p>
+<ul>
+<li>Uses <code>bufio.Scanner</code> and <code>os.Open</code> to read and parse input from a file.</li>
+<li>Handles errors gracefully for file operations and input format.</li>
+</ul>
+</li>
+<li>
+<p><strong>Switch Statements</strong></p>
+<ul>
+<li>The code uses a <code>switch</code> to select the correct struct type based on the input.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-3"><a class="header" href="#overview-of-the-program-3"><strong>Overview of the Program</strong></a></h4>
+<ul>
+<li>
+<p>The program reads a file (<code>data.txt</code>) where each line describes a solid:</p>
+<ul>
+<li>The first letter is the shape type:
+<ul>
+<li><code>C</code> for Cube</li>
+<li><code>P</code> for Pyramid</li>
+<li><code>S</code> for Sphere</li>
+</ul>
+</li>
+<li>The following two numbers are dimensions:
+<ul>
+<li>For <code>Cube</code>: side length, second value unused (set as 0.0 in file)</li>
+<li>For <code>Sphere</code>: radius, second value unused (set as 0.0)</li>
+<li>For <code>Pyramid</code>: base length and height</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>For each line, the corresponding shape’s volume is calculated using methods that implement the interface, and the result is printed.</p>
+</li>
+</ul>
+<hr />
+<h4 id="example-input-datatxt"><a class="header" href="#example-input-datatxt"><strong>Example Input (<code>data.txt</code>)</strong></a></h4>
+<pre><code>C  2.5 0.0
+P  3 6.0
+S  4.5 0.0
+...
+</code></pre>
+<hr />
+<h4 id="code-explanation-9"><a class="header" href="#code-explanation-9"><strong>Code Explanation</strong></a></h4>
+<ul>
+<li>
+<p><strong>Solid Interface and Structs:</strong></p>
+<pre><code class="language-go">type Solid interface {
+    Volume() float64
+}
+type Sphere struct { radius float64 }
+type Cube struct { length float64 }
+type Pyramid struct { base, height float64 }
+</code></pre>
+</li>
+<li>
+<p><strong>Volume Methods:</strong></p>
+<pre><code class="language-go">func (s Sphere) Volume() float64 { return 4 * math.Pi * math.Pow(s.radius, 3) / 3 }
+func (l Cube) Volume() float64 { return math.Pow(l.length, 3) }
+func (p Pyramid) Volume() float64 { return math.Pow(p.base, 2) * p.height / 3 }
+</code></pre>
+</li>
+<li>
+<p><strong>Input Handling:</strong></p>
+<ul>
+<li>Reads each line, splits fields, converts numeric strings to float64, and selects the shape with a <code>switch</code>.</li>
+<li>Handles invalid or unknown input gracefully.</li>
+</ul>
+</li>
+<li>
+<p><strong>Processing:</strong></p>
+<pre><code class="language-go">for _, solid := range solids {
+    fmt.Printf("Volume: %.2f\n", solid.Volume())
+}
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="how-to-run-4"><a class="header" href="#how-to-run-4"><strong>How to Run</strong></a></h4>
+<ol>
+<li>Prepare a <code>data.txt</code> file with one shape per line as above.</li>
+<li>Save your Go file as <code>interfaces.go</code>.</li>
+<li>Run with:
+<pre><code class="language-bash">go run interfaces.go
+</code></pre>
+</li>
+<li>Sample output:
+<pre><code>Volume: 15.63
+Volume: 18.00
+Volume: 381.70
+...
+</code></pre>
+</li>
+</ol>
+<hr />
+<h4 id="extensions--real-world-applications"><a class="header" href="#extensions--real-world-applications"><strong>Extensions &amp; Real-World Applications</strong></a></h4>
+<ul>
+<li><strong>Adding More Shapes:</strong><br />
+Implement more 3D solids by creating new structs and their <code>Volume</code> methods—no change to the main logic needed.</li>
+<li><strong>Polymorphism:</strong><br />
+Interfaces allow for flexible, extensible, and decoupled code, a key principle in large Go programs.</li>
+<li><strong>Error Reporting:</strong><br />
+Improve error messages, or log and skip bad lines in larger data files.</li>
+<li><strong>Practical Use:</strong><br />
+Useful for any geometry processing, CAD software, or scientific computation where multiple shape types are handled generically.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="dining-philosophers-problem-in-go"><a class="header" href="#dining-philosophers-problem-in-go"><strong>Dining Philosophers Problem in Go</strong></a></h2>
+<pre><code class="language-go">// Philosopher's problem, exploring concurrency in Go
+
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
+)
+
+const (
+	numPhilosophers = 5
+	numForks        = 5
+	numMeals        = 3
+)
+
+type Philosopher struct {
+	id        int
+	leftFork  *sync.Mutex
+	rightFork *sync.Mutex
+	ladle     *sync.Mutex
+}
+
+func (p *Philosopher) eat(wg *sync.WaitGroup) {
+	defer wg.Done()
+	for i := 0; i &lt; numMeals; i++ {
+		// think
+		think := rand.Intn(5) + 1
+		fmt.Printf("Philosopher %d is thinking for %d seconds\n", p.id, think)
+		time.Sleep(time.Duration(think) * time.Second)
+
+		// pick up ladle
+		p.ladle.Lock()
+		fmt.Printf("Philosopher %d used the ladle\n", p.id)
+
+		// pick up fork
+		p.leftFork.Lock()
+		fmt.Printf("Philosopher %d picked up left fork\n", p.id)
+		p.rightFork.Lock()
+		fmt.Printf("Philosopher %d picked up right fork\n", p.id)
+
+		// eat after picking up two forks
+		eat := rand.Intn(5) + 1
+		fmt.Printf("Philosopher %d is eating for %d seconds\n", p.id, eat)
+		time.Sleep(time.Duration(eat) * time.Second)
+
+		// put down forks
+		p.leftFork.Unlock()
+		fmt.Printf("Philosopher %d put down the left fork\n", p.id)
+		p.rightFork.Unlock()
+		fmt.Printf("Philosopher %d put down the right fork\n", p.id)
+
+		// Put down ladle
+		p.ladle.Unlock()
+		fmt.Printf("Philosopher %d put down the ladle\n", p.id)
+	}
+}
+
+func main() {
+	forks := make([]*sync.Mutex, numForks)
+	for i := range forks {
+		forks[i] = &amp;sync.Mutex{}
+	}
+
+	ladle := &amp;sync.Mutex{}
+
+	philosophers := make([]*Philosopher, numPhilosophers)
+	for i := range philosophers {
+		leftFork := forks[i]
+		rightFork := forks[(i+1)%numForks]
+		philosophers[i] = &amp;Philosopher{id: i + 1, leftFork: leftFork, rightFork: rightFork, ladle: ladle}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(numPhilosophers)
+	for _, p := range philosophers {
+		go p.eat(&amp;wg)
+	}
+	wg.Wait()
+}
+</code></pre>
+<h4 id="key-concepts-in-go-7"><a class="header" href="#key-concepts-in-go-7"><strong>Key Concepts in Go</strong></a></h4>
+<ol>
+<li>
+<p><strong>Concurrency with Goroutines</strong></p>
+<ul>
+<li>Go’s goroutines are lightweight threads managed by the Go runtime, making concurrent programming simple and efficient.</li>
+<li>Each philosopher runs as a separate goroutine, simulating independent actors that can execute and be scheduled concurrently.</li>
+</ul>
+</li>
+<li>
+<p><strong>Mutual Exclusion with Mutexes</strong></p>
+<ul>
+<li>Uses <code>sync.Mutex</code> to represent forks and a ladle (shared resource), ensuring that only one philosopher can access each at a time.</li>
+<li>Prevents race conditions and ensures data consistency.</li>
+</ul>
+</li>
+<li>
+<p><strong>Deadlock Avoidance</strong></p>
+<ul>
+<li>The classic dining philosophers problem risks deadlocks if every philosopher picks up one fork and waits for another.</li>
+<li>This implementation introduces a <strong>ladle</strong> (a single mutex all philosophers must acquire before picking up forks), serializing entry to the critical section and eliminating deadlock risk.</li>
+</ul>
+</li>
+<li>
+<p><strong>WaitGroup Synchronization</strong></p>
+<ul>
+<li><code>sync.WaitGroup</code> is used to wait for all philosopher goroutines to finish their meals before the main program exits.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-4"><a class="header" href="#overview-of-the-program-4"><strong>Overview of the Program</strong></a></h4>
+<ul>
+<li><strong>Problem</strong>: Five philosophers sit at a table with five forks. Each needs two forks to eat. This classic concurrency problem explores synchronization and deadlock.</li>
+<li><strong>Go Solution</strong>:
+<ul>
+<li>Each philosopher is modeled as a goroutine.</li>
+<li>Forks and the ladle are mutexes.</li>
+<li>Philosophers repeatedly “think,” then attempt to eat by acquiring the ladle and both adjacent forks.</li>
+<li>After eating, they release all resources and think again.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="real-world-applications-of-concurrency"><a class="header" href="#real-world-applications-of-concurrency"><strong>Real-World Applications of Concurrency</strong></a></h4>
+<ul>
+<li><strong>Resource Scheduling</strong>: This pattern is useful for modeling systems where many agents need exclusive access to a limited set of resources (e.g., database locks, printer queues).</li>
+<li><strong>Professional Use</strong>: Concurrency is fundamental in backend services, networking, simulations, and distributed systems.</li>
+<li><strong>Go in Production</strong>: Go’s model is widely used in cloud infrastructure, microservices, high-performance servers, and real-time applications.</li>
+</ul>
+<hr />
+<h4 id="code-explanation-10"><a class="header" href="#code-explanation-10"><strong>Code Explanation</strong></a></h4>
+<ul>
+<li>
+<p><strong>Philosopher Struct</strong>:</p>
+<pre><code class="language-go">type Philosopher struct {
+    id        int
+    leftFork  *sync.Mutex
+    rightFork *sync.Mutex
+    ladle     *sync.Mutex
+}
+</code></pre>
+<ul>
+<li>Each philosopher keeps track of their forks and the shared ladle.</li>
+</ul>
+</li>
+<li>
+<p><strong>Eating Logic</strong>:</p>
+<pre><code class="language-go">func (p *Philosopher) eat(wg *sync.WaitGroup) {
+    defer wg.Done()
+    for i := 0; i &lt; numMeals; i++ {
+        // Think (simulate with sleep)
+        // Lock ladle (serialize access)
+        // Lock left then right fork (mutexes)
+        // Eat (simulate with sleep)
+        // Unlock all in reverse order
+    }
+}
+</code></pre>
+<ul>
+<li>The philosopher must acquire the ladle before forks, then eat, then release all.</li>
+</ul>
+</li>
+<li>
+<p><strong>Launching Goroutines</strong>:</p>
+<pre><code class="language-go">for _, p := range philosophers {
+    go p.eat(&amp;wg)
+}
+wg.Wait()
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="how-to-run-5"><a class="header" href="#how-to-run-5"><strong>How to Run</strong></a></h4>
+<ol>
+<li>Save the file as <code>philosopher.go</code>.</li>
+<li>Run the program:
+<pre><code class="language-bash">go run philosopher.go
+</code></pre>
+</li>
+<li>Example output:
+<pre><code>Philosopher 1 is thinking for 3 seconds
+Philosopher 2 is thinking for 5 seconds
+...
+Philosopher 1 used the ladle
+Philosopher 1 picked up left fork
+Philosopher 1 picked up right fork
+Philosopher 1 is eating for 2 seconds
+...
+</code></pre>
+</li>
+</ol>
+<hr />
+<h4 id="extensions-and-professional-tips"><a class="header" href="#extensions-and-professional-tips"><strong>Extensions and Professional Tips</strong></a></h4>
+<ul>
+<li><strong>Alternative Deadlock Solutions</strong>: Explore solutions such as ordering resource acquisition or using semaphores.</li>
+<li><strong>Performance Tuning</strong>: In high-concurrency systems, analyze lock contention and consider lock-free or channel-based designs.</li>
+<li><strong>Production Use</strong>: Always test concurrent code with race detection (<code>go run -race</code>); concurrency bugs can be subtle.</li>
+</ul>
+<hr />
+<p>Would you like to document another concurrency example or go deeper into Go’s concurrency patterns?</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="generic-stack-implementation-and-testing-in-go"><a class="header" href="#generic-stack-implementation-and-testing-in-go"><strong>Generic Stack Implementation and Testing in Go</strong></a></h2>
+<p><code>genstack.go</code></p>
+<pre><code class="language-go">// A package to implement a generic stack in Go
+
+package genstack
+
+import "fmt"
+
+type Stack[T any] struct {
+	vals []interface{}
+}
+
+func (s *Stack[T]) Push(val interface{}) {
+	s.vals = append(s.vals, val)
+}
+
+func (s *Stack[T]) isEmpty() bool {
+	return len(s.vals) == 0
+}
+
+func (s *Stack[T]) Pop() (val interface{}, err error) {
+	if s.isEmpty() {
+		var zero T
+		return zero, fmt.Errorf("Stack is empty")
+	}
+	val = s.vals[len(s.vals)-1]
+	s.vals = s.vals[:len(s.vals)-1]
+	return val, nil
+}
+
+func (s *Stack[T]) Top() (val interface{}, err error) {
+	if s.isEmpty() {
+		var zero T
+		return zero, fmt.Errorf("stack is empty")
+	}
+	return s.vals[len(s.vals)-1], nil
+}
+
+// Fill the stack from a slice
+func (s *Stack[T]) CopyFromSlice(slice []interface{}) {
+	for _, val := range slice {
+		s.Push(val)
+	}
+}
+
+// Pops the stack contents into a slice
+func (s *Stack[T]) CopyToSlice() []interface{} {
+	var slice []interface{}
+	for !s.isEmpty() {
+		val, err := s.Pop()
+		if err != nil {
+			break
+		}
+		slice = append(slice, val)
+	}
+	return slice
+}
+
+func main() {
+	fmt.Println("Stacks")
+	var intStack Stack[int]
+	fmt.Println(intStack)
+	intStack.Push(15)
+	intStack.Push("dog")
+	intStack.Push(25)
+	fmt.Println(intStack)
+	fmt.Println(intStack.isEmpty())
+
+	// Copy stack contents to a slice
+	slice := intStack.CopyToSlice()
+	fmt.Println("Slice:", slice)
+	fmt.Println("Stack after CopyToSlice:", intStack)
+	intStack.CopyFromSlice(slice)
+	fmt.Println("Stack after CopyFromSlice:", intStack)
+}
+</code></pre>
+<p><code>genstack_test.go</code></p>
+<pre><code class="language-go">// Running unit tests for genstack package
+
+package genstack
+
+import (
+	"testing"
+)
+
+func TestPushPop(t *testing.T) {
+	stack := Stack[int]{}
+
+	stack.Push(10)
+	stack.Push(20)
+
+	val, err := stack.Pop()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if val != 20 {
+		t.Errorf("Expected 20, got %v", val)
+	}
+
+	val2, err2 := stack.Pop()
+	if err2 != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if val2 != 10 {
+		t.Errorf("Expected 10, got %v", val2)
+	}
+
+	_, err = stack.Pop()
+	if err == nil {
+		t.Errorf("Expected error, got nil")
+	}
+}
+
+func TestIsEmpty(t *testing.T) {
+	stack := Stack[int]{}
+
+	if !stack.isEmpty() {
+		t.Errorf("Expected stack to be empty")
+	}
+
+	stack.Push(10)
+	if stack.isEmpty() {
+		t.Errorf("Expected stack to be non-empty")
+	}
+
+	stack.Pop()
+	if !stack.isEmpty() {
+		t.Errorf("Expected stack to be empty")
+	}
+}
+
+</code></pre>
+<h4 id="key-concepts-in-go-8"><a class="header" href="#key-concepts-in-go-8"><strong>Key Concepts in Go</strong></a></h4>
+<ol>
+<li>
+<p><strong>Generics</strong></p>
+<ul>
+<li>The stack is defined as <code>Stack[T any]</code>, using Go’s generics to allow for stacks of any type.</li>
+<li>This provides flexibility and type safety, a major feature added in Go 1.18+.</li>
+</ul>
+</li>
+<li>
+<p><strong>Interfaces and Type Flexibility</strong></p>
+<ul>
+<li>Internally, the stack stores values as <code>[]interface{}</code>. This enables pushing different types onto the stack, but means type assertions or checks may be necessary when popping.</li>
+</ul>
+</li>
+<li>
+<p><strong>Idiomatic Error Handling</strong></p>
+<ul>
+<li>Both <code>Pop()</code> and <code>Top()</code> return an error if the stack is empty, following Go’s convention of explicit error returns rather than exceptions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Testing with the <code>testing</code> Package</strong></p>
+<ul>
+<li>Testing in Go is simple and built-in: functions beginning with <code>Test</code> in a <code>*_test.go</code> file are automatically discovered and run with <code>go test</code>.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-5"><a class="header" href="#overview-of-the-program-5"><strong>Overview of the Program</strong></a></h4>
+<ul>
+<li><strong>genstack.go</strong> implements a generic stack, supporting:
+<ul>
+<li>Pushing and popping elements</li>
+<li>Checking if the stack is empty</li>
+<li>Copying stack contents to/from slices</li>
+</ul>
+</li>
+<li><strong>genstack_test.go</strong> provides unit tests to verify core stack behavior, ensuring reliability and correctness.</li>
+</ul>
+<hr />
+<h4 id="test-file-explanation-genstack_testgo"><a class="header" href="#test-file-explanation-genstack_testgo"><strong>Test File Explanation (<code>genstack_test.go</code>)</strong></a></h4>
+<ul>
+<li>
+<p><strong>TestPushPop</strong></p>
+<ul>
+<li>Pushes integers onto the stack, pops them, and checks order (LIFO: last-in, first-out).</li>
+<li>Ensures errors are correctly raised when popping from an empty stack.</li>
+</ul>
+</li>
+<li>
+<p><strong>TestIsEmpty</strong></p>
+<ul>
+<li>Verifies that the stack correctly reports empty and non-empty states as elements are pushed and popped.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-go">func TestPushPop(t *testing.T) {
+	stack := Stack[int]{}
+	stack.Push(10)
+	stack.Push(20)
+	val, err := stack.Pop()
+	if val != 20 { /* ... */ }
+	// ... further checks ...
+}
+</code></pre>
+<hr />
+<h4 id="how-to-run-the-tests"><a class="header" href="#how-to-run-the-tests"><strong>How to Run the Tests</strong></a></h4>
+<ol>
+<li>Ensure both <code>genstack.go</code> and <code>genstack_test.go</code> are in the same directory/package.</li>
+<li>Run:
+<pre><code class="language-bash">go test
+</code></pre>
+</li>
+<li>Output:
+<pre><code>ok  	theflyoccultist/hello-go/genstack	0.002s
+</code></pre>
+</li>
+</ol>
+<hr />
+<h4 id="real-world-use-cases"><a class="header" href="#real-world-use-cases"><strong>Real-World Use Cases</strong></a></h4>
+<ul>
+<li>
+<p><strong>Testing in Go</strong>:</p>
+<ul>
+<li>Automated tests are crucial for reliability, especially when implementing generic data structures.</li>
+<li>Go's testing framework is simple, fast, and integrates with tools for continuous integration and code coverage.</li>
+</ul>
+</li>
+<li>
+<p><strong>Generic Data Structures</strong>:</p>
+<ul>
+<li>Stacks are used in parsing, algorithms, interpreter runtimes, undo/redo features, and much more.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="extensions-5"><a class="header" href="#extensions-5"><strong>Extensions</strong></a></h4>
+<ul>
+<li><strong>Type Safety</strong>:
+<ul>
+<li>Consider using <code>[]T</code> instead of <code>[]interface{}</code> for stricter type guarantees (now possible with Go generics).</li>
+</ul>
+</li>
+<li><strong>More Operations</strong>:
+<ul>
+<li>Add Peek, Size, or Clear methods for a more complete stack implementation.</li>
+</ul>
+</li>
+<li><strong>More Tests</strong>:
+<ul>
+<li>Add tests for copying to/from slices, pushing mixed types, or concurrent usage.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<div style="break-before: page; page-break-before: always;"></div><h2 id="dijkstras-algorithm-in-go"><a class="header" href="#dijkstras-algorithm-in-go"><strong>Dijkstra's Algorithm in Go</strong></a></h2>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+// Edge represents a connection between two nodes
+type Edge struct {
+	Source      int
+	Destination int
+	Weight      int
+}
+
+// Graph represents a graph with a list of edges
+type Graph struct {
+	vertices int
+	edges    []Edge
+}
+
+const large = 999999
+
+// NewGraph creates a new graph with a given number of vertices
+func NewGraph(vertices int) *Graph {
+	return &amp;Graph{
+		vertices: vertices,
+		edges:    make([]Edge, 0),
+	}
+}
+
+// AddEdge adds an edge to the graph
+func (g *Graph) AddEdge(source, destination, weight int) {
+	g.edges = append(g.edges, Edge{source, destination, weight})
+	g.edges = append(g.edges, Edge{destination, source, weight})
+}
+
+// Dijkstra calculates the shortest path from a source node to all other nodes
+func (g *Graph) Dijkstra(source int) []int {
+	distances := make([]int, g.vertices)
+	visited := make([]bool, g.vertices)
+
+	for i := range distances {
+		distances[i] = large
+	}
+	distances[source] = 0
+
+	for i := 0; i &lt; g.vertices-1; i++ {
+		u := g.minDistance(distances, visited)
+		visited[u] = true
+
+		for _, edge := range g.edges {
+			if !visited[edge.Destination] &amp;&amp; edge.Source == u {
+				newDistance := distances[u] + edge.Weight
+				if newDistance &lt; distances[edge.Destination] {
+					distances[edge.Destination] = newDistance
+				}
+			}
+		}
+	}
+
+	return distances
+}
+
+func (g *Graph) minDistance(distances []int, visited []bool) int {
+	minDist := large
+	minIndex := -1
+
+	for v := 0; v &lt; g.vertices; v++ {
+		if !visited[v] &amp;&amp; distances[v] &lt;= minDist {
+			minDist = distances[v]
+			minIndex = v
+		}
+	}
+
+	return minIndex
+}
+
+func main() {
+	g := NewGraph(9)
+
+	// Add edges to the graph
+	g.AddEdge(0, 1, 4)
+	g.AddEdge(0, 7, 8)
+	g.AddEdge(1, 2, 8)
+	g.AddEdge(1, 7, 11)
+	g.AddEdge(2, 3, 7)
+	g.AddEdge(2, 8, 2)
+	g.AddEdge(2, 5, 4)
+	g.AddEdge(3, 4, 9)
+	g.AddEdge(3, 5, 14)
+	g.AddEdge(4, 5, 10)
+	g.AddEdge(5, 6, 2)
+	g.AddEdge(6, 7, 1)
+	g.AddEdge(6, 8, 6)
+	g.AddEdge(7, 8, 7)
+
+	// Calculate the shortest path from node 0 to all other nodes
+	distances := g.Dijkstra(0)
+
+	// Print the shortest path to all nodes
+	fmt.Println("Shortest path from node 0 to all other nodes:")
+	for i, distance := range distances {
+		fmt.Printf("Node %d: %d\n", i, distance)
+	}
+}
+</code></pre>
+<h4 id="key-concepts-in-go-9"><a class="header" href="#key-concepts-in-go-9"><strong>Key Concepts in Go</strong></a></h4>
+<ol>
+<li>
+<p><strong>Graph Representation</strong></p>
+<ul>
+<li>The graph is modeled using a <code>Graph</code> struct with a slice of <code>Edge</code> structs.</li>
+<li>Each <code>Edge</code> holds a source, destination, and weight.</li>
+</ul>
+</li>
+<li>
+<p><strong>Dijkstra's Algorithm</strong></p>
+<ul>
+<li>Finds the shortest path from a source node to all other nodes in a weighted graph with non-negative weights.</li>
+<li>The implementation uses basic slices for distances and visited nodes, focusing on simplicity and readability.</li>
+</ul>
+</li>
+<li>
+<p><strong>Idiomatic Go</strong></p>
+<ul>
+<li>Makes use of Go’s slices, custom struct types, and method receivers for clean, modular code.</li>
+<li>Uses zero-based indexing and initialization patterns familiar to Go developers.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h4 id="overview-of-the-program-6"><a class="header" href="#overview-of-the-program-6"><strong>Overview of the Program</strong></a></h4>
+<ul>
+<li><strong>Purpose:</strong><br />
+Finds the shortest path from a starting node (node 0) to all other nodes in a sample undirected weighted graph.</li>
+<li><strong>How It Works:</strong>
+<ol>
+<li>A graph is created and edges are added.</li>
+<li>The <code>Dijkstra</code> method computes shortest paths from node 0.</li>
+<li>Results are printed to the terminal.</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h4 id="code-explanation-11"><a class="header" href="#code-explanation-11"><strong>Code Explanation</strong></a></h4>
+<ul>
+<li>
+<p><strong>Structs and Graph Construction</strong></p>
+<pre><code class="language-go">type Edge struct { Source, Destination, Weight int }
+type Graph struct { vertices int; edges []Edge }
+</code></pre>
+<ul>
+<li>The graph is undirected: each <code>AddEdge</code> call inserts both directions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Dijkstra’s Algorithm</strong></p>
+<pre><code class="language-go">func (g *Graph) Dijkstra(source int) []int {
+    distances := make([]int, g.vertices)
+    visited := make([]bool, g.vertices)
+    // Initialize all distances to a large value
+    // Main loop: pick unvisited node with smallest distance, update neighbors
+}
+</code></pre>
+<ul>
+<li>Uses a simple linear search for the next node (not a heap/priority queue), prioritizing clarity over speed.</li>
+</ul>
+</li>
+<li>
+<p><strong>Result Output</strong></p>
+<pre><code class="language-go">for i, distance := range distances {
+    fmt.Printf("Node %d: %d\n", i, distance)
+}
+</code></pre>
+</li>
+</ul>
+<hr />
+<h4 id="how-to-run-6"><a class="header" href="#how-to-run-6"><strong>How to Run</strong></a></h4>
+<ol>
+<li>Save the file as <code>dijkstra.go</code>.</li>
+<li>Run the program:
+<pre><code class="language-bash">go run dijkstra.go
+</code></pre>
+</li>
+<li>Expected output:
+<pre><code>Shortest path from node 0 to all other nodes:
+Node 0: 0
+Node 1: 4
+Node 2: 12
+Node 3: 19
+Node 4: 21
+Node 5: 11
+Node 6: 9
+Node 7: 8
+Node 8: 14
+</code></pre>
+</li>
+</ol>
+<hr />
+<h4 id="real-world-applications-6"><a class="header" href="#real-world-applications-6"><strong>Real-World Applications</strong></a></h4>
+<ul>
+<li><strong>Navigation &amp; Routing:</strong><br />
+GPS, mapping software, network packet routing.</li>
+<li><strong>Game Development:</strong><br />
+Pathfinding for AI, dynamic environments.</li>
+<li><strong>Operations Research:</strong><br />
+Logistics, resource allocation, project planning.</li>
+</ul>
+<hr />
+<h4 id="extensions-6"><a class="header" href="#extensions-6"><strong>Extensions</strong></a></h4>
+<ul>
+<li><strong>Performance:</strong><br />
+For larger graphs, replace the linear search in <code>minDistance</code> with a min-heap (priority queue).</li>
+<li><strong>Directed Graphs:</strong><br />
+Modify <code>AddEdge</code> to add only one direction for directed graphs.</li>
+<li><strong>Path Reconstruction:</strong><br />
+Track predecessors to reconstruct the actual shortest path, not just distances.</li>
+</ul>
+<hr />
+<h4 id="why-go"><a class="header" href="#why-go"><strong>Why Go?</strong></a></h4>
+<ul>
+<li><strong>Simplicity:</strong><br />
+Go’s syntax allows for clear and concise code, reducing boilerplate.</li>
+<li><strong>Concurrency:</strong><br />
+While not used here, Go excels at concurrent computation—useful for parallel pathfinding in large or dynamic graphs.</li>
+<li><strong>Readability:</strong><br />
+Easier for teams to understand and maintain compared to lower-level languages.</li>
+</ul>
 
                     </main>
 
