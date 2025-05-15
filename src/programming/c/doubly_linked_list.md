@@ -271,8 +271,6 @@ Sorted list: `10 <-> 20 <-> 30 <-> 40 <-> 50`
 
 ---
 
-This addition will make your documentation even more robust and appealing to readers! If you'd like, I can analyze the `double_linked_lists.c` file to verify and explain your implementation of `split_list` and `merge`.
-
 ### Advantages of a Doubly Linked List Over a Singly Linked List
 
 1. **Bidirectional Traversal:**  

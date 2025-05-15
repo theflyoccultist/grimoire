@@ -4,7 +4,7 @@
 
 # Debugging Grimoire - The Tome Of Cursed Knowledge
 
-- [DevOps](devops/README.md)
+- [DevOps ☁️](devops/README.md)
   - [Set Up SSH for GitHub](devops/github-ssh.md)
   - [Minimal Docker Image for Ruby](devops/minimal-ruby-docker.md)
   - [Deploying mdBook to Github Pages with GitHub Actions](devops/gitactions-mdbook.md)
@@ -17,20 +17,20 @@
   - [Set Up PostgreSQL in a Google Cloud VM using Docker Compose](virtualization/postgres-gcloud-vm.md)
   - [Create an HMAC Server API for the VM](virtualization/postgres-gcloud-vm2.md)
 
-- [Linux](linux/README.md)
+- [Linux 🐧](linux/README.md)
   - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
   - [Linux Process Management](linux/linux-proc-mgmt.md)
 
-- [Database](database/README.md)
+- [Database 🐘](database/README.md)
   - [PostgreSQL Local Setup Guide](database/postgres-local.md)
   - [How to Setup Rate Limiting in PostgreSQL](database/postgres-ratelimiting.md)
   - [How to Boot Up Redis on Debian](database/redis-setup.md)
 
-- [Cheat Sheet](cheatsheet/README.md)
+- [Cheat Sheet 💡](cheatsheet/README.md)
   - [GitHub Cheat Sheet](cheatsheet/github.md)
   - [YAML Cheat Sheet](cheatsheet/yaml-cheatsheet.md)
 
-- [Programming Languages](programming/README.md)
+- [Programming Languages 🖥️](programming/README.md)
   - [SQL 📊](programming/sql/README.md)
     - [Part 1 - Fundamentals](programming/sql/pt1-fundamentals.md)
     - [Part 2 - GROUP BY](programming/sql/pt2-GROUPBY.md)
