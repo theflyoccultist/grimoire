@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Use SQLite as Your Rate Limiter in Ruby - Debugging Grimoire</title>
+        <title>Sea Elephants Weight Generator - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,67 +155,111 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="use-sqlite3-as-your-ratelimiter-in-ruby"><a class="header" href="#use-sqlite3-as-your-ratelimiter-in-ruby">Use SQLite3 as Your RateLimiter in Ruby</a></h1>
-<p>Sometimes, your project is small, scalability is a problem for later and you can't afford to deploy Redis separately either. In that case, you can always rely on SQLite3 to gatekeep users that might be making too many requests.</p>
-<pre><code class="language-ruby"># frozen_string_literal: true
+                        <h2 id="weight_generatorc"><a class="header" href="#weight_generatorc"><code>weight_generator.c</code></a></h2>
+<pre><code class="language-c">// Generate random weight numbers within a range and assign to elephants
 
-require 'dotenv/load'
-require 'sqlite3'
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
 
-# The @limit and @period instance variables specify
-# the maximum number of requests and the time period,
-# respectively.
-class RateLimiter
-  def initialize(app, limit:, period:, db_path: 'data/rate-limiter.db')
-    @app = app
-    @limit = limit
-    @period = period
+#define MAX_ELEPHANT_SEAL_WT_MALE 8800
+#define MIN_ELEPHANT_SEAL_WT_MALE 4400
 
-    @db = SQLite3::Database.new(db_path)
-    create_table
-  end
+#define RANGE       4400
+#define POPULATION  1000
+#define WEIGHT_OVER rand() % RANGE
+#define WEIGHT      WEIGHT_OVER + MIN_ELEPHANT_SEAL_WT_MALE
+#define FILL        for (i = 0; i &lt; POPULATION; i++) \
+                    data[i] = WEIGHT
 
-  def call(env)
-    req = Rack::Request.new(env)
-    ip = req.ip
+void print_data (int d[], int size) {
+  int i;
+  for (i = 0; i &lt; size; i++) {
+    printf("%d\t", d[i]);
+    if ((i + 1) % 10 == 0) printf("\n");
+  }
+}
 
-    current_time = Time.now.to_i
-    window_start = current_time - @period
-
-    @db.execute('DELETE FROM rate_limits WHERE timestamp &lt; ?', window_start)
-
-    count = @db.get_first_value('SELECT COUNT(*) FROM rate_limits WHERE ip = ?', ip)
-
-    return [429, { 'content-type' =&gt; 'text/plain' }, ['rate limit exceeded']] if count &gt; @limit
-
-    @db.execute('INSERT INTO rate_limits (ip, timestamp) VALUES (?, ?)', [ip, current_time])
-
-    @app.call(env)
-  end
-
-  private
-
-  def create_table
-    @db.execute &lt;&lt;-SQL
-      CREATE TABLE IF NOT EXISTS rate_limits (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ip TEXT NOT NULL,
-        timestamp INTEGER NOT NULL
-      );
-    SQL
-  end
-end
+int main () {
+  int i;
+  int data [POPULATION];
+  srand(time(0));
+  FILL;
+  print_data(data, POPULATION);
+  printf("\n\n");
+  return 0;
+}
 </code></pre>
+<h3 id="overview"><a class="header" href="#overview">Overview</a></h3>
+<p>This program generates random weights for a population of elephant seals, based on pre-defined weight ranges. It utilizes macros to simplify the weight calculation and prints the generated weights in a tabular format.</p>
+<h3 id="code-details"><a class="header" href="#code-details">Code Details</a></h3>
+<h4 id="key-macros"><a class="header" href="#key-macros">Key Macros</a></h4>
+<ul>
+<li><strong><code>MAX_ELEPHANT_SEAL_WT_MALE</code></strong>: Defines the maximum weight for a male elephant seal (8800 lbs).</li>
+<li><strong><code>MIN_ELEPHANT_SEAL_WT_MALE</code></strong>: Defines the minimum weight for a male elephant seal (4400 lbs).</li>
+<li><strong><code>RANGE</code></strong>: The range of weights (<code>4400</code> lbs, calculated as <code>MAX - MIN</code>).</li>
+<li><strong><code>POPULATION</code></strong>: The number of elephant seals in the population (<code>1000</code> seals).</li>
+<li><strong><code>WEIGHT_OVER</code></strong>: Generates a random weight offset within the range.</li>
+<li><strong><code>WEIGHT</code></strong>: Calculates the actual weight by adding the offset to the minimum weight.</li>
+<li><strong><code>FILL</code></strong>: A macro to populate the <code>data</code> array with random weights.</li>
+</ul>
+<h4 id="functions"><a class="header" href="#functions">Functions</a></h4>
+<ul>
+<li><strong><code>void print_data(int d[], int size)</code></strong>:
+<ul>
+<li>Prints the elements of the provided array (<code>d</code>) in rows of 10.</li>
+<li>Parameters:
+<ul>
+<li><code>d[]</code>: The array of weights.</li>
+<li><code>size</code>: The size of the array.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="main"><a class="header" href="#main"><code>main()</code></a></h4>
+<ul>
+<li>Initializes an array (<code>data</code>) to store the weights of the population.</li>
+<li>Seeds the random number generator using the current time (<code>srand(time(0))</code>).</li>
+<li>Fills the <code>data</code> array with random weights using the <code>FILL</code> macro.</li>
+<li>Prints the generated weights using the <code>print_data</code> function.</li>
+</ul>
+<h3 id="usage"><a class="header" href="#usage">Usage</a></h3>
+<ol>
+<li>Compile the program using a C compiler, e.g., <code>gcc weight_generator.c -o weight_generator</code>.</li>
+<li>Run the program: <code>./weight_generator</code>.</li>
+<li>The output will display 1000 weights in rows of 10, representing the weights of the elephant seals.</li>
+</ol>
+<h3 id="example-output"><a class="header" href="#example-output">Example Output</a></h3>
+<pre><code>4402    5000    6000    4800    7600    8800    7000    4600    5800    5400
+...
+</code></pre>
+<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
+<ul>
+<li>Standard C libraries:
+<ul>
+<li><code>&lt;stdio.h&gt;</code>: For input/output functions.</li>
+<li><code>&lt;stdlib.h&gt;</code>: For random number generation.</li>
+<li><code>&lt;time.h&gt;</code>: For seeding the random number generator.</li>
+</ul>
+</li>
+</ul>
+<h3 id="additional-notes"><a class="header" href="#additional-notes">Additional Notes</a></h3>
+<ul>
+<li>The program is designed specifically for male elephant seals, as indicated by the defined weight range.</li>
+<li>The use of macros simplifies the code but can make debugging more challenging.</li>
+<li>The population size (<code>POPULATION</code>) and other constants can be adjusted as needed.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/ruby/setup_redis_ruby.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/c/employee.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/Quick_Sinatra_Setup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/c/card_deck.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -225,11 +269,11 @@ end
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/ruby/setup_redis_ruby.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/c/employee.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/Quick_Sinatra_Setup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/c/card_deck.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

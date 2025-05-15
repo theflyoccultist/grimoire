@@ -619,7 +619,7 @@ git push origin main
 <li>Bonus: in your domain host DNS settings, add * as a host, CNAME as type and ghs.googlehosted.com if you want subdomains.</li>
 </ul>
 <p>-Now any subdomain (<code>blog.yourdomain.com</code>, <code>api.yourdomain.com</code>, etc.) will automatically work.</p>
-<h1 id="fix-if-your-cloud-run-region-doesnt-support-domain-mapping"><a class="header" href="#fix-if-your-cloud-run-region-doesnt-support-domain-mapping">Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping</a></h1>
+<h2 id="fix-if-your-cloud-run-region-doesnt-support-domain-mapping"><a class="header" href="#fix-if-your-cloud-run-region-doesnt-support-domain-mapping">Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping</a></h2>
 <p>🔥 <strong>If you see:</strong></p>
 <p>❌ <em>"Domain mappings are not available in this region."</em></p>
 <p>💀 <strong>Google Cloud decided your region isn’t good enough.</strong></p>
@@ -2513,6 +2513,1871 @@ done
 
 [ "$1" == "$result" ] &amp;&amp; echo true || echo false
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
+<ol>
+<li>
+<p><strong>Header Inclusion</strong>:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+</code></pre>
+<p>The <code>stdio.h</code> library is included for input and output functions, specifically for using <code>printf</code>.</p>
+</li>
+<li>
+<p><strong>Enumeration Declaration</strong>:</p>
+<pre><code class="language-c">enum month{jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec};
+</code></pre>
+<p>An enumeration type <code>month</code> is defined, representing the months of the year. The values in the enumeration are implicitly assigned integer values starting from 0 (<code>jan</code> = 0, <code>feb</code> = 1, ..., <code>dec</code> = 11).</p>
+</li>
+<li>
+<p><strong>Function Definition</strong>:</p>
+<pre><code class="language-c">enum month get_month(enum month m) {
+    return(m);
+}
+</code></pre>
+<p>The function <code>get_month</code> takes an argument of type <code>enum month</code> and simply returns the same value. It's a minimal example to show how an enumeration can be passed to and returned from a function.</p>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<pre><code class="language-c">int main()
+{
+    printf("%u\n", get_month(apr));
+    return 0;
+}
+</code></pre>
+<p>The <code>main</code> function:</p>
+<ul>
+<li>Calls <code>get_month</code> with the <code>apr</code> enumeration value (which corresponds to 3, assuming 0-based indexing),</li>
+<li>Prints the returned value as an unsigned integer (<code>%u</code> format specifier).</li>
+<li>Returns 0 to indicate successful execution.</li>
+</ul>
+</li>
+</ol>
+<h3 id="output"><a class="header" href="#output">Output:</a></h3>
+<p>When this program is run, it will output:</p>
+<pre><code>3
+</code></pre>
+<p>This corresponds to the integer value of the <code>apr</code> enumeration.</p>
+<h3 id="purpose"><a class="header" href="#purpose">Purpose:</a></h3>
+<p>This program is essentially a learning exercise to demonstrate the basics of declaring and using enumerations in C. It introduces how to:</p>
+<ul>
+<li>Create an enumeration,</li>
+<li>Pass an enumerated value to a function,</li>
+<li>Return an enumerated value from a function, and</li>
+<li>Print the integer representation of an enumerated value.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="weekdayc"><a class="header" href="#weekdayc">weekday.c</a></h2>
+<h3 id="purpose-1"><a class="header" href="#purpose-1">Purpose</a></h3>
+<p>This C program demonstrates the use of <code>enum</code>, <code>switch</code>, and <code>case</code> constructs in C by working with days of the week. It includes functions to get the next and previous day and prints the corresponding day names.</p>
+<h3 id="code-explanation"><a class="header" href="#code-explanation">Code Explanation</a></h3>
+<ol>
+<li>
+<p><strong>Enum Definition</strong>:</p>
+<ul>
+<li><code>enum day {sun, mon, tue, wed, thu, fri, sat};</code><br />
+Defines an enumerated type <code>day</code> to represent days of the week.</li>
+</ul>
+</li>
+<li>
+<p><strong>print_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and prints the corresponding day name using a <code>switch</code> statement. If the input is invalid, it prints an error message.</li>
+</ul>
+</li>
+<li>
+<p><strong>next_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and computes the next day based on modulo arithmetic.</li>
+</ul>
+</li>
+<li>
+<p><strong>previous_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and computes the previous day based on modulo arithmetic.</li>
+</ul>
+</li>
+<li>
+<p><strong>main Function</strong>:</p>
+<ul>
+<li>Demonstrates how to use the enumerated type and the functions:
+<ul>
+<li>Initializes today as <code>fri</code>.</li>
+<li>Prints the current day.</li>
+<li>Prints an invalid day (to demonstrate error handling).</li>
+<li>Prints the next and previous days.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="example-usage"><a class="header" href="#example-usage">Example Usage</a></h3>
+<p>Here’s how the program would behave:</p>
+<pre><code class="language-c">enum day today = fri;
+print_day(today);         // Outputs: friday
+print_day(7);             // Outputs: 7 is an error
+print_day(next_day(today)); // Outputs: saturday
+print_day(previous_day(today)); // Expected Output: thursday
+</code></pre>
+<h3 id="output-example"><a class="header" href="#output-example">Output Example</a></h3>
+<p>When you compile and run the program:</p>
+<pre><code class="language-plaintext">friday
+7 is an error
+saturday
+thursday
+</code></pre>
+<h3 id="complete-code"><a class="header" href="#complete-code">Complete Code</a></h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+enum day {sun, mon, tue, wed, thu, fri, sat};
+
+void print_day (enum day d) {
+  switch(d) {
+    case sun: printf("sunday"); break;
+    case mon: printf("monday"); break;
+    case tue: printf("tuesday"); break;
+    case wed: printf("wednesday"); break;
+    case thu: printf("thursday"); break;
+    case fri: printf("friday"); break;
+    case sat: printf("saturday"); break;
+    default: printf("%d is an error", d);
+  }
+}
+
+enum day next_day (enum day d) {
+  return (d + 1) % 7;
+}
+
+enum day previous_day (enum day d) {
+  return (d + 6) % 7;
+}
+
+int main() {
+  enum day today = fri;
+  print_day(today);
+  printf("\n");
+  print_day(7);
+  printf("\n");
+  print_day(next_day(today));
+  printf("\n");
+  print_day(previous_day(today));
+  return 0;
+}
+</code></pre>
+<h3 id="key-learning-points"><a class="header" href="#key-learning-points">Key Learning Points</a></h3>
+<ul>
+<li>Enumerations (<code>enum</code>) are useful for defining named constants.</li>
+<li><code>switch</code> and <code>case</code> statements simplify multi-branch conditional logic.</li>
+<li>Be cautious of operator precedence when performing arithmetic operations.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="employeec--employee-salary-and-ssn-generator"><a class="header" href="#employeec--employee-salary-and-ssn-generator">employee.c : Employee Salary and SSN Generator</a></h2>
+<p>This program assigns salaries to employees in various departments and generates random Social Security Numbers (SSNs) for them.</p>
+<h3 id="overview"><a class="header" href="#overview">Overview</a></h3>
+<ul>
+<li>This project calculates salaries for employees in different departments.</li>
+<li>It also generates random SSNs for each employee.</li>
+</ul>
+<h3 id="code-explanation-1"><a class="header" href="#code-explanation-1">Code Explanation</a></h3>
+<h4 id="1-headers-and-libraries"><a class="header" href="#1-headers-and-libraries">1. <strong>Headers and Libraries</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+</code></pre>
+<ul>
+<li><code>stdio.h</code>: Used for input/output functions like <code>printf</code>.</li>
+<li><code>stdlib.h</code>: Provides functions like <code>rand</code> for generating random numbers.</li>
+<li><code>time.h</code>: Used to seed the random number generator with the current time.</li>
+</ul>
+<h4 id="2-departments-and-salaries"><a class="header" href="#2-departments-and-salaries">2. <strong>Departments and Salaries</strong></a></h4>
+<pre><code class="language-c">enum departments { HR, SALES, RESEARCH, SOFTWARE, EXECUTIVE };
+const int SALARIES[] = {70000, 60000, 120000, 180000, 100000};
+#define SALARY_OVER rand() % 10000 + 1
+const char *DEPARTMENT_NAMES[] = {"HR", "Sales", "Research", "Software", "Executive"};
+</code></pre>
+<ul>
+<li>The <code>departments</code> enum lists all departments.</li>
+<li>The <code>SALARIES</code> array provides base salaries for each department.</li>
+<li><code>SALARY_OVER</code> adds a random bonus between 1 and 10,000.</li>
+<li><code>DEPARTMENT_NAMES</code> maps department names to their respective enum values.</li>
+</ul>
+<h4 id="3-ssn-generation"><a class="header" href="#3-ssn-generation">3. <strong>SSN Generation</strong></a></h4>
+<pre><code class="language-c">#define SSN_MAX 999999999
+#define SSN_MIN 100000000
+#define SSN ((rand() % (SSN_MAX - SSN_MIN + 1)) + SSN_MIN)
+</code></pre>
+<ul>
+<li>Generates a random SSN between <code>100000000</code> and <code>999999999</code>.</li>
+</ul>
+<h4 id="4-processing-departments"><a class="header" href="#4-processing-departments">4. <strong>Processing Departments</strong></a></h4>
+<pre><code class="language-c">void process_departments() {
+    for (int department = HR; department &lt;= EXECUTIVE; department++) {
+      printf("SSN: %d\t", SSN);
+      printf("Salary for %s: %d\n", DEPARTMENT_NAMES[department], (SALARIES[department] + SALARY_OVER));
+    }
+}
+</code></pre>
+<ul>
+<li>Iterates through all departments.</li>
+<li>Prints a random SSN and the salary (including a random bonus) for each department.</li>
+</ul>
+<h4 id="5-main-function"><a class="header" href="#5-main-function">5. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main()
+{ 
+    srand(time(0));
+    process_departments();
+    printf("\n---- Second Run ----\n\n");
+    process_departments();
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Seeds the random number generator with the current time.</li>
+<li>Calls <code>process_departments</code> twice, simulating output for 10 employees (two runs of 5 departments).</li>
+</ul>
+<h3 id="sample-output"><a class="header" href="#sample-output">Sample Output</a></h3>
+<p>The program's output will look something like this:</p>
+<pre><code>SSN: 123456789   Salary for HR: 71000
+SSN: 987654321   Salary for Sales: 60500
+SSN: 564738291   Salary for Research: 121000
+SSN: 192837465   Salary for Software: 181000
+SSN: 847362514   Salary for Executive: 101000
+
+---- Second Run ----
+
+SSN: 234567890   Salary for HR: 72000
+SSN: 876543210   Salary for Sales: 61200
+SSN: 473829165   Salary for Research: 119500
+SSN: 928374651   Salary for Software: 183000
+SSN: 847362514   Salary for Executive: 100500
+</code></pre>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ul>
+<li>Random SSN generation ensures unique identifiers for employees.</li>
+<li>Random salary bonuses simulate real-world variability in salaries.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="weight_generatorc"><a class="header" href="#weight_generatorc"><code>weight_generator.c</code></a></h2>
+<pre><code class="language-c">// Generate random weight numbers within a range and assign to elephants
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+#define MAX_ELEPHANT_SEAL_WT_MALE 8800
+#define MIN_ELEPHANT_SEAL_WT_MALE 4400
+
+#define RANGE       4400
+#define POPULATION  1000
+#define WEIGHT_OVER rand() % RANGE
+#define WEIGHT      WEIGHT_OVER + MIN_ELEPHANT_SEAL_WT_MALE
+#define FILL        for (i = 0; i &lt; POPULATION; i++) \
+                    data[i] = WEIGHT
+
+void print_data (int d[], int size) {
+  int i;
+  for (i = 0; i &lt; size; i++) {
+    printf("%d\t", d[i]);
+    if ((i + 1) % 10 == 0) printf("\n");
+  }
+}
+
+int main () {
+  int i;
+  int data [POPULATION];
+  srand(time(0));
+  FILL;
+  print_data(data, POPULATION);
+  printf("\n\n");
+  return 0;
+}
+</code></pre>
+<h3 id="overview-1"><a class="header" href="#overview-1">Overview</a></h3>
+<p>This program generates random weights for a population of elephant seals, based on pre-defined weight ranges. It utilizes macros to simplify the weight calculation and prints the generated weights in a tabular format.</p>
+<h3 id="code-details"><a class="header" href="#code-details">Code Details</a></h3>
+<h4 id="key-macros"><a class="header" href="#key-macros">Key Macros</a></h4>
+<ul>
+<li><strong><code>MAX_ELEPHANT_SEAL_WT_MALE</code></strong>: Defines the maximum weight for a male elephant seal (8800 lbs).</li>
+<li><strong><code>MIN_ELEPHANT_SEAL_WT_MALE</code></strong>: Defines the minimum weight for a male elephant seal (4400 lbs).</li>
+<li><strong><code>RANGE</code></strong>: The range of weights (<code>4400</code> lbs, calculated as <code>MAX - MIN</code>).</li>
+<li><strong><code>POPULATION</code></strong>: The number of elephant seals in the population (<code>1000</code> seals).</li>
+<li><strong><code>WEIGHT_OVER</code></strong>: Generates a random weight offset within the range.</li>
+<li><strong><code>WEIGHT</code></strong>: Calculates the actual weight by adding the offset to the minimum weight.</li>
+<li><strong><code>FILL</code></strong>: A macro to populate the <code>data</code> array with random weights.</li>
+</ul>
+<h4 id="functions"><a class="header" href="#functions">Functions</a></h4>
+<ul>
+<li><strong><code>void print_data(int d[], int size)</code></strong>:
+<ul>
+<li>Prints the elements of the provided array (<code>d</code>) in rows of 10.</li>
+<li>Parameters:
+<ul>
+<li><code>d[]</code>: The array of weights.</li>
+<li><code>size</code>: The size of the array.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="main"><a class="header" href="#main"><code>main()</code></a></h4>
+<ul>
+<li>Initializes an array (<code>data</code>) to store the weights of the population.</li>
+<li>Seeds the random number generator using the current time (<code>srand(time(0))</code>).</li>
+<li>Fills the <code>data</code> array with random weights using the <code>FILL</code> macro.</li>
+<li>Prints the generated weights using the <code>print_data</code> function.</li>
+</ul>
+<h3 id="usage"><a class="header" href="#usage">Usage</a></h3>
+<ol>
+<li>Compile the program using a C compiler, e.g., <code>gcc weight_generator.c -o weight_generator</code>.</li>
+<li>Run the program: <code>./weight_generator</code>.</li>
+<li>The output will display 1000 weights in rows of 10, representing the weights of the elephant seals.</li>
+</ol>
+<h3 id="example-output"><a class="header" href="#example-output">Example Output</a></h3>
+<pre><code>4402    5000    6000    4800    7600    8800    7000    4600    5800    5400
+...
+</code></pre>
+<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
+<ul>
+<li>Standard C libraries:
+<ul>
+<li><code>&lt;stdio.h&gt;</code>: For input/output functions.</li>
+<li><code>&lt;stdlib.h&gt;</code>: For random number generation.</li>
+<li><code>&lt;time.h&gt;</code>: For seeding the random number generator.</li>
+</ul>
+</li>
+</ul>
+<h3 id="additional-notes"><a class="header" href="#additional-notes">Additional Notes</a></h3>
+<ul>
+<li>The program is designed specifically for male elephant seals, as indicated by the defined weight range.</li>
+<li>The use of macros simplifies the code but can make debugging more challenging.</li>
+<li>The population size (<code>POPULATION</code>) and other constants can be adjusted as needed.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="card_deckc"><a class="header" href="#card_deckc"><code>card_deck.c</code></a></h2>
+<p>This file, <code>card_deck.c</code>, is a C program that simulates shuffling a deck of cards, drawing 7 cards 1 million times, and analyzing the probabilities of various hand outcomes. Here's a breakdown:</p>
+<ol>
+<li>
+<p><strong>Deck Setup</strong>:</p>
+<ul>
+<li>Defines suits (<code>CLUB</code>, <code>DIAMOND</code>, <code>HEART</code>, <code>SPADE</code>) and ranks (<code>Ace</code> to <code>King</code>) of cards.</li>
+<li>Creates an array of 52 cards (<code>deck</code>) and initializes it with all possible combinations of suits and ranks.</li>
+</ul>
+</li>
+<li>
+<p><strong>Operations on the Deck</strong>:</p>
+<ul>
+<li><strong>Initialization</strong>: Fills the deck with cards in order.</li>
+<li><strong>Shuffling</strong>: Randomly shuffles the deck using the Fisher-Yates algorithm.</li>
+</ul>
+</li>
+<li>
+<p><strong>Hand Analysis</strong>:</p>
+<ul>
+<li>Simulates drawing 7 cards (<code>hand</code>) repeatedly.</li>
+<li>Analyzes the drawn cards to detect patterns like:
+<ul>
+<li>Four of a kind</li>
+<li>Full house</li>
+<li>Three of a kind</li>
+<li>Two pairs</li>
+<li>Single pair</li>
+<li>No pairs</li>
+</ul>
+</li>
+<li>Updates counters for each type of hand.</li>
+</ul>
+</li>
+<li>
+<p><strong>Probability Calculation</strong>:</p>
+<ul>
+<li>After 1 million draws, calculates the probabilities of each pattern (e.g., four of a kind, full house) and prints the results.</li>
+<li>Ensures the probabilities sum up to 1 as a sanity check.</li>
+</ul>
+</li>
+<li>
+<p><strong>Other Details</strong>:</p>
+<ul>
+<li>Uses global counters to tally hand outcomes.</li>
+<li>Employs <code>rand()</code> for randomness and initializes it with the current time using <code>srand(time(NULL))</code>.</li>
+</ul>
+</li>
+</ol>
+<p>The program provides insights into the likelihood of various poker hands from random draws of a shuffled deck.</p>
+<pre><code class="language-c">// This project shuffles a deck of cards and draws 7 cards 1 million times.
+// It then calculates the probability of getting a pair, two pairs, three of a kind, full house, and four of a kind.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+// Define suits
+enum suit_card { CLUB, DIAMOND, HEART, SPADE };
+const char *SUIT[] = { "CLUB", "DIAMOND", "HEART", "SPADE" };
+
+// Define pips
+enum pips_card { PIP_A, PIP_2, PIP_3, PIP_4, PIP_5, PIP_6, PIP_7, PIP_8, PIP_9, PIP_10, PIP_J, PIP_Q, PIP_K };
+const char *PIPS[] = { "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King" };
+
+#define NUM_PIPS PIP_K
+
+#define DECK_SIZE 52
+#define DRAW_SIZE 7
+#define DRAW_COUNT 1000000
+
+// Card structure with pip and suit
+struct card {
+    enum suit_card suit;
+    enum pips_card pip;
+} deck [52];
+
+// Initialize the deck of cards
+void initialize_deck() {
+    int index = 0;
+
+    // This loop outputs the entire card deck in order
+    for (int suit = CLUB; suit &lt;= SPADE; suit++) {
+        for (int pip = PIP_A; pip &lt;= NUM_PIPS; pip++) {
+            deck[index].suit = suit;
+            deck[index].pip = pip;
+            index++;
+        }
+    }
+}
+
+// Shuffle the deck of cards
+void shuffle_deck() {
+    int i;
+    for (i = DECK_SIZE - 1; i &gt; 1; i--) {
+        int j = rand() % DECK_SIZE; // Pick a random index
+
+        // Swap deck[i] and deck[j]
+        struct card temp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = temp;
+    }
+}
+
+// I gotta access those at the main() function too, that's why I put them here
+int four, full_house, three, two_pairs, two, no_pair;
+
+// This function checks if the hands contains a pair, a three or four and adds it to the counter.
+void analyze_hand(struct card hand[], int number_draws) {
+    
+    int pairs = 0, three_of_a_kind = 0, four_of_a_kind = 0;
+    int rank_count[NUM_PIPS] = {0}; // Count occurencies of each rank
+
+    // Increment the rank count for each card in hand
+    for (int i = 0; i &lt; number_draws; i++) {
+        rank_count[hand[i].pip]++;
+    }
+
+    for (int i = 0; i &lt; NUM_PIPS; i++) {
+        if (rank_count[i] == 2) {
+            pairs++;
+        } else if (rank_count[i] == 3) {
+            three_of_a_kind++;
+        } else if (rank_count[i] == 4) {
+            four_of_a_kind++;
+        }
+    }
+
+    // This logic groups each draw, from the luckiest to the unluckiest
+    if (four_of_a_kind &gt; 0) {
+        four++;
+    } else if (three_of_a_kind &amp;&amp; pairs &gt; 0) {
+        full_house++;
+    } else if (three_of_a_kind) {
+        three++;
+    } else if (pairs &gt; 1) {
+        two_pairs++;
+    } else if (pairs == 1) {
+        two++;
+    } else {
+        no_pair++;
+    }
+}
+
+int main(void) {
+    srand(time(NULL));
+
+    struct card hand[DRAW_SIZE];
+
+    initialize_deck();
+
+    // Draw cards one million times
+    for (int draw = 0; draw &lt; DRAW_COUNT; draw++) {
+        shuffle_deck();
+
+        for (int i = 0; i &lt; DRAW_SIZE; i++) {
+            hand[i] = deck[i];
+        }
+
+        analyze_hand(hand, DRAW_SIZE);
+    }
+
+    // Printing all the probabilities here
+    float four_probability = (float)four / DRAW_COUNT;
+    printf("Probability of four of a kind : %.6f\n", four_probability);
+
+    float full_house_probability = (float)full_house / DRAW_COUNT;
+    printf("Probability of full house : %.6f\n", full_house_probability);
+
+    float three_probability = (float)three / DRAW_COUNT;
+    printf("Probability of three of a kind : %.6f\n", three_probability);
+
+    float two_pair_probability = (float)two_pairs / DRAW_COUNT;
+    printf("Probability of two pairs : %.6f\n", two_pair_probability);
+
+    float pair_probability = (float)two / DRAW_COUNT;
+    printf("Probability of a pair : %.6f\n", pair_probability);
+
+    float no_pair_probability = (float)no_pair / DRAW_COUNT;
+    printf("No pair : %.6f\n", no_pair_probability);
+
+    // Added this just to check that it's equal to 1
+    float total = four_probability + full_house_probability + three_probability + two_pair_probability + pair_probability + no_pair_probability;
+    printf("Total : %.6f\n", total);
+
+    return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="bubble-sort-example-in-c"><a class="header" href="#bubble-sort-example-in-c">Bubble Sort Example in C</a></h2>
+<p>This program demonstrates the implementation of the Bubble Sort algorithm in C, which is a simple sorting algorithm used to arrange elements in ascending order.</p>
+<h3 id="overview-2"><a class="header" href="#overview-2">Overview</a></h3>
+<ul>
+<li>Bubble Sort is a comparison-based algorithm that repeatedly steps through the array, compares adjacent elements, and swaps them if they are in the wrong order.</li>
+<li>Its time complexity is (O(n^2)) in the worst and average cases, making it inefficient for large datasets.</li>
+</ul>
+<h3 id="code-explanation-2"><a class="header" href="#code-explanation-2">Code Explanation</a></h3>
+<h4 id="1-headers-and-libraries-1"><a class="header" href="#1-headers-and-libraries-1">1. <strong>Headers and Libraries</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+</code></pre>
+<ul>
+<li><code>stdio.h</code> is included for input/output operations using <code>printf</code> and <code>scanf</code>.</li>
+</ul>
+<h4 id="2-swap-function"><a class="header" href="#2-swap-function">2. <strong>Swap Function</strong></a></h4>
+<pre><code class="language-c">void swap(int* arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+</code></pre>
+<ul>
+<li>A helper function to swap two elements in an array.</li>
+<li>Parameters:
+<ul>
+<li><code>arr</code>: The array in which elements will be swapped.</li>
+<li><code>i</code> and <code>j</code>: The indices of the elements to swap.</li>
+</ul>
+</li>
+<li>Uses a temporary variable to perform the swap.</li>
+</ul>
+<h4 id="3-bubble-sort-implementation"><a class="header" href="#3-bubble-sort-implementation">3. <strong>Bubble Sort Implementation</strong></a></h4>
+<pre><code class="language-c">void bubbleSort(int arr[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+      
+        // Last i elements are already sorted
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] &gt; arr[j + 1])
+                swap(arr, j, j + 1);
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>The sorting function takes an array <code>arr</code> and its size <code>n</code> as parameters.</li>
+<li>Outer loop:
+<ul>
+<li>Runs (n-1) times because, with each pass, the largest unsorted element "bubbles up" to its correct position.</li>
+</ul>
+</li>
+<li>Inner loop:
+<ul>
+<li>Compares adjacent elements and swaps them if out of order.</li>
+<li>Reduces the number of comparisons in each subsequent pass since the last <code>i</code> elements are already sorted.</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-main-function"><a class="header" href="#4-main-function">4. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main() {
+    int arr[] = { 6, 0, 3, 5 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Calling bubble sort on array arr
+    bubbleSort(arr, n);
+
+    for (int i = 0; i &lt; n; i++)
+        printf("%d ", arr[i]);
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Array <code>arr</code> is initialized with unsorted integers <code>{6, 0, 3, 5}</code>.</li>
+<li>The size of the array is calculated as <code>sizeof(arr) / sizeof(arr[0])</code>.</li>
+<li>The <code>bubbleSort</code> function is called to sort the array.</li>
+<li>A loop is used to print the sorted array.</li>
+</ul>
+<h3 id="sample-output-1"><a class="header" href="#sample-output-1">Sample Output</a></h3>
+<p>For the given array <code>{6, 0, 3, 5}</code>, the output after sorting will be:</p>
+<pre><code>0 3 5 6
+</code></pre>
+<h3 id="key-features-1"><a class="header" href="#key-features-1">Key Features</a></h3>
+<ol>
+<li><strong>Modular Design</strong>:
+<ul>
+<li>The sorting logic is encapsulated in the <code>bubbleSort</code> function.</li>
+<li>The <code>swap</code> function enhances code readability and reusability.</li>
+</ul>
+</li>
+<li><strong>Simplicity</strong>:
+<ul>
+<li>Bubble Sort is easy to implement and understand, making it suitable for educational purposes.</li>
+</ul>
+</li>
+</ol>
+<h3 id="limitations"><a class="header" href="#limitations">Limitations</a></h3>
+<ul>
+<li>Inefficient for large datasets due to its (O(n^2)) complexity.</li>
+<li>Better sorting algorithms like Merge Sort or Quick Sort are more suitable for performance-critical applications.</li>
+</ul>
+<h3 id="possible-improvements"><a class="header" href="#possible-improvements">Possible Improvements</a></h3>
+<ol>
+<li><strong>Optimization</strong>:
+<ul>
+<li>Add a flag to check if any swaps were made in the current pass. If no swaps are made, the array is already sorted, and the algorithm can terminate early.</li>
+</ul>
+</li>
+<li><strong>User Input</strong>:
+<ul>
+<li>Allow the user to input the array dynamically instead of hardcoding it.</li>
+</ul>
+</li>
+</ol>
+<h3 id="full-code"><a class="header" href="#full-code">Full Code:</a></h3>
+<pre><code class="language-c">// C program for implementation of Bubble sort
+
+#include &lt;stdio.h&gt;
+
+void swap(int* arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+      
+        // Last i elements are already in place, so the loop
+        // will only num n - i - 1 times
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] &gt; arr[j + 1])
+                swap(arr, j, j + 1);
+        }
+    }
+}
+
+int main() {
+    int arr[] = { 6, 0, 3, 5 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Calling bubble sort on array arr
+    bubbleSort(arr, n);
+
+    for (int i = 0; i &lt; n; i++)
+        printf("%d ", arr[i]);
+
+    return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p>The file <code>double_space_file.c</code> is a C program designed to take an input file, double-space its contents by inserting an additional blank line between each line of text, and then write the double-spaced output to another file.</p>
+<h3 id="explanation-of-the-code"><a class="header" href="#explanation-of-the-code">Explanation of the Code:</a></h3>
+<h4 id="1-header-files"><a class="header" href="#1-header-files">1. <strong>Header Files</strong></a></h4>
+<pre><code class="language-c"># include &lt;stdio.h&gt;
+# include &lt;stdlib.h&gt;
+</code></pre>
+<ul>
+<li><code>#include &lt;stdio.h&gt;</code>: Provides functionalities for input/output operations like reading from or writing to files.</li>
+<li><code>#include &lt;stdlib.h&gt;</code>: Provides utilities for memory allocation, process control, and other helper functions like <code>exit()</code>.</li>
+</ul>
+<h4 id="2-print_file-function"><a class="header" href="#2-print_file-function">2. <strong><code>print_file()</code> Function</strong></a></h4>
+<pre><code class="language-c">void print_file(FILE *fptr) {
+    int c;
+    rewind(fptr);
+    while ((c = getc(fptr)) != EOF) {
+         putc(c, stdout);
+     }
+}
+</code></pre>
+<ul>
+<li>This function prints the contents of a file (<code>FILE *fptr</code>) to the standard output (terminal).</li>
+<li><code>rewind(fptr)</code> resets the file pointer to the beginning of the file.</li>
+<li><code>getc(fptr)</code> reads characters one by one, and <code>putc(c, stdout)</code> prints them to the terminal.</li>
+</ul>
+<h4 id="3-double_space-function"><a class="header" href="#3-double_space-function">3. <strong><code>double_space()</code> Function</strong></a></h4>
+<pre><code class="language-c">void double_space(FILE *ifp, FILE *ofp) {
+    int c;
+    rewind(ifp);
+    while ((c = getc(ifp)) != EOF) {
+        putc(c, ofp);
+        if (c == '\n') {
+            putc('\n', ofp);
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>This function reads from an input file (<code>ifp</code>) and writes to an output file (<code>ofp</code>).</li>
+<li>For every newline character (<code>\n</code>) found, it writes an extra newline character to the output file, effectively double-spacing the content.</li>
+</ul>
+<h4 id="4-main-function-1"><a class="header" href="#4-main-function-1">4. <strong><code>main()</code> Function</strong></a></h4>
+<pre><code class="language-c">int main (int argc, char *argv[]) {
+    FILE *ifp, *ofp;
+
+    if (argc != 3) {
+        fprintf(stderr, "Usage: &lt;input file&gt; &lt;output file&gt;\n");
+        exit(1);
+    }
+
+    ifp = fopen(argv[1], "r");
+    ofp = fopen(argv[2], "w");
+
+    if (ifp == NULL || ofp == NULL) {
+        fprintf(stderr, "Error opening files\n");
+        exit(1);
+    }
+
+    printf("My input file is: %s\n", argv[1]);
+    print_file(ifp);
+    printf("\n");
+
+    double_space(ifp, ofp);
+
+    printf("My output file is: %s\n", argv[2]);
+    print_file(ofp);
+    printf("\n");
+
+    fclose(ifp);
+    fclose(ofp);
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>
+<p><strong>Command-line Arguments</strong>:</p>
+<ul>
+<li>The program expects two arguments: the input file name (<code>argv[1]</code>) and the output file name (<code>argv[2]</code>).</li>
+<li>If the number of arguments is incorrect, it prints a usage message and exits.</li>
+</ul>
+</li>
+<li>
+<p><strong>File Handling</strong>:</p>
+<ul>
+<li><code>fopen(argv[1], "r")</code>: Opens the input file in read mode.</li>
+<li><code>fopen(argv[2], "w")</code>: Opens the output file in write mode.</li>
+<li>If either file fails to open, an error message is displayed.</li>
+</ul>
+</li>
+<li>
+<p><strong>Workflow</strong>:</p>
+<ol>
+<li>Print the contents of the input file to the terminal using <code>print_file()</code>.</li>
+<li>Double-space the input file's contents into the output file using <code>double_space()</code>.</li>
+<li>Print the contents of the output file to the terminal.</li>
+<li>Close both files to release resources.</li>
+</ol>
+</li>
+<li>
+<p><strong>Example Usage</strong>:</p>
+<pre><code class="language-bash">./double_space_file input.txt output.txt
+</code></pre>
+<ul>
+<li>Reads <code>input.txt</code>, double-spaces its content, and writes the result to <code>output.txt</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="summary"><a class="header" href="#summary">Summary:</a></h3>
+<p>This program is a simple command-line tool demonstrating file handling in C. It showcases how to read from and write to files, as well as how to manipulate the content. It also shows how to use C for a CLI utility.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="fileio_rationalc"><a class="header" href="#fileio_rationalc"><code>fileio_rational.c</code></a></h2>
+<pre><code class="language-c">// Given a file with integer numbers, this program will use the first number to determine the array length.
+// Then, it will regroup every couple next numbers as a rational number and perform operations on them.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Define the rational number structure
+typedef struct rational {
+    double num;     // Numerator
+    double den;     // Denominator
+    struct rational *next;
+} rational;
+
+// Function to create a new rational number
+rational* create_rational (int num, int den) {
+    if (den == 0) {
+        fprintf(stderr, "0 is not an anthorized Denominator\n");
+        exit(1);
+    }
+
+    rational* new_rational = (struct rational*)malloc ( sizeof(rational) );
+    if (new_rational == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+
+    new_rational -&gt; num = num;
+    new_rational -&gt; den = den;
+    new_rational -&gt; next = NULL;
+    return new_rational;
+}
+
+// Function to loop through the rest of the numbers and pair them as rational numbers
+rational* pair_rational_numbers(FILE* file) {
+    int num, den;
+    rational* head = NULL;
+    rational* tail = NULL;
+
+    // Assuming the first number is already handled
+    while (fscanf(file, "%d %d", &amp;num, &amp;den) == 2) {
+        rational* new_rational = create_rational(num, den);
+        if (head == NULL) {
+            head = new_rational;
+            tail = new_rational;
+        } else {
+            tail -&gt; next = new_rational;    // Link the new node to the end
+            tail = new_rational;            // Move the tail pointer to the new node            
+        }
+    }
+    return head;
+}
+
+// Print the list of rational numbers to the console
+void print_rational_list(rational* head) {
+    rational* current = head;
+    while (current != NULL) {
+        printf("%f/%f\n", current -&gt; num, current -&gt; den);
+        current = current -&gt; next;
+    }
+}
+
+// Helper function to simplify the rational numbers
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+void simplify_rational(rational* r) {
+    int divisor = gcd(r -&gt; num, r -&gt; den);
+    r -&gt; num /= divisor;
+    r -&gt; den /= divisor;
+
+    if (r -&gt; den &lt; 0) {
+        r -&gt; num = -r -&gt; num;
+        r -&gt; den = -r -&gt; den;
+    }
+}
+
+// Perform operations on the rational numbers
+rational* addition (rational* head) {
+    if (head == NULL) return NULL;
+
+    int total_num = head -&gt; num;
+    int total_den = head -&gt; den;
+
+    head = head -&gt; next;
+
+    while (head != NULL) {
+        total_num = (total_num * head -&gt; den) + (total_den * head -&gt; num);
+        total_den = total_den * head -&gt; den;
+        head = head -&gt; next;
+    }   
+        rational* total = create_rational(total_num, total_den);
+        simplify_rational(total);
+        return total;
+}
+
+rational* substraction(rational* head) {
+    if (head == NULL) return NULL;
+
+    int total_num = head -&gt; num;
+    int total_den = head -&gt; den;
+
+    head = head -&gt; next;    
+
+    while (head != NULL) {
+        total_num = (total_num * head -&gt; den) - (total_den * head -&gt; num);
+        total_den = total_den * head -&gt; den;
+        head = head -&gt; next;
+    }
+        rational* total = create_rational(total_num, total_den);
+        simplify_rational(total);
+        return total;
+}
+
+rational* multiplication(rational* head) {
+    if (head == NULL) return NULL;
+
+    int total_num = head -&gt; num;
+    int total_den = head -&gt; den;
+
+    head = head -&gt; next;
+
+    while (head != NULL) {
+        total_num = total_num * head -&gt; num;
+        total_den = total_den * head -&gt; den;
+        head = head -&gt; next;
+    }
+        rational* total = create_rational(total_num, total_den);
+        simplify_rational(total);
+        return total;
+}
+
+rational* division(rational* head) {
+    if (head == NULL) return NULL;
+
+    int total_num = head -&gt; num;
+    int total_den = head -&gt; den;
+
+    head = head -&gt; next;
+
+    while (head != NULL) {
+        total_num = total_num * head -&gt; den;
+        total_den = total_den * head -&gt; num;
+        head = head -&gt; next;
+    }
+
+    rational* total = create_rational(total_num, total_den);
+    simplify_rational(total);
+    return total;
+}
+
+rational* average(rational* head, int size) {
+    if (head == NULL || size == 0) return NULL;
+
+    rational* sum = addition(head);
+    sum -&gt; den *= size;
+
+    simplify_rational(sum);
+    return sum;
+}
+
+//Write the result of those operations to the file
+void write_result_to_file(FILE* ofp, rational* add_result, rational* sub_result, rational* mult_result, rational* div_result, rational* avg_result) {
+    fprintf(ofp, "Addition: %f/%f\n", add_result -&gt; num, add_result -&gt; den);
+    fprintf(ofp, "Substraction: %f/%f\n", sub_result -&gt; num, sub_result -&gt; den);
+    fprintf(ofp, "Multiplication: %f/%f\n", mult_result -&gt; num, mult_result -&gt; den);
+    fprintf(ofp, "Division: %f/%f\n", div_result -&gt; num, div_result -&gt; den);
+    fprintf(ofp, "Average: %f/%f\n", avg_result -&gt; num, avg_result -&gt; den);
+}
+
+//Write the result of those operations to the console
+void write_result_to_console(rational* add_result, rational* sub_result, rational* mult_result, rational* div_result, rational* avg_result) {
+    printf("Addition: %f/%f\n", add_result -&gt; num, add_result -&gt; den);
+    printf("Substraction: %f/%f\n", sub_result -&gt; num, sub_result -&gt; den);
+    printf("Multiplication: %f/%f\n", mult_result -&gt; num, mult_result -&gt; den);
+    printf("Division: %f/%f\n", div_result -&gt; num, div_result -&gt; den);
+    printf("Average: %f/%f\n", avg_result -&gt; num, avg_result -&gt; den);
+}
+
+// Good to free the memory
+void free_list(rational* head) {
+    rational* current = head;
+    while (current != NULL) {
+        rational* next = current -&gt; next;
+        free(current);
+        current = next;
+    }
+}
+
+int main (int argc, char* argv[]) {
+    FILE *ifp, *ofp;
+
+    if (argc != 3) {
+        fprintf(stderr, "Usage: &lt;filename&gt; &lt;filename&gt;\n");
+        exit(1);
+    }
+
+    ifp = fopen(argv[1], "r");
+    if (ifp == NULL) {
+        fprintf(stderr, "Can't open input file %s\n", argv[1]);
+        exit(1);
+    }
+
+    ofp = fopen(argv[2], "w");
+    if (ofp == NULL) {
+        fprintf(stderr, "Can't open output file %s\n", argv[2]);
+        exit(1);
+    }
+
+    printf("Reading from %s and writing to %s\n", argv[1], argv[2]);
+
+    // Skip the first number
+    int first_num;
+    fscanf(ifp, "%d", &amp;first_num);
+    printf("First number (array size): %d\n", first_num);
+
+    rational* head = NULL;
+    head = pair_rational_numbers(ifp);
+
+    printf("Printing the list of rational numbers\n");
+    print_rational_list(head);
+
+    printf("Performing calculations...\n");
+
+    rational* add_result = addition(head);
+    rational* sub_result = substraction(head);
+    rational* mult_result = multiplication(head);
+    rational* div_result = division(head);
+    rational* avg_result = average(head, first_num);
+
+    write_result_to_file(ofp, add_result, sub_result, mult_result, div_result, avg_result);
+    write_result_to_console(add_result, sub_result, mult_result, div_result, avg_result);
+
+    printf("Calculations written on the output file. Closing the program\n");
+
+    free_list(head);
+    free(add_result);
+    free(sub_result);
+    free(mult_result);
+    free(div_result);
+    free(avg_result);
+    fclose(ifp);
+    fclose(ofp);
+
+    return 0;
+}
+</code></pre>
+<p>This program processes a file containing integers. It interprets the first integer as the array size and then pairs subsequent integers as rational numbers (fractions). Here’s an example of how the input and output would look:</p>
+<h3 id="example-input-file-eg-inputtxt"><a class="header" href="#example-input-file-eg-inputtxt">Example Input File (e.g., <code>input.txt</code>)</a></h3>
+<pre><code class="language-plaintext">3
+1 2
+3 4
+5 6
+</code></pre>
+<p>Explanation:</p>
+<ul>
+<li>The first number <code>3</code> indicates the array size (3 rational numbers).</li>
+<li>The numbers <code>1 2</code>, <code>3 4</code>, and <code>5 6</code> are paired as rational numbers:
+<ul>
+<li><code>1/2</code></li>
+<li><code>3/4</code></li>
+<li><code>5/6</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="example-output-file-eg-outputtxt"><a class="header" href="#example-output-file-eg-outputtxt">Example Output File (e.g., <code>output.txt</code>)</a></h3>
+<pre><code class="language-plaintext">Addition: 38/24
+Substraction: -10/24
+Multiplication: 15/48
+Division: 48/120
+Average: 19/24
+</code></pre>
+<p>Explanation:</p>
+<ul>
+<li><strong>Addition:</strong> Sum of all rational numbers.</li>
+<li><strong>Subtraction:</strong> Result of subtracting all rational numbers in sequence.</li>
+<li><strong>Multiplication:</strong> Product of all rational numbers.</li>
+<li><strong>Division:</strong> Result of dividing all rational numbers in sequence.</li>
+<li><strong>Average:</strong> Sum of all rational numbers divided by the size (3 in this case).</li>
+</ul>
+<h3 id="console-output"><a class="header" href="#console-output">Console Output</a></h3>
+<p>When running the program, you would see:</p>
+<pre><code class="language-plaintext">Reading from input.txt and writing to output.txt
+First number (array size): 3
+Printing the list of rational numbers
+0.500000/1.000000
+0.750000/1.000000
+0.833333/1.000000
+Performing calculations...
+Addition: 38/24
+Substraction: -10/24
+Multiplication: 15/48
+Division: 48/120
+Average: 19/24
+Calculations written on the output file. Closing the program
+</code></pre>
+<h3 id="command-to-run"><a class="header" href="#command-to-run">Command to Run</a></h3>
+<pre><code class="language-bash">./program input.txt output.txt
+</code></pre>
+<p>Make sure to replace <code>program</code> with the compiled executable name.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="simple-linked-list"><a class="header" href="#simple-linked-list">Simple Linked list</a></h2>
+<pre><code class="language-c">//A simple example of a linked list in C.
+//This example creates a linked list of integers from an array of integers.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;ctype.h&gt;
+
+typedef struct list 
+    { 
+    int data;
+    struct list *next;
+    } list;
+
+int is_empty(const list *l){ return (l == NULL); }
+list* create_list (int d) 
+{
+    list* head = malloc ( sizeof(list) );
+    head -&gt; data = d;
+    head -&gt; next = NULL;
+    return head;
+}
+
+list* add_to_front( int d, list* h )
+{
+    list* head = create_list(d);
+    head -&gt; next = h;
+    return head;
+}
+
+list* array_to_list(int d[], int size)
+{
+    list* head = create_list(d[0]);
+    int i;
+    for (i = 1; i &lt; size; i++)
+    {
+        head = add_to_front(d[i], head);
+    }
+    return head;
+}
+
+void print_list (list *h, char *title)
+{
+    printf ("%s\n", title);
+    while (h != NULL) {
+        printf ("%d:", h -&gt; data);
+        h = h -&gt; next;
+    }
+}
+
+int main()
+{
+    list list_of_int;
+    list* head = NULL;
+    int data[6] = { 2, 3, 5, 7, 8, 9 };
+    head = array_to_list( data, 6 );
+    print_list(head, "data[6] made into a 6 element list");
+    printf("\n\n");
+    return 0;
+}
+</code></pre>
+<p>This program demonstrates the creation and usage of a simple linked list in C. Here's an example of how the program works:</p>
+<h3 id="example-input"><a class="header" href="#example-input">Example Input</a></h3>
+<p>The program itself uses the following array of integers as input:</p>
+<pre><code class="language-c">int data[6] = { 2, 3, 5, 7, 8, 9 };
+</code></pre>
+<h3 id="example-output-1"><a class="header" href="#example-output-1">Example Output</a></h3>
+<p>The program prints the following list:</p>
+<pre><code>data[6] made into a 6 element list
+9:8:7:5:3:2:
+</code></pre>
+<h3 id="memory-management-note"><a class="header" href="#memory-management-note">Memory Management Note</a></h3>
+<p>The program uses <code>malloc</code> in the <code>create_list</code> function to allocate memory for nodes, but it does not free the memory after its use. This can lead to memory leaks if the program is run repeatedly or in a larger application.</p>
+<p>To fix this, you need to add a function to free the memory allocated for the linked list, like this:</p>
+<pre><code class="language-c">void free_list(list *h) {
+    list *tmp;
+    while (h != NULL) {
+        tmp = h;
+        h = h-&gt;next;
+        free(tmp);
+    }
+}
+</code></pre>
+<p>Then, you should call <code>free_list(head);</code> before exiting <code>main()</code>:</p>
+<pre><code class="language-c">int main() {
+    list list_of_int;
+    list* head = NULL;
+    int data[6] = { 2, 3, 5, 7, 8, 9 };
+    head = array_to_list( data, 6 );
+    print_list(head, "data[6] made into a 6 element list");
+    printf("\n\n");
+    free_list(head);
+    return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="working-with-lists-example-in-c"><a class="header" href="#working-with-lists-example-in-c">Working with Lists Example in C</a></h2>
+<p>This program demonstrates the creation, manipulation, and sorting of a linked list using the Bubble Sort algorithm. The list is initially populated with random numbers, converted into a linked list, and then sorted.</p>
+<h3 id="overview-3"><a class="header" href="#overview-3">Overview</a></h3>
+<ul>
+<li>Generates an array of random integers.</li>
+<li>Converts the array into a linked list.</li>
+<li>Sorts the linked list using an adapted Bubble Sort algorithm.</li>
+</ul>
+<h3 id="key-features-2"><a class="header" href="#key-features-2">Key Features</a></h3>
+<ol>
+<li><strong>Linked List Operations</strong>:
+<ul>
+<li>Creation of nodes and linked lists.</li>
+<li>Adding elements to the front of the list.</li>
+<li>Conversion of an array to a linked list.</li>
+<li>Traversing and freeing a linked list.</li>
+</ul>
+</li>
+<li><strong>Sorting Mechanism</strong>:
+<ul>
+<li>Bubble Sort algorithm adapted for linked lists.</li>
+</ul>
+</li>
+<li><strong>Random Number Generation</strong>:
+<ul>
+<li>Generates random integers between 0 and 100.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="code-breakdown"><a class="header" href="#code-breakdown">Code Breakdown</a></h3>
+<h4 id="1-headers-and-macros"><a class="header" href="#1-headers-and-macros">1. <strong>Headers and Macros</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+#define SIZE 100
+</code></pre>
+<ul>
+<li><code>stdio.h</code>: Provides input/output functions like <code>printf</code>.</li>
+<li><code>stdlib.h</code>: For memory allocation (<code>malloc</code>) and random number generation (<code>rand</code>).</li>
+<li><code>time.h</code>: Used to seed the random number generator with the system time.</li>
+<li><code>SIZE</code>: The size of the array and the linked list (100 elements).</li>
+</ul>
+<hr />
+<h4 id="2-linked-list-structure"><a class="header" href="#2-linked-list-structure">2. <strong>Linked List Structure</strong></a></h4>
+<pre><code class="language-c">typedef struct list { 
+    int data;
+    struct list *next;
+} list;
+</code></pre>
+<ul>
+<li><strong><code>data</code></strong>: Holds the value of the node.</li>
+<li><strong><code>next</code></strong>: Pointer to the next node in the list.</li>
+</ul>
+<hr />
+<h4 id="3-node-creation"><a class="header" href="#3-node-creation">3. <strong>Node Creation</strong></a></h4>
+<pre><code class="language-c">list* create_list(int d) {
+    list* head = (list*)malloc(sizeof(list));
+    head-&gt;data = d;
+    head-&gt;next = NULL;
+    return head;
+}
+</code></pre>
+<ul>
+<li>Allocates memory for a new node and initializes its data.</li>
+</ul>
+<hr />
+<h4 id="4-adding-nodes-to-the-list"><a class="header" href="#4-adding-nodes-to-the-list">4. <strong>Adding Nodes to the List</strong></a></h4>
+<pre><code class="language-c">list* add_to_front(int d, list* h) {
+    list* head = create_list(d);
+    head-&gt;next = h;
+    return head;
+}
+</code></pre>
+<ul>
+<li>Adds a new node to the front of the list.</li>
+</ul>
+<hr />
+<h4 id="5-array-to-linked-list-conversion"><a class="header" href="#5-array-to-linked-list-conversion">5. <strong>Array to Linked List Conversion</strong></a></h4>
+<pre><code class="language-c">list* array_to_list(int d[], int size) {
+    list* head = create_list(d[0]);
+    for (int i = 1; i &lt; size; i++) {
+        head = add_to_front(d[i], head);
+    }
+    return head;
+}
+</code></pre>
+<ul>
+<li>Converts an array of integers into a linked list.</li>
+</ul>
+<hr />
+<h4 id="6-freeing-the-list"><a class="header" href="#6-freeing-the-list">6. <strong>Freeing the List</strong></a></h4>
+<pre><code class="language-c">void free_list(list *head) {
+    list* current = head;
+    list* next;
+
+    while (current != NULL) {
+        next = current-&gt;next;
+        free(current);
+        current = next;
+    }
+}
+</code></pre>
+<ul>
+<li>Traverses through the list and frees each node to prevent memory leaks.</li>
+</ul>
+<hr />
+<h4 id="7-random-number-generation"><a class="header" href="#7-random-number-generation">7. <strong>Random Number Generation</strong></a></h4>
+<pre><code class="language-c">int getRandomNumber(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+</code></pre>
+<ul>
+<li>Generates a random integer between <code>min</code> and <code>max</code>.</li>
+</ul>
+<hr />
+<h4 id="8-bubble-sort-adaptation"><a class="header" href="#8-bubble-sort-adaptation">8. <strong>Bubble Sort Adaptation</strong></a></h4>
+<pre><code class="language-c">void bubbleSort(list* h) {
+    if (h == NULL || h-&gt;next == NULL) return;
+
+    list *i, *j;
+    for (i = h; i != NULL; i = i-&gt;next) {
+        for (j = i-&gt;next; j != NULL; j = j-&gt;next) {
+            if (i-&gt;data &gt; j-&gt;data) {
+                swap(i, j);
+            }
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>Sorts the linked list using the Bubble Sort algorithm.</li>
+<li>Compares adjacent nodes and swaps their data if they are out of order.</li>
+</ul>
+<hr />
+<h4 id="9-swap-function"><a class="header" href="#9-swap-function">9. <strong>Swap Function</strong></a></h4>
+<pre><code class="language-c">void swap(list* a, list* b) {
+    int temp = a-&gt;data;
+    a-&gt;data = b-&gt;data;
+    b-&gt;data = temp;
+}
+</code></pre>
+<ul>
+<li>Swaps the <code>data</code> fields of two nodes in the list.</li>
+</ul>
+<hr />
+<h4 id="10-printing-the-list"><a class="header" href="#10-printing-the-list">10. <strong>Printing the List</strong></a></h4>
+<pre><code class="language-c">void print_list(list *h) {
+    int count = 0;
+    while (h != NULL) {
+        printf("%d\t", h-&gt;data);
+        count++;
+        if (count % 5 == 0) printf("\n");
+        h = h-&gt;next;
+    }
+}
+</code></pre>
+<ul>
+<li>Prints the linked list's elements in rows of 5 for better readability.</li>
+</ul>
+<hr />
+<h4 id="11-main-function"><a class="header" href="#11-main-function">11. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main() {
+    srand(time(NULL));
+    list* head = NULL;
+
+    int data[SIZE];
+
+    for (int i = 0; i &lt; SIZE; i++) {
+        data[i] = getRandomNumber(0, 100);
+    }
+
+    head = array_to_list(data, SIZE);
+
+    printf("\nBefore sorting\n");
+    print_list(head);
+    printf("\n");
+
+    bubbleSort(head);
+
+    printf("After Sorting\n");
+    print_list(head);
+
+    free_list(head);
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Initializes an array with 100 random integers.</li>
+<li>Converts the array into a linked list.</li>
+<li>Prints the list before and after sorting.</li>
+<li>Frees the list at the end to release memory.</li>
+</ul>
+<hr />
+<h3 id="sample-output-2"><a class="header" href="#sample-output-2">Sample Output</a></h3>
+<p>Before Sorting:</p>
+<pre><code>45	23	67	89	12	
+34	78	56	90	11	
+...
+</code></pre>
+<p>After Sorting:</p>
+<pre><code>1	2	5	6	9	
+10	11	12	14	15	
+...
+</code></pre>
+<hr />
+<h3 id="key-points"><a class="header" href="#key-points">Key Points</a></h3>
+<ol>
+<li><strong>Linked List Manipulation</strong>:
+<ul>
+<li>Demonstrates creation, traversal, and memory management.</li>
+</ul>
+</li>
+<li><strong>Sorting Algorithm</strong>:
+<ul>
+<li>Adapts Bubble Sort for linked lists, showcasing its flexibility.</li>
+</ul>
+</li>
+<li><strong>Random Number Handling</strong>:
+<ul>
+<li>Generates randomized inputs to simulate real-world scenarios.</li>
+</ul>
+</li>
+</ol>
+<h3 id="limitations-1"><a class="header" href="#limitations-1">Limitations</a></h3>
+<ol>
+<li><strong>Inefficient Sorting</strong>:
+<ul>
+<li>Bubble Sort has (O(n^2)) complexity, making it unsuitable for large datasets.</li>
+</ul>
+</li>
+<li><strong>Memory Overhead</strong>:
+<ul>
+<li>The program uses dynamic memory allocation, which requires careful management to prevent leaks.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="possible-improvements-1"><a class="header" href="#possible-improvements-1">Possible Improvements</a></h3>
+<ol>
+<li><strong>Sorting Efficiency</strong>:
+<ul>
+<li>Replace Bubble Sort with a more efficient algorithm like Merge Sort.</li>
+</ul>
+</li>
+<li><strong>Dynamic Size</strong>:
+<ul>
+<li>Allow the user to specify the size of the list at runtime.</li>
+</ul>
+</li>
+<li><strong>Error Handling</strong>:
+<ul>
+<li>Add checks for memory allocation and null pointers.</li>
+</ul>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="doubly-linked-list"><a class="header" href="#doubly-linked-list">Doubly Linked List</a></h2>
+<pre><code class="language-c">// Given a list of integers, the program will sort the list using merge sort and remove any duplicates.
+// It uses a doubly linked list to store the integers.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+#define SIZE 200
+
+// Define the list node structure
+typedef struct list { 
+    int data;           // Data stored in the node
+    struct list *next;  // Pointer to the next node
+    struct list *prev;  // Pointer to the previous node
+} list;
+
+// Function to create a new doubly linked list
+struct list* create_list (int d) 
+{
+    struct list* newList = (struct list*)malloc( sizeof(struct list) );
+        if (newList == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+        }
+
+    newList -&gt; data = d;
+    newList -&gt; next = NULL;
+    newList -&gt; prev = NULL;
+    
+    return newList;
+}
+
+// Function to add a new node with data 'd' to the front of the list 'h'
+struct list* add_to_front(int d, list* h)
+{
+    list* head = create_list(d);
+
+    head -&gt; next = h;
+    if (h != NULL) {
+        h -&gt; prev = head;
+    }
+
+    return head;
+}
+
+// Function to convert an array of integers into a linked list
+struct list* array_to_list(int d[], int size)
+{
+    if (d == NULL || size &lt;= 0) {
+    fprintf(stderr, "Invalid array or size\n");
+    return NULL;
+    }
+    // Create the head of the list using the first element of the array
+    list* head = create_list(d[0]);
+    
+    // Loop through the remaining elements of the array
+    for (int i = 1; i &lt; size; i++)
+    {
+        // Add each element to the front of the list
+        head = add_to_front(d[i], head);
+    }
+    // Return the head of the linked list
+    return head;
+}
+
+// Function to generate random numbers between 0 and 100
+int getRandomNumber(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+struct list* split_list(struct list* head) {
+    struct list* slow = head;
+    struct list* fast = head;
+
+    while (fast != NULL &amp;&amp; fast -&gt; next != NULL) {
+        slow = slow -&gt; next;
+        fast = fast -&gt; next -&gt; next;
+    }
+
+    if (slow != NULL &amp;&amp; slow -&gt; prev != NULL) {
+        slow -&gt; prev -&gt; next = NULL;    // Break forward link
+        slow -&gt; prev = NULL;            // Break backward link
+    }
+
+    return slow; // Return the head of the second half
+}
+
+struct list* merge(struct list* head_a, struct list* head_b) {
+    if (head_a == NULL) return head_b;
+    if (head_b == NULL) return head_a;
+    
+    struct list* result = NULL;
+
+    // Compare data and recursively merge
+    if (head_a -&gt; data &lt; head_b -&gt; data) {
+        result = head_a;
+        result -&gt; next = merge(head_a -&gt; next, head_b);
+        if (result -&gt; next != NULL) {
+            result -&gt; next -&gt; prev = result; // Update backward link            
+        }
+    } else {
+        result = head_b;
+        result -&gt; next = merge(head_a, head_b -&gt; next);
+        if (result -&gt; next != NULL) {
+            result -&gt; next -&gt; prev = result;
+        }    
+    }
+    
+    return result;
+}
+
+struct list* merge_sort(struct list* head) {
+    if (head == NULL || head -&gt; next == NULL) return head;
+
+    struct list* second_half = split_list(head); // Split the list into two halves
+
+    // Recursively sort half
+    struct list* left_sorted = merge_sort(head);
+    struct list* right_sorted = merge_sort(second_half);
+
+    return merge(left_sorted, right_sorted);
+}
+
+// This function unlinks the duplicate node in next pointer.
+struct list* remove_duplicates(struct list* head) {
+    if (head == NULL || head -&gt; next == NULL) return head;
+
+    struct list* current = head;
+
+    while (current != NULL &amp;&amp; current -&gt; next != NULL) {
+        if (current -&gt; data == current -&gt; next -&gt; data) {
+            struct list* duplicate = current -&gt; next;
+
+            current -&gt; next = duplicate -&gt; next;
+
+            if (duplicate -&gt; next != NULL) {
+                duplicate -&gt; next -&gt; prev = current;
+            }
+
+            free(duplicate);
+
+        } else {
+            current = current -&gt; next;
+        }
+    }
+    return head;
+}
+
+// Print the numbers in rows of 5
+void print_list (struct list *head) {
+    if (head == NULL || head -&gt; next == NULL) return;
+
+    int count = 0;
+    while (head != NULL) {
+        printf("%d\t", head -&gt; data);
+        count ++;
+        if (count % 5 == 0) printf("\n");
+        head = head -&gt; next;
+    }
+}
+
+void free_list(struct list *head) {
+    list* current = head;
+    list* next;
+
+    // Traverse the list and free each node
+    while (current != NULL) {
+        next = current -&gt; next; // Save the pointer to the next node
+        free(current);          // Free the current node
+        current = next;         // Move to the next node
+    }
+}
+
+int main() {
+    srand(time(NULL));
+
+    int data[SIZE];
+    for (int i = 0; i &lt; SIZE; i++) {
+        data[i] = getRandomNumber(0, 49);
+    }
+
+    // Convert the array to a doubly linked list
+    struct list* head = array_to_list(data, SIZE);
+
+    printf("Before Sorting:\n");
+    print_list(head);
+    printf("\n");
+
+    // Perform merge sort on the list, and remove duplicates
+    head = merge_sort(head);
+    remove_duplicates(head);
+
+    printf("After Sorting and Removing Duplicates:\n");
+    print_list(head);
+
+    free_list(head); // Free allocated memory
+
+    return 0;
+}
+</code></pre>
+<hr />
+<h3 id="example-input-and-output-for-a-doubly-linked-list-program"><a class="header" href="#example-input-and-output-for-a-doubly-linked-list-program">Example Input and Output for a Doubly Linked List Program</a></h3>
+<h4 id="example-input-1"><a class="header" href="#example-input-1">Example Input</a></h4>
+<p>Let's assume this doubly linked list program supports typical operations like adding, deleting, and traversing nodes. Here’s a sample input sequence:</p>
+<ol>
+<li>Add 10 to the list.</li>
+<li>Add 20 to the list.</li>
+<li>Add 30 to the list.</li>
+<li>Traverse the list forward.</li>
+<li>Traverse the list backward.</li>
+<li>Delete 20 from the list.</li>
+<li>Traverse the list forward again.</li>
+</ol>
+<h4 id="example-output-2"><a class="header" href="#example-output-2">Example Output</a></h4>
+<p><strong>Step-by-Step Output:</strong></p>
+<ol>
+<li>
+<p>Adding 10 to the list:<br />
+<code>List: 10</code></p>
+</li>
+<li>
+<p>Adding 20 to the list:<br />
+<code>List: 10 &lt;-&gt; 20</code></p>
+</li>
+<li>
+<p>Adding 30 to the list:<br />
+<code>List: 10 &lt;-&gt; 20 &lt;-&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing forward:<br />
+<code>Forward: 10 -&gt; 20 -&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing backward:<br />
+<code>Backward: 30 -&gt; 20 -&gt; 10</code></p>
+</li>
+<li>
+<p>Deleting 20 from the list:<br />
+<code>List: 10 &lt;-&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing forward again:<br />
+<code>Forward: 10 -&gt; 30</code></p>
+</li>
+</ol>
+<hr />
+<h3 id="merge-sort-in-doubly-linked-lists"><a class="header" href="#merge-sort-in-doubly-linked-lists">Merge Sort in Doubly Linked Lists</a></h3>
+<h4 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h4>
+<p>Merge sort is a divide-and-conquer algorithm that splits the list into smaller sublists, sorts them individually, and then merges them back together in sorted order. With doubly linked lists, this algorithm can be implemented efficiently because of the bidirectional traversal and the ability to split and merge nodes easily.</p>
+<h4 id="key-functions"><a class="header" href="#key-functions">Key Functions:</a></h4>
+<ol>
+<li>
+<p><strong><code>split_list</code></strong><br />
+This function divides the doubly linked list into two halves. The midpoint is typically found using a slow and fast pointer approach.</p>
+</li>
+<li>
+<p><strong><code>merge</code></strong><br />
+This function takes two sorted sublists and merges them into a single sorted list, maintaining the order.</p>
+</li>
+</ol>
+<h4 id="advantages-of-merge-sort-in-doubly-linked-lists"><a class="header" href="#advantages-of-merge-sort-in-doubly-linked-lists">Advantages of Merge Sort in Doubly Linked Lists:</a></h4>
+<ul>
+<li><strong>Stability:</strong> Maintains the relative order of equal elements.</li>
+<li><strong>Efficiency:</strong> Performs well on linked lists as it doesn't require random access to elements.</li>
+<li><strong>Recursive Nature:</strong> Leverages the recursive structure of merge sort for easy implementation.</li>
+</ul>
+<h4 id="example-input-and-output-for-merge-sort"><a class="header" href="#example-input-and-output-for-merge-sort">Example Input and Output for Merge Sort</a></h4>
+<p><strong>Input:</strong><br />
+Unsorted list: <code>30 &lt;-&gt; 10 &lt;-&gt; 20 &lt;-&gt; 50 &lt;-&gt; 40</code></p>
+<p><strong>Output:</strong><br />
+Sorted list: <code>10 &lt;-&gt; 20 &lt;-&gt; 30 &lt;-&gt; 40 &lt;-&gt; 50</code></p>
+<hr />
+<p>This addition will make your documentation even more robust and appealing to readers! If you'd like, I can analyze the <code>double_linked_lists.c</code> file to verify and explain your implementation of <code>split_list</code> and <code>merge</code>.</p>
+<h3 id="advantages-of-a-doubly-linked-list-over-a-singly-linked-list"><a class="header" href="#advantages-of-a-doubly-linked-list-over-a-singly-linked-list">Advantages of a Doubly Linked List Over a Singly Linked List</a></h3>
+<ol>
+<li>
+<p><strong>Bidirectional Traversal:</strong><br />
+The biggest advantage is the ability to traverse both forwards and backwards. This makes certain algorithms and operations easier to implement.</p>
+</li>
+<li>
+<p><strong>Easier Deletion:</strong><br />
+Deleting a node is simpler because you have a pointer to the previous node, so there's no need to traverse the list to find it.</p>
+</li>
+<li>
+<p><strong>Flexibility in Insertion:</strong><br />
+Insertion after or before a given node is straightforward as you can access both the next and previous pointers.</p>
+</li>
+</ol>
+<hr />
+<h3 id="drawbacks-of-a-doubly-linked-list-compared-to-a-singly-linked-list"><a class="header" href="#drawbacks-of-a-doubly-linked-list-compared-to-a-singly-linked-list">Drawbacks of a Doubly Linked List Compared to a Singly Linked List</a></h3>
+<ol>
+<li>
+<p><strong>Increased Memory Usage:</strong><br />
+Each node requires an extra pointer (<code>prev</code>), which doubles the memory used for pointers.</p>
+</li>
+<li>
+<p><strong>Reduced Performance:</strong><br />
+Due to the extra pointer, operations like insertion and deletion involve slightly more overhead for managing the <code>prev</code> pointer.</p>
+</li>
+<li>
+<p><strong>Complexity:</strong><br />
+The implementation is more complex, especially when handling edge cases like inserting or deleting the first or last node.</p>
+</li>
+</ol>
+<hr />
+<h3 id="summary-1"><a class="header" href="#summary-1">Summary</a></h3>
+<p>While a doubly linked list provides more flexibility with bidirectional traversal and easier node deletion/insertion, it comes at the cost of increased memory usage and slightly reduced performance. It's an excellent choice for scenarios where frequent backward traversal is needed or when node deletion happens often.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="binary-tree"><a class="header" href="#binary-tree">Binary Tree</a></h2>
+<pre><code class="language-c">// This program opens and reads a file of integer pairs into an array, with the first integer telling it how many to read.
+// It places these values into a binary tree structure. Walks the tree inorder and prints the values onto the screen.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Define the structure for a binary tree node
+typedef struct TreeNode {
+    int value;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+
+// Function to create a new tree node
+TreeNode* create_node(int value) {
+    TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
+    if (!new_node) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+    new_node-&gt;value = value;
+    new_node-&gt;left = new_node-&gt;right = NULL;
+    return new_node;
+}
+
+// Function to insert a value into the binary tree
+TreeNode* insert(TreeNode* root, int value) {
+    if (root == NULL) {
+        return create_node(value);
+    }
+    if (value &lt; root-&gt;value) {
+        root-&gt;left = insert(root-&gt;left, value);
+    } else {
+        root-&gt;right = insert(root-&gt;right, value);
+    }
+    return root;
+}
+
+// Function to perform inorder traversal and print the values
+void inorder_traversal(TreeNode* root) {
+    if (root != NULL) {
+        inorder_traversal(root-&gt;left);
+        printf("%d ", root-&gt;value);
+        inorder_traversal(root-&gt;right);
+    }
+}
+
+void free_tree(TreeNode* root) {
+    if (root != NULL) {
+        free_tree(root-&gt;left);
+        free_tree(root-&gt;right);
+        free(root);
+    }
+}
+
+int main(int argc, char* argv[]) {
+    FILE *ifp;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: &lt;input_filename&gt;\n");
+        exit(1);
+    }
+
+    ifp = fopen(argv[1], "r");
+    if (ifp == NULL) {
+        fprintf(stderr, "Can't open input file %s\n", argv[1]);
+        exit(1);
+    }
+
+    printf("Reading from %s\n", argv[1]);
+
+    // Read the first number to determine the array size
+    int array_size;
+    fscanf(ifp, "%d", &amp;array_size);
+    printf("Array size: %d\n", array_size);
+
+    // Create the binary tree and insert values
+    TreeNode* root = NULL;
+    for (int i = 0; i &lt; array_size; i++) {
+        int value;
+        fscanf(ifp, "%d", &amp;value);
+        root = insert(root, value);
+    }
+
+    // Perform inorder traversal and print the values
+    printf("Inorder traversal of the binary tree:\n");
+    inorder_traversal(root);
+    printf("\n");
+
+    free_tree(root);
+
+    // Close the input file
+    fclose(ifp);
+
+    return 0;
+}
+</code></pre>
+<h3 id="binary-tree-definition"><a class="header" href="#binary-tree-definition">Binary Tree Definition</a></h3>
+<p>A <strong>binary tree</strong> is a data structure in which each node has at most two children, referred to as the left child and the right child. It is commonly used for organizing data for quick access, insertion, and deletion.</p>
+<h3 id="example-input-and-output"><a class="header" href="#example-input-and-output">Example Input and Output</a></h3>
+<p>Based on your code, the program reads pairs of integers from a file, creates a binary tree, and prints the values in-order.</p>
+<h4 id="example-input-file-inputtxt"><a class="header" href="#example-input-file-inputtxt">Example Input File (<code>input.txt</code>):</a></h4>
+<pre><code>5
+30 10 50 20 40
+</code></pre>
+<h4 id="explanation-of-input"><a class="header" href="#explanation-of-input">Explanation of Input:</a></h4>
+<ol>
+<li>The first number (<code>5</code>) specifies the number of integers to insert into the binary tree.</li>
+<li>The subsequent numbers (<code>30</code>, <code>10</code>, <code>50</code>, <code>20</code>, <code>40</code>) are inserted into the binary tree.</li>
+</ol>
+<h4 id="output-1"><a class="header" href="#output-1">Output:</a></h4>
+<pre><code>Reading from input.txt
+Array size: 5
+Inorder traversal of the binary tree:
+10 20 30 40 50
+</code></pre>
+<h4 id="explanation-of-output"><a class="header" href="#explanation-of-output">Explanation of Output:</a></h4>
+<ul>
+<li>The in-order traversal prints the values in ascending order: left subtree → root → right subtree.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
@@ -4305,6 +6170,143 @@ class RateLimiter
   end
 end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quick-server-side-sinatra-setup"><a class="header" href="#quick-server-side-sinatra-setup">Quick Server-Side Sinatra Setup</a></h1>
+<p><em>Minimal, elegant Ruby backend without JavaScript nonsense.</em></p>
+<h2 id="project-structure"><a class="header" href="#project-structure">Project Structure</a></h2>
+<pre><code class="language-plaintext">my_app/
+├── app.rb
+├── views/
+│   └── index.erb
+├── public/
+│   └── style.css
+├── Gemfile
+└── config.ru
+</code></pre>
+<h2 id="step-by-step"><a class="header" href="#step-by-step">Step-by-Step</a></h2>
+<ol>
+<li><strong>Install Sinatra</strong></li>
+</ol>
+<pre><code class="language-bash">gem install sinatra
+</code></pre>
+<ol start="2">
+<li><strong>Basic <code>app.rb</code> Template</strong></li>
+</ol>
+<pre><code class="language-ruby">require 'sinatra'
+
+get '/' do
+  erb :index
+end
+</code></pre>
+<ol start="3">
+<li><strong>Create Views</strong></li>
+</ol>
+<pre><code class="language-erb">&lt;!-- views/index.erb --&gt;
+&lt;h1&gt;Hello, world&lt;/h1&gt;
+</code></pre>
+<ol start="4">
+<li><strong>Run It</strong></li>
+</ol>
+<pre><code class="language-bash">ruby app.rb
+</code></pre>
+<ol start="5">
+<li><strong>Production Ready with Rack</strong></li>
+</ol>
+<pre><code class="language-ruby"># config.ru
+require './app'
+run Sinatra::Application
+</code></pre>
+<pre><code class="language-bash">rackup config.ru
+</code></pre>
+<h2 id="todo"><a class="header" href="#todo">TODO</a></h2>
+<ul>
+<li>Add custom routes</li>
+<li>Add environment config (<code>dotenv</code>)</li>
+<li>Connect to Postgres</li>
+</ul>
+<h2 id="resources"><a class="header" href="#resources">Resources</a></h2>
+<ul>
+<li><a href="http://sinatrarb.com/">Sinatra Docs</a></li>
+<li><a href="https://rack.github.io/">Rack Configs</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erb-templates-with-htmx"><a class="header" href="#erb-templates-with-htmx">ERB Templates with HTMX</a></h1>
+<p><em>Using server-side rendered HTML fragments with zero JS frameworks.</em></p>
+<h2 id="goal"><a class="header" href="#goal">Goal</a></h2>
+<p>Combine Ruby’s ERB templating system with HTMX to create reactive web pages without using JavaScript libraries.</p>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<h3 id="html-template"><a class="header" href="#html-template">HTML Template</a></h3>
+<pre><code class="language-erb">&lt;!-- views/index.erb --&gt;
+&lt;div id="content"&gt;
+  &lt;%= erb :partial, locals: { message: "Initial load" } %&gt;
+&lt;/div&gt;
+
+&lt;button hx-get="/update" hx-target="#content" hx-swap="innerHTML"&gt;Click Me&lt;/button&gt;
+</code></pre>
+<h3 id="route-in-sinatra"><a class="header" href="#route-in-sinatra">Route in Sinatra</a></h3>
+<pre><code class="language-ruby">get '/update' do
+  erb :partial, locals: { message: "Updated via HTMX!" }
+end
+</code></pre>
+<h3 id="partial-template"><a class="header" href="#partial-template">Partial Template</a></h3>
+<pre><code class="language-erb">&lt;!-- views/_partial.erb --&gt;
+&lt;p&gt;&lt;%= message %&gt;&lt;/p&gt;
+</code></pre>
+<h2 id="server-behavior"><a class="header" href="#server-behavior">Server Behavior</a></h2>
+<ul>
+<li>On button click, HTMX sends GET request</li>
+<li>Server returns only the partial</li>
+<li>Target content is replaced with new HTML fragment</li>
+</ul>
+<h2 id="advanced-use"><a class="header" href="#advanced-use">Advanced Use</a></h2>
+<ul>
+<li>Use <code>hx-post</code> for form submissions</li>
+<li>Load content into modals</li>
+<li>Trigger spinners using <code>hx-indicator</code></li>
+</ul>
+<h2 id="todo-1"><a class="header" href="#todo-1">TODO</a></h2>
+<ul>
+<li>Add CSRF protection</li>
+<li>Explore <code>htmx:configRequest</code> for headers</li>
+<li>Integrate with sessions or user auth</li>
+</ul>
+<h2 id="resources-1"><a class="header" href="#resources-1">Resources</a></h2>
+<ul>
+<li><a href="https://htmx.org/docs/">HTMX Docs</a></li>
+<li><a href="http://sinatrarb.com/">Sinatra with ERB</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-clean-pagination-in-sinatra-backend-controlled"><a class="header" href="#-clean-pagination-in-sinatra-backend-controlled">🗂️ Clean Pagination in Sinatra (Backend-Controlled)</a></h2>
+<p>To avoid loading too many records and letting the UI handle paging, use SQL's <code>LIMIT</code> and <code>OFFSET</code> directly in your Sinatra route:</p>
+<pre><code class="language-ruby">get '/' do
+  page = params[:page].to_i
+  page = 1 if page &lt; 1
+  limit = 10
+  offset = (page - 1) * limit
+
+  @posts = db.execute("SELECT * FROM posts ORDER BY created_at DESC LIMIT ? OFFSET ?", [limit, offset])
+  @total_posts = db.get_first_value('SELECT COUNT(*) FROM posts')
+  @current_page = page
+
+  smart_template(:index)
+end
+</code></pre>
+<hr />
+<p>And in your ERB view, display pagination buttons dynamically:</p>
+<pre><code class="language-erb">&lt;div class="pagination"&gt;
+  &lt;% total_pages = (@total_posts.to_f / 10).ceil %&gt;
+
+  &lt;% if @current_page &gt; 1 %&gt;
+    &lt;button hx-get="/?page=&lt;%= @current_page - 1 %&gt;"
+            hx-target="#content"
+            hx-swap="innerHTML"&gt;Previous&lt;/button&gt;
+  &lt;% end %&gt;
+
+  &lt;% if @current_page &lt; total_pages %&gt;
+    &lt;button hx-get="/?page=&lt;%= @current_page + 1 %&gt;"
+            hx-target="#content"
+            hx-swap="innerHTML"&gt;Next&lt;/button&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;
+</code></pre>
+<p>This ensures fast load times, clean UX, and a backend that acts like a proper gatekeeper of database sanity.</p>
 <div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
 <pre><code class="language-python">number = 7
