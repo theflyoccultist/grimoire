@@ -34,7 +34,7 @@ I have unfortunately decided to swallow my pride and use the Google Cloud UI for
 
 -Now any subdomain (`blog.yourdomain.com`, `api.yourdomain.com`, etc.) will automatically work.
 
-# Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping
+## Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping
 
 🔥 **If you see:**  
 
