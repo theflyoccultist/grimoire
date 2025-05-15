@@ -1,3 +1,15 @@
+### Create a new repository from the command line
+
+```bash
+echo "# http_server" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:theflyoccultist/http_server.git
+git push -u origin main
+```
+
 ### Connect to a new repository
 
 1. Open a Terminal
