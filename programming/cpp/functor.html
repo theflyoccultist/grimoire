@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>Functional Objects - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,22 +155,125 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
-<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
-<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
-<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
-<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
-<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+                        <h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<ul>
+<li>It's useful to have function objects to further leverage the STL library</li>
+<li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
+<li>Functors like <code>std::plus</code>, <code>std::minus</code>, <code>std::multiplies</code>, etc. are part of <code>&lt;functional&gt;</code>.</li>
+<li><code>std::accumulate</code> takes a starting value and a binary operation to process each element.</li>
+<li>You can plug in your own class with <code>operator()</code> to accumulate however you want.</li>
+<li>It’s an elegant way to avoid lambda clutter in simple cases.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+
+int main() {
+  double v1[3] = {1.0, 2.5, 4.6}, sum;
+  sum = std::accumulate(v1, v1 + 3, 0.0, std::minus&lt;double&gt;());
+  std::cout &lt;&lt; "sum = " &lt;&lt; sum &lt;&lt; "\n";
+}
+</code></pre>
+<p><code>Expected output: -8.1</code></p>
+<h2 id="generator-object--integration"><a class="header" href="#generator-object--integration">Generator Object &amp; Integration</a></h2>
+<h4 id="function-object-aka-functor"><a class="header" href="#function-object-aka-functor">📝Function Object aka Functor</a></h4>
+<ul>
+<li><code>operator()</code> lets you treat an object like a function.</li>
+<li>This is <strong>zero-parameter</strong>, meaning it's called like <code>g()</code>; no arguments.</li>
+<li>Each call advances <code>x</code> and returns <code>x²</code>.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;vector&gt;
+
+public:
+  gen(double x_zero, double increment) : x(x_zero), incr(increment) {}
+  double operator()() {
+    x += incr;
+    return x * x;
+  }
+
+private:
+  double x, incr;
+};
+</code></pre>
+<h4 id="stdgenerate--functor"><a class="header" href="#stdgenerate--functor"><code>std::generate()</code> + Functor</a></h4>
+<ul>
+<li><code>std::generate</code> takes a range and a function object.</li>
+<li>It calls <code>g()</code> <code>n</code> times, populating the vector with values like <code>(Δx)², (2Δx)², ...</code>.</li>
+<li>Then <code>accumulate</code> computes the average: approximating ∫x² dx.</li>
+</ul>
+<pre><code class="language-cpp">double integrate(gen g, int n) {
+  std::vector&lt;double&gt; fx(n);
+  std::generate(fx.begin(), fx.end(), g);
+  return std::accumulate(fx.begin(), fx.end(), 0.0) / n;
+}
+</code></pre>
+<p>This is basically doing numerical integration of <code>f(x) = x²</code> over <code>[Δx, 1]</code> by approximating the area under the curve using small slices.</p>
+<h4 id="testing"><a class="header" href="#testing">Testing:</a></h4>
+<pre><code class="language-cpp">int main() {
+  const int n = 10000;
+
+  gen g(0.0, 1.0 / n);
+  std::cout &lt;&lt; "Integration program x**2" &lt;&lt; "\n";
+  std::cout &lt;&lt; integrate(g, n) &lt;&lt; "\n";
+}
+</code></pre>
+<h4 id="generator-objects-with-operator"><a class="header" href="#generator-objects-with-operator">Generator Objects with operator()()</a></h4>
+<ul>
+<li>A generator object is a class that maintains state and returns a value on each call to <code>operator()</code>.</li>
+<li>Acts like a function but remembers where it left off.</li>
+<li>Commonly used in STL algorithms like <code>std::generate()</code>.</li>
+</ul>
+<h4 id="usage-in-numerical-integration"><a class="header" href="#usage-in-numerical-integration">Usage in Numerical Integration</a></h4>
+<ul>
+<li>Create a functor that simulates the progression of <code>x</code> in a function <code>f(x)</code>.</li>
+<li>Call it repeatedly to generate the range <code>f(x₁), f(x₂), ..., f(xₙ)</code>.</li>
+<li>Sum and average to estimate integrals (e.g. Riemann sum).</li>
+</ul>
+<h2 id="function-adapters"><a class="header" href="#function-adapters">Function Adapters</a></h2>
+<p>Things like <code>bind1st</code>, <code>bind2nd</code>, <code>ptr_fun</code> are deprecated nowadays. You needed to stack templates on templates just to multiply something by 2. They are now replaced by:</p>
+<ul>
+<li><strong>Lambdas</strong> for inline operations</li>
+<li><code>std::function</code> for <strong>polymorphic callables</strong></li>
+<li><code>std::bind</code> if you're feeling retro (avoid at all costs)</li>
+</ul>
+<p>Old version:</p>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+auto f = std::bind(std::multiplies&lt;&gt;(), std::placeholders::_1, 2);
+</code></pre>
+<p>New version:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+template &lt;class ForwIter&gt;
+void print(ForwIter first, ForwIter last, const char *title) {
+  std::cout &lt;&lt; title &lt;&lt; "\n";
+  while (first != last)
+    std::cout &lt;&lt; *first++ &lt;&lt; "\t";
+  std::cout &lt;&lt; "\n";
+}
+
+int main() {
+  int data[3] = {9, 10, 11};
+  print(data, data + 3, "Original Values");
+
+  std::transform(data, data + 3, data, [](int x) { return x * 2; });
+
+  print(data, data + 3, "New values");
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/cpp/functor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/cpp/for_each.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/ruby/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -180,11 +283,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/cpp/functor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/cpp/for_each.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/ruby/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

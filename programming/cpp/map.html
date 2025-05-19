@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>Ordered Map vs Unordered Map - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,22 +155,53 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
-<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
-<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
-<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
-<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
-<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+                        <h1 id="ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos"><a class="header" href="#ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos">Ordered vs. Unordered Maps - When to Sort and When to Chaos</a></h1>
+<ul>
+<li><code>std::map</code> is a sorted associative container using a <strong>red-black tree</strong>, which means it's always in order, but inserts and lookups are logarithmic time (<code>O(log n)</code>). Great if you need your data sorted or care about order.</li>
+<li><code>std::unordered_map</code> is based on a <strong>hash table</strong>, so you get average <code>O(1)</code> time for lookups and inserts, but no ordering. It's the gremlin that screams "fast but chaotic."</li>
+</ul>
+<p>Both store key-value pairs (<code>std::pair&lt;const Key, T&gt;</code> under the hood).</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+
+int main() {
+  std::map&lt;unsigned long, std::string&gt; worker;
+  std::unordered_map&lt;unsigned long, unsigned&gt; payroll;
+
+  unsigned total_pay = 0;
+  worker[99567800] = "Harold Fish";
+  payroll[99567800] = 67300;
+  worker[8567800] = "Philip Fish";
+  payroll[8567800] = 87300;
+
+  for (auto p = worker.begin(); p != worker.end(); ++p) {
+    std::cout &lt;&lt; "name " &lt;&lt; (*p).second &lt;&lt; "\tid no." &lt;&lt; (*p).first &lt;&lt; "\n";
+  }
+
+  for (auto p = payroll.begin(); p != payroll.end(); ++p) {
+    total_pay += (*p).second;
+  }
+  std::cout &lt;&lt; "Payroll totals $" &lt;&lt; total_pay &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">name Philip Fish        id no.8567800
+name Harold Fish        id no.99567800
+Payroll totals $154600
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/cpp/functor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/cpp/is_palindrome.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/cpp/find.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -180,11 +211,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/cpp/functor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/cpp/is_palindrome.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/cpp/find.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

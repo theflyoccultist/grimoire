@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>Bidirectional iterator: is_palindrome - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -155,22 +155,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
-<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
-<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
-<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
-<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
-<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+                        <h1 id="bidirectional-iterator-is_palindromecpp"><a class="header" href="#bidirectional-iterator-is_palindromecpp">Bidirectional Iterator: <code>is_palindrome.cpp</code></a></h1>
+<p>This algorithm demonstrates how to use bidirectional iterators, which allow traversal both forward and backward—a requirement for checking palindromes efficiently.</p>
+<h4 id="key-traits-of-a-bidirectional-iterator"><a class="header" href="#key-traits-of-a-bidirectional-iterator">Key Traits of a Bidirectional Iterator:</a></h4>
+<ul>
+<li>Must support both ++ and -- operators (aka "backing up the iterator").</li>
+<li>Used in algorithms like <code>std::reverse()</code> and <code>std::equal()</code> that walk from both ends inward.</li>
+</ul>
+<h4 id="old-school-approach-is_palindrome"><a class="header" href="#old-school-approach-is_palindrome">Old-School Approach (<code>is_palindrome</code>)</a></h4>
+<p>This version uses two pointers (<code>first</code>, <code>last</code>) that walk inward and compare characters:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+template &lt;typename Bidirectional&gt;
+bool is_palindrome(Bidirectional first, Bidirectional last) {
+  if (first == last)
+    return true;
+
+  --last;
+  while (first &lt; last) {
+    if (*first != *last)
+      return false;
+    ++first;
+    --last;
+  }
+  return true;
+}
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  if (is_palindrome(input.begin(), input.end()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>This is the low-level “two-pointer” style, seen often in C-style code.</li>
+<li>It stops early if any characters differ.</li>
+<li>If the pointers meet (or cross), it returns true.</li>
+</ul>
+<p>Compared to using a forward-only iterator (which would require repeatedly walking from the start to simulate --), this approach is linear instead of quadratic.</p>
+<h4 id="input-normalization"><a class="header" href="#input-normalization">Input Normalization</a></h4>
+<p>Before checking, we normalize the input to handle mixed case and punctuation (e.g. "A man, a plan, a canal, Panama!"):</p>
+<pre><code class="language-cpp">std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+</code></pre>
+<ul>
+<li><code>std::transform</code> applies <code>::tolower</code> to each character. This is necessary because uppercase and lowercase letters have different values in memory, unlike scripting languages that hide this behind <code>.to_lower()</code> or <code>${1,,}</code>.</li>
+<li><code>std::regex_replace</code> strips out all non-alphanumeric characters.</li>
+</ul>
+<h3 id="modern-c-one-liner-stdequal"><a class="header" href="#modern-c-one-liner-stdequal">Modern C++ One-Liner: <code>std::equal</code></a></h3>
+<p>You can replace the entire is_palindrome function with one clean STL call:</p>
+<pre><code class="language-cpp">std::equal(input.begin(), input.begin() + input.size() / 2, input.rbegin())
+</code></pre>
+<p>This:</p>
+<ul>
+<li>Compares the first half of the string with the reverse of the second half.</li>
+<li>Automatically handles “meeting in the middle” without manual pointer arithmetic.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  // check for palindrome
+  if (std::equal(input.begin(), input.begin() + input.size() / 2,
+                 input.rbegin()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p>Summary</p>
+<ul>
+<li>You should still learn the manual ++/-- method—understanding the low-level behavior makes STL functions less magical and more powerful.</li>
+<li>But once you get it, use std::equal. It’s cleaner, easier to read, and less error-prone. Let the STL do the pointer math.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/cpp/functor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/cpp/poker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/cpp/map.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -180,11 +276,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/cpp/functor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/cpp/poker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/cpp/map.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

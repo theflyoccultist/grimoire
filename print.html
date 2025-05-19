@@ -5829,6 +5829,640 @@ int main() {
 
   return 0;
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now"><a class="header" href="#poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now">Poker Monte Carlo Simulation: The Final Boss of Single Iterators (for now)</a></h1>
+<p>This simulation is a chaotic but disciplined demonstration of core C++ features, data structures, and algorithmic logic. Here's what it leverages:</p>
+<ul>
+<li>
+<p><code>enum class</code>: a scoped, type-safe alternative to traditional C-style enums.</p>
+<ul>
+<li>Syntax: <code>enum class Identifier : integral_type { list };</code></li>
+<li>Example:
+<pre><code class="language-cpp">enum class Color { RED, GREEN, BLUE };
+enum class Spotlight { RED, YELLOW, GREEN };
+</code></pre>
+</li>
+<li>In old-style enums, <code>RED</code> would be ambiguous if used in the same scope.</li>
+<li>With <code>enum class</code>, <code>Color::RED</code> and <code>Spotlight::RED</code> are completely distinct.</li>
+<li><code>::</code> is called the <strong>scope resolution operator</strong>.</li>
+<li>By default, the underlying type is int; but you can specify something smaller like <code>short</code> or <code>unsigned</code> (as long as it's integral).</li>
+</ul>
+</li>
+<li>
+<p>Custom <code>card</code> data type: modeled using <code>enum class</code> for suits and a <code>pips</code> class to represent values (1 to 13). Together, they form an easily extensible system for identifying and comparing cards.</p>
+</li>
+<li>
+<p><code>std::vector&lt;T&gt;</code>, dynamic arrays that shrink and grow as needed. Also a great workaround to avoid using <code>new</code> and <code>delete</code>, something you would use if you're asking for problems. Vectors also provides iterator support for algorithms like <code>std::shuffle</code> and <code>std::sort</code>.</p>
+</li>
+<li>
+<p>Modern RNG:</p>
+<ul>
+<li><code>std::random_shuffle()</code> is deprecated.</li>
+<li>The correct modern approach is:
+<pre><code class="language-cpp">std::random_device rd;
+std::mt19937 g(rd());
+std::shuffle(deck.begin(), deck.end(), g);
+</code></pre>
+</li>
+<li><code>std::mt19937</code> is a Mersenne Twister engine, high-quality and widely used.</li>
+<li><code>std::random_device</code> provides a non-deterministic seed (if supported by the system).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="stdmap"><a class="header" href="#stdmap"><code>std::map</code>:</a></h4>
+<p>To classify hands like pairs, three-of-a-kinds, full houses, and four-of-a-kinds, I used <code>std::map</code> as a clean alternative to writing multiple functions for each case.</p>
+<ul>
+<li>
+<p>A <code>std::map&lt;Key, Value&gt;</code> stores <strong>key-value pairs</strong>, sorted by key in <strong>ascending order</strong> by default.</p>
+</li>
+<li>
+<p>In this simulation, the <strong>key</strong> is the pip value (card number), and the <strong>value</strong> is the count of how many times it appears in a hand.</p>
+</li>
+<li>
+<p>This allows a single pass over the hand to collect <strong>all frequency data</strong>, which can then be used to identify any relevant hand:</p>
+<ul>
+<li>A key with a value of <code>4</code> → Four of a Kind</li>
+<li>A key with a value of <code>3</code> and another with <code>2</code> → Full House</li>
+<li>Two keys with value <code>2</code> → Two Pair</li>
+<li>One key with value <code>2</code> → One Pair</li>
+</ul>
+</li>
+</ul>
+<p>Example usage:</p>
+<pre><code class="language-cpp">std::map&lt;int, int&gt; pip_counts;
+for (const card&amp; c : hand) {
+    pip_counts[c.get_pips().get_pips()]++;
+}
+</code></pre>
+<ul>
+<li>Unlike <code>unordered_map</code>, which is backed by a hash table and has no guaranteed order, <code>std::map</code> keeps things <strong>sorted</strong>, which may help with debug output or extensions like detecting the highest kicker.</li>
+</ul>
+<p>Using this map, a single <code>classify_hand()</code> function was enough to identify all hand types based on how many identical pip values were found.</p>
+<hr />
+<h3 id="suggestions-for-improvements"><a class="header" href="#suggestions-for-improvements">Suggestions for improvements</a></h3>
+<ul>
+<li>Detecting royal flushes</li>
+<li>Analyzing average hand value</li>
+<li>Plotting probabilities as a histogram</li>
+</ul>
+<hr />
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;ostream&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+
+enum class suit : short { SPADE, HEART, DIAMOND, CLUB };
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const suit &amp;s) {
+  return out &lt;&lt; static_cast&lt;int&gt;(s);
+}
+
+class pips {
+public:
+  pips(int val) : v(val) { assert(v &gt; 0 &amp;&amp; v &lt; 14); }
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const pips &amp;p) {
+    out &lt;&lt; p.v;
+    return out;
+  };
+  int get_pips() { return v; }
+
+private:
+  int v;
+};
+
+class card {
+public:
+  card() : s(suit::SPADE), v(1) {}
+  card(suit s, pips v) : s(s), v(v) {}
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const card &amp;c);
+  const suit get_suit() { return s; }
+  pips get_pips() const { return v; }
+
+private:
+  suit s;
+  pips v;
+};
+
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const card &amp;c) {
+  out &lt;&lt; c.v &lt;&lt; c.s;
+  return out;
+}
+
+void init_deck(std::vector&lt;card&gt; &amp;d) {
+  const std::array&lt;suit, 4&gt; all_suits = {suit::SPADE, suit::HEART,
+                                         suit::DIAMOND, suit::CLUB};
+
+  for (const auto &amp;s : all_suits) {
+    for (int p = 1; p &lt; 14; ++p) {
+      d.emplace_back(s, pips(p));
+    }
+  }
+}
+
+void print(std::vector&lt;card&gt; &amp;deck) {
+  for (auto cardval : deck)
+    std::cout &lt;&lt; cardval &lt;&lt; "\n";
+}
+
+void classify_hand(std::vector&lt;card&gt; &amp;hand, int &amp;pairs, int &amp;trips,
+                   int &amp;quads) {
+  std::map&lt;int, int&gt; pip_count;
+
+  for (const card &amp;c : hand) {
+    int pip = c.get_pips().get_pips();
+    pip_count[pip]++;
+  }
+
+  pairs = 0;
+  trips = 0;
+  quads = 0;
+
+  for (const auto &amp;[pip, count] : pip_count) {
+    if (count == 2)
+      pairs++;
+    else if (count == 3)
+      trips++;
+    else if (count == 4)
+      quads++;
+  }
+}
+
+bool is_flush(std::vector&lt;card&gt; &amp;hand) {
+  suit s = hand[0].get_suit();
+  for (auto p = hand.begin() + 1; p != hand.end(); ++p)
+    if (s != p-&gt;get_suit())
+      return false;
+  return true;
+}
+
+bool is_consecutive(int *pips) {
+  for (int i = 1; i &lt; 5; ++i)
+    if (pips[i] != pips[i - 1] + 1)
+      return false;
+  return true;
+}
+
+bool is_straight(std::vector&lt;card&gt; &amp;hand) {
+  int pips_v[5];
+  for (int i = 0; i &lt; 5; ++i)
+    pips_v[i] = hand[i].get_pips().get_pips();
+
+  std::sort(pips_v, pips_v + 5);
+
+  // Ace high: 10-J-Q-K-A
+  if (pips_v[0] == 1 &amp;&amp; pips_v[1] == 10)
+    return pips_v[1] == 10 &amp;&amp; pips_v[2] == 11 &amp;&amp; pips_v[3] == 12 &amp;&amp;
+           pips_v[4] == 13;
+
+  // regular straight
+  return is_consecutive(pips_v);
+}
+
+bool is_straight_flush(std::vector&lt;card&gt; &amp;hand) {
+  return is_flush(hand) &amp;&amp; is_straight(hand);
+}
+
+int main() {
+  std::vector&lt;card&gt; deck(52);
+  srand(time(nullptr));
+  init_deck(deck);
+  int how_many;
+  int high_card = 0, one_pair = 0, two_pair = 0, three_ofa_kind = 0,
+      four_of_akind = 0, full_house = 0;
+  int flush_count = 0, str_count = 0, str_flush_count = 0;
+  std::cout &lt;&lt; "How many shuffles? ";
+  std::cin &gt;&gt; how_many;
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+  for (int loop = 0; loop &lt; how_many; ++loop) {
+    std::shuffle(deck.begin(), deck.end(), g);
+    std::vector&lt;card&gt; hand(deck.begin(), deck.begin() + 5);
+
+    int pairs = 0, trips = 0, quads = 0;
+    classify_hand(hand, pairs, trips, quads);
+
+    if (is_flush(hand))
+      flush_count++;
+    else if (is_straight(hand))
+      str_count++;
+    else if (is_straight_flush(hand))
+      str_flush_count++;
+
+    else if (quads == 1)
+      four_of_akind++;
+    else if (trips == 1 &amp;&amp; pairs == 1)
+      full_house++;
+    else if (trips == 1)
+      three_ofa_kind++;
+    else if (pairs == 2)
+      two_pair++;
+    else if (pairs == 1)
+      one_pair++;
+    else
+      high_card++;
+  }
+
+  std::cout &lt;&lt; "High Card: " &lt;&lt; high_card &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Pair: " &lt;&lt; one_pair &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Two Pairs: " &lt;&lt; two_pair &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Three of a kind: " &lt;&lt; three_ofa_kind &lt;&lt; " out of " &lt;&lt; how_many
+            &lt;&lt; "\n";
+
+  std::cout &lt;&lt; "Straights: " &lt;&lt; str_count &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Flushes: " &lt;&lt; flush_count &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Full House: " &lt;&lt; full_house &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
+  std::cout &lt;&lt; "Four of a kind: " &lt;&lt; four_of_akind &lt;&lt; " out of " &lt;&lt; how_many
+            &lt;&lt; "\n";
+  std::cout &lt;&lt; "Straight Flushes: " &lt;&lt; str_flush_count &lt;&lt; " out of " &lt;&lt; how_many
+            &lt;&lt; "\n";
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bidirectional-iterator-is_palindromecpp"><a class="header" href="#bidirectional-iterator-is_palindromecpp">Bidirectional Iterator: <code>is_palindrome.cpp</code></a></h1>
+<p>This algorithm demonstrates how to use bidirectional iterators, which allow traversal both forward and backward—a requirement for checking palindromes efficiently.</p>
+<h4 id="key-traits-of-a-bidirectional-iterator"><a class="header" href="#key-traits-of-a-bidirectional-iterator">Key Traits of a Bidirectional Iterator:</a></h4>
+<ul>
+<li>Must support both ++ and -- operators (aka "backing up the iterator").</li>
+<li>Used in algorithms like <code>std::reverse()</code> and <code>std::equal()</code> that walk from both ends inward.</li>
+</ul>
+<h4 id="old-school-approach-is_palindrome"><a class="header" href="#old-school-approach-is_palindrome">Old-School Approach (<code>is_palindrome</code>)</a></h4>
+<p>This version uses two pointers (<code>first</code>, <code>last</code>) that walk inward and compare characters:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+template &lt;typename Bidirectional&gt;
+bool is_palindrome(Bidirectional first, Bidirectional last) {
+  if (first == last)
+    return true;
+
+  --last;
+  while (first &lt; last) {
+    if (*first != *last)
+      return false;
+    ++first;
+    --last;
+  }
+  return true;
+}
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  if (is_palindrome(input.begin(), input.end()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>This is the low-level “two-pointer” style, seen often in C-style code.</li>
+<li>It stops early if any characters differ.</li>
+<li>If the pointers meet (or cross), it returns true.</li>
+</ul>
+<p>Compared to using a forward-only iterator (which would require repeatedly walking from the start to simulate --), this approach is linear instead of quadratic.</p>
+<h4 id="input-normalization"><a class="header" href="#input-normalization">Input Normalization</a></h4>
+<p>Before checking, we normalize the input to handle mixed case and punctuation (e.g. "A man, a plan, a canal, Panama!"):</p>
+<pre><code class="language-cpp">std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+</code></pre>
+<ul>
+<li><code>std::transform</code> applies <code>::tolower</code> to each character. This is necessary because uppercase and lowercase letters have different values in memory, unlike scripting languages that hide this behind <code>.to_lower()</code> or <code>${1,,}</code>.</li>
+<li><code>std::regex_replace</code> strips out all non-alphanumeric characters.</li>
+</ul>
+<h3 id="modern-c-one-liner-stdequal"><a class="header" href="#modern-c-one-liner-stdequal">Modern C++ One-Liner: <code>std::equal</code></a></h3>
+<p>You can replace the entire is_palindrome function with one clean STL call:</p>
+<pre><code class="language-cpp">std::equal(input.begin(), input.begin() + input.size() / 2, input.rbegin())
+</code></pre>
+<p>This:</p>
+<ul>
+<li>Compares the first half of the string with the reverse of the second half.</li>
+<li>Automatically handles “meeting in the middle” without manual pointer arithmetic.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  // check for palindrome
+  if (std::equal(input.begin(), input.begin() + input.size() / 2,
+                 input.rbegin()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p>Summary</p>
+<ul>
+<li>You should still learn the manual ++/-- method—understanding the low-level behavior makes STL functions less magical and more powerful.</li>
+<li>But once you get it, use std::equal. It’s cleaner, easier to read, and less error-prone. Let the STL do the pointer math.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos"><a class="header" href="#ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos">Ordered vs. Unordered Maps - When to Sort and When to Chaos</a></h1>
+<ul>
+<li><code>std::map</code> is a sorted associative container using a <strong>red-black tree</strong>, which means it's always in order, but inserts and lookups are logarithmic time (<code>O(log n)</code>). Great if you need your data sorted or care about order.</li>
+<li><code>std::unordered_map</code> is based on a <strong>hash table</strong>, so you get average <code>O(1)</code> time for lookups and inserts, but no ordering. It's the gremlin that screams "fast but chaotic."</li>
+</ul>
+<p>Both store key-value pairs (<code>std::pair&lt;const Key, T&gt;</code> under the hood).</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+
+int main() {
+  std::map&lt;unsigned long, std::string&gt; worker;
+  std::unordered_map&lt;unsigned long, unsigned&gt; payroll;
+
+  unsigned total_pay = 0;
+  worker[99567800] = "Harold Fish";
+  payroll[99567800] = 67300;
+  worker[8567800] = "Philip Fish";
+  payroll[8567800] = 87300;
+
+  for (auto p = worker.begin(); p != worker.end(); ++p) {
+    std::cout &lt;&lt; "name " &lt;&lt; (*p).second &lt;&lt; "\tid no." &lt;&lt; (*p).first &lt;&lt; "\n";
+  }
+
+  for (auto p = payroll.begin(); p != payroll.end(); ++p) {
+    total_pay += (*p).second;
+  }
+  std::cout &lt;&lt; "Payroll totals $" &lt;&lt; total_pay &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">name Philip Fish        id no.8567800
+name Harold Fish        id no.99567800
+Payroll totals $154600
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="non-mutating-algorithms-stdfind"><a class="header" href="#non-mutating-algorithms-stdfind">Non mutating algorithms: <code>std::find</code></a></h1>
+<ul>
+<li>Does not modify the contents of the container they work on.</li>
+<li>Typical operation is searching the container for a particular element and returning its position</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class T&gt;
+InputIter find(InputIter b, InputIter e, const T &amp;t);
+</code></pre>
+<ul>
+<li>This returns an iterator to the first matching element (or <code>end()</code> if not found), so checking against the end is crucial for sanity.</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Predicate&gt;
+InputIter find(InputIter b, InputIter e, Predicate p);
+</code></pre>
+<ul>
+<li>Finds position of first element that makes Predicate true in range b to e, otherwise position e is returned.</li>
+</ul>
+<p>Another possibility:</p>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Function&gt;
+void for_each(InputIter b, InputIter e, Function f);
+</code></pre>
+<ul>
+<li>Apply f for each value found in range b to e.</li>
+<li><code>std::for_each</code> is great for side effects, but in modern C++, it's usually replaced with range-based for loops or algorithms like <code>std::transform</code> or <code>std::accumulate</code> for actual data transformation.</li>
+</ul>
+<h4 id="find-algorithm-example"><a class="header" href="#find-algorithm-example"><code>find()</code> algorithm example</a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string words[5] = {"my", "hop", "mop", "hope", "cope"};
+  std::string *where;
+
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+  std::sort(words, words + 5);
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">mop
+hope
+</code></pre>
+<ul>
+<li>Here, sort does a lexicographic sort. "cope" will end up first and "my" will end up last.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lambda-expressions-for_each-function"><a class="header" href="#lambda-expressions-for_each-function">Lambda expressions: <code>for_each()</code> function</a></h1>
+<p>Lambda expressions:</p>
+<ul>
+<li>Derived from Lisp</li>
+<li>Previously <code>for_each()</code> needs a function</li>
+<li>Will use C++11 idea: write an unnamed function in place: a lambda expression</li>
+</ul>
+<p>You can use it, fall in love with it even if you don't have Lisp experience - or in more modern terms, Haskell.</p>
+<h4 id="old-style-for_each"><a class="header" href="#old-style-for_each">Old style <code>for_each()</code></a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+void outvec(int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; }
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="lambda-in-c11"><a class="header" href="#lambda-in-c11">Lambda in C++11</a></h4>
+<ul>
+<li>Unnamed function</li>
+</ul>
+<pre><code class="language-cpp">[](int i) { cout &lt;&lt; i &lt;&lt; "\n"; }
+</code></pre>
+<ul>
+<li><code>[]</code> Goes where the function object is required.</li>
+<li><code>(int i)</code> Parameters</li>
+<li><code>{ cout &lt;&lt; i &lt;&lt; "\n"; }</code> Executable</li>
+</ul>
+<p><code>[](int n) { return n * 5.5; }</code> deduces the return value as double
+<code>[](int n) -&gt; int { return ++n; }</code> explicit type declaration.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+auto outvec = [](int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+// auto outvec: (lambda) = [](int i) -&gt; void { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="bonus-from-the-void-if-you-are-still-here-chaining-lambdas"><a class="header" href="#bonus-from-the-void-if-you-are-still-here-chaining-lambdas">Bonus from the Void If you are still here: Chaining Lambdas</a></h4>
+<ul>
+<li>Defining a lambda</li>
+<li>That returns another lambda</li>
+<li>That closes over <code>factor</code></li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+  // make_multiplier is a function (a lambda) that takes one int: factor
+  auto make_multiplier = [](int factor) {
+  
+    // It returns another function - also a lambda!
+    // That lambda takes int x and multiplies it by factor
+    return [factor](int x) {
+      return x * factor; 
+    };
+  };
+  
+  // times5 is literally this: [](int x) { return x * 5; }
+  auto times5 = make_multiplier(5);
+
+  // This is calling 10 * 5 -&gt; 50
+  std::cout &lt;&lt; times5(10) &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output: 50</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<ul>
+<li>It's useful to have function objects to further leverage the STL library</li>
+<li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
+<li>Functors like <code>std::plus</code>, <code>std::minus</code>, <code>std::multiplies</code>, etc. are part of <code>&lt;functional&gt;</code>.</li>
+<li><code>std::accumulate</code> takes a starting value and a binary operation to process each element.</li>
+<li>You can plug in your own class with <code>operator()</code> to accumulate however you want.</li>
+<li>It’s an elegant way to avoid lambda clutter in simple cases.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+
+int main() {
+  double v1[3] = {1.0, 2.5, 4.6}, sum;
+  sum = std::accumulate(v1, v1 + 3, 0.0, std::minus&lt;double&gt;());
+  std::cout &lt;&lt; "sum = " &lt;&lt; sum &lt;&lt; "\n";
+}
+</code></pre>
+<p><code>Expected output: -8.1</code></p>
+<h2 id="generator-object--integration"><a class="header" href="#generator-object--integration">Generator Object &amp; Integration</a></h2>
+<h4 id="function-object-aka-functor"><a class="header" href="#function-object-aka-functor">📝Function Object aka Functor</a></h4>
+<ul>
+<li><code>operator()</code> lets you treat an object like a function.</li>
+<li>This is <strong>zero-parameter</strong>, meaning it's called like <code>g()</code>; no arguments.</li>
+<li>Each call advances <code>x</code> and returns <code>x²</code>.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;vector&gt;
+
+public:
+  gen(double x_zero, double increment) : x(x_zero), incr(increment) {}
+  double operator()() {
+    x += incr;
+    return x * x;
+  }
+
+private:
+  double x, incr;
+};
+</code></pre>
+<h4 id="stdgenerate--functor"><a class="header" href="#stdgenerate--functor"><code>std::generate()</code> + Functor</a></h4>
+<ul>
+<li><code>std::generate</code> takes a range and a function object.</li>
+<li>It calls <code>g()</code> <code>n</code> times, populating the vector with values like <code>(Δx)², (2Δx)², ...</code>.</li>
+<li>Then <code>accumulate</code> computes the average: approximating ∫x² dx.</li>
+</ul>
+<pre><code class="language-cpp">double integrate(gen g, int n) {
+  std::vector&lt;double&gt; fx(n);
+  std::generate(fx.begin(), fx.end(), g);
+  return std::accumulate(fx.begin(), fx.end(), 0.0) / n;
+}
+</code></pre>
+<p>This is basically doing numerical integration of <code>f(x) = x²</code> over <code>[Δx, 1]</code> by approximating the area under the curve using small slices.</p>
+<h4 id="testing"><a class="header" href="#testing">Testing:</a></h4>
+<pre><code class="language-cpp">int main() {
+  const int n = 10000;
+
+  gen g(0.0, 1.0 / n);
+  std::cout &lt;&lt; "Integration program x**2" &lt;&lt; "\n";
+  std::cout &lt;&lt; integrate(g, n) &lt;&lt; "\n";
+}
+</code></pre>
+<h4 id="generator-objects-with-operator"><a class="header" href="#generator-objects-with-operator">Generator Objects with operator()()</a></h4>
+<ul>
+<li>A generator object is a class that maintains state and returns a value on each call to <code>operator()</code>.</li>
+<li>Acts like a function but remembers where it left off.</li>
+<li>Commonly used in STL algorithms like <code>std::generate()</code>.</li>
+</ul>
+<h4 id="usage-in-numerical-integration"><a class="header" href="#usage-in-numerical-integration">Usage in Numerical Integration</a></h4>
+<ul>
+<li>Create a functor that simulates the progression of <code>x</code> in a function <code>f(x)</code>.</li>
+<li>Call it repeatedly to generate the range <code>f(x₁), f(x₂), ..., f(xₙ)</code>.</li>
+<li>Sum and average to estimate integrals (e.g. Riemann sum).</li>
+</ul>
+<h2 id="function-adapters"><a class="header" href="#function-adapters">Function Adapters</a></h2>
+<p>Things like <code>bind1st</code>, <code>bind2nd</code>, <code>ptr_fun</code> are deprecated nowadays. You needed to stack templates on templates just to multiply something by 2. They are now replaced by:</p>
+<ul>
+<li><strong>Lambdas</strong> for inline operations</li>
+<li><code>std::function</code> for <strong>polymorphic callables</strong></li>
+<li><code>std::bind</code> if you're feeling retro (avoid at all costs)</li>
+</ul>
+<p>Old version:</p>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+auto f = std::bind(std::multiplies&lt;&gt;(), std::placeholders::_1, 2);
+</code></pre>
+<p>New version:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+template &lt;class ForwIter&gt;
+void print(ForwIter first, ForwIter last, const char *title) {
+  std::cout &lt;&lt; title &lt;&lt; "\n";
+  while (first != last)
+    std::cout &lt;&lt; *first++ &lt;&lt; "\t";
+  std::cout &lt;&lt; "\n";
+}
+
+int main() {
+  int data[3] = {9, 10, 11};
+  print(data, data + 3, "Original Values");
+
+  std::transform(data, data + 3, data, [](int x) { return x * 2; });
+
+  print(data, data + 3, "New values");
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
