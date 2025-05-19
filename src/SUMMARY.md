@@ -60,7 +60,7 @@
     - [Doubly Linked List and Merge Sort](programming/c/doubly_linked_list.md)
     - [Binary Tree](programming/c/binary_tree.md)
 
-  - [C++ 💀](programming/cpp/README.md)
+  - [C++ 🤖](programming/cpp/README.md)
     - [Debugging Tools](programming/cpp/debugging-tools.md)
     - [C++ Fundamentals](programming/cpp/basics.md)
     - [OOP](programming/cpp/oop.md)
@@ -68,6 +68,12 @@
     - [Dijkstra's algorithm using Edge Lists](programming/cpp/algorithms.md)    
     - [Output a Random Graph](programming/cpp/generate-graph.md)
     - [Kruskal's algorithm, MST for an Inputted Graph](programming/cpp/kruskal-mst.md)
+    - [Monte Carlo Simulation](programming/cpp/poker.md)
+    - [Bidirectional iterator: is_palindrome](programming/cpp/is_palindrome.md)
+    - [Ordered Map vs Unordered Map](programming/cpp/map.md)
+    - [Non Mutating Algorithm: find()](programming/cpp/find.md)
+    - [Lambda expressions: for_each](programming/cpp/for_each.md)
+    - [Functional Objects](programming/cpp/functor.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
