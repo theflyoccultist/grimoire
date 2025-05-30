@@ -27,6 +27,7 @@
   - [How to Boot Up Redis on Debian](database/redis-setup.md)
 
 - [Cheat Sheet 💡](cheatsheet/README.md)
+  - [Bash Cheat Sheet](cheatsheet/bash-cheatsheet.md)
   - [GitHub Cheat Sheet](cheatsheet/github.md)
   - [YAML Cheat Sheet](cheatsheet/yaml-cheatsheet.md)
 
@@ -74,9 +75,12 @@
     - [Non Mutating Algorithm: find()](programming/cpp/find.md)
     - [Lambda expressions: for_each](programming/cpp/for_each.md)
     - [Functional Objects](programming/cpp/functor.md)
+    - [Depth First vs. Breadth First Search](programming/cpp/dfs.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
+    - [OOP](programming/ruby/OOP.md)
+    - [:params vs @instance_variables](programming/ruby/params_instancevariables.md)
     - [Ruby as a Functional Language](programming/ruby/ruby-functional.md)
     - [Setup a Redis Rate Limiter Middleware in Ruby](programming/ruby/setup_redis_ruby.md)
     - [Use SQLite as Your Rate Limiter in Ruby](programming/ruby/sqlite_ratelimit_ruby.md)

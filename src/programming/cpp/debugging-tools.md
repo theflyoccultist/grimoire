@@ -20,6 +20,12 @@ g++ -fsanitize=address -g -O1 your_code.cpp -o output
 valgrind ./output
 ```
 
+- This flag tells Valgrind to trace the origin of unitialized values.
+
+```bash
+valgrind --track-origins=yes ./output
+```
+
 Bonus: combine with `--leak-check=full` to get all the juicy info.
 
 ## 🧠 3. GDB (The Stoic Therapist)
