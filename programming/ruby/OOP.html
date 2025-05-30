@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Debugging Grimoire</title>
-        <base href="/">
+        <title>OOP - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -103,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -138,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -167,14 +166,152 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h2 id="-ruby-oop-crash-course--for-when-youre-tired-of-cs-bs"><a class="header" href="#-ruby-oop-crash-course--for-when-youre-tired-of-cs-bs">🧠 Ruby OOP Crash Course – For When You’re Tired of C++’s BS</a></h2>
+<blockquote>
+<p>Because sometimes you want to write OOP without declaring constructors like it’s a war crime.</p>
+</blockquote>
+<hr />
+<h3 id="-classes--your-basic-drama-unit"><a class="header" href="#-classes--your-basic-drama-unit">🎭 Classes – Your Basic Drama Unit</a></h3>
+<pre><code class="language-ruby">class Witch
+  def initialize(name)
+    @name = name
+  end
+
+  def cackle
+    puts "#{@name} cackles wickedly. 🔮"
+  end
+end
+
+sabrina = Witch.new("Sabrina")
+sabrina.cackle
+</code></pre>
+<ul>
+<li><code>initialize</code> is the constructor.</li>
+<li><code>@name</code> is an instance variable — tied to that specific girl (object).</li>
+<li><code>new</code> creates the object.</li>
+<li>Cute and to the point.</li>
+</ul>
+<hr />
+<h3 id="-self--finding-yourself-spiritually-and-contextually"><a class="header" href="#-self--finding-yourself-spiritually-and-contextually">🧘‍♀️ <code>self</code> – Finding Yourself Spiritually and Contextually</a></h3>
+<pre><code class="language-ruby">class Mirror
+  def self.reflect
+    puts "I am looking at myself. 💅"
+  end
+
+  def reflect
+    puts "You're looking at an instance now. 👀"
+  end
+end
+
+Mirror.reflect         # Class method
+Mirror.new.reflect     # Instance method
+</code></pre>
+<ul>
+<li><code>self.method</code> is a <strong>class method</strong>.</li>
+<li>Just <code>def method</code> is an <strong>instance method</strong>.</li>
+<li>You <em>have</em> to be explicit with <code>self.</code> for class methods, or Ruby’s like “nah fam”.</li>
+</ul>
+<hr />
+<h3 id="-instance-vs-class-variables"><a class="header" href="#-instance-vs-class-variables">🫂 Instance vs Class Variables</a></h3>
+<pre><code class="language-ruby">class Cult
+  @@followers = 0
+
+  def initialize
+    @@followers += 1
+  end
+
+  def self.count_followers
+    @@followers
+  end
+end
+
+3.times { Cult.new }
+puts Cult.count_followers # 3
+</code></pre>
+<ul>
+<li><code>@@variable</code> is shared <em>across all instances</em> — a class variable.</li>
+<li>Use with caution: this can get messy if subclassing. Ruby has drama here.</li>
+</ul>
+<hr />
+<h3 id="-modules--when-you-just-wanna-mixin-some-behavior"><a class="header" href="#-modules--when-you-just-wanna-mixin-some-behavior">📦 Modules – When You Just Wanna Mixin™ Some Behavior</a></h3>
+<pre><code class="language-ruby">module Flyable
+  def fly
+    puts "Zooming through the sky! 🕊️"
+  end
+end
+
+class Witch
+  include Flyable
+end
+
+Witch.new.fly
+</code></pre>
+<ul>
+<li>Use <code>include</code> to <strong>mixin instance methods</strong>.</li>
+<li>Use <code>extend</code> to <strong>add class methods</strong> from a module.</li>
+</ul>
+<pre><code class="language-ruby">module Sassy
+  def roast
+    puts "Your code's so bad, it makes Perl look readable. 💅"
+  end
+end
+
+class Ruby
+  extend Sassy
+end
+
+Ruby.roast
+</code></pre>
+<hr />
+<h3 id="-when-to-use-classes-vs-modules"><a class="header" href="#-when-to-use-classes-vs-modules">🧱 When to Use Classes vs Modules</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Go With</th><th>Why</th></tr></thead><tbody>
+<tr><td>You’re building real objects (people, dragons, buttons)</td><td><strong>Class</strong></td><td>They’re blueprints for things</td></tr>
+<tr><td>You just want to slap on some extra behavior</td><td><strong>Module</strong></td><td>They’re like trait makeup kits</td></tr>
+<tr><td>You’re trying to share methods across multiple classes</td><td><strong>Module</strong></td><td>DRY, reusable, non-instantiable</td></tr>
+<tr><td>You need to instantiate something</td><td><strong>Class</strong></td><td>Modules don’t <code>.new</code> unless you're cursed</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-inheritance--passing-down-that-magic"><a class="header" href="#-inheritance--passing-down-that-magic">🪄 Inheritance – Passing Down That Magic</a></h3>
+<pre><code class="language-ruby">class Being
+  def exist
+    puts "I exist. 🌌"
+  end
+end
+
+class Unicorn &lt; Being
+  def sparkle
+    puts "✨ I sparkle with purpose ✨"
+  end
+end
+
+Unicorn.new.exist
+Unicorn.new.sparkle
+</code></pre>
+<ul>
+<li><code>Class &lt; ParentClass</code> for inheritance.</li>
+<li>Ruby only supports <em>single inheritance</em> (no poly party), but you can fake it with modules.</li>
+</ul>
+<hr />
+<h3 id="-extra-sass--warnings"><a class="header" href="#-extra-sass--warnings">💣 Extra Sass &amp; Warnings</a></h3>
+<ul>
+<li>Don’t overuse class variables (<code>@@</code>). They can leak like gossip in a small town.</li>
+<li>Prefer modules for reusable behavior, especially if you don’t need state.</li>
+<li>Ruby is duck-typed — don’t obsess over class hierarchies like it’s Java.</li>
+<li>Everything is an object. Even classes. Even <code>nil</code>. So go wild (but not too wild).</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../../programming/ruby/params_instancevariables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -182,7 +319,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../programming/ruby/ruby-basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../../programming/ruby/params_instancevariables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -195,13 +338,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

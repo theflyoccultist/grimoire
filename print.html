@@ -42,6 +42,17 @@
         <script src="toc.js"></script>
     </head>
     <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
     <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
@@ -119,7 +130,7 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -1394,7 +1405,43 @@ Set a password (optional, overkill for local but useful for staging/prod):</li>
 <p>Confirm it's only bound to localhost:</p>
 <pre><code class="language-bash">sudo ss -tlnp | grep redis
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="create-a-new-repository-from-the-command-line"><a class="header" href="#create-a-new-repository-from-the-command-line">Create a new repository from the command line</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
+<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
+</code></pre>
+<p>1..200: number of requests
+http://localhost:4567: the URL that needs to be tested</p>
+<h1 id="-basic-grep-guide"><a class="header" href="#-basic-grep-guide">🔍 Basic Grep Guide</a></h1>
+<ul>
+<li>Search for a word in all .md files</li>
+</ul>
+<pre><code class="language-sh">grep "keyword" *.md
+</code></pre>
+<ul>
+<li>Search recursively through directories</li>
+</ul>
+<pre><code class="language-sh">grep -r "keyword" .
+</code></pre>
+<ul>
+<li>Ignore case</li>
+</ul>
+<pre><code class="language-sh">grep -i "keyword" filename.md
+</code></pre>
+<ul>
+<li>Show line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -n "keyword" filename.md
+</code></pre>
+<ul>
+<li>Combine: recursive, case-insensitive, line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -rin "keyword" .
+</code></pre>
+<ul>
+<li>Use regular expressions (careful—this is where it gets spicy)</li>
+</ul>
+<pre><code class="language-sh">grep -E "foo|bar" file.md
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="create-a-new-repository-from-the-command-line"><a class="header" href="#create-a-new-repository-from-the-command-line">Create a new repository from the command line</a></h3>
 <pre><code class="language-bash">echo "# http_server" &gt;&gt; README.md
 git init
 git add README.md
@@ -1441,7 +1488,7 @@ git commit -m "Start ignoring debug.log"
 <pre><code class="language-bash">git remote set-url origin &lt;NEW_GIT_URL_HERE&gt;
 </code></pre>
 <h3 id="remove-a-git-commit-which-has-not-yet-been-pushed"><a class="header" href="#remove-a-git-commit-which-has-not-yet-been-pushed">Remove a Git commit which has not yet been pushed</a></h3>
-<pre><code class="language-bash">git reset --hard HEAD~1
+<pre><code class="language-bash">git reset HEAD^
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="yaml-cheatsheet"><a class="header" href="#yaml-cheatsheet">YAML Cheatsheet</a></h1>
 <h2 id="what-is-yaml"><a class="header" href="#what-is-yaml">What is YAML</a></h2>
@@ -2308,13 +2355,7 @@ SELECT *
 <li>If you are getting errors, try writing the function without subqueries.</li>
 <li>SQL: Practice makes muscle memory.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h3>
-<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
-</code></pre>
-<p>1..200: number of requests
-http://localhost:4567: the URL that needs to be tested</p>
-<hr />
-<h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
 <p>Verify the package is installed:</p>
 <pre><code class="language-bash">dpkg -l | grep bash-completion
 </code></pre>
@@ -4386,7 +4427,52 @@ Inorder traversal of the binary tree:
 <ul>
 <li>The in-order traversal prints the values in ascending order: left subtree → root → right subtree.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C++</a></h1>
+<h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
+<p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
+<p>It is definitely a language to use with precaution, a language you could lose yourself into, for better or for worse.</p>
+<hr />
+<h2 id="setting-up-c-on-linux"><a class="header" href="#setting-up-c-on-linux">Setting Up C++ on Linux</a></h2>
+<p>To get started with C++ development, you can install the essential tools via your package manager. On Ubuntu/Debian-based systems, run:</p>
+<pre><code class="language-sh">sudo apt update
+sudo apt install build-essential
+</code></pre>
+<p>This installs both the C and C++ compilers (gcc and g++), along with useful build tools like make.</p>
+<p>For debugging and memory checking, install:</p>
+<pre><code class="language-sh">sudo apt install gdb valgrind
+</code></pre>
+<h3 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h3>
+<p>If you use Neovim with Mason.nvim, you can install the clangd language server for better code intelligence:</p>
+<ol>
+<li>Open Neovim.</li>
+<li>Run <code>:Mason</code> and search for <code>clangd</code>.</li>
+<li>Install <code>clangd</code> from Mason's UI.</li>
+</ol>
+<hr />
+<h2 id="updating-g-for-new-c-standards-eg-c26"><a class="header" href="#updating-g-for-new-c-standards-eg-c26">Updating g++ for New C++ Standards (e.g., C++26)</a></h2>
+<p>When a new C++ standard (like C++26) is released and you want to try it:</p>
+<ul>
+<li>
+<p>First, check if your distribution’s repositories have the updated g++ version:</p>
+<pre><code class="language-sh">sudo apt update
+sudo apt install g++-13   # replace 13 with the latest version available
+</code></pre>
+</li>
+<li>
+<p>If the latest version is not available, you might need to use a PPA (on Ubuntu), download from the official GNU Toolchain, or build from source.</p>
+</li>
+<li>
+<p>You can check your g++ version with:</p>
+<pre><code class="language-sh">g++ --version
+</code></pre>
+</li>
+<li>
+<p>When compiling with a new standard, use the appropriate flag (e.g., <code>-std=c++2b</code> or <code>-std=c++26</code> when it’s officially supported):</p>
+<pre><code class="language-sh">g++ -std=c++2b main.cpp -o main
+</code></pre>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
 <li>
@@ -4408,6 +4494,11 @@ Inorder traversal of the binary tree:
 </li>
 </ul>
 <pre><code class="language-bash">valgrind ./output
+</code></pre>
+<ul>
+<li>This flag tells Valgrind to trace the origin of unitialized values.</li>
+</ul>
+<pre><code class="language-bash">valgrind --track-origins=yes ./output
 </code></pre>
 <p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
 <h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
@@ -6463,6 +6554,111 @@ int main() {
   print(data, data + 3, "New values");
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
+<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
+<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
+<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
+<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
+<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
+<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
+<ul>
+<li><strong>You only care if a path exists</strong> between one side and the other.</li>
+<li><strong>You don’t care how long the path is.</strong></li>
+</ul>
+<p>✅ So <strong>DFS is perfect</strong>:</p>
+<ul>
+<li>Fast</li>
+<li>Low overhead</li>
+<li>Easy to implement</li>
+<li>Works great for this use case</li>
+</ul>
+<hr />
+<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
+<hr />
+<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
+<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
+<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<ul>
+<li>We don't care how long the path is—just whether one exists.</li>
+<li>DFS is lightweight and simple for this use case.</li>
+<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+</ul>
+<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
+<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
+std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
+
+// Start from the player’s border cells
+for (int i = 0; i &lt; board_size; ++i)
+  if (border_cell[i] == player)
+    stack.push({x, y});
+
+while (!stack.empty()) {
+  Point current = stack.top();
+  stack.pop();
+
+  // Skip visited
+  if (visited[current.x][current.y]) continue;
+  visited[current.x][current.y] = true;
+
+  // Check if we reached the goal edge
+  if (current.y == board_size - 1) return true;
+
+  // Explore neighbors
+  for (auto n : get_neighbors(current.x, current.y))
+    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
+      stack.push(n);
+}
+</code></pre>
+<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<ul>
+<li>Use a queue instead of a stack.</li>
+<li>Use it when path length matters (e.g. shortest route to victory).</li>
+<li>Slightly more memory-intensive in wide boards.</li>
+</ul>
+<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
+<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
+<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
+<pre><code class="language-cpp">class Graph {
+  int V;
+  std::list&lt;int&gt;* adj;
+
+  // ... constructor, addEdge, etc.
+
+  void BFS(int start) {
+    bool* visited = new bool[V];
+    std::fill(visited, visited + V, false);
+
+    std::list&lt;int&gt; queue;
+    visited[start] = true;
+    queue.push_back(start);
+
+    while (!queue.empty()) {
+      int node = queue.front();
+      queue.pop_front();
+      // Process node...
+
+      for (auto neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push_back(neighbor);
+        }
+      }
+    }
+
+    delete[] visited;
+  }
+};
+</code></pre>
+<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
+<ul>
+<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
@@ -6634,6 +6830,173 @@ puts pwat.introduce
 <li>@name is an instance variable.</li>
 <li>attr_accessor generates getter/setter methods automatically</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-ruby-oop-crash-course--for-when-youre-tired-of-cs-bs"><a class="header" href="#-ruby-oop-crash-course--for-when-youre-tired-of-cs-bs">🧠 Ruby OOP Crash Course – For When You’re Tired of C++’s BS</a></h2>
+<blockquote>
+<p>Because sometimes you want to write OOP without declaring constructors like it’s a war crime.</p>
+</blockquote>
+<hr />
+<h3 id="-classes--your-basic-drama-unit"><a class="header" href="#-classes--your-basic-drama-unit">🎭 Classes – Your Basic Drama Unit</a></h3>
+<pre><code class="language-ruby">class Witch
+  def initialize(name)
+    @name = name
+  end
+
+  def cackle
+    puts "#{@name} cackles wickedly. 🔮"
+  end
+end
+
+sabrina = Witch.new("Sabrina")
+sabrina.cackle
+</code></pre>
+<ul>
+<li><code>initialize</code> is the constructor.</li>
+<li><code>@name</code> is an instance variable — tied to that specific girl (object).</li>
+<li><code>new</code> creates the object.</li>
+<li>Cute and to the point.</li>
+</ul>
+<hr />
+<h3 id="-self--finding-yourself-spiritually-and-contextually"><a class="header" href="#-self--finding-yourself-spiritually-and-contextually">🧘‍♀️ <code>self</code> – Finding Yourself Spiritually and Contextually</a></h3>
+<pre><code class="language-ruby">class Mirror
+  def self.reflect
+    puts "I am looking at myself. 💅"
+  end
+
+  def reflect
+    puts "You're looking at an instance now. 👀"
+  end
+end
+
+Mirror.reflect         # Class method
+Mirror.new.reflect     # Instance method
+</code></pre>
+<ul>
+<li><code>self.method</code> is a <strong>class method</strong>.</li>
+<li>Just <code>def method</code> is an <strong>instance method</strong>.</li>
+<li>You <em>have</em> to be explicit with <code>self.</code> for class methods, or Ruby’s like “nah fam”.</li>
+</ul>
+<hr />
+<h3 id="-instance-vs-class-variables"><a class="header" href="#-instance-vs-class-variables">🫂 Instance vs Class Variables</a></h3>
+<pre><code class="language-ruby">class Cult
+  @@followers = 0
+
+  def initialize
+    @@followers += 1
+  end
+
+  def self.count_followers
+    @@followers
+  end
+end
+
+3.times { Cult.new }
+puts Cult.count_followers # 3
+</code></pre>
+<ul>
+<li><code>@@variable</code> is shared <em>across all instances</em> — a class variable.</li>
+<li>Use with caution: this can get messy if subclassing. Ruby has drama here.</li>
+</ul>
+<hr />
+<h3 id="-modules--when-you-just-wanna-mixin-some-behavior"><a class="header" href="#-modules--when-you-just-wanna-mixin-some-behavior">📦 Modules – When You Just Wanna Mixin™ Some Behavior</a></h3>
+<pre><code class="language-ruby">module Flyable
+  def fly
+    puts "Zooming through the sky! 🕊️"
+  end
+end
+
+class Witch
+  include Flyable
+end
+
+Witch.new.fly
+</code></pre>
+<ul>
+<li>Use <code>include</code> to <strong>mixin instance methods</strong>.</li>
+<li>Use <code>extend</code> to <strong>add class methods</strong> from a module.</li>
+</ul>
+<pre><code class="language-ruby">module Sassy
+  def roast
+    puts "Your code's so bad, it makes Perl look readable. 💅"
+  end
+end
+
+class Ruby
+  extend Sassy
+end
+
+Ruby.roast
+</code></pre>
+<hr />
+<h3 id="-when-to-use-classes-vs-modules"><a class="header" href="#-when-to-use-classes-vs-modules">🧱 When to Use Classes vs Modules</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Go With</th><th>Why</th></tr></thead><tbody>
+<tr><td>You’re building real objects (people, dragons, buttons)</td><td><strong>Class</strong></td><td>They’re blueprints for things</td></tr>
+<tr><td>You just want to slap on some extra behavior</td><td><strong>Module</strong></td><td>They’re like trait makeup kits</td></tr>
+<tr><td>You’re trying to share methods across multiple classes</td><td><strong>Module</strong></td><td>DRY, reusable, non-instantiable</td></tr>
+<tr><td>You need to instantiate something</td><td><strong>Class</strong></td><td>Modules don’t <code>.new</code> unless you're cursed</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-inheritance--passing-down-that-magic"><a class="header" href="#-inheritance--passing-down-that-magic">🪄 Inheritance – Passing Down That Magic</a></h3>
+<pre><code class="language-ruby">class Being
+  def exist
+    puts "I exist. 🌌"
+  end
+end
+
+class Unicorn &lt; Being
+  def sparkle
+    puts "✨ I sparkle with purpose ✨"
+  end
+end
+
+Unicorn.new.exist
+Unicorn.new.sparkle
+</code></pre>
+<ul>
+<li><code>Class &lt; ParentClass</code> for inheritance.</li>
+<li>Ruby only supports <em>single inheritance</em> (no poly party), but you can fake it with modules.</li>
+</ul>
+<hr />
+<h3 id="-extra-sass--warnings"><a class="header" href="#-extra-sass--warnings">💣 Extra Sass &amp; Warnings</a></h3>
+<ul>
+<li>Don’t overuse class variables (<code>@@</code>). They can leak like gossip in a small town.</li>
+<li>Prefer modules for reusable behavior, especially if you don’t need state.</li>
+<li>Ruby is duck-typed — don’t obsess over class hierarchies like it’s Java.</li>
+<li>Everything is an object. Even classes. Even <code>nil</code>. So go wild (but not too wild).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="-params-direct-from-the-user"><a class="header" href="#-params-direct-from-the-user">💌 <code>params[]</code>: Direct from the user</a></h3>
+<ul>
+<li>Comes from the <strong>request</strong> itself: URL segments (<code>:id</code>), query strings (<code>?foo=bar</code>), or form data.</li>
+<li>You use it <strong>in the same route</strong> where the request is made.</li>
+<li>It's like checking the envelope of a letter to see who it's from. It's raw input.</li>
+</ul>
+<h4 id="example"><a class="header" href="#example">Example:</a></h4>
+<pre><code class="language-ruby">params[:id] # from `/blog/42`
+params[:search] # from `/search?search=cats`
+</code></pre>
+<hr />
+<h3 id="-instance_variable-for-sharing-across-templates"><a class="header" href="#-instance_variable-for-sharing-across-templates">💅 <code>@instance_variable</code>: For sharing across templates</a></h3>
+<ul>
+<li>Used to <strong>pass data to views (templates)</strong>, or between routes if you're being fancy.</li>
+<li>You set it in the route/controller action and access it in the view (<code>erb</code>, <code>haml</code>, whatever).</li>
+<li>It’s like putting your lipstick on the table for others to use. You're saying, "Here, this is for the next part."</li>
+</ul>
+<h4 id="example-1"><a class="header" href="#example-1">Example:</a></h4>
+<pre><code class="language-ruby">@article = fetch_api(...)
+# later in the view: &lt;%= @article['title'] %&gt;
+</code></pre>
+<hr />
+<h3 id="-rule-of-thumb"><a class="header" href="#-rule-of-thumb">💡 Rule of Thumb</a></h3>
+<ul>
+<li><strong>Use <code>params[]</code></strong> to get data <strong>from the request</strong>.</li>
+<li><strong>Use <code>@variables</code></strong> to <strong>send data to the view</strong> or carry stuff along in your code.</li>
+<li>Always <strong>guard</strong> against <code>nil</code> when dealing with external data. They're like unreliable exes — might show up, might ghost you.</li>
+</ul>
+<hr />
+<p>If you ever get confused again, just ask yourself:</p>
+<blockquote>
+<p>“Is this coming from the outside world? Or is this something I already put on the shelf for later?”</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-functional-programming-cheat-sheet-"><a class="header" href="#ruby-functional-programming-cheat-sheet-">Ruby Functional Programming Cheat Sheet 💎</a></h1>
 <h2 id="1-first-class-functions-because-were-not-peasants"><a class="header" href="#1-first-class-functions-because-were-not-peasants">1. First-Class Functions (Because We’re Not Peasants)</a></h2>
 <p>In Ruby, functions are first-class citizens, which means you can:</p>

@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Debugging Grimoire</title>
-        <base href="/">
+        <title>:params vs @instance_variables - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -103,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -138,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -167,14 +166,51 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h3 id="-params-direct-from-the-user"><a class="header" href="#-params-direct-from-the-user">💌 <code>params[]</code>: Direct from the user</a></h3>
+<ul>
+<li>Comes from the <strong>request</strong> itself: URL segments (<code>:id</code>), query strings (<code>?foo=bar</code>), or form data.</li>
+<li>You use it <strong>in the same route</strong> where the request is made.</li>
+<li>It's like checking the envelope of a letter to see who it's from. It's raw input.</li>
+</ul>
+<h4 id="example"><a class="header" href="#example">Example:</a></h4>
+<pre><code class="language-ruby">params[:id] # from `/blog/42`
+params[:search] # from `/search?search=cats`
+</code></pre>
+<hr />
+<h3 id="-instance_variable-for-sharing-across-templates"><a class="header" href="#-instance_variable-for-sharing-across-templates">💅 <code>@instance_variable</code>: For sharing across templates</a></h3>
+<ul>
+<li>Used to <strong>pass data to views (templates)</strong>, or between routes if you're being fancy.</li>
+<li>You set it in the route/controller action and access it in the view (<code>erb</code>, <code>haml</code>, whatever).</li>
+<li>It’s like putting your lipstick on the table for others to use. You're saying, "Here, this is for the next part."</li>
+</ul>
+<h4 id="example-1"><a class="header" href="#example-1">Example:</a></h4>
+<pre><code class="language-ruby">@article = fetch_api(...)
+# later in the view: &lt;%= @article['title'] %&gt;
+</code></pre>
+<hr />
+<h3 id="-rule-of-thumb"><a class="header" href="#-rule-of-thumb">💡 Rule of Thumb</a></h3>
+<ul>
+<li><strong>Use <code>params[]</code></strong> to get data <strong>from the request</strong>.</li>
+<li><strong>Use <code>@variables</code></strong> to <strong>send data to the view</strong> or carry stuff along in your code.</li>
+<li>Always <strong>guard</strong> against <code>nil</code> when dealing with external data. They're like unreliable exes — might show up, might ghost you.</li>
+</ul>
+<hr />
+<p>If you ever get confused again, just ask yourself:</p>
+<blockquote>
+<p>“Is this coming from the outside world? Or is this something I already put on the shelf for later?”</p>
+</blockquote>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../programming/ruby/OOP.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../../programming/ruby/ruby-functional.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -182,7 +218,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../programming/ruby/OOP.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../../programming/ruby/ruby-functional.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -195,13 +237,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

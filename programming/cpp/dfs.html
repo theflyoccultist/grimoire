@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Debugging Grimoire</title>
-        <base href="/">
+        <title>Depth First vs. Breadth First Search - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -103,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -138,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -167,14 +166,123 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
+<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
+<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
+<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
+<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
+<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
+<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
+<ul>
+<li><strong>You only care if a path exists</strong> between one side and the other.</li>
+<li><strong>You don’t care how long the path is.</strong></li>
+</ul>
+<p>✅ So <strong>DFS is perfect</strong>:</p>
+<ul>
+<li>Fast</li>
+<li>Low overhead</li>
+<li>Easy to implement</li>
+<li>Works great for this use case</li>
+</ul>
+<hr />
+<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
+<hr />
+<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
+<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
+<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<ul>
+<li>We don't care how long the path is—just whether one exists.</li>
+<li>DFS is lightweight and simple for this use case.</li>
+<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+</ul>
+<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
+<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
+std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
+
+// Start from the player’s border cells
+for (int i = 0; i &lt; board_size; ++i)
+  if (border_cell[i] == player)
+    stack.push({x, y});
+
+while (!stack.empty()) {
+  Point current = stack.top();
+  stack.pop();
+
+  // Skip visited
+  if (visited[current.x][current.y]) continue;
+  visited[current.x][current.y] = true;
+
+  // Check if we reached the goal edge
+  if (current.y == board_size - 1) return true;
+
+  // Explore neighbors
+  for (auto n : get_neighbors(current.x, current.y))
+    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
+      stack.push(n);
+}
+</code></pre>
+<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<ul>
+<li>Use a queue instead of a stack.</li>
+<li>Use it when path length matters (e.g. shortest route to victory).</li>
+<li>Slightly more memory-intensive in wide boards.</li>
+</ul>
+<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
+<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
+<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
+<pre><code class="language-cpp">class Graph {
+  int V;
+  std::list&lt;int&gt;* adj;
+
+  // ... constructor, addEdge, etc.
+
+  void BFS(int start) {
+    bool* visited = new bool[V];
+    std::fill(visited, visited + V, false);
+
+    std::list&lt;int&gt; queue;
+    visited[start] = true;
+    queue.push_back(start);
+
+    while (!queue.empty()) {
+      int node = queue.front();
+      queue.pop_front();
+      // Process node...
+
+      for (auto neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push_back(neighbor);
+        }
+      }
+    }
+
+    delete[] visited;
+  }
+};
+</code></pre>
+<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
+<ul>
+<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../programming/cpp/functor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../../programming/ruby/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -182,7 +290,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../programming/cpp/functor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../../programming/ruby/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -195,13 +309,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
