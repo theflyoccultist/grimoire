@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Debugging Tools - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,87 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
+<h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>
+<p>You already know the girl. She’s protective, loud, and dragging every invalid memory access by its wig.</p>
+</li>
+<li>
+<p>Just compile with:</p>
+</li>
+</ul>
+<pre><code class="language-bash">g++ -fsanitize=address -g -O1 your_code.cpp -o output
+</code></pre>
+<h2 id="-2-valgrind-the-classic-queen"><a class="header" href="#-2-valgrind-the-classic-queen">🔥 2. Valgrind (The Classic Queen)</a></h2>
+<ul>
+<li>
+<p>She’s slower, but ultra-detailed. Great for memory leaks, use-after-free, uninitialized memory reads.</p>
+</li>
+<li>
+<p>Use like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">valgrind ./output
+</code></pre>
+<ul>
+<li>This flag tells Valgrind to trace the origin of unitialized values.</li>
+</ul>
+<pre><code class="language-bash">valgrind --track-origins=yes ./output
+</code></pre>
+<p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
+<h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
+<ul>
+<li>Not flashy, but powerful. If you need to pause execution mid-Dijkstra and stare at your pointers like a disappointed parent:</li>
+</ul>
+<pre><code class="language-bash">g++ -g your_code.cpp -o output
+gdb ./output
+</code></pre>
+<p>Then in GDB:</p>
+<pre><code class="language-bash">run
+bt        # Backtrace on crash
+info locals
+</code></pre>
+<ul>
+<li>Common Commands:
+<ul>
+<li>run – start execution</li>
+<li>break main – set breakpoint</li>
+<li>next, step – step through code</li>
+<li>print var, info locals – inspect variables</li>
+<li>bt – backtrace after crash</li>
+</ul>
+</li>
+</ul>
+<h2 id="-4-godbolt-optional-but-very-nerdy"><a class="header" href="#-4-godbolt-optional-but-very-nerdy">🌈 4. Godbolt (Optional, but Very Nerdy)</a></h2>
+<ul>
+<li>Not for runtime bugs, but if you ever want to see how your C++ compiles to assembly, or compare optimizations. It’s fun for algorithm analysis.</li>
+</ul>
+<h2 id="-5-clang-tidy"><a class="header" href="#-5-clang-tidy">🚀 5. Clang-Tidy</a></h2>
+<ul>
+<li>
+<p>For static analysis. Lints C++ code and catches suspicious patterns before they explode.</p>
+</li>
+<li>
+<p>Run like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">clang-tidy your_code.cpp -- -std=c++17
+</code></pre>
+<h2 id="bonus-compilation-flags"><a class="header" href="#bonus-compilation-flags">Bonus: Compilation Flags</a></h2>
+<ul>
+<li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +256,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

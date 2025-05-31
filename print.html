@@ -2582,7 +2582,7 @@ done
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C</a></h1>
 <p>Very old, very fast and minimal, basically never goes out of style.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
 <p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
 <ol>
 <li>
@@ -3665,7 +3665,7 @@ Calculations written on the output file. Closing the program
 <pre><code class="language-bash">./program input.txt output.txt
 </code></pre>
 <p>Make sure to replace <code>program</code> with the compiled executable name.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="simple-linked-list"><a class="header" href="#simple-linked-list">Simple Linked list</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="simple-linked-list"><a class="header" href="#simple-linked-list">Simple Linked list</a></h2>
 <pre><code class="language-c">//A simple example of a linked list in C.
 //This example creates a linked list of integers from an array of integers.
 
@@ -4787,7 +4787,14 @@ int main(int argc, char **argv) {
   return 0;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="c-1"><a class="header" href="#c-1">C++</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c-"><a class="header" href="#c-">C++ 🤖</a></h1>
+<p>Welcome to my C++ notes. Categorized for your sanity and mine.</p>
+<ul>
+<li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
+<li><a href="programming/cpp/oop/README.html">Object-Oriented Programming</a></li>
+<li><a href="programming/cpp/features/">Language Features</a></li>
+<li><a href="programming/cpp/examples/">Practical Examples</a></li>
+</ul>
 <h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
 <p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
 <p>It is definitely a language to use with precaution, a language you could lose yourself into, for better or for worse.</p>
@@ -4832,7 +4839,7 @@ sudo apt install g++-13   # replace 13 with the latest version available
 </code></pre>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
 <li>
@@ -5189,7 +5196,7 @@ int main() {
 <li>C++ style would be to return int instead of modifying via pointer.</li>
 <li>This is still very C-like, since we’re explicitly using pointer manipulation.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
 <p>C++ is not a fully object-oriented language like Java—it gives you the choice of using OOP, procedural, or even template-based metaprogramming. However, when you do use OOP, C++ expects you to take responsibility (i.e., manual memory management, virtual destructors, and explicit inheritance rules).</p>
 <h2 id="basic-oop-program"><a class="header" href="#basic-oop-program">Basic OOP Program</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
@@ -5794,7 +5801,354 @@ list b
 <li>Double deletion errors</li>
 <li>Undefined behavior</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-templates-in-c-"><a class="header" href="#introduction-to-templates-in-c-">Introduction to Templates in C++ 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="c-inheritance-and-derived-classes"><a class="header" href="#c-inheritance-and-derived-classes">C++ Inheritance and Derived Classes</a></h2>
+<h3 id="the-inheritance-mechanism"><a class="header" href="#the-inheritance-mechanism">The Inheritance Mechanism</a></h3>
+<ul>
+<li>Allows deriving new classes from existing base classes.</li>
+<li>Reuses existing code, avoiding tedious and error-prone duplication.</li>
+<li>Derived classes extend or alter base class functionality.</li>
+<li>Creates a hierarchy of related types sharing code and interface.</li>
+</ul>
+<hr />
+<h3 id="base-class-student"><a class="header" href="#base-class-student">Base Class: <code>student</code></a></h3>
+<pre><code class="language-cpp">#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+
+class student {
+public:
+  enum year { fresh, soph, junior, senior, grad };
+  student(char *nm, int id, double g, year x);
+  void print() const;
+
+protected:
+  int student_id;
+  double gpa;
+  year y;
+  char name[30];
+};
+</code></pre>
+<h3 id="derived-class-grad_student"><a class="header" href="#derived-class-grad_student">Derived Class: <code>grad_student</code></a></h3>
+<pre><code class="language-cpp">class grad_student : public student {
+public:
+  enum support { ta, ra, fellowship, other };
+  grad_student(char *nm, int id, double g, year x, support t, char *d, char *th);
+  void print() const;
+
+protected:
+  support s;
+  char dept[10];
+  char thesis[80];
+};
+</code></pre>
+<hr />
+<h3 id="constructors"><a class="header" href="#constructors">Constructors</a></h3>
+<pre><code class="language-cpp">student::student(char *nm, int id, double g, year x)
+    : student_id(id), gpa(g), y(x) {
+  strcpy(name, nm);
+}
+
+grad_student::grad_student(char *nm, int id, double g, year x, support t,
+                           char *d, char *th)
+    : student(nm, id, g, x), s(t) {
+  strcpy(dept, d);
+  strcpy(thesis, th);
+}
+</code></pre>
+<ul>
+<li><code>grad_student</code> constructor invokes the base <code>student</code> constructor.</li>
+<li>Base class constructed first.</li>
+<li><code>student_id</code> and <code>gpa</code> are <code>protected</code>, so accessible to derived class.</li>
+</ul>
+<hr />
+<h3 id="print-functions"><a class="header" href="#print-functions">Print Functions</a></h3>
+<pre><code class="language-cpp">void student::print() const {
+  std::cout &lt;&lt; name &lt;&lt; " , " &lt;&lt; student_id &lt;&lt; " , " &lt;&lt; y &lt;&lt; " , " &lt;&lt; gpa &lt;&lt; std::endl;
+}
+
+void grad_student::print() const {
+  student::print();
+  std::cout &lt;&lt; dept &lt;&lt; " , " &lt;&lt; s &lt;&lt; std::endl &lt;&lt; thesis &lt;&lt; std::endl;
+}
+</code></pre>
+<ul>
+<li><code>grad_student::print</code> reuses <code>student::print</code> and adds extra info.</li>
+</ul>
+<hr />
+<h3 id="main-function"><a class="header" href="#main-function"><code>main()</code> Function</a></h3>
+<pre><code class="language-cpp">int main() {
+  student s("Mae Pohl", 100, 3.425, student::fresh), *ps = &amp;s;
+  grad_student gs("Morris Pohl", 200, 3.2564, student::grad, grad_student::ta,
+                  "Pharmacy", "Retail Pharmacies"), *pgs;
+  
+  ps-&gt;print();  // student::print
+  ps = pgs = &amp;gs;
+  ps-&gt;print();  // still student::print due to pointer type
+  pgs-&gt;print(); // grad_student::print
+}
+</code></pre>
+<ul>
+<li>Demonstrates polymorphism via pointer to base class.</li>
+<li><code>ps</code> points to both <code>student</code> and <code>grad_student</code> objects.</li>
+<li>Without <code>virtual</code>, the base class's <code>print()</code> is called.</li>
+<li><code>pgs</code> calls the derived version because it's typed as <code>grad_student*</code>.</li>
+</ul>
+<hr />
+<h3 id="benefits-recap"><a class="header" href="#benefits-recap">Benefits Recap</a></h3>
+<ul>
+<li>Reuse of tested code.</li>
+<li>Reflects domain relationships.</li>
+<li>Allows treating derived types as base types.</li>
+<li>Simpler, more maintainable code.</li>
+</ul>
+<hr />
+<p><strong>Reminder</strong>: Mark that <code>print()</code> function as <code>virtual</code> if you want actual polymorphism, otherwise it’s just pretending like your last situationship.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-c-class-inheritance--polymorphism--with-a-3d-geometry-twist"><a class="header" href="#-c-class-inheritance--polymorphism--with-a-3d-geometry-twist">🧙‍♀️ C++ Class Inheritance &amp; Polymorphism – With a 3D Geometry Twist</a></h2>
+<h3 id="-base-class--point2d"><a class="header" href="#-base-class--point2d">🧱 Base Class – Point2D</a></h3>
+<pre><code class="language-cpp">class Point2D {
+protected:
+    float x, y;
+
+public:
+    Point2D(float x = 0, float y = 0) : x(x), y(y) {}
+
+    virtual void print() const {
+        std::cout &lt;&lt; "Point2D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+
+    virtual ~Point2D() {} // Always virtual destructor for polymorphic base
+};
+</code></pre>
+<ul>
+<li><code>protected</code>: accessible to subclasses, but hidden from the outside world like a locked diary.</li>
+<li><code>virtual</code>: magic keyword that enables polymorphism (late binding).</li>
+<li>Destructor is virtual so your objects don’t leave memory corpses behind. 👻</li>
+</ul>
+<hr />
+<h3 id="-subclass--point3d"><a class="header" href="#-subclass--point3d">🌌 Subclass – Point3D</a></h3>
+<pre><code class="language-cpp">class Point3D : public Point2D {
+    float z;
+
+public:
+    Point3D(float x = 0, float y = 0, float z = 0) : Point2D(x, y), z(z) {}
+
+    void print() const override {
+        std::cout &lt;&lt; "Point3D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ", " &lt;&lt; z &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+};
+</code></pre>
+<ul>
+<li><code>public</code> inheritance: “yes, I’m extending the public interface, not hiding it.”</li>
+<li><code>override</code>: optional, but makes the compiler scream if you mess up a virtual override (bless her).</li>
+</ul>
+<hr />
+<h3 id="-polymorphism-in-action"><a class="header" href="#-polymorphism-in-action">🧪 Polymorphism in Action</a></h3>
+<pre><code class="language-cpp">void describePoint(const Point2D&amp; p) {
+    p.print();
+}
+
+int main() {
+    Point2D p2(1, 2);
+    Point3D p3(3, 4, 5);
+
+    describePoint(p2); // prints Point2D(1, 2)
+    describePoint(p3); // prints Point3D(3, 4, 5) – polymorphism magic!
+}
+</code></pre>
+<ul>
+<li>This is the power move: a <code>Point2D</code> reference holds a <code>Point3D</code> object, but still calls the right method.</li>
+<li>No casting. No mess. Just vibes. 🎩✨</li>
+</ul>
+<hr />
+<h3 id="-what-if-you-forget-virtual"><a class="header" href="#-what-if-you-forget-virtual">💀 What If You Forget <code>virtual</code>?</a></h3>
+<p>If you remove <code>virtual</code> from <code>Point2D::print()</code>, then the method won’t get overridden at runtime — you’ll always call the base version. This is what we call... <em>a tragic plot twist.</em></p>
+<hr />
+<h3 id="-when-to-use-this"><a class="header" href="#-when-to-use-this">🔮 When to Use This</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Inheritance?</th></tr></thead><tbody>
+<tr><td>You need multiple related types that behave differently</td><td><strong>Yes</strong></td></tr>
+<tr><td>You want to generalize with base class pointers or references</td><td><strong>Yes</strong></td></tr>
+<tr><td>You’re sharing behavior across <em>unrelated</em> classes</td><td><strong>No</strong>, use composition/templates</td></tr>
+<tr><td>You don’t want to deal with destructor landmines</td><td><strong>Use smart pointers</strong>, queen</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h2 id="c-virtual-function-behavior"><a class="header" href="#c-virtual-function-behavior">C++ Virtual Function Behavior</a></h2>
+<h3 id="virtual-function-selection"><a class="header" href="#virtual-function-selection">Virtual Function Selection</a></h3>
+<ul>
+<li>Base classes typically define a <code>virtual</code> function.</li>
+<li>Derived classes override these functions.</li>
+<li>Pointer to base can point at base or derived class objects.</li>
+<li>Function selected depends on <strong>object type</strong>, not <strong>pointer type</strong>.</li>
+<li>If no derived override exists, the base class function is used.</li>
+</ul>
+<h3 id="virtual--overloaded-function-selection"><a class="header" href="#virtual--overloaded-function-selection">Virtual &amp; Overloaded Function Selection</a></h3>
+<ul>
+<li>Overloaded member functions are selected <strong>at compile-time</strong> based on signature.</li>
+<li>They can have different return types.</li>
+<li>Once a function is declared <code>virtual</code>, it stays virtual in derived classes.</li>
+<li>The <code>virtual</code> keyword is not required in the redefinition, but it's clearer if included.</li>
+</ul>
+<hr />
+<h3 id="example-code"><a class="header" href="#example-code">Example Code</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+
+class B {
+public:
+  int i;
+  virtual void print_i() const { std::cout &lt;&lt; i &lt;&lt; " inside B" &lt;&lt; std::endl; }
+};
+
+class D : public B {
+public:
+  void print_i() const { std::cout &lt;&lt; i &lt;&lt; " inside D" &lt;&lt; std::endl; }
+};
+
+int main() {
+  B b;
+  B *pb = &amp;b; // point at a B object
+  D f;
+
+  f.i = 1 + (b.i = 1);
+  pb-&gt;print_i(); // Call B::print_i()
+  pb = &amp;f;       // point at D object
+  pb-&gt;print_i(); // Call D::print_i()
+}
+</code></pre>
+<h3 id="output-2"><a class="header" href="#output-2">Output</a></h3>
+<pre><code>1 inside B
+2 inside D
+</code></pre>
+<h3 id="analysis"><a class="header" href="#analysis">Analysis</a></h3>
+<ul>
+<li>First <code>pb-&gt;print_i()</code> calls <code>B::print_i()</code> because <code>pb</code> points to a <code>B</code> object.</li>
+<li>Second <code>pb-&gt;print_i()</code> calls <code>D::print_i()</code> because <code>pb</code> now points to a <code>D</code> object.</li>
+<li>Function selection happens <strong>dynamically</strong> at <strong>runtime</strong> based on the actual object.</li>
+</ul>
+<hr />
+<h3 id="object-oriented-principles"><a class="header" href="#object-oriented-principles">Object-Oriented Principles</a></h3>
+<ul>
+<li>Abstract Data Types (ADTs), inheritance, and polymorphism allow treating different class objects through a common interface.</li>
+<li>Virtual functions enable run-time method resolution—<strong>true polymorphism</strong>.</li>
+<li>This dynamic dispatch is at the heart of OOP.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-c-shapes-with-oop"><a class="header" href="#-c-shapes-with-oop">📐 C++ Shapes with OOP</a></h2>
+<h3 id="-concept"><a class="header" href="#-concept">🧠 Concept</a></h3>
+<p>In object-oriented design, <strong>shapes</strong> are abstractions made up of <strong>points</strong> and behaviors (like calculating area, or drawing). By using <strong>inheritance</strong> and <strong>polymorphism</strong>, we create a base <code>Shape</code> class and specialize it into specific geometric forms like <code>Triangle</code>, <code>Circle</code>, etc.</p>
+<h3 id="-why-use-inheritance-here"><a class="header" href="#-why-use-inheritance-here">💡 Why Use Inheritance Here?</a></h3>
+<ul>
+<li>Shared interface via base class: <code>Shape</code> defines what a shape <em>can do</em>.</li>
+<li>Specialization via subclasses: Each shape has its own way to draw and compute area.</li>
+<li>Allows dynamic polymorphism: store and manipulate shapes through base class pointers (<code>Shape*</code>), but still get the <em>actual</em> shape behavior.</li>
+</ul>
+<h3 id="-base-class-shape"><a class="header" href="#-base-class-shape">🧱 Base Class: Shape</a></h3>
+<pre><code class="language-cpp">class Shape {
+public:
+    virtual void draw() const = 0;
+    virtual float area() const = 0;
+    virtual ~Shape() {}
+};
+</code></pre>
+<ul>
+<li>Declares pure virtual methods = <strong>abstract class</strong>.</li>
+<li>No objects of <code>Shape</code> directly; it’s just a blueprint.</li>
+<li>Destructor is virtual to ensure correct cleanup when using base pointers.</li>
+</ul>
+<hr />
+<h3 id="-triangle"><a class="header" href="#-triangle">🔺 Triangle</a></h3>
+<ul>
+<li>Defined by 3 points.</li>
+<li>Area is computed using <strong>Heron's formula</strong>.</li>
+<li>Inherits from <code>Shape</code>.</li>
+</ul>
+<hr />
+<h3 id="-circle"><a class="header" href="#-circle">🔵 Circle</a></h3>
+<ul>
+<li>Defined by center + radius.</li>
+<li>Area is <code>πr²</code>.</li>
+<li>Also overrides <code>draw()</code> and <code>area()</code>.</li>
+</ul>
+<hr />
+<h3 id="-polymorphic-usage"><a class="header" href="#-polymorphic-usage">🧪 Polymorphic Usage</a></h3>
+<pre><code class="language-cpp">std::vector&lt;Shape*&gt; scene;
+scene.push_back(new Triangle(...));
+scene.push_back(new Circle(...));
+for (Shape* s : scene) {
+    s-&gt;draw();
+    std::cout &lt;&lt; s-&gt;area();
+}
+</code></pre>
+<p>This allows us to treat all shapes <em>uniformly</em> while letting each class decide how to behave. That’s <strong>real polymorphism energy</strong>.</p>
+<hr />
+<h3 id="full-code-1"><a class="header" href="#full-code-1">Full code</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;math.h&gt;
+#include &lt;vector&gt;
+
+struct Point2D {
+  float x, y;
+};
+
+// virtual forces subclasses to implement
+class Shape {
+public:
+  virtual void draw() const = 0;
+  virtual float area() const = 0;
+  virtual ~Shape() {}
+};
+
+class Triangle : public Shape {
+  Point2D a, b, c;
+
+  float distance(const Point2D &amp;p1, const Point2D &amp;p2) const {
+    return std::hypot(p2.x - p1.x, p2.y - p1.y);
+  }
+
+public:
+  Triangle(Point2D a, Point2D b, Point2D c) : a(a), b(b), c(c) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing triangle between A, B, C.\n";
+  }
+
+  float area() const override {
+    // Heron’s formula because we fancy
+    float ab = distance(a, b);
+    float bc = distance(b, c);
+    float ca = distance(c, a);
+    float s = (ab + bc + ca) / 2;
+    return std::sqrt(s * (s - ab) * (s - bc) * (s - ca));
+  }
+};
+
+class Circle : public Shape {
+  Point2D center;
+  float radius;
+
+public:
+  Circle(Point2D c, float r) : center(c), radius(r) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing circle at (" &lt;&lt; center.x &lt;&lt; ", " &lt;&lt; center.y
+              &lt;&lt; ") with radius " &lt;&lt; radius &lt;&lt; "\n";
+  }
+
+  float area() const override { return M_PI * radius * radius; }
+};
+
+int main() {
+  std::vector&lt;Shape *&gt; scene;
+  scene.push_back(new Triangle({0, 0}, {1, 0}, {0, 1}));
+  scene.push_back(new Circle({0, 0}, 5));
+
+  for (Shape *shape : scene) {
+    shape-&gt;draw();
+    std::cout &lt;&lt; "Area: " &lt;&lt; shape-&gt;area() &lt;&lt; "\n";
+  }
+
+  // free memory
+  for (Shape *shape : scene)
+    delete shape;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-templates-in-c-"><a class="header" href="#introduction-to-templates-in-c-">Introduction to Templates in C++ 💀</a></h1>
 <p>Templates are one of C++’s most powerful and frightening features. They let you write generic code that can work with multiple data types without duplication. But they also have the potential to turn your code into an unreadable mess of cryptic compiler errors if misused.</p>
 <p>In these examples, we’ll look at two ways templates are used:</p>
 <ul>
@@ -5908,7 +6262,389 @@ int main() {
 <li>When you write Summable<int>, the compiler generates an int-specific version of the class.</li>
 <li>When you write Summable<double>, the compiler generates a separate double version.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<ul>
+<li>It's useful to have function objects to further leverage the STL library</li>
+<li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
+<li>Functors like <code>std::plus</code>, <code>std::minus</code>, <code>std::multiplies</code>, etc. are part of <code>&lt;functional&gt;</code>.</li>
+<li><code>std::accumulate</code> takes a starting value and a binary operation to process each element.</li>
+<li>You can plug in your own class with <code>operator()</code> to accumulate however you want.</li>
+<li>It’s an elegant way to avoid lambda clutter in simple cases.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+
+int main() {
+  double v1[3] = {1.0, 2.5, 4.6}, sum;
+  sum = std::accumulate(v1, v1 + 3, 0.0, std::minus&lt;double&gt;());
+  std::cout &lt;&lt; "sum = " &lt;&lt; sum &lt;&lt; "\n";
+}
+</code></pre>
+<p><code>Expected output: -8.1</code></p>
+<h2 id="generator-object--integration"><a class="header" href="#generator-object--integration">Generator Object &amp; Integration</a></h2>
+<h4 id="function-object-aka-functor"><a class="header" href="#function-object-aka-functor">📝Function Object aka Functor</a></h4>
+<ul>
+<li><code>operator()</code> lets you treat an object like a function.</li>
+<li>This is <strong>zero-parameter</strong>, meaning it's called like <code>g()</code>; no arguments.</li>
+<li>Each call advances <code>x</code> and returns <code>x²</code>.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;vector&gt;
+
+public:
+  gen(double x_zero, double increment) : x(x_zero), incr(increment) {}
+  double operator()() {
+    x += incr;
+    return x * x;
+  }
+
+private:
+  double x, incr;
+};
+</code></pre>
+<h4 id="stdgenerate--functor"><a class="header" href="#stdgenerate--functor"><code>std::generate()</code> + Functor</a></h4>
+<ul>
+<li><code>std::generate</code> takes a range and a function object.</li>
+<li>It calls <code>g()</code> <code>n</code> times, populating the vector with values like <code>(Δx)², (2Δx)², ...</code>.</li>
+<li>Then <code>accumulate</code> computes the average: approximating ∫x² dx.</li>
+</ul>
+<pre><code class="language-cpp">double integrate(gen g, int n) {
+  std::vector&lt;double&gt; fx(n);
+  std::generate(fx.begin(), fx.end(), g);
+  return std::accumulate(fx.begin(), fx.end(), 0.0) / n;
+}
+</code></pre>
+<p>This is basically doing numerical integration of <code>f(x) = x²</code> over <code>[Δx, 1]</code> by approximating the area under the curve using small slices.</p>
+<h4 id="testing"><a class="header" href="#testing">Testing:</a></h4>
+<pre><code class="language-cpp">int main() {
+  const int n = 10000;
+
+  gen g(0.0, 1.0 / n);
+  std::cout &lt;&lt; "Integration program x**2" &lt;&lt; "\n";
+  std::cout &lt;&lt; integrate(g, n) &lt;&lt; "\n";
+}
+</code></pre>
+<h4 id="generator-objects-with-operator"><a class="header" href="#generator-objects-with-operator">Generator Objects with operator()()</a></h4>
+<ul>
+<li>A generator object is a class that maintains state and returns a value on each call to <code>operator()</code>.</li>
+<li>Acts like a function but remembers where it left off.</li>
+<li>Commonly used in STL algorithms like <code>std::generate()</code>.</li>
+</ul>
+<h4 id="usage-in-numerical-integration"><a class="header" href="#usage-in-numerical-integration">Usage in Numerical Integration</a></h4>
+<ul>
+<li>Create a functor that simulates the progression of <code>x</code> in a function <code>f(x)</code>.</li>
+<li>Call it repeatedly to generate the range <code>f(x₁), f(x₂), ..., f(xₙ)</code>.</li>
+<li>Sum and average to estimate integrals (e.g. Riemann sum).</li>
+</ul>
+<h2 id="function-adapters"><a class="header" href="#function-adapters">Function Adapters</a></h2>
+<p>Things like <code>bind1st</code>, <code>bind2nd</code>, <code>ptr_fun</code> are deprecated nowadays. You needed to stack templates on templates just to multiply something by 2. They are now replaced by:</p>
+<ul>
+<li><strong>Lambdas</strong> for inline operations</li>
+<li><code>std::function</code> for <strong>polymorphic callables</strong></li>
+<li><code>std::bind</code> if you're feeling retro (avoid at all costs)</li>
+</ul>
+<p>Old version:</p>
+<pre><code class="language-cpp">#include &lt;functional&gt;
+auto f = std::bind(std::multiplies&lt;&gt;(), std::placeholders::_1, 2);
+</code></pre>
+<p>New version:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+template &lt;class ForwIter&gt;
+void print(ForwIter first, ForwIter last, const char *title) {
+  std::cout &lt;&lt; title &lt;&lt; "\n";
+  while (first != last)
+    std::cout &lt;&lt; *first++ &lt;&lt; "\t";
+  std::cout &lt;&lt; "\n";
+}
+
+int main() {
+  int data[3] = {9, 10, 11};
+  print(data, data + 3, "Original Values");
+
+  std::transform(data, data + 3, data, [](int x) { return x * 2; });
+
+  print(data, data + 3, "New values");
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos"><a class="header" href="#ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos">Ordered vs. Unordered Maps - When to Sort and When to Chaos</a></h1>
+<ul>
+<li><code>std::map</code> is a sorted associative container using a <strong>red-black tree</strong>, which means it's always in order, but inserts and lookups are logarithmic time (<code>O(log n)</code>). Great if you need your data sorted or care about order.</li>
+<li><code>std::unordered_map</code> is based on a <strong>hash table</strong>, so you get average <code>O(1)</code> time for lookups and inserts, but no ordering. It's the gremlin that screams "fast but chaotic."</li>
+</ul>
+<p>Both store key-value pairs (<code>std::pair&lt;const Key, T&gt;</code> under the hood).</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+
+int main() {
+  std::map&lt;unsigned long, std::string&gt; worker;
+  std::unordered_map&lt;unsigned long, unsigned&gt; payroll;
+
+  unsigned total_pay = 0;
+  worker[99567800] = "Harold Fish";
+  payroll[99567800] = 67300;
+  worker[8567800] = "Philip Fish";
+  payroll[8567800] = 87300;
+
+  for (auto p = worker.begin(); p != worker.end(); ++p) {
+    std::cout &lt;&lt; "name " &lt;&lt; (*p).second &lt;&lt; "\tid no." &lt;&lt; (*p).first &lt;&lt; "\n";
+  }
+
+  for (auto p = payroll.begin(); p != payroll.end(); ++p) {
+    total_pay += (*p).second;
+  }
+  std::cout &lt;&lt; "Payroll totals $" &lt;&lt; total_pay &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">name Philip Fish        id no.8567800
+name Harold Fish        id no.99567800
+Payroll totals $154600
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="non-mutating-algorithms-stdfind"><a class="header" href="#non-mutating-algorithms-stdfind">Non mutating algorithms: <code>std::find</code></a></h1>
+<ul>
+<li>Does not modify the contents of the container they work on.</li>
+<li>Typical operation is searching the container for a particular element and returning its position</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class T&gt;
+InputIter find(InputIter b, InputIter e, const T &amp;t);
+</code></pre>
+<ul>
+<li>This returns an iterator to the first matching element (or <code>end()</code> if not found), so checking against the end is crucial for sanity.</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Predicate&gt;
+InputIter find(InputIter b, InputIter e, Predicate p);
+</code></pre>
+<ul>
+<li>Finds position of first element that makes Predicate true in range b to e, otherwise position e is returned.</li>
+</ul>
+<p>Another possibility:</p>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Function&gt;
+void for_each(InputIter b, InputIter e, Function f);
+</code></pre>
+<ul>
+<li>Apply f for each value found in range b to e.</li>
+<li><code>std::for_each</code> is great for side effects, but in modern C++, it's usually replaced with range-based for loops or algorithms like <code>std::transform</code> or <code>std::accumulate</code> for actual data transformation.</li>
+</ul>
+<h4 id="find-algorithm-example"><a class="header" href="#find-algorithm-example"><code>find()</code> algorithm example</a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string words[5] = {"my", "hop", "mop", "hope", "cope"};
+  std::string *where;
+
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+  std::sort(words, words + 5);
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">mop
+hope
+</code></pre>
+<ul>
+<li>Here, sort does a lexicographic sort. "cope" will end up first and "my" will end up last.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lambda-expressions-for_each-function"><a class="header" href="#lambda-expressions-for_each-function">Lambda expressions: <code>for_each()</code> function</a></h1>
+<p>Lambda expressions:</p>
+<ul>
+<li>Derived from Lisp</li>
+<li>Previously <code>for_each()</code> needs a function</li>
+<li>Will use C++11 idea: write an unnamed function in place: a lambda expression</li>
+</ul>
+<p>You can use it, fall in love with it even if you don't have Lisp experience - or in more modern terms, Haskell.</p>
+<h4 id="old-style-for_each"><a class="header" href="#old-style-for_each">Old style <code>for_each()</code></a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+void outvec(int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; }
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="lambda-in-c11"><a class="header" href="#lambda-in-c11">Lambda in C++11</a></h4>
+<ul>
+<li>Unnamed function</li>
+</ul>
+<pre><code class="language-cpp">[](int i) { cout &lt;&lt; i &lt;&lt; "\n"; }
+</code></pre>
+<ul>
+<li><code>[]</code> Goes where the function object is required.</li>
+<li><code>(int i)</code> Parameters</li>
+<li><code>{ cout &lt;&lt; i &lt;&lt; "\n"; }</code> Executable</li>
+</ul>
+<p><code>[](int n) { return n * 5.5; }</code> deduces the return value as double
+<code>[](int n) -&gt; int { return ++n; }</code> explicit type declaration.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+auto outvec = [](int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+// auto outvec: (lambda) = [](int i) -&gt; void { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="bonus-from-the-void-if-you-are-still-here-chaining-lambdas"><a class="header" href="#bonus-from-the-void-if-you-are-still-here-chaining-lambdas">Bonus from the Void If you are still here: Chaining Lambdas</a></h4>
+<ul>
+<li>Defining a lambda</li>
+<li>That returns another lambda</li>
+<li>That closes over <code>factor</code></li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+  // make_multiplier is a function (a lambda) that takes one int: factor
+  auto make_multiplier = [](int factor) {
+  
+    // It returns another function - also a lambda!
+    // That lambda takes int x and multiplies it by factor
+    return [factor](int x) {
+      return x * factor; 
+    };
+  };
+  
+  // times5 is literally this: [](int x) { return x * 5; }
+  auto times5 = make_multiplier(5);
+
+  // This is calling 10 * 5 -&gt; 50
+  std::cout &lt;&lt; times5(10) &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output: 50</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bidirectional-iterator-is_palindromecpp"><a class="header" href="#bidirectional-iterator-is_palindromecpp">Bidirectional Iterator: <code>is_palindrome.cpp</code></a></h1>
+<p>This algorithm demonstrates how to use bidirectional iterators, which allow traversal both forward and backward—a requirement for checking palindromes efficiently.</p>
+<h4 id="key-traits-of-a-bidirectional-iterator"><a class="header" href="#key-traits-of-a-bidirectional-iterator">Key Traits of a Bidirectional Iterator:</a></h4>
+<ul>
+<li>Must support both ++ and -- operators (aka "backing up the iterator").</li>
+<li>Used in algorithms like <code>std::reverse()</code> and <code>std::equal()</code> that walk from both ends inward.</li>
+</ul>
+<h4 id="old-school-approach-is_palindrome"><a class="header" href="#old-school-approach-is_palindrome">Old-School Approach (<code>is_palindrome</code>)</a></h4>
+<p>This version uses two pointers (<code>first</code>, <code>last</code>) that walk inward and compare characters:</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+template &lt;typename Bidirectional&gt;
+bool is_palindrome(Bidirectional first, Bidirectional last) {
+  if (first == last)
+    return true;
+
+  --last;
+  while (first &lt; last) {
+    if (*first != *last)
+      return false;
+    ++first;
+    --last;
+  }
+  return true;
+}
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  if (is_palindrome(input.begin(), input.end()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p><strong>How it works</strong>:</p>
+<ul>
+<li>This is the low-level “two-pointer” style, seen often in C-style code.</li>
+<li>It stops early if any characters differ.</li>
+<li>If the pointers meet (or cross), it returns true.</li>
+</ul>
+<p>Compared to using a forward-only iterator (which would require repeatedly walking from the start to simulate --), this approach is linear instead of quadratic.</p>
+<h4 id="input-normalization"><a class="header" href="#input-normalization">Input Normalization</a></h4>
+<p>Before checking, we normalize the input to handle mixed case and punctuation (e.g. "A man, a plan, a canal, Panama!"):</p>
+<pre><code class="language-cpp">std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+</code></pre>
+<ul>
+<li><code>std::transform</code> applies <code>::tolower</code> to each character. This is necessary because uppercase and lowercase letters have different values in memory, unlike scripting languages that hide this behind <code>.to_lower()</code> or <code>${1,,}</code>.</li>
+<li><code>std::regex_replace</code> strips out all non-alphanumeric characters.</li>
+</ul>
+<h3 id="modern-c-one-liner-stdequal"><a class="header" href="#modern-c-one-liner-stdequal">Modern C++ One-Liner: <code>std::equal</code></a></h3>
+<p>You can replace the entire is_palindrome function with one clean STL call:</p>
+<pre><code class="language-cpp">std::equal(input.begin(), input.begin() + input.size() / 2, input.rbegin())
+</code></pre>
+<p>This:</p>
+<ul>
+<li>Compares the first half of the string with the reverse of the second half.</li>
+<li>Automatically handles “meeting in the middle” without manual pointer arithmetic.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;regex&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string input;
+  std::cout &lt;&lt; "Is the input a palindrome? ";
+  std::getline(std::cin, input);
+
+  // lowercase input
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+  // remove non-alphanumeric
+  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
+
+  // check for palindrome
+  if (std::equal(input.begin(), input.begin() + input.size() / 2,
+                 input.rbegin()))
+    std::cout &lt;&lt; "Yes\n";
+  else
+    std::cout &lt;&lt; "No\n";
+}
+</code></pre>
+<p>Summary</p>
+<ul>
+<li>You should still learn the manual ++/-- method—understanding the low-level behavior makes STL functions less magical and more powerful.</li>
+<li>But once you get it, use std::equal. It’s cleaner, easier to read, and less error-prone. Let the STL do the pointer math.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
 <p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
 <hr />
 <h2 id="-key-concepts"><a class="header" href="#-key-concepts">💻 Key Concepts</a></h2>
@@ -6036,107 +6772,6 @@ int main() {
   std::cout &lt;&lt; "Average Path : " &lt;&lt; static_cast&lt;float&gt;(sum) / 49.0 &lt;&lt; "\n";
 
   return 0;
-}
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="output-a-random-graph-in-c"><a class="header" href="#output-a-random-graph-in-c">Output a Random Graph in C++</a></h1>
-<p>Context: Refactor of an instructor-provided codebase to generate a random undirected graph with cost and color data. Original code was a memory-leaking, segfault-happy mess.</p>
-<p>Generate a random graph using a 2D adjacency matrix, apply weights (cost) and labels (color) to edges, and export the result to a .txt file.</p>
-<p>💥 Original Problems</p>
-<ul>
-<li>Used raw pointers (<code>new[]</code>) without any <code>delete[]</code>: memory leak central.</li>
-<li>No structure—everything shoved into <code>main()</code>.</li>
-</ul>
-<p>🔧 Refactor Goals</p>
-<ul>
-<li>Encapsulate logic in a Graph class.</li>
-<li>Use <code>std::vector&lt;std::vector&lt;T&gt;&gt;</code> for memory safety and clarity.</li>
-<li>Organize code: generation, cost assignment, and file output as clean methods.</li>
-<li>Eliminate leaks and crashes; run clean under Valgrind.</li>
-</ul>
-<p>⚙️ Inputs</p>
-<ul>
-<li><code>int size</code>: graph size (number of nodes)</li>
-<li><code>double density</code>: probability of edge existence between nodes</li>
-<li><code>std::string filename</code>: output filename for the graph data</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;cstdlib&gt;
-#include &lt;ctime&gt;
-#include &lt;fstream&gt;
-#include &lt;iostream&gt;
-#include &lt;ostream&gt;
-#include &lt;string&gt;
-#include &lt;vector&gt;
-
-class Graph {
-private:
-  double prob() { return (static_cast&lt;double&gt;(rand()) / RAND_MAX); }
-
-public:
-  // Constructor
-  std::vector&lt;std::vector&lt;bool&gt;&gt; graph;
-  std::vector&lt;std::vector&lt;int&gt;&gt; color;
-  std::vector&lt;std::vector&lt;int&gt;&gt; cost;
-  int size;
-  double density;
-
-  Graph(int s, double d) : size(s), density(d) {
-    graph.resize(size, std::vector&lt;bool&gt;(size, false));
-    color.resize(size, std::vector&lt;int&gt;(size, 0));
-    cost.resize(size, std::vector&lt;int&gt;(size, 0));
-  }
-
-  // generate graph
-  void generate_graph() {
-    for (int i = 0; i &lt; size; ++i)
-      for (int j = i; j &lt; size; ++j)
-        if (i == j)
-          graph[i][j] = false;
-        else
-          graph[i][j] = graph[j][i] = (prob() &lt; density);
-  }
-
-  // generate cost and color
-  void cost_and_color() {
-    for (int i = 0; i &lt; size; ++i)
-      for (int j = i; j &lt; size; ++j)
-        if (graph[i][j]) {
-          color[i][j] = color[j][i] = rand() % 3;
-          cost[i][j] = cost[j][i] = prob() * 30;
-        }
-  }
-
-  // write to a txt file
-  void output_file(const std::string &amp;filename) {
-    std::ofstream outp(filename);
-    outp &lt;&lt; size &lt;&lt; "\n";
-    for (int i = 0; i &lt; size; ++i)
-      for (int j = 0; j &lt; size; ++j) {
-        if (graph[i][j])
-          outp &lt;&lt; i &lt;&lt; '\t' &lt;&lt; j &lt;&lt; '\t' &lt;&lt; cost[i][j] &lt;&lt; '\t' &lt;&lt; color[i][j]
-               &lt;&lt; '\n';
-      }
-  }
-};
-
-int main(void) {
-  int size;
-  double density;
-  std::string filename;
-
-  // User input
-  std::cout &lt;&lt; "graph size?" &lt;&lt; "\n";
-  std::cin &gt;&gt; size;
-  std::cout &lt;&lt; "graph density (0,1)?" &lt;&lt; "\n";
-  std::cin &gt;&gt; density;
-
-  Graph g(size, density);
-  g.generate_graph();
-  g.cost_and_color();
-
-  std::cout &lt;&lt; "file name?" &lt;&lt; "\n";
-  std::cin &gt;&gt; filename;
-  g.output_file(filename);
-  std::cout &lt;&lt; "done." &lt;&lt; "\n";
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
@@ -6279,6 +6914,212 @@ int main() {
   graph.printMST();
 
   return 0;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
+<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
+<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
+<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
+<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
+<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
+<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
+<ul>
+<li><strong>You only care if a path exists</strong> between one side and the other.</li>
+<li><strong>You don’t care how long the path is.</strong></li>
+</ul>
+<p>✅ So <strong>DFS is perfect</strong>:</p>
+<ul>
+<li>Fast</li>
+<li>Low overhead</li>
+<li>Easy to implement</li>
+<li>Works great for this use case</li>
+</ul>
+<hr />
+<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
+<hr />
+<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
+<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
+<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<ul>
+<li>We don't care how long the path is—just whether one exists.</li>
+<li>DFS is lightweight and simple for this use case.</li>
+<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+</ul>
+<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
+<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
+std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
+
+// Start from the player’s border cells
+for (int i = 0; i &lt; board_size; ++i)
+  if (border_cell[i] == player)
+    stack.push({x, y});
+
+while (!stack.empty()) {
+  Point current = stack.top();
+  stack.pop();
+
+  // Skip visited
+  if (visited[current.x][current.y]) continue;
+  visited[current.x][current.y] = true;
+
+  // Check if we reached the goal edge
+  if (current.y == board_size - 1) return true;
+
+  // Explore neighbors
+  for (auto n : get_neighbors(current.x, current.y))
+    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
+      stack.push(n);
+}
+</code></pre>
+<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<ul>
+<li>Use a queue instead of a stack.</li>
+<li>Use it when path length matters (e.g. shortest route to victory).</li>
+<li>Slightly more memory-intensive in wide boards.</li>
+</ul>
+<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
+<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
+<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
+<pre><code class="language-cpp">class Graph {
+  int V;
+  std::list&lt;int&gt;* adj;
+
+  // ... constructor, addEdge, etc.
+
+  void BFS(int start) {
+    bool* visited = new bool[V];
+    std::fill(visited, visited + V, false);
+
+    std::list&lt;int&gt; queue;
+    visited[start] = true;
+    queue.push_back(start);
+
+    while (!queue.empty()) {
+      int node = queue.front();
+      queue.pop_front();
+      // Process node...
+
+      for (auto neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push_back(neighbor);
+        }
+      }
+    }
+
+    delete[] visited;
+  }
+};
+</code></pre>
+<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
+<ul>
+<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="output-a-random-graph-in-c"><a class="header" href="#output-a-random-graph-in-c">Output a Random Graph in C++</a></h1>
+<p>Context: Refactor of an instructor-provided codebase to generate a random undirected graph with cost and color data. Original code was a memory-leaking, segfault-happy mess.</p>
+<p>Generate a random graph using a 2D adjacency matrix, apply weights (cost) and labels (color) to edges, and export the result to a .txt file.</p>
+<p>💥 Original Problems</p>
+<ul>
+<li>Used raw pointers (<code>new[]</code>) without any <code>delete[]</code>: memory leak central.</li>
+<li>No structure—everything shoved into <code>main()</code>.</li>
+</ul>
+<p>🔧 Refactor Goals</p>
+<ul>
+<li>Encapsulate logic in a Graph class.</li>
+<li>Use <code>std::vector&lt;std::vector&lt;T&gt;&gt;</code> for memory safety and clarity.</li>
+<li>Organize code: generation, cost assignment, and file output as clean methods.</li>
+<li>Eliminate leaks and crashes; run clean under Valgrind.</li>
+</ul>
+<p>⚙️ Inputs</p>
+<ul>
+<li><code>int size</code>: graph size (number of nodes)</li>
+<li><code>double density</code>: probability of edge existence between nodes</li>
+<li><code>std::string filename</code>: output filename for the graph data</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;ctime&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Graph {
+private:
+  double prob() { return (static_cast&lt;double&gt;(rand()) / RAND_MAX); }
+
+public:
+  // Constructor
+  std::vector&lt;std::vector&lt;bool&gt;&gt; graph;
+  std::vector&lt;std::vector&lt;int&gt;&gt; color;
+  std::vector&lt;std::vector&lt;int&gt;&gt; cost;
+  int size;
+  double density;
+
+  Graph(int s, double d) : size(s), density(d) {
+    graph.resize(size, std::vector&lt;bool&gt;(size, false));
+    color.resize(size, std::vector&lt;int&gt;(size, 0));
+    cost.resize(size, std::vector&lt;int&gt;(size, 0));
+  }
+
+  // generate graph
+  void generate_graph() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (i == j)
+          graph[i][j] = false;
+        else
+          graph[i][j] = graph[j][i] = (prob() &lt; density);
+  }
+
+  // generate cost and color
+  void cost_and_color() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (graph[i][j]) {
+          color[i][j] = color[j][i] = rand() % 3;
+          cost[i][j] = cost[j][i] = prob() * 30;
+        }
+  }
+
+  // write to a txt file
+  void output_file(const std::string &amp;filename) {
+    std::ofstream outp(filename);
+    outp &lt;&lt; size &lt;&lt; "\n";
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = 0; j &lt; size; ++j) {
+        if (graph[i][j])
+          outp &lt;&lt; i &lt;&lt; '\t' &lt;&lt; j &lt;&lt; '\t' &lt;&lt; cost[i][j] &lt;&lt; '\t' &lt;&lt; color[i][j]
+               &lt;&lt; '\n';
+      }
+  }
+};
+
+int main(void) {
+  int size;
+  double density;
+  std::string filename;
+
+  // User input
+  std::cout &lt;&lt; "graph size?" &lt;&lt; "\n";
+  std::cin &gt;&gt; size;
+  std::cout &lt;&lt; "graph density (0,1)?" &lt;&lt; "\n";
+  std::cin &gt;&gt; density;
+
+  Graph g(size, density);
+  g.generate_graph();
+  g.cost_and_color();
+
+  std::cout &lt;&lt; "file name?" &lt;&lt; "\n";
+  std::cin &gt;&gt; filename;
+  g.output_file(filename);
+  std::cout &lt;&lt; "done." &lt;&lt; "\n";
+}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now"><a class="header" href="#poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now">Poker Monte Carlo Simulation: The Final Boss of Single Iterators (for now)</a></h1>
 <p>This simulation is a chaotic but disciplined demonstration of core C++ features, data structures, and algorithmic logic. Here's what it leverages:</p>
@@ -6530,679 +7371,6 @@ int main() {
             &lt;&lt; "\n";
   std::cout &lt;&lt; "Straight Flushes: " &lt;&lt; str_flush_count &lt;&lt; " out of " &lt;&lt; how_many
             &lt;&lt; "\n";
-}
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="bidirectional-iterator-is_palindromecpp"><a class="header" href="#bidirectional-iterator-is_palindromecpp">Bidirectional Iterator: <code>is_palindrome.cpp</code></a></h1>
-<p>This algorithm demonstrates how to use bidirectional iterators, which allow traversal both forward and backward—a requirement for checking palindromes efficiently.</p>
-<h4 id="key-traits-of-a-bidirectional-iterator"><a class="header" href="#key-traits-of-a-bidirectional-iterator">Key Traits of a Bidirectional Iterator:</a></h4>
-<ul>
-<li>Must support both ++ and -- operators (aka "backing up the iterator").</li>
-<li>Used in algorithms like <code>std::reverse()</code> and <code>std::equal()</code> that walk from both ends inward.</li>
-</ul>
-<h4 id="old-school-approach-is_palindrome"><a class="header" href="#old-school-approach-is_palindrome">Old-School Approach (<code>is_palindrome</code>)</a></h4>
-<p>This version uses two pointers (<code>first</code>, <code>last</code>) that walk inward and compare characters:</p>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;cctype&gt;
-#include &lt;iostream&gt;
-#include &lt;regex&gt;
-#include &lt;string&gt;
-
-template &lt;typename Bidirectional&gt;
-bool is_palindrome(Bidirectional first, Bidirectional last) {
-  if (first == last)
-    return true;
-
-  --last;
-  while (first &lt; last) {
-    if (*first != *last)
-      return false;
-    ++first;
-    --last;
-  }
-  return true;
-}
-
-int main() {
-  std::string input;
-  std::cout &lt;&lt; "Is the input a palindrome? ";
-  std::getline(std::cin, input);
-
-  // lowercase input
-  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
-
-  // remove non-alphanumeric
-  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
-
-  if (is_palindrome(input.begin(), input.end()))
-    std::cout &lt;&lt; "Yes\n";
-  else
-    std::cout &lt;&lt; "No\n";
-}
-</code></pre>
-<p><strong>How it works</strong>:</p>
-<ul>
-<li>This is the low-level “two-pointer” style, seen often in C-style code.</li>
-<li>It stops early if any characters differ.</li>
-<li>If the pointers meet (or cross), it returns true.</li>
-</ul>
-<p>Compared to using a forward-only iterator (which would require repeatedly walking from the start to simulate --), this approach is linear instead of quadratic.</p>
-<h4 id="input-normalization"><a class="header" href="#input-normalization">Input Normalization</a></h4>
-<p>Before checking, we normalize the input to handle mixed case and punctuation (e.g. "A man, a plan, a canal, Panama!"):</p>
-<pre><code class="language-cpp">std::transform(input.begin(), input.end(), input.begin(), ::tolower);
-input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
-</code></pre>
-<ul>
-<li><code>std::transform</code> applies <code>::tolower</code> to each character. This is necessary because uppercase and lowercase letters have different values in memory, unlike scripting languages that hide this behind <code>.to_lower()</code> or <code>${1,,}</code>.</li>
-<li><code>std::regex_replace</code> strips out all non-alphanumeric characters.</li>
-</ul>
-<h3 id="modern-c-one-liner-stdequal"><a class="header" href="#modern-c-one-liner-stdequal">Modern C++ One-Liner: <code>std::equal</code></a></h3>
-<p>You can replace the entire is_palindrome function with one clean STL call:</p>
-<pre><code class="language-cpp">std::equal(input.begin(), input.begin() + input.size() / 2, input.rbegin())
-</code></pre>
-<p>This:</p>
-<ul>
-<li>Compares the first half of the string with the reverse of the second half.</li>
-<li>Automatically handles “meeting in the middle” without manual pointer arithmetic.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;cctype&gt;
-#include &lt;iostream&gt;
-#include &lt;regex&gt;
-#include &lt;string&gt;
-
-int main() {
-  std::string input;
-  std::cout &lt;&lt; "Is the input a palindrome? ";
-  std::getline(std::cin, input);
-
-  // lowercase input
-  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
-
-  // remove non-alphanumeric
-  input = std::regex_replace(input, std::regex(R"([^a-z0-9])"), "");
-
-  // check for palindrome
-  if (std::equal(input.begin(), input.begin() + input.size() / 2,
-                 input.rbegin()))
-    std::cout &lt;&lt; "Yes\n";
-  else
-    std::cout &lt;&lt; "No\n";
-}
-</code></pre>
-<p>Summary</p>
-<ul>
-<li>You should still learn the manual ++/-- method—understanding the low-level behavior makes STL functions less magical and more powerful.</li>
-<li>But once you get it, use std::equal. It’s cleaner, easier to read, and less error-prone. Let the STL do the pointer math.</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos"><a class="header" href="#ordered-vs-unordered-maps---when-to-sort-and-when-to-chaos">Ordered vs. Unordered Maps - When to Sort and When to Chaos</a></h1>
-<ul>
-<li><code>std::map</code> is a sorted associative container using a <strong>red-black tree</strong>, which means it's always in order, but inserts and lookups are logarithmic time (<code>O(log n)</code>). Great if you need your data sorted or care about order.</li>
-<li><code>std::unordered_map</code> is based on a <strong>hash table</strong>, so you get average <code>O(1)</code> time for lookups and inserts, but no ordering. It's the gremlin that screams "fast but chaotic."</li>
-</ul>
-<p>Both store key-value pairs (<code>std::pair&lt;const Key, T&gt;</code> under the hood).</p>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;map&gt;
-#include &lt;ostream&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
-
-int main() {
-  std::map&lt;unsigned long, std::string&gt; worker;
-  std::unordered_map&lt;unsigned long, unsigned&gt; payroll;
-
-  unsigned total_pay = 0;
-  worker[99567800] = "Harold Fish";
-  payroll[99567800] = 67300;
-  worker[8567800] = "Philip Fish";
-  payroll[8567800] = 87300;
-
-  for (auto p = worker.begin(); p != worker.end(); ++p) {
-    std::cout &lt;&lt; "name " &lt;&lt; (*p).second &lt;&lt; "\tid no." &lt;&lt; (*p).first &lt;&lt; "\n";
-  }
-
-  for (auto p = payroll.begin(); p != payroll.end(); ++p) {
-    total_pay += (*p).second;
-  }
-  std::cout &lt;&lt; "Payroll totals $" &lt;&lt; total_pay &lt;&lt; "\n";
-}
-</code></pre>
-<p>Expected output:</p>
-<pre><code class="language-plaintext">name Philip Fish        id no.8567800
-name Harold Fish        id no.99567800
-Payroll totals $154600
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="non-mutating-algorithms-stdfind"><a class="header" href="#non-mutating-algorithms-stdfind">Non mutating algorithms: <code>std::find</code></a></h1>
-<ul>
-<li>Does not modify the contents of the container they work on.</li>
-<li>Typical operation is searching the container for a particular element and returning its position</li>
-</ul>
-<pre><code class="language-cpp">template &lt;class InputIter, Class T&gt;
-InputIter find(InputIter b, InputIter e, const T &amp;t);
-</code></pre>
-<ul>
-<li>This returns an iterator to the first matching element (or <code>end()</code> if not found), so checking against the end is crucial for sanity.</li>
-</ul>
-<pre><code class="language-cpp">template &lt;class InputIter, Class Predicate&gt;
-InputIter find(InputIter b, InputIter e, Predicate p);
-</code></pre>
-<ul>
-<li>Finds position of first element that makes Predicate true in range b to e, otherwise position e is returned.</li>
-</ul>
-<p>Another possibility:</p>
-<pre><code class="language-cpp">template &lt;class InputIter, Class Function&gt;
-void for_each(InputIter b, InputIter e, Function f);
-</code></pre>
-<ul>
-<li>Apply f for each value found in range b to e.</li>
-<li><code>std::for_each</code> is great for side effects, but in modern C++, it's usually replaced with range-based for loops or algorithms like <code>std::transform</code> or <code>std::accumulate</code> for actual data transformation.</li>
-</ul>
-<h4 id="find-algorithm-example"><a class="header" href="#find-algorithm-example"><code>find()</code> algorithm example</a></h4>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;ostream&gt;
-#include &lt;string&gt;
-
-int main() {
-  std::string words[5] = {"my", "hop", "mop", "hope", "cope"};
-  std::string *where;
-
-  where = std::find(words, words + 5, "hop");
-  std::cout &lt;&lt; *++where &lt;&lt; "\n";
-  std::sort(words, words + 5);
-  where = std::find(words, words + 5, "hop");
-  std::cout &lt;&lt; *++where &lt;&lt; "\n";
-}
-</code></pre>
-<p>Expected output:</p>
-<pre><code class="language-plaintext">mop
-hope
-</code></pre>
-<ul>
-<li>Here, sort does a lexicographic sort. "cope" will end up first and "my" will end up last.</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="lambda-expressions-for_each-function"><a class="header" href="#lambda-expressions-for_each-function">Lambda expressions: <code>for_each()</code> function</a></h1>
-<p>Lambda expressions:</p>
-<ul>
-<li>Derived from Lisp</li>
-<li>Previously <code>for_each()</code> needs a function</li>
-<li>Will use C++11 idea: write an unnamed function in place: a lambda expression</li>
-</ul>
-<p>You can use it, fall in love with it even if you don't have Lisp experience - or in more modern terms, Haskell.</p>
-<h4 id="old-style-for_each"><a class="header" href="#old-style-for_each">Old style <code>for_each()</code></a></h4>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;ostream&gt;
-#include &lt;vector&gt;
-
-void incr(int &amp;i) {
-  static int n = 1;
-  i = n++;
-}
-void outvec(int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; }
-
-int main() {
-  std::vector&lt;int&gt; v(6);
-  std::for_each(v.begin(), v.end(), incr);
-  std::for_each(v.begin(), v.end(), outvec);
-}
-</code></pre>
-<h4 id="lambda-in-c11"><a class="header" href="#lambda-in-c11">Lambda in C++11</a></h4>
-<ul>
-<li>Unnamed function</li>
-</ul>
-<pre><code class="language-cpp">[](int i) { cout &lt;&lt; i &lt;&lt; "\n"; }
-</code></pre>
-<ul>
-<li><code>[]</code> Goes where the function object is required.</li>
-<li><code>(int i)</code> Parameters</li>
-<li><code>{ cout &lt;&lt; i &lt;&lt; "\n"; }</code> Executable</li>
-</ul>
-<p><code>[](int n) { return n * 5.5; }</code> deduces the return value as double
-<code>[](int n) -&gt; int { return ++n; }</code> explicit type declaration.</p>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;ostream&gt;
-#include &lt;vector&gt;
-
-void incr(int &amp;i) {
-  static int n = 1;
-  i = n++;
-}
-auto outvec = [](int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; };
-
-// auto outvec: (lambda) = [](int i) -&gt; void { std::cout &lt;&lt; i &lt;&lt; "\n"; };
-
-int main() {
-  std::vector&lt;int&gt; v(6);
-  std::for_each(v.begin(), v.end(), incr);
-  std::for_each(v.begin(), v.end(), outvec);
-}
-</code></pre>
-<h4 id="bonus-from-the-void-if-you-are-still-here-chaining-lambdas"><a class="header" href="#bonus-from-the-void-if-you-are-still-here-chaining-lambdas">Bonus from the Void If you are still here: Chaining Lambdas</a></h4>
-<ul>
-<li>Defining a lambda</li>
-<li>That returns another lambda</li>
-<li>That closes over <code>factor</code></li>
-</ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-
-int main() {
-  // make_multiplier is a function (a lambda) that takes one int: factor
-  auto make_multiplier = [](int factor) {
-  
-    // It returns another function - also a lambda!
-    // That lambda takes int x and multiplies it by factor
-    return [factor](int x) {
-      return x * factor; 
-    };
-  };
-  
-  // times5 is literally this: [](int x) { return x * 5; }
-  auto times5 = make_multiplier(5);
-
-  // This is calling 10 * 5 -&gt; 50
-  std::cout &lt;&lt; times5(10) &lt;&lt; "\n";
-}
-</code></pre>
-<p>Expected output: 50</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
-<ul>
-<li>It's useful to have function objects to further leverage the STL library</li>
-<li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
-<li>Functors like <code>std::plus</code>, <code>std::minus</code>, <code>std::multiplies</code>, etc. are part of <code>&lt;functional&gt;</code>.</li>
-<li><code>std::accumulate</code> takes a starting value and a binary operation to process each element.</li>
-<li>You can plug in your own class with <code>operator()</code> to accumulate however you want.</li>
-<li>It’s an elegant way to avoid lambda clutter in simple cases.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;functional&gt;
-#include &lt;iostream&gt;
-#include &lt;numeric&gt;
-
-int main() {
-  double v1[3] = {1.0, 2.5, 4.6}, sum;
-  sum = std::accumulate(v1, v1 + 3, 0.0, std::minus&lt;double&gt;());
-  std::cout &lt;&lt; "sum = " &lt;&lt; sum &lt;&lt; "\n";
-}
-</code></pre>
-<p><code>Expected output: -8.1</code></p>
-<h2 id="generator-object--integration"><a class="header" href="#generator-object--integration">Generator Object &amp; Integration</a></h2>
-<h4 id="function-object-aka-functor"><a class="header" href="#function-object-aka-functor">📝Function Object aka Functor</a></h4>
-<ul>
-<li><code>operator()</code> lets you treat an object like a function.</li>
-<li>This is <strong>zero-parameter</strong>, meaning it's called like <code>g()</code>; no arguments.</li>
-<li>Each call advances <code>x</code> and returns <code>x²</code>.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;numeric&gt;
-#include &lt;vector&gt;
-
-public:
-  gen(double x_zero, double increment) : x(x_zero), incr(increment) {}
-  double operator()() {
-    x += incr;
-    return x * x;
-  }
-
-private:
-  double x, incr;
-};
-</code></pre>
-<h4 id="stdgenerate--functor"><a class="header" href="#stdgenerate--functor"><code>std::generate()</code> + Functor</a></h4>
-<ul>
-<li><code>std::generate</code> takes a range and a function object.</li>
-<li>It calls <code>g()</code> <code>n</code> times, populating the vector with values like <code>(Δx)², (2Δx)², ...</code>.</li>
-<li>Then <code>accumulate</code> computes the average: approximating ∫x² dx.</li>
-</ul>
-<pre><code class="language-cpp">double integrate(gen g, int n) {
-  std::vector&lt;double&gt; fx(n);
-  std::generate(fx.begin(), fx.end(), g);
-  return std::accumulate(fx.begin(), fx.end(), 0.0) / n;
-}
-</code></pre>
-<p>This is basically doing numerical integration of <code>f(x) = x²</code> over <code>[Δx, 1]</code> by approximating the area under the curve using small slices.</p>
-<h4 id="testing"><a class="header" href="#testing">Testing:</a></h4>
-<pre><code class="language-cpp">int main() {
-  const int n = 10000;
-
-  gen g(0.0, 1.0 / n);
-  std::cout &lt;&lt; "Integration program x**2" &lt;&lt; "\n";
-  std::cout &lt;&lt; integrate(g, n) &lt;&lt; "\n";
-}
-</code></pre>
-<h4 id="generator-objects-with-operator"><a class="header" href="#generator-objects-with-operator">Generator Objects with operator()()</a></h4>
-<ul>
-<li>A generator object is a class that maintains state and returns a value on each call to <code>operator()</code>.</li>
-<li>Acts like a function but remembers where it left off.</li>
-<li>Commonly used in STL algorithms like <code>std::generate()</code>.</li>
-</ul>
-<h4 id="usage-in-numerical-integration"><a class="header" href="#usage-in-numerical-integration">Usage in Numerical Integration</a></h4>
-<ul>
-<li>Create a functor that simulates the progression of <code>x</code> in a function <code>f(x)</code>.</li>
-<li>Call it repeatedly to generate the range <code>f(x₁), f(x₂), ..., f(xₙ)</code>.</li>
-<li>Sum and average to estimate integrals (e.g. Riemann sum).</li>
-</ul>
-<h2 id="function-adapters"><a class="header" href="#function-adapters">Function Adapters</a></h2>
-<p>Things like <code>bind1st</code>, <code>bind2nd</code>, <code>ptr_fun</code> are deprecated nowadays. You needed to stack templates on templates just to multiply something by 2. They are now replaced by:</p>
-<ul>
-<li><strong>Lambdas</strong> for inline operations</li>
-<li><code>std::function</code> for <strong>polymorphic callables</strong></li>
-<li><code>std::bind</code> if you're feeling retro (avoid at all costs)</li>
-</ul>
-<p>Old version:</p>
-<pre><code class="language-cpp">#include &lt;functional&gt;
-auto f = std::bind(std::multiplies&lt;&gt;(), std::placeholders::_1, 2);
-</code></pre>
-<p>New version:</p>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-
-template &lt;class ForwIter&gt;
-void print(ForwIter first, ForwIter last, const char *title) {
-  std::cout &lt;&lt; title &lt;&lt; "\n";
-  while (first != last)
-    std::cout &lt;&lt; *first++ &lt;&lt; "\t";
-  std::cout &lt;&lt; "\n";
-}
-
-int main() {
-  int data[3] = {9, 10, 11};
-  print(data, data + 3, "Original Values");
-
-  std::transform(data, data + 3, data, [](int x) { return x * 2; });
-
-  print(data, data + 3, "New values");
-}
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
-<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
-<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
-<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
-<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
-<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
-<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
-</tbody></table>
-</div>
-<hr />
-<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
-<ul>
-<li><strong>You only care if a path exists</strong> between one side and the other.</li>
-<li><strong>You don’t care how long the path is.</strong></li>
-</ul>
-<p>✅ So <strong>DFS is perfect</strong>:</p>
-<ul>
-<li>Fast</li>
-<li>Low overhead</li>
-<li>Easy to implement</li>
-<li>Works great for this use case</li>
-</ul>
-<hr />
-<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
-<hr />
-<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
-<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
-<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
-<ul>
-<li>We don't care how long the path is—just whether one exists.</li>
-<li>DFS is lightweight and simple for this use case.</li>
-<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
-</ul>
-<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
-<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
-std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
-
-// Start from the player’s border cells
-for (int i = 0; i &lt; board_size; ++i)
-  if (border_cell[i] == player)
-    stack.push({x, y});
-
-while (!stack.empty()) {
-  Point current = stack.top();
-  stack.pop();
-
-  // Skip visited
-  if (visited[current.x][current.y]) continue;
-  visited[current.x][current.y] = true;
-
-  // Check if we reached the goal edge
-  if (current.y == board_size - 1) return true;
-
-  // Explore neighbors
-  for (auto n : get_neighbors(current.x, current.y))
-    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
-      stack.push(n);
-}
-</code></pre>
-<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
-<ul>
-<li>Use a queue instead of a stack.</li>
-<li>Use it when path length matters (e.g. shortest route to victory).</li>
-<li>Slightly more memory-intensive in wide boards.</li>
-</ul>
-<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
-<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
-<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
-<pre><code class="language-cpp">class Graph {
-  int V;
-  std::list&lt;int&gt;* adj;
-
-  // ... constructor, addEdge, etc.
-
-  void BFS(int start) {
-    bool* visited = new bool[V];
-    std::fill(visited, visited + V, false);
-
-    std::list&lt;int&gt; queue;
-    visited[start] = true;
-    queue.push_back(start);
-
-    while (!queue.empty()) {
-      int node = queue.front();
-      queue.pop_front();
-      // Process node...
-
-      for (auto neighbor : adj[node]) {
-        if (!visited[neighbor]) {
-          visited[neighbor] = true;
-          queue.push_back(neighbor);
-        }
-      }
-    }
-
-    delete[] visited;
-  }
-};
-</code></pre>
-<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
-<ul>
-<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
-<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="-c-class-inheritance--polymorphism--with-a-3d-geometry-twist"><a class="header" href="#-c-class-inheritance--polymorphism--with-a-3d-geometry-twist">🧙‍♀️ C++ Class Inheritance &amp; Polymorphism – With a 3D Geometry Twist</a></h2>
-<h3 id="-base-class--point2d"><a class="header" href="#-base-class--point2d">🧱 Base Class – Point2D</a></h3>
-<pre><code class="language-cpp">class Point2D {
-protected:
-    float x, y;
-
-public:
-    Point2D(float x = 0, float y = 0) : x(x), y(y) {}
-
-    virtual void print() const {
-        std::cout &lt;&lt; "Point2D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ")" &lt;&lt; std::endl;
-    }
-
-    virtual ~Point2D() {} // Always virtual destructor for polymorphic base
-};
-</code></pre>
-<ul>
-<li><code>protected</code>: accessible to subclasses, but hidden from the outside world like a locked diary.</li>
-<li><code>virtual</code>: magic keyword that enables polymorphism (late binding).</li>
-<li>Destructor is virtual so your objects don’t leave memory corpses behind. 👻</li>
-</ul>
-<hr />
-<h3 id="-subclass--point3d"><a class="header" href="#-subclass--point3d">🌌 Subclass – Point3D</a></h3>
-<pre><code class="language-cpp">class Point3D : public Point2D {
-    float z;
-
-public:
-    Point3D(float x = 0, float y = 0, float z = 0) : Point2D(x, y), z(z) {}
-
-    void print() const override {
-        std::cout &lt;&lt; "Point3D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ", " &lt;&lt; z &lt;&lt; ")" &lt;&lt; std::endl;
-    }
-};
-</code></pre>
-<ul>
-<li><code>public</code> inheritance: “yes, I’m extending the public interface, not hiding it.”</li>
-<li><code>override</code>: optional, but makes the compiler scream if you mess up a virtual override (bless her).</li>
-</ul>
-<hr />
-<h3 id="-polymorphism-in-action"><a class="header" href="#-polymorphism-in-action">🧪 Polymorphism in Action</a></h3>
-<pre><code class="language-cpp">void describePoint(const Point2D&amp; p) {
-    p.print();
-}
-
-int main() {
-    Point2D p2(1, 2);
-    Point3D p3(3, 4, 5);
-
-    describePoint(p2); // prints Point2D(1, 2)
-    describePoint(p3); // prints Point3D(3, 4, 5) – polymorphism magic!
-}
-</code></pre>
-<ul>
-<li>This is the power move: a <code>Point2D</code> reference holds a <code>Point3D</code> object, but still calls the right method.</li>
-<li>No casting. No mess. Just vibes. 🎩✨</li>
-</ul>
-<hr />
-<h3 id="-what-if-you-forget-virtual"><a class="header" href="#-what-if-you-forget-virtual">💀 What If You Forget <code>virtual</code>?</a></h3>
-<p>If you remove <code>virtual</code> from <code>Point2D::print()</code>, then the method won’t get overridden at runtime — you’ll always call the base version. This is what we call... <em>a tragic plot twist.</em></p>
-<hr />
-<h3 id="-when-to-use-this"><a class="header" href="#-when-to-use-this">🔮 When to Use This</a></h3>
-<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Inheritance?</th></tr></thead><tbody>
-<tr><td>You need multiple related types that behave differently</td><td><strong>Yes</strong></td></tr>
-<tr><td>You want to generalize with base class pointers or references</td><td><strong>Yes</strong></td></tr>
-<tr><td>You’re sharing behavior across <em>unrelated</em> classes</td><td><strong>No</strong>, use composition/templates</td></tr>
-<tr><td>You don’t want to deal with destructor landmines</td><td><strong>Use smart pointers</strong>, queen</td></tr>
-</tbody></table>
-</div><div style="break-before: page; page-break-before: always;"></div><h2 id="-c-shapes-with-oop"><a class="header" href="#-c-shapes-with-oop">📐 C++ Shapes with OOP</a></h2>
-<h3 id="-concept"><a class="header" href="#-concept">🧠 Concept</a></h3>
-<p>In object-oriented design, <strong>shapes</strong> are abstractions made up of <strong>points</strong> and behaviors (like calculating area, or drawing). By using <strong>inheritance</strong> and <strong>polymorphism</strong>, we create a base <code>Shape</code> class and specialize it into specific geometric forms like <code>Triangle</code>, <code>Circle</code>, etc.</p>
-<h3 id="-why-use-inheritance-here"><a class="header" href="#-why-use-inheritance-here">💡 Why Use Inheritance Here?</a></h3>
-<ul>
-<li>Shared interface via base class: <code>Shape</code> defines what a shape <em>can do</em>.</li>
-<li>Specialization via subclasses: Each shape has its own way to draw and compute area.</li>
-<li>Allows dynamic polymorphism: store and manipulate shapes through base class pointers (<code>Shape*</code>), but still get the <em>actual</em> shape behavior.</li>
-</ul>
-<h3 id="-base-class-shape"><a class="header" href="#-base-class-shape">🧱 Base Class: Shape</a></h3>
-<pre><code class="language-cpp">class Shape {
-public:
-    virtual void draw() const = 0;
-    virtual float area() const = 0;
-    virtual ~Shape() {}
-};
-</code></pre>
-<ul>
-<li>Declares pure virtual methods = <strong>abstract class</strong>.</li>
-<li>No objects of <code>Shape</code> directly; it’s just a blueprint.</li>
-<li>Destructor is virtual to ensure correct cleanup when using base pointers.</li>
-</ul>
-<hr />
-<h3 id="-triangle"><a class="header" href="#-triangle">🔺 Triangle</a></h3>
-<ul>
-<li>Defined by 3 points.</li>
-<li>Area is computed using <strong>Heron's formula</strong>.</li>
-<li>Inherits from <code>Shape</code>.</li>
-</ul>
-<hr />
-<h3 id="-circle"><a class="header" href="#-circle">🔵 Circle</a></h3>
-<ul>
-<li>Defined by center + radius.</li>
-<li>Area is <code>πr²</code>.</li>
-<li>Also overrides <code>draw()</code> and <code>area()</code>.</li>
-</ul>
-<hr />
-<h3 id="-polymorphic-usage"><a class="header" href="#-polymorphic-usage">🧪 Polymorphic Usage</a></h3>
-<pre><code class="language-cpp">std::vector&lt;Shape*&gt; scene;
-scene.push_back(new Triangle(...));
-scene.push_back(new Circle(...));
-for (Shape* s : scene) {
-    s-&gt;draw();
-    std::cout &lt;&lt; s-&gt;area();
-}
-</code></pre>
-<p>This allows us to treat all shapes <em>uniformly</em> while letting each class decide how to behave. That’s <strong>real polymorphism energy</strong>.</p>
-<hr />
-<h3 id="full-code-1"><a class="header" href="#full-code-1">Full code</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;math.h&gt;
-#include &lt;vector&gt;
-
-struct Point2D {
-  float x, y;
-};
-
-// virtual forces subclasses to implement
-class Shape {
-public:
-  virtual void draw() const = 0;
-  virtual float area() const = 0;
-  virtual ~Shape() {}
-};
-
-class Triangle : public Shape {
-  Point2D a, b, c;
-
-  float distance(const Point2D &amp;p1, const Point2D &amp;p2) const {
-    return std::hypot(p2.x - p1.x, p2.y - p1.y);
-  }
-
-public:
-  Triangle(Point2D a, Point2D b, Point2D c) : a(a), b(b), c(c) {}
-
-  void draw() const override {
-    std::cout &lt;&lt; "Drawing triangle between A, B, C.\n";
-  }
-
-  float area() const override {
-    // Heron’s formula because we fancy
-    float ab = distance(a, b);
-    float bc = distance(b, c);
-    float ca = distance(c, a);
-    float s = (ab + bc + ca) / 2;
-    return std::sqrt(s * (s - ab) * (s - bc) * (s - ca));
-  }
-};
-
-class Circle : public Shape {
-  Point2D center;
-  float radius;
-
-public:
-  Circle(Point2D c, float r) : center(c), radius(r) {}
-
-  void draw() const override {
-    std::cout &lt;&lt; "Drawing circle at (" &lt;&lt; center.x &lt;&lt; ", " &lt;&lt; center.y
-              &lt;&lt; ") with radius " &lt;&lt; radius &lt;&lt; "\n";
-  }
-
-  float area() const override { return M_PI * radius * radius; }
-};
-
-int main() {
-  std::vector&lt;Shape *&gt; scene;
-  scene.push_back(new Triangle({0, 0}, {1, 0}, {0, 1}));
-  scene.push_back(new Circle({0, 0}, 5));
-
-  for (Shape *shape : scene) {
-    shape-&gt;draw();
-    std::cout &lt;&lt; "Area: " &lt;&lt; shape-&gt;area() &lt;&lt; "\n";
-  }
-
-  // free memory
-  for (Shape *shape : scene)
-    delete shape;
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>

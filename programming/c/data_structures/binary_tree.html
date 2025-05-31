@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Binary Tree - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,137 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="binary-tree"><a class="header" href="#binary-tree">Binary Tree</a></h2>
+<pre><code class="language-c">// This program opens and reads a file of integer pairs into an array, with the first integer telling it how many to read.
+// It places these values into a binary tree structure. Walks the tree inorder and prints the values onto the screen.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Define the structure for a binary tree node
+typedef struct TreeNode {
+    int value;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+
+// Function to create a new tree node
+TreeNode* create_node(int value) {
+    TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
+    if (!new_node) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+    new_node-&gt;value = value;
+    new_node-&gt;left = new_node-&gt;right = NULL;
+    return new_node;
+}
+
+// Function to insert a value into the binary tree
+TreeNode* insert(TreeNode* root, int value) {
+    if (root == NULL) {
+        return create_node(value);
+    }
+    if (value &lt; root-&gt;value) {
+        root-&gt;left = insert(root-&gt;left, value);
+    } else {
+        root-&gt;right = insert(root-&gt;right, value);
+    }
+    return root;
+}
+
+// Function to perform inorder traversal and print the values
+void inorder_traversal(TreeNode* root) {
+    if (root != NULL) {
+        inorder_traversal(root-&gt;left);
+        printf("%d ", root-&gt;value);
+        inorder_traversal(root-&gt;right);
+    }
+}
+
+void free_tree(TreeNode* root) {
+    if (root != NULL) {
+        free_tree(root-&gt;left);
+        free_tree(root-&gt;right);
+        free(root);
+    }
+}
+
+int main(int argc, char* argv[]) {
+    FILE *ifp;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: &lt;input_filename&gt;\n");
+        exit(1);
+    }
+
+    ifp = fopen(argv[1], "r");
+    if (ifp == NULL) {
+        fprintf(stderr, "Can't open input file %s\n", argv[1]);
+        exit(1);
+    }
+
+    printf("Reading from %s\n", argv[1]);
+
+    // Read the first number to determine the array size
+    int array_size;
+    fscanf(ifp, "%d", &amp;array_size);
+    printf("Array size: %d\n", array_size);
+
+    // Create the binary tree and insert values
+    TreeNode* root = NULL;
+    for (int i = 0; i &lt; array_size; i++) {
+        int value;
+        fscanf(ifp, "%d", &amp;value);
+        root = insert(root, value);
+    }
+
+    // Perform inorder traversal and print the values
+    printf("Inorder traversal of the binary tree:\n");
+    inorder_traversal(root);
+    printf("\n");
+
+    free_tree(root);
+
+    // Close the input file
+    fclose(ifp);
+
+    return 0;
+}
+</code></pre>
+<h3 id="binary-tree-definition"><a class="header" href="#binary-tree-definition">Binary Tree Definition</a></h3>
+<p>A <strong>binary tree</strong> is a data structure in which each node has at most two children, referred to as the left child and the right child. It is commonly used for organizing data for quick access, insertion, and deletion.</p>
+<h3 id="example-input-and-output"><a class="header" href="#example-input-and-output">Example Input and Output</a></h3>
+<p>Based on your code, the program reads pairs of integers from a file, creates a binary tree, and prints the values in-order.</p>
+<h4 id="example-input-file-inputtxt"><a class="header" href="#example-input-file-inputtxt">Example Input File (<code>input.txt</code>):</a></h4>
+<pre><code>5
+30 10 50 20 40
+</code></pre>
+<h4 id="explanation-of-input"><a class="header" href="#explanation-of-input">Explanation of Input:</a></h4>
+<ol>
+<li>The first number (<code>5</code>) specifies the number of integers to insert into the binary tree.</li>
+<li>The subsequent numbers (<code>30</code>, <code>10</code>, <code>50</code>, <code>20</code>, <code>40</code>) are inserted into the binary tree.</li>
+</ol>
+<h4 id="output"><a class="header" href="#output">Output:</a></h4>
+<pre><code>Reading from input.txt
+Array size: 5
+Inorder traversal of the binary tree:
+10 20 30 40 50
+</code></pre>
+<h4 id="explanation-of-output"><a class="header" href="#explanation-of-output">Explanation of Output:</a></h4>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>The in-order traversal prints the values in ascending order: left subtree → root → right subtree.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/data_structures/doubly_linked_list.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/ncurses/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +306,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/data_structures/doubly_linked_list.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/ncurses/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

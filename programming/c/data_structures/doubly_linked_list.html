@@ -1,0 +1,527 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Doubly Linked List and Merge Sort - Debugging Grimoire</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Debugging Grimoire</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="doubly-linked-list"><a class="header" href="#doubly-linked-list">Doubly Linked List</a></h2>
+<pre><code class="language-c">// Given a list of integers, the program will sort the list using merge sort and remove any duplicates.
+// It uses a doubly linked list to store the integers.
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+#define SIZE 200
+
+// Define the list node structure
+typedef struct list { 
+    int data;           // Data stored in the node
+    struct list *next;  // Pointer to the next node
+    struct list *prev;  // Pointer to the previous node
+} list;
+
+// Function to create a new doubly linked list
+struct list* create_list (int d) 
+{
+    struct list* newList = (struct list*)malloc( sizeof(struct list) );
+        if (newList == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+        }
+
+    newList -&gt; data = d;
+    newList -&gt; next = NULL;
+    newList -&gt; prev = NULL;
+    
+    return newList;
+}
+
+// Function to add a new node with data 'd' to the front of the list 'h'
+struct list* add_to_front(int d, list* h)
+{
+    list* head = create_list(d);
+
+    head -&gt; next = h;
+    if (h != NULL) {
+        h -&gt; prev = head;
+    }
+
+    return head;
+}
+
+// Function to convert an array of integers into a linked list
+struct list* array_to_list(int d[], int size)
+{
+    if (d == NULL || size &lt;= 0) {
+    fprintf(stderr, "Invalid array or size\n");
+    return NULL;
+    }
+    // Create the head of the list using the first element of the array
+    list* head = create_list(d[0]);
+    
+    // Loop through the remaining elements of the array
+    for (int i = 1; i &lt; size; i++)
+    {
+        // Add each element to the front of the list
+        head = add_to_front(d[i], head);
+    }
+    // Return the head of the linked list
+    return head;
+}
+
+// Function to generate random numbers between 0 and 100
+int getRandomNumber(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+struct list* split_list(struct list* head) {
+    struct list* slow = head;
+    struct list* fast = head;
+
+    while (fast != NULL &amp;&amp; fast -&gt; next != NULL) {
+        slow = slow -&gt; next;
+        fast = fast -&gt; next -&gt; next;
+    }
+
+    if (slow != NULL &amp;&amp; slow -&gt; prev != NULL) {
+        slow -&gt; prev -&gt; next = NULL;    // Break forward link
+        slow -&gt; prev = NULL;            // Break backward link
+    }
+
+    return slow; // Return the head of the second half
+}
+
+struct list* merge(struct list* head_a, struct list* head_b) {
+    if (head_a == NULL) return head_b;
+    if (head_b == NULL) return head_a;
+    
+    struct list* result = NULL;
+
+    // Compare data and recursively merge
+    if (head_a -&gt; data &lt; head_b -&gt; data) {
+        result = head_a;
+        result -&gt; next = merge(head_a -&gt; next, head_b);
+        if (result -&gt; next != NULL) {
+            result -&gt; next -&gt; prev = result; // Update backward link            
+        }
+    } else {
+        result = head_b;
+        result -&gt; next = merge(head_a, head_b -&gt; next);
+        if (result -&gt; next != NULL) {
+            result -&gt; next -&gt; prev = result;
+        }    
+    }
+    
+    return result;
+}
+
+struct list* merge_sort(struct list* head) {
+    if (head == NULL || head -&gt; next == NULL) return head;
+
+    struct list* second_half = split_list(head); // Split the list into two halves
+
+    // Recursively sort half
+    struct list* left_sorted = merge_sort(head);
+    struct list* right_sorted = merge_sort(second_half);
+
+    return merge(left_sorted, right_sorted);
+}
+
+// This function unlinks the duplicate node in next pointer.
+struct list* remove_duplicates(struct list* head) {
+    if (head == NULL || head -&gt; next == NULL) return head;
+
+    struct list* current = head;
+
+    while (current != NULL &amp;&amp; current -&gt; next != NULL) {
+        if (current -&gt; data == current -&gt; next -&gt; data) {
+            struct list* duplicate = current -&gt; next;
+
+            current -&gt; next = duplicate -&gt; next;
+
+            if (duplicate -&gt; next != NULL) {
+                duplicate -&gt; next -&gt; prev = current;
+            }
+
+            free(duplicate);
+
+        } else {
+            current = current -&gt; next;
+        }
+    }
+    return head;
+}
+
+// Print the numbers in rows of 5
+void print_list (struct list *head) {
+    if (head == NULL || head -&gt; next == NULL) return;
+
+    int count = 0;
+    while (head != NULL) {
+        printf("%d\t", head -&gt; data);
+        count ++;
+        if (count % 5 == 0) printf("\n");
+        head = head -&gt; next;
+    }
+}
+
+void free_list(struct list *head) {
+    list* current = head;
+    list* next;
+
+    // Traverse the list and free each node
+    while (current != NULL) {
+        next = current -&gt; next; // Save the pointer to the next node
+        free(current);          // Free the current node
+        current = next;         // Move to the next node
+    }
+}
+
+int main() {
+    srand(time(NULL));
+
+    int data[SIZE];
+    for (int i = 0; i &lt; SIZE; i++) {
+        data[i] = getRandomNumber(0, 49);
+    }
+
+    // Convert the array to a doubly linked list
+    struct list* head = array_to_list(data, SIZE);
+
+    printf("Before Sorting:\n");
+    print_list(head);
+    printf("\n");
+
+    // Perform merge sort on the list, and remove duplicates
+    head = merge_sort(head);
+    remove_duplicates(head);
+
+    printf("After Sorting and Removing Duplicates:\n");
+    print_list(head);
+
+    free_list(head); // Free allocated memory
+
+    return 0;
+}
+</code></pre>
+<hr />
+<h3 id="example-input-and-output-for-a-doubly-linked-list-program"><a class="header" href="#example-input-and-output-for-a-doubly-linked-list-program">Example Input and Output for a Doubly Linked List Program</a></h3>
+<h4 id="example-input"><a class="header" href="#example-input">Example Input</a></h4>
+<p>Let's assume this doubly linked list program supports typical operations like adding, deleting, and traversing nodes. Here’s a sample input sequence:</p>
+<ol>
+<li>Add 10 to the list.</li>
+<li>Add 20 to the list.</li>
+<li>Add 30 to the list.</li>
+<li>Traverse the list forward.</li>
+<li>Traverse the list backward.</li>
+<li>Delete 20 from the list.</li>
+<li>Traverse the list forward again.</li>
+</ol>
+<h4 id="example-output"><a class="header" href="#example-output">Example Output</a></h4>
+<p><strong>Step-by-Step Output:</strong></p>
+<ol>
+<li>
+<p>Adding 10 to the list:<br />
+<code>List: 10</code></p>
+</li>
+<li>
+<p>Adding 20 to the list:<br />
+<code>List: 10 &lt;-&gt; 20</code></p>
+</li>
+<li>
+<p>Adding 30 to the list:<br />
+<code>List: 10 &lt;-&gt; 20 &lt;-&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing forward:<br />
+<code>Forward: 10 -&gt; 20 -&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing backward:<br />
+<code>Backward: 30 -&gt; 20 -&gt; 10</code></p>
+</li>
+<li>
+<p>Deleting 20 from the list:<br />
+<code>List: 10 &lt;-&gt; 30</code></p>
+</li>
+<li>
+<p>Traversing forward again:<br />
+<code>Forward: 10 -&gt; 30</code></p>
+</li>
+</ol>
+<hr />
+<h3 id="merge-sort-in-doubly-linked-lists"><a class="header" href="#merge-sort-in-doubly-linked-lists">Merge Sort in Doubly Linked Lists</a></h3>
+<h4 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h4>
+<p>Merge sort is a divide-and-conquer algorithm that splits the list into smaller sublists, sorts them individually, and then merges them back together in sorted order. With doubly linked lists, this algorithm can be implemented efficiently because of the bidirectional traversal and the ability to split and merge nodes easily.</p>
+<h4 id="key-functions"><a class="header" href="#key-functions">Key Functions:</a></h4>
+<ol>
+<li>
+<p><strong><code>split_list</code></strong><br />
+This function divides the doubly linked list into two halves. The midpoint is typically found using a slow and fast pointer approach.</p>
+</li>
+<li>
+<p><strong><code>merge</code></strong><br />
+This function takes two sorted sublists and merges them into a single sorted list, maintaining the order.</p>
+</li>
+</ol>
+<h4 id="advantages-of-merge-sort-in-doubly-linked-lists"><a class="header" href="#advantages-of-merge-sort-in-doubly-linked-lists">Advantages of Merge Sort in Doubly Linked Lists:</a></h4>
+<ul>
+<li><strong>Stability:</strong> Maintains the relative order of equal elements.</li>
+<li><strong>Efficiency:</strong> Performs well on linked lists as it doesn't require random access to elements.</li>
+<li><strong>Recursive Nature:</strong> Leverages the recursive structure of merge sort for easy implementation.</li>
+</ul>
+<h4 id="example-input-and-output-for-merge-sort"><a class="header" href="#example-input-and-output-for-merge-sort">Example Input and Output for Merge Sort</a></h4>
+<p><strong>Input:</strong><br />
+Unsorted list: <code>30 &lt;-&gt; 10 &lt;-&gt; 20 &lt;-&gt; 50 &lt;-&gt; 40</code></p>
+<p><strong>Output:</strong><br />
+Sorted list: <code>10 &lt;-&gt; 20 &lt;-&gt; 30 &lt;-&gt; 40 &lt;-&gt; 50</code></p>
+<hr />
+<h3 id="advantages-of-a-doubly-linked-list-over-a-singly-linked-list"><a class="header" href="#advantages-of-a-doubly-linked-list-over-a-singly-linked-list">Advantages of a Doubly Linked List Over a Singly Linked List</a></h3>
+<ol>
+<li>
+<p><strong>Bidirectional Traversal:</strong><br />
+The biggest advantage is the ability to traverse both forwards and backwards. This makes certain algorithms and operations easier to implement.</p>
+</li>
+<li>
+<p><strong>Easier Deletion:</strong><br />
+Deleting a node is simpler because you have a pointer to the previous node, so there's no need to traverse the list to find it.</p>
+</li>
+<li>
+<p><strong>Flexibility in Insertion:</strong><br />
+Insertion after or before a given node is straightforward as you can access both the next and previous pointers.</p>
+</li>
+</ol>
+<hr />
+<h3 id="drawbacks-of-a-doubly-linked-list-compared-to-a-singly-linked-list"><a class="header" href="#drawbacks-of-a-doubly-linked-list-compared-to-a-singly-linked-list">Drawbacks of a Doubly Linked List Compared to a Singly Linked List</a></h3>
+<ol>
+<li>
+<p><strong>Increased Memory Usage:</strong><br />
+Each node requires an extra pointer (<code>prev</code>), which doubles the memory used for pointers.</p>
+</li>
+<li>
+<p><strong>Reduced Performance:</strong><br />
+Due to the extra pointer, operations like insertion and deletion involve slightly more overhead for managing the <code>prev</code> pointer.</p>
+</li>
+<li>
+<p><strong>Complexity:</strong><br />
+The implementation is more complex, especially when handling edge cases like inserting or deleting the first or last node.</p>
+</li>
+</ol>
+<hr />
+<h3 id="summary"><a class="header" href="#summary">Summary</a></h3>
+<p>While a doubly linked list provides more flexibility with bidirectional traversal and easier node deletion/insertion, it comes at the cost of increased memory usage and slightly reduced performance. It's an excellent choice for scenarios where frequent backward traversal is needed or when node deletion happens often.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../programming/c/data_structures/working_with_lists.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../programming/c/data_structures/working_with_lists.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

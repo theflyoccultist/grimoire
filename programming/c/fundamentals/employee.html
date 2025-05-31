@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Employee Salary and SSN Generator - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,101 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="employeec--employee-salary-and-ssn-generator"><a class="header" href="#employeec--employee-salary-and-ssn-generator">employee.c : Employee Salary and SSN Generator</a></h2>
+<p>This program assigns salaries to employees in various departments and generates random Social Security Numbers (SSNs) for them.</p>
+<h3 id="overview"><a class="header" href="#overview">Overview</a></h3>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>This project calculates salaries for employees in different departments.</li>
+<li>It also generates random SSNs for each employee.</li>
+</ul>
+<h3 id="code-explanation"><a class="header" href="#code-explanation">Code Explanation</a></h3>
+<h4 id="1-headers-and-libraries"><a class="header" href="#1-headers-and-libraries">1. <strong>Headers and Libraries</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+</code></pre>
+<ul>
+<li><code>stdio.h</code>: Used for input/output functions like <code>printf</code>.</li>
+<li><code>stdlib.h</code>: Provides functions like <code>rand</code> for generating random numbers.</li>
+<li><code>time.h</code>: Used to seed the random number generator with the current time.</li>
+</ul>
+<h4 id="2-departments-and-salaries"><a class="header" href="#2-departments-and-salaries">2. <strong>Departments and Salaries</strong></a></h4>
+<pre><code class="language-c">enum departments { HR, SALES, RESEARCH, SOFTWARE, EXECUTIVE };
+const int SALARIES[] = {70000, 60000, 120000, 180000, 100000};
+#define SALARY_OVER rand() % 10000 + 1
+const char *DEPARTMENT_NAMES[] = {"HR", "Sales", "Research", "Software", "Executive"};
+</code></pre>
+<ul>
+<li>The <code>departments</code> enum lists all departments.</li>
+<li>The <code>SALARIES</code> array provides base salaries for each department.</li>
+<li><code>SALARY_OVER</code> adds a random bonus between 1 and 10,000.</li>
+<li><code>DEPARTMENT_NAMES</code> maps department names to their respective enum values.</li>
+</ul>
+<h4 id="3-ssn-generation"><a class="header" href="#3-ssn-generation">3. <strong>SSN Generation</strong></a></h4>
+<pre><code class="language-c">#define SSN_MAX 999999999
+#define SSN_MIN 100000000
+#define SSN ((rand() % (SSN_MAX - SSN_MIN + 1)) + SSN_MIN)
+</code></pre>
+<ul>
+<li>Generates a random SSN between <code>100000000</code> and <code>999999999</code>.</li>
+</ul>
+<h4 id="4-processing-departments"><a class="header" href="#4-processing-departments">4. <strong>Processing Departments</strong></a></h4>
+<pre><code class="language-c">void process_departments() {
+    for (int department = HR; department &lt;= EXECUTIVE; department++) {
+      printf("SSN: %d\t", SSN);
+      printf("Salary for %s: %d\n", DEPARTMENT_NAMES[department], (SALARIES[department] + SALARY_OVER));
+    }
+}
+</code></pre>
+<ul>
+<li>Iterates through all departments.</li>
+<li>Prints a random SSN and the salary (including a random bonus) for each department.</li>
+</ul>
+<h4 id="5-main-function"><a class="header" href="#5-main-function">5. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main()
+{ 
+    srand(time(0));
+    process_departments();
+    printf("\n---- Second Run ----\n\n");
+    process_departments();
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Seeds the random number generator with the current time.</li>
+<li>Calls <code>process_departments</code> twice, simulating output for 10 employees (two runs of 5 departments).</li>
+</ul>
+<h3 id="sample-output"><a class="header" href="#sample-output">Sample Output</a></h3>
+<p>The program's output will look something like this:</p>
+<pre><code>SSN: 123456789   Salary for HR: 71000
+SSN: 987654321   Salary for Sales: 60500
+SSN: 564738291   Salary for Research: 121000
+SSN: 192837465   Salary for Software: 181000
+SSN: 847362514   Salary for Executive: 101000
+
+---- Second Run ----
+
+SSN: 234567890   Salary for HR: 72000
+SSN: 876543210   Salary for Sales: 61200
+SSN: 473829165   Salary for Research: 119500
+SSN: 928374651   Salary for Software: 183000
+SSN: 847362514   Salary for Executive: 100500
+</code></pre>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ul>
+<li>Random SSN generation ensures unique identifiers for employees.</li>
+<li>Random salary bonuses simulate real-world variability in salaries.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/fundamentals/weekday.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/fundamentals/weight_generator.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +270,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/fundamentals/weekday.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/fundamentals/weight_generator.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

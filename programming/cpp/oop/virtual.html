@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Virtual Function Behavior - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,76 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="c-virtual-function-behavior"><a class="header" href="#c-virtual-function-behavior">C++ Virtual Function Behavior</a></h2>
+<h3 id="virtual-function-selection"><a class="header" href="#virtual-function-selection">Virtual Function Selection</a></h3>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Base classes typically define a <code>virtual</code> function.</li>
+<li>Derived classes override these functions.</li>
+<li>Pointer to base can point at base or derived class objects.</li>
+<li>Function selected depends on <strong>object type</strong>, not <strong>pointer type</strong>.</li>
+<li>If no derived override exists, the base class function is used.</li>
+</ul>
+<h3 id="virtual--overloaded-function-selection"><a class="header" href="#virtual--overloaded-function-selection">Virtual &amp; Overloaded Function Selection</a></h3>
+<ul>
+<li>Overloaded member functions are selected <strong>at compile-time</strong> based on signature.</li>
+<li>They can have different return types.</li>
+<li>Once a function is declared <code>virtual</code>, it stays virtual in derived classes.</li>
+<li>The <code>virtual</code> keyword is not required in the redefinition, but it's clearer if included.</li>
+</ul>
+<hr />
+<h3 id="example-code"><a class="header" href="#example-code">Example Code</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+
+class B {
+public:
+  int i;
+  virtual void print_i() const { std::cout &lt;&lt; i &lt;&lt; " inside B" &lt;&lt; std::endl; }
+};
+
+class D : public B {
+public:
+  void print_i() const { std::cout &lt;&lt; i &lt;&lt; " inside D" &lt;&lt; std::endl; }
+};
+
+int main() {
+  B b;
+  B *pb = &amp;b; // point at a B object
+  D f;
+
+  f.i = 1 + (b.i = 1);
+  pb-&gt;print_i(); // Call B::print_i()
+  pb = &amp;f;       // point at D object
+  pb-&gt;print_i(); // Call D::print_i()
+}
+</code></pre>
+<h3 id="output"><a class="header" href="#output">Output</a></h3>
+<pre><code>1 inside B
+2 inside D
+</code></pre>
+<h3 id="analysis"><a class="header" href="#analysis">Analysis</a></h3>
+<ul>
+<li>First <code>pb-&gt;print_i()</code> calls <code>B::print_i()</code> because <code>pb</code> points to a <code>B</code> object.</li>
+<li>Second <code>pb-&gt;print_i()</code> calls <code>D::print_i()</code> because <code>pb</code> now points to a <code>D</code> object.</li>
+<li>Function selection happens <strong>dynamically</strong> at <strong>runtime</strong> based on the actual object.</li>
+</ul>
+<hr />
+<h3 id="object-oriented-principles"><a class="header" href="#object-oriented-principles">Object-Oriented Principles</a></h3>
+<ul>
+<li>Abstract Data Types (ADTs), inheritance, and polymorphism allow treating different class objects through a common interface.</li>
+<li>Virtual functions enable run-time method resolution—<strong>true polymorphism</strong>.</li>
+<li>This dynamic dispatch is at the heart of OOP.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/shapes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +245,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/shapes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

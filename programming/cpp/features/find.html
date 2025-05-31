@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Non Mutating Algorithm: find() - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,65 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h1 id="non-mutating-algorithms-stdfind"><a class="header" href="#non-mutating-algorithms-stdfind">Non mutating algorithms: <code>std::find</code></a></h1>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Does not modify the contents of the container they work on.</li>
+<li>Typical operation is searching the container for a particular element and returning its position</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class T&gt;
+InputIter find(InputIter b, InputIter e, const T &amp;t);
+</code></pre>
+<ul>
+<li>This returns an iterator to the first matching element (or <code>end()</code> if not found), so checking against the end is crucial for sanity.</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Predicate&gt;
+InputIter find(InputIter b, InputIter e, Predicate p);
+</code></pre>
+<ul>
+<li>Finds position of first element that makes Predicate true in range b to e, otherwise position e is returned.</li>
+</ul>
+<p>Another possibility:</p>
+<pre><code class="language-cpp">template &lt;class InputIter, Class Function&gt;
+void for_each(InputIter b, InputIter e, Function f);
+</code></pre>
+<ul>
+<li>Apply f for each value found in range b to e.</li>
+<li><code>std::for_each</code> is great for side effects, but in modern C++, it's usually replaced with range-based for loops or algorithms like <code>std::transform</code> or <code>std::accumulate</code> for actual data transformation.</li>
+</ul>
+<h4 id="find-algorithm-example"><a class="header" href="#find-algorithm-example"><code>find()</code> algorithm example</a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+
+int main() {
+  std::string words[5] = {"my", "hop", "mop", "hope", "cope"};
+  std::string *where;
+
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+  std::sort(words, words + 5);
+  where = std::find(words, words + 5, "hop");
+  std::cout &lt;&lt; *++where &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-plaintext">mop
+hope
+</code></pre>
+<ul>
+<li>Here, sort does a lexicographic sort. "cope" will end up first and "my" will end up last.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/features/map.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/features/for_each.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +234,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/features/map.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/features/for_each.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

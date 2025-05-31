@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Output a Random Graph - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,117 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h1 id="output-a-random-graph-in-c"><a class="header" href="#output-a-random-graph-in-c">Output a Random Graph in C++</a></h1>
+<p>Context: Refactor of an instructor-provided codebase to generate a random undirected graph with cost and color data. Original code was a memory-leaking, segfault-happy mess.</p>
+<p>Generate a random graph using a 2D adjacency matrix, apply weights (cost) and labels (color) to edges, and export the result to a .txt file.</p>
+<p>💥 Original Problems</p>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Used raw pointers (<code>new[]</code>) without any <code>delete[]</code>: memory leak central.</li>
+<li>No structure—everything shoved into <code>main()</code>.</li>
 </ul>
+<p>🔧 Refactor Goals</p>
+<ul>
+<li>Encapsulate logic in a Graph class.</li>
+<li>Use <code>std::vector&lt;std::vector&lt;T&gt;&gt;</code> for memory safety and clarity.</li>
+<li>Organize code: generation, cost assignment, and file output as clean methods.</li>
+<li>Eliminate leaks and crashes; run clean under Valgrind.</li>
+</ul>
+<p>⚙️ Inputs</p>
+<ul>
+<li><code>int size</code>: graph size (number of nodes)</li>
+<li><code>double density</code>: probability of edge existence between nodes</li>
+<li><code>std::string filename</code>: output filename for the graph data</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;ctime&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Graph {
+private:
+  double prob() { return (static_cast&lt;double&gt;(rand()) / RAND_MAX); }
+
+public:
+  // Constructor
+  std::vector&lt;std::vector&lt;bool&gt;&gt; graph;
+  std::vector&lt;std::vector&lt;int&gt;&gt; color;
+  std::vector&lt;std::vector&lt;int&gt;&gt; cost;
+  int size;
+  double density;
+
+  Graph(int s, double d) : size(s), density(d) {
+    graph.resize(size, std::vector&lt;bool&gt;(size, false));
+    color.resize(size, std::vector&lt;int&gt;(size, 0));
+    cost.resize(size, std::vector&lt;int&gt;(size, 0));
+  }
+
+  // generate graph
+  void generate_graph() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (i == j)
+          graph[i][j] = false;
+        else
+          graph[i][j] = graph[j][i] = (prob() &lt; density);
+  }
+
+  // generate cost and color
+  void cost_and_color() {
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = i; j &lt; size; ++j)
+        if (graph[i][j]) {
+          color[i][j] = color[j][i] = rand() % 3;
+          cost[i][j] = cost[j][i] = prob() * 30;
+        }
+  }
+
+  // write to a txt file
+  void output_file(const std::string &amp;filename) {
+    std::ofstream outp(filename);
+    outp &lt;&lt; size &lt;&lt; "\n";
+    for (int i = 0; i &lt; size; ++i)
+      for (int j = 0; j &lt; size; ++j) {
+        if (graph[i][j])
+          outp &lt;&lt; i &lt;&lt; '\t' &lt;&lt; j &lt;&lt; '\t' &lt;&lt; cost[i][j] &lt;&lt; '\t' &lt;&lt; color[i][j]
+               &lt;&lt; '\n';
+      }
+  }
+};
+
+int main(void) {
+  int size;
+  double density;
+  std::string filename;
+
+  // User input
+  std::cout &lt;&lt; "graph size?" &lt;&lt; "\n";
+  std::cin &gt;&gt; size;
+  std::cout &lt;&lt; "graph density (0,1)?" &lt;&lt; "\n";
+  std::cin &gt;&gt; density;
+
+  Graph g(size, density);
+  g.generate_graph();
+  g.cost_and_color();
+
+  std::cout &lt;&lt; "file name?" &lt;&lt; "\n";
+  std::cin &gt;&gt; filename;
+  g.output_file(filename);
+  std::cout &lt;&lt; "done." &lt;&lt; "\n";
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/examples/dfs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/examples/poker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +286,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/examples/dfs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/examples/poker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

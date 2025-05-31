@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Usage of enums - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,68 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
+<ol>
+<li>
+<p><strong>Header Inclusion</strong>:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+</code></pre>
+<p>The <code>stdio.h</code> library is included for input and output functions, specifically for using <code>printf</code>.</p>
+</li>
+<li>
+<p><strong>Enumeration Declaration</strong>:</p>
+<pre><code class="language-c">enum month{jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec};
+</code></pre>
+<p>An enumeration type <code>month</code> is defined, representing the months of the year. The values in the enumeration are implicitly assigned integer values starting from 0 (<code>jan</code> = 0, <code>feb</code> = 1, ..., <code>dec</code> = 11).</p>
+</li>
+<li>
+<p><strong>Function Definition</strong>:</p>
+<pre><code class="language-c">enum month get_month(enum month m) {
+    return(m);
+}
+</code></pre>
+<p>The function <code>get_month</code> takes an argument of type <code>enum month</code> and simply returns the same value. It's a minimal example to show how an enumeration can be passed to and returned from a function.</p>
+</li>
+<li>
+<p><strong>Main Function</strong>:</p>
+<pre><code class="language-c">int main()
+{
+    printf("%u\n", get_month(apr));
+    return 0;
+}
+</code></pre>
+<p>The <code>main</code> function:</p>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Calls <code>get_month</code> with the <code>apr</code> enumeration value (which corresponds to 3, assuming 0-based indexing),</li>
+<li>Prints the returned value as an unsigned integer (<code>%u</code> format specifier).</li>
+<li>Returns 0 to indicate successful execution.</li>
+</ul>
+</li>
+</ol>
+<h3 id="output"><a class="header" href="#output">Output:</a></h3>
+<p>When this program is run, it will output:</p>
+<pre><code>3
+</code></pre>
+<p>This corresponds to the integer value of the <code>apr</code> enumeration.</p>
+<h3 id="purpose"><a class="header" href="#purpose">Purpose:</a></h3>
+<p>This program is essentially a learning exercise to demonstrate the basics of declaring and using enumerations in C. It introduces how to:</p>
+<ul>
+<li>Create an enumeration,</li>
+<li>Pass an enumerated value to a function,</li>
+<li>Return an enumerated value from a function, and</li>
+<li>Print the integer representation of an enumerated value.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/fundamentals/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/fundamentals/weekday.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +237,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/fundamentals/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/fundamentals/weekday.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

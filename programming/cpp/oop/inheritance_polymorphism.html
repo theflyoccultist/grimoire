@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Inheritance and Polymorphism - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,83 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
-<ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
-</ul>
+                        <h2 id="-c-class-inheritance--polymorphism--with-a-3d-geometry-twist"><a class="header" href="#-c-class-inheritance--polymorphism--with-a-3d-geometry-twist">🧙‍♀️ C++ Class Inheritance &amp; Polymorphism – With a 3D Geometry Twist</a></h2>
+<h3 id="-base-class--point2d"><a class="header" href="#-base-class--point2d">🧱 Base Class – Point2D</a></h3>
+<pre><code class="language-cpp">class Point2D {
+protected:
+    float x, y;
 
+public:
+    Point2D(float x = 0, float y = 0) : x(x), y(y) {}
+
+    virtual void print() const {
+        std::cout &lt;&lt; "Point2D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+
+    virtual ~Point2D() {} // Always virtual destructor for polymorphic base
+};
+</code></pre>
+<ul>
+<li><code>protected</code>: accessible to subclasses, but hidden from the outside world like a locked diary.</li>
+<li><code>virtual</code>: magic keyword that enables polymorphism (late binding).</li>
+<li>Destructor is virtual so your objects don’t leave memory corpses behind. 👻</li>
+</ul>
+<hr />
+<h3 id="-subclass--point3d"><a class="header" href="#-subclass--point3d">🌌 Subclass – Point3D</a></h3>
+<pre><code class="language-cpp">class Point3D : public Point2D {
+    float z;
+
+public:
+    Point3D(float x = 0, float y = 0, float z = 0) : Point2D(x, y), z(z) {}
+
+    void print() const override {
+        std::cout &lt;&lt; "Point3D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ", " &lt;&lt; z &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+};
+</code></pre>
+<ul>
+<li><code>public</code> inheritance: “yes, I’m extending the public interface, not hiding it.”</li>
+<li><code>override</code>: optional, but makes the compiler scream if you mess up a virtual override (bless her).</li>
+</ul>
+<hr />
+<h3 id="-polymorphism-in-action"><a class="header" href="#-polymorphism-in-action">🧪 Polymorphism in Action</a></h3>
+<pre><code class="language-cpp">void describePoint(const Point2D&amp; p) {
+    p.print();
+}
+
+int main() {
+    Point2D p2(1, 2);
+    Point3D p3(3, 4, 5);
+
+    describePoint(p2); // prints Point2D(1, 2)
+    describePoint(p3); // prints Point3D(3, 4, 5) – polymorphism magic!
+}
+</code></pre>
+<ul>
+<li>This is the power move: a <code>Point2D</code> reference holds a <code>Point3D</code> object, but still calls the right method.</li>
+<li>No casting. No mess. Just vibes. 🎩✨</li>
+</ul>
+<hr />
+<h3 id="-what-if-you-forget-virtual"><a class="header" href="#-what-if-you-forget-virtual">💀 What If You Forget <code>virtual</code>?</a></h3>
+<p>If you remove <code>virtual</code> from <code>Point2D::print()</code>, then the method won’t get overridden at runtime — you’ll always call the base version. This is what we call... <em>a tragic plot twist.</em></p>
+<hr />
+<h3 id="-when-to-use-this"><a class="header" href="#-when-to-use-this">🔮 When to Use This</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Inheritance?</th></tr></thead><tbody>
+<tr><td>You need multiple related types that behave differently</td><td><strong>Yes</strong></td></tr>
+<tr><td>You want to generalize with base class pointers or references</td><td><strong>Yes</strong></td></tr>
+<tr><td>You’re sharing behavior across <em>unrelated</em> classes</td><td><strong>No</strong>, use composition/templates</td></tr>
+<tr><td>You don’t want to deal with destructor landmines</td><td><strong>Use smart pointers</strong>, queen</td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/inheritance_derived.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/virtual.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +252,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/inheritance_derived.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/virtual.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Dijkstra&#x27;s algorithm - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,146 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
+<p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
+<hr />
+<h2 id="-key-concepts"><a class="header" href="#-key-concepts">💻 Key Concepts</a></h2>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li><strong>Graph Structure</strong>: <code>std::vector&lt;Edge&gt;</code> with an <code>Edge</code> struct holding source, destination, and weight.</li>
+<li><strong>Dijkstra’s Algorithm</strong>: Classic implementation using a <code>distances[]</code> array and a greedy loop with <code>minDistance()</code> helper.</li>
+<li><strong>Random Graph Generation</strong>: Custom <code>generateRandomGraph()</code> function adds edges based on a given density (e.g. 20% or 40%).</li>
 </ul>
+<hr />
+<h2 id="the-code"><a class="header" href="#the-code">The Code</a></h2>
+<pre><code class="language-cpp">#include &lt;ctime&gt;
+#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;random&gt;
+#include &lt;set&gt;
+#include &lt;vector&gt;
+
+const int INF = std::numeric_limits&lt;int&gt;::max();
+
+struct Edge {
+  int source;
+  int destination;
+  int weight;
+
+  Edge(int s, int d, int w) : source(s), destination(d), weight(w) {}
+};
+
+class Graph {
+public:
+  Graph(int vertices) : vertices(vertices) {}
+
+  void addEdge(int source, int destination, int weight) {
+    edges.emplace_back(source, destination, weight);
+    edges.emplace_back(destination, source, weight);
+  }
+
+  int getVertices() const { return vertices; }
+  const std::vector&lt;Edge&gt; &amp;getEdges() const { return edges; }
+
+  std::vector&lt;int&gt; Dijkstra(int source) {
+    std::vector&lt;int&gt; distances(vertices, INF);
+    std::vector&lt;int&gt; visited(vertices, 0);
+
+    distances[source] = 0;
+
+    for (int i = 0; i &lt; vertices - 1; ++i) {
+      int u = minDistance(distances, visited);
+      if (u == -1)
+        break;
+
+      visited[u] = 1;
+
+      for (const auto &amp;edge : edges) {
+        if (!visited[edge.destination] &amp;&amp; edge.source == u) {
+          int newDistance = distances[u] + edge.weight;
+          if (newDistance &lt; distances[edge.destination]) {
+            distances[edge.destination] = newDistance;
+          }
+        }
+      }
+    }
+
+    return distances;
+  }
+
+private:
+  int vertices;
+  std::vector&lt;Edge&gt; edges;
+
+  int minDistance(const std::vector&lt;int&gt; &amp;distances,
+                  const std::vector&lt;int&gt; &amp;visited) {
+    int minDist = INF;
+    int minIndex = -1;
+
+    for (int v = 0; v &lt; vertices; ++v) {
+      if (!visited[v] &amp;&amp; distances[v] &lt;= minDist) {
+        minDist = distances[v];
+        minIndex = v;
+      }
+    }
+    return minIndex;
+  }
+};
+
+void generateRandomGraph(Graph &amp;g, int vertices, double density, int minWeight,
+                         int maxWeight) {
+  int maxEdges = vertices * (vertices - 1) / 2;
+  int targetEdges = static_cast&lt;int&gt;(density * maxEdges);
+
+  std::mt19937 rng(static_cast&lt;unsigned int&gt;(time(nullptr)));
+  std::uniform_int_distribution&lt;int&gt; vertexDist(0, vertices - 1);
+  std::uniform_int_distribution&lt;int&gt; weightDist(minWeight, maxWeight);
+
+  std::set&lt;std::pair&lt;int, int&gt;&gt; existingEdges;
+
+  while (static_cast&lt;int&gt;(existingEdges.size()) &lt; targetEdges) {
+    int u = vertexDist(rng);
+    int v = vertexDist(rng);
+
+    if (u != v &amp;&amp; existingEdges.find({u, v}) == existingEdges.end() &amp;&amp;
+        existingEdges.find({u, v}) == existingEdges.end()) {
+      int weight = weightDist(rng);
+      g.addEdge(u, v, weight);
+      existingEdges.insert({u, v});
+    }
+  }
+}
+
+int main() {
+  int vertices = 50;
+  Graph g(vertices);
+
+  double density = 0.2;
+  generateRandomGraph(g, vertices, density, 1, 10);
+
+  std::vector&lt;int&gt; distances = g.Dijkstra(0);
+
+  int sum = 0;
+
+  for (int i = 1; i &lt; vertices; ++i) {
+    std::cout &lt;&lt; "Distance from 0 to " &lt;&lt; i &lt;&lt; ": " &lt;&lt; distances[i] &lt;&lt; "\n";
+    sum += distances[i];
+  }
+
+  std::cout &lt;&lt; "Average Path : " &lt;&lt; static_cast&lt;float&gt;(sum) / 49.0 &lt;&lt; "\n";
+
+  return 0;
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/examples/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/examples/kruskal-mst.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +315,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/examples/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/examples/kruskal-mst.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Shapes with OOP - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,135 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="-c-shapes-with-oop"><a class="header" href="#-c-shapes-with-oop">📐 C++ Shapes with OOP</a></h2>
+<h3 id="-concept"><a class="header" href="#-concept">🧠 Concept</a></h3>
+<p>In object-oriented design, <strong>shapes</strong> are abstractions made up of <strong>points</strong> and behaviors (like calculating area, or drawing). By using <strong>inheritance</strong> and <strong>polymorphism</strong>, we create a base <code>Shape</code> class and specialize it into specific geometric forms like <code>Triangle</code>, <code>Circle</code>, etc.</p>
+<h3 id="-why-use-inheritance-here"><a class="header" href="#-why-use-inheritance-here">💡 Why Use Inheritance Here?</a></h3>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Shared interface via base class: <code>Shape</code> defines what a shape <em>can do</em>.</li>
+<li>Specialization via subclasses: Each shape has its own way to draw and compute area.</li>
+<li>Allows dynamic polymorphism: store and manipulate shapes through base class pointers (<code>Shape*</code>), but still get the <em>actual</em> shape behavior.</li>
 </ul>
+<h3 id="-base-class-shape"><a class="header" href="#-base-class-shape">🧱 Base Class: Shape</a></h3>
+<pre><code class="language-cpp">class Shape {
+public:
+    virtual void draw() const = 0;
+    virtual float area() const = 0;
+    virtual ~Shape() {}
+};
+</code></pre>
+<ul>
+<li>Declares pure virtual methods = <strong>abstract class</strong>.</li>
+<li>No objects of <code>Shape</code> directly; it’s just a blueprint.</li>
+<li>Destructor is virtual to ensure correct cleanup when using base pointers.</li>
+</ul>
+<hr />
+<h3 id="-triangle"><a class="header" href="#-triangle">🔺 Triangle</a></h3>
+<ul>
+<li>Defined by 3 points.</li>
+<li>Area is computed using <strong>Heron's formula</strong>.</li>
+<li>Inherits from <code>Shape</code>.</li>
+</ul>
+<hr />
+<h3 id="-circle"><a class="header" href="#-circle">🔵 Circle</a></h3>
+<ul>
+<li>Defined by center + radius.</li>
+<li>Area is <code>πr²</code>.</li>
+<li>Also overrides <code>draw()</code> and <code>area()</code>.</li>
+</ul>
+<hr />
+<h3 id="-polymorphic-usage"><a class="header" href="#-polymorphic-usage">🧪 Polymorphic Usage</a></h3>
+<pre><code class="language-cpp">std::vector&lt;Shape*&gt; scene;
+scene.push_back(new Triangle(...));
+scene.push_back(new Circle(...));
+for (Shape* s : scene) {
+    s-&gt;draw();
+    std::cout &lt;&lt; s-&gt;area();
+}
+</code></pre>
+<p>This allows us to treat all shapes <em>uniformly</em> while letting each class decide how to behave. That’s <strong>real polymorphism energy</strong>.</p>
+<hr />
+<h3 id="full-code"><a class="header" href="#full-code">Full code</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;math.h&gt;
+#include &lt;vector&gt;
+
+struct Point2D {
+  float x, y;
+};
+
+// virtual forces subclasses to implement
+class Shape {
+public:
+  virtual void draw() const = 0;
+  virtual float area() const = 0;
+  virtual ~Shape() {}
+};
+
+class Triangle : public Shape {
+  Point2D a, b, c;
+
+  float distance(const Point2D &amp;p1, const Point2D &amp;p2) const {
+    return std::hypot(p2.x - p1.x, p2.y - p1.y);
+  }
+
+public:
+  Triangle(Point2D a, Point2D b, Point2D c) : a(a), b(b), c(c) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing triangle between A, B, C.\n";
+  }
+
+  float area() const override {
+    // Heron’s formula because we fancy
+    float ab = distance(a, b);
+    float bc = distance(b, c);
+    float ca = distance(c, a);
+    float s = (ab + bc + ca) / 2;
+    return std::sqrt(s * (s - ab) * (s - bc) * (s - ca));
+  }
+};
+
+class Circle : public Shape {
+  Point2D center;
+  float radius;
+
+public:
+  Circle(Point2D c, float r) : center(c), radius(r) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing circle at (" &lt;&lt; center.x &lt;&lt; ", " &lt;&lt; center.y
+              &lt;&lt; ") with radius " &lt;&lt; radius &lt;&lt; "\n";
+  }
+
+  float area() const override { return M_PI * radius * radius; }
+};
+
+int main() {
+  std::vector&lt;Shape *&gt; scene;
+  scene.push_back(new Triangle({0, 0}, {1, 0}, {0, 1}));
+  scene.push_back(new Circle({0, 0}, 5));
+
+  for (Shape *shape : scene) {
+    shape-&gt;draw();
+    std::cout &lt;&lt; "Area: " &lt;&lt; shape-&gt;area() &lt;&lt; "\n";
+  }
+
+  // free memory
+  for (Shape *shape : scene)
+    delete shape;
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/virtual.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/features/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +304,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/virtual.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/features/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Usage of cases (switch-case) - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,119 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="weekdayc"><a class="header" href="#weekdayc">weekday.c</a></h2>
+<h3 id="purpose"><a class="header" href="#purpose">Purpose</a></h3>
+<p>This C program demonstrates the use of <code>enum</code>, <code>switch</code>, and <code>case</code> constructs in C by working with days of the week. It includes functions to get the next and previous day and prints the corresponding day names.</p>
+<h3 id="code-explanation"><a class="header" href="#code-explanation">Code Explanation</a></h3>
+<ol>
+<li>
+<p><strong>Enum Definition</strong>:</p>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li><code>enum day {sun, mon, tue, wed, thu, fri, sat};</code><br />
+Defines an enumerated type <code>day</code> to represent days of the week.</li>
+</ul>
+</li>
+<li>
+<p><strong>print_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and prints the corresponding day name using a <code>switch</code> statement. If the input is invalid, it prints an error message.</li>
+</ul>
+</li>
+<li>
+<p><strong>next_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and computes the next day based on modulo arithmetic.</li>
+</ul>
+</li>
+<li>
+<p><strong>previous_day Function</strong>:</p>
+<ul>
+<li>Takes an enum <code>day</code> value as input and computes the previous day based on modulo arithmetic.</li>
+</ul>
+</li>
+<li>
+<p><strong>main Function</strong>:</p>
+<ul>
+<li>Demonstrates how to use the enumerated type and the functions:
+<ul>
+<li>Initializes today as <code>fri</code>.</li>
+<li>Prints the current day.</li>
+<li>Prints an invalid day (to demonstrate error handling).</li>
+<li>Prints the next and previous days.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="example-usage"><a class="header" href="#example-usage">Example Usage</a></h3>
+<p>Here’s how the program would behave:</p>
+<pre><code class="language-c">enum day today = fri;
+print_day(today);         // Outputs: friday
+print_day(7);             // Outputs: 7 is an error
+print_day(next_day(today)); // Outputs: saturday
+print_day(previous_day(today)); // Expected Output: thursday
+</code></pre>
+<h3 id="output-example"><a class="header" href="#output-example">Output Example</a></h3>
+<p>When you compile and run the program:</p>
+<pre><code class="language-plaintext">friday
+7 is an error
+saturday
+thursday
+</code></pre>
+<h3 id="complete-code"><a class="header" href="#complete-code">Complete Code</a></h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+enum day {sun, mon, tue, wed, thu, fri, sat};
+
+void print_day (enum day d) {
+  switch(d) {
+    case sun: printf("sunday"); break;
+    case mon: printf("monday"); break;
+    case tue: printf("tuesday"); break;
+    case wed: printf("wednesday"); break;
+    case thu: printf("thursday"); break;
+    case fri: printf("friday"); break;
+    case sat: printf("saturday"); break;
+    default: printf("%d is an error", d);
+  }
+}
+
+enum day next_day (enum day d) {
+  return (d + 1) % 7;
+}
+
+enum day previous_day (enum day d) {
+  return (d + 6) % 7;
+}
+
+int main() {
+  enum day today = fri;
+  print_day(today);
+  printf("\n");
+  print_day(7);
+  printf("\n");
+  print_day(next_day(today));
+  printf("\n");
+  print_day(previous_day(today));
+  return 0;
+}
+</code></pre>
+<h3 id="key-learning-points"><a class="header" href="#key-learning-points">Key Learning Points</a></h3>
+<ul>
+<li>Enumerations (<code>enum</code>) are useful for defining named constants.</li>
+<li><code>switch</code> and <code>case</code> statements simplify multi-branch conditional logic.</li>
+<li>Be cautious of operator precedence when performing arithmetic operations.</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/fundamentals/enum.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/fundamentals/employee.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +288,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/fundamentals/enum.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/fundamentals/employee.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

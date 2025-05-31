@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Working With Linked Lists - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,274 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="working-with-lists-example-in-c"><a class="header" href="#working-with-lists-example-in-c">Working with Lists Example in C</a></h2>
+<p>This program demonstrates the creation, manipulation, and sorting of a linked list using the Bubble Sort algorithm. The list is initially populated with random numbers, converted into a linked list, and then sorted.</p>
+<h3 id="overview"><a class="header" href="#overview">Overview</a></h3>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Generates an array of random integers.</li>
+<li>Converts the array into a linked list.</li>
+<li>Sorts the linked list using an adapted Bubble Sort algorithm.</li>
 </ul>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ol>
+<li><strong>Linked List Operations</strong>:
+<ul>
+<li>Creation of nodes and linked lists.</li>
+<li>Adding elements to the front of the list.</li>
+<li>Conversion of an array to a linked list.</li>
+<li>Traversing and freeing a linked list.</li>
+</ul>
+</li>
+<li><strong>Sorting Mechanism</strong>:
+<ul>
+<li>Bubble Sort algorithm adapted for linked lists.</li>
+</ul>
+</li>
+<li><strong>Random Number Generation</strong>:
+<ul>
+<li>Generates random integers between 0 and 100.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="code-breakdown"><a class="header" href="#code-breakdown">Code Breakdown</a></h3>
+<h4 id="1-headers-and-macros"><a class="header" href="#1-headers-and-macros">1. <strong>Headers and Macros</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+#define SIZE 100
+</code></pre>
+<ul>
+<li><code>stdio.h</code>: Provides input/output functions like <code>printf</code>.</li>
+<li><code>stdlib.h</code>: For memory allocation (<code>malloc</code>) and random number generation (<code>rand</code>).</li>
+<li><code>time.h</code>: Used to seed the random number generator with the system time.</li>
+<li><code>SIZE</code>: The size of the array and the linked list (100 elements).</li>
+</ul>
+<hr />
+<h4 id="2-linked-list-structure"><a class="header" href="#2-linked-list-structure">2. <strong>Linked List Structure</strong></a></h4>
+<pre><code class="language-c">typedef struct list { 
+    int data;
+    struct list *next;
+} list;
+</code></pre>
+<ul>
+<li><strong><code>data</code></strong>: Holds the value of the node.</li>
+<li><strong><code>next</code></strong>: Pointer to the next node in the list.</li>
+</ul>
+<hr />
+<h4 id="3-node-creation"><a class="header" href="#3-node-creation">3. <strong>Node Creation</strong></a></h4>
+<pre><code class="language-c">list* create_list(int d) {
+    list* head = (list*)malloc(sizeof(list));
+    head-&gt;data = d;
+    head-&gt;next = NULL;
+    return head;
+}
+</code></pre>
+<ul>
+<li>Allocates memory for a new node and initializes its data.</li>
+</ul>
+<hr />
+<h4 id="4-adding-nodes-to-the-list"><a class="header" href="#4-adding-nodes-to-the-list">4. <strong>Adding Nodes to the List</strong></a></h4>
+<pre><code class="language-c">list* add_to_front(int d, list* h) {
+    list* head = create_list(d);
+    head-&gt;next = h;
+    return head;
+}
+</code></pre>
+<ul>
+<li>Adds a new node to the front of the list.</li>
+</ul>
+<hr />
+<h4 id="5-array-to-linked-list-conversion"><a class="header" href="#5-array-to-linked-list-conversion">5. <strong>Array to Linked List Conversion</strong></a></h4>
+<pre><code class="language-c">list* array_to_list(int d[], int size) {
+    list* head = create_list(d[0]);
+    for (int i = 1; i &lt; size; i++) {
+        head = add_to_front(d[i], head);
+    }
+    return head;
+}
+</code></pre>
+<ul>
+<li>Converts an array of integers into a linked list.</li>
+</ul>
+<hr />
+<h4 id="6-freeing-the-list"><a class="header" href="#6-freeing-the-list">6. <strong>Freeing the List</strong></a></h4>
+<pre><code class="language-c">void free_list(list *head) {
+    list* current = head;
+    list* next;
+
+    while (current != NULL) {
+        next = current-&gt;next;
+        free(current);
+        current = next;
+    }
+}
+</code></pre>
+<ul>
+<li>Traverses through the list and frees each node to prevent memory leaks.</li>
+</ul>
+<hr />
+<h4 id="7-random-number-generation"><a class="header" href="#7-random-number-generation">7. <strong>Random Number Generation</strong></a></h4>
+<pre><code class="language-c">int getRandomNumber(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+</code></pre>
+<ul>
+<li>Generates a random integer between <code>min</code> and <code>max</code>.</li>
+</ul>
+<hr />
+<h4 id="8-bubble-sort-adaptation"><a class="header" href="#8-bubble-sort-adaptation">8. <strong>Bubble Sort Adaptation</strong></a></h4>
+<pre><code class="language-c">void bubbleSort(list* h) {
+    if (h == NULL || h-&gt;next == NULL) return;
+
+    list *i, *j;
+    for (i = h; i != NULL; i = i-&gt;next) {
+        for (j = i-&gt;next; j != NULL; j = j-&gt;next) {
+            if (i-&gt;data &gt; j-&gt;data) {
+                swap(i, j);
+            }
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>Sorts the linked list using the Bubble Sort algorithm.</li>
+<li>Compares adjacent nodes and swaps their data if they are out of order.</li>
+</ul>
+<hr />
+<h4 id="9-swap-function"><a class="header" href="#9-swap-function">9. <strong>Swap Function</strong></a></h4>
+<pre><code class="language-c">void swap(list* a, list* b) {
+    int temp = a-&gt;data;
+    a-&gt;data = b-&gt;data;
+    b-&gt;data = temp;
+}
+</code></pre>
+<ul>
+<li>Swaps the <code>data</code> fields of two nodes in the list.</li>
+</ul>
+<hr />
+<h4 id="10-printing-the-list"><a class="header" href="#10-printing-the-list">10. <strong>Printing the List</strong></a></h4>
+<pre><code class="language-c">void print_list(list *h) {
+    int count = 0;
+    while (h != NULL) {
+        printf("%d\t", h-&gt;data);
+        count++;
+        if (count % 5 == 0) printf("\n");
+        h = h-&gt;next;
+    }
+}
+</code></pre>
+<ul>
+<li>Prints the linked list's elements in rows of 5 for better readability.</li>
+</ul>
+<hr />
+<h4 id="11-main-function"><a class="header" href="#11-main-function">11. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main() {
+    srand(time(NULL));
+    list* head = NULL;
+
+    int data[SIZE];
+
+    for (int i = 0; i &lt; SIZE; i++) {
+        data[i] = getRandomNumber(0, 100);
+    }
+
+    head = array_to_list(data, SIZE);
+
+    printf("\nBefore sorting\n");
+    print_list(head);
+    printf("\n");
+
+    bubbleSort(head);
+
+    printf("After Sorting\n");
+    print_list(head);
+
+    free_list(head);
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Initializes an array with 100 random integers.</li>
+<li>Converts the array into a linked list.</li>
+<li>Prints the list before and after sorting.</li>
+<li>Frees the list at the end to release memory.</li>
+</ul>
+<hr />
+<h3 id="sample-output"><a class="header" href="#sample-output">Sample Output</a></h3>
+<p>Before Sorting:</p>
+<pre><code>45	23	67	89	12	
+34	78	56	90	11	
+...
+</code></pre>
+<p>After Sorting:</p>
+<pre><code>1	2	5	6	9	
+10	11	12	14	15	
+...
+</code></pre>
+<hr />
+<h3 id="key-points"><a class="header" href="#key-points">Key Points</a></h3>
+<ol>
+<li><strong>Linked List Manipulation</strong>:
+<ul>
+<li>Demonstrates creation, traversal, and memory management.</li>
+</ul>
+</li>
+<li><strong>Sorting Algorithm</strong>:
+<ul>
+<li>Adapts Bubble Sort for linked lists, showcasing its flexibility.</li>
+</ul>
+</li>
+<li><strong>Random Number Handling</strong>:
+<ul>
+<li>Generates randomized inputs to simulate real-world scenarios.</li>
+</ul>
+</li>
+</ol>
+<h3 id="limitations"><a class="header" href="#limitations">Limitations</a></h3>
+<ol>
+<li><strong>Inefficient Sorting</strong>:
+<ul>
+<li>Bubble Sort has (O(n^2)) complexity, making it unsuitable for large datasets.</li>
+</ul>
+</li>
+<li><strong>Memory Overhead</strong>:
+<ul>
+<li>The program uses dynamic memory allocation, which requires careful management to prevent leaks.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="possible-improvements"><a class="header" href="#possible-improvements">Possible Improvements</a></h3>
+<ol>
+<li><strong>Sorting Efficiency</strong>:
+<ul>
+<li>Replace Bubble Sort with a more efficient algorithm like Merge Sort.</li>
+</ul>
+</li>
+<li><strong>Dynamic Size</strong>:
+<ul>
+<li>Allow the user to specify the size of the list at runtime.</li>
+</ul>
+</li>
+<li><strong>Error Handling</strong>:
+<ul>
+<li>Add checks for memory allocation and null pointers.</li>
+</ul>
+</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/data_structures/full_list_example.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/data_structures/doubly_linked_list.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +443,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/data_structures/full_list_example.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/data_structures/doubly_linked_list.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

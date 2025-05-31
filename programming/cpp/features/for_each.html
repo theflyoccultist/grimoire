@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Lambda expressions: for_each - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,101 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h1 id="lambda-expressions-for_each-function"><a class="header" href="#lambda-expressions-for_each-function">Lambda expressions: <code>for_each()</code> function</a></h1>
+<p>Lambda expressions:</p>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Derived from Lisp</li>
+<li>Previously <code>for_each()</code> needs a function</li>
+<li>Will use C++11 idea: write an unnamed function in place: a lambda expression</li>
 </ul>
+<p>You can use it, fall in love with it even if you don't have Lisp experience - or in more modern terms, Haskell.</p>
+<h4 id="old-style-for_each"><a class="header" href="#old-style-for_each">Old style <code>for_each()</code></a></h4>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+void outvec(int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; }
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="lambda-in-c11"><a class="header" href="#lambda-in-c11">Lambda in C++11</a></h4>
+<ul>
+<li>Unnamed function</li>
+</ul>
+<pre><code class="language-cpp">[](int i) { cout &lt;&lt; i &lt;&lt; "\n"; }
+</code></pre>
+<ul>
+<li><code>[]</code> Goes where the function object is required.</li>
+<li><code>(int i)</code> Parameters</li>
+<li><code>{ cout &lt;&lt; i &lt;&lt; "\n"; }</code> Executable</li>
+</ul>
+<p><code>[](int n) { return n * 5.5; }</code> deduces the return value as double
+<code>[](int n) -&gt; int { return ++n; }</code> explicit type declaration.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+#include &lt;vector&gt;
+
+void incr(int &amp;i) {
+  static int n = 1;
+  i = n++;
+}
+auto outvec = [](int i) { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+// auto outvec: (lambda) = [](int i) -&gt; void { std::cout &lt;&lt; i &lt;&lt; "\n"; };
+
+int main() {
+  std::vector&lt;int&gt; v(6);
+  std::for_each(v.begin(), v.end(), incr);
+  std::for_each(v.begin(), v.end(), outvec);
+}
+</code></pre>
+<h4 id="bonus-from-the-void-if-you-are-still-here-chaining-lambdas"><a class="header" href="#bonus-from-the-void-if-you-are-still-here-chaining-lambdas">Bonus from the Void If you are still here: Chaining Lambdas</a></h4>
+<ul>
+<li>Defining a lambda</li>
+<li>That returns another lambda</li>
+<li>That closes over <code>factor</code></li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+  // make_multiplier is a function (a lambda) that takes one int: factor
+  auto make_multiplier = [](int factor) {
+  
+    // It returns another function - also a lambda!
+    // That lambda takes int x and multiplies it by factor
+    return [factor](int x) {
+      return x * factor; 
+    };
+  };
+  
+  // times5 is literally this: [](int x) { return x * 5; }
+  auto times5 = make_multiplier(5);
+
+  // This is calling 10 * 5 -&gt; 50
+  std::cout &lt;&lt; times5(10) &lt;&lt; "\n";
+}
+</code></pre>
+<p>Expected output: 50</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/features/find.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/features/is_palindrome.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +270,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/features/find.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/features/is_palindrome.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

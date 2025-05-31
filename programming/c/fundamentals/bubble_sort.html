@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ncurses - Debugging Grimoire</title>
+        <title>Bubble Sort - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,24 +166,165 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
-<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
-<p><strong>References:</strong></p>
+                        <h2 id="bubble-sort-example-in-c"><a class="header" href="#bubble-sort-example-in-c">Bubble Sort Example in C</a></h2>
+<p>This program demonstrates the implementation of the Bubble Sort algorithm in C, which is a simple sorting algorithm used to arrange elements in ascending order.</p>
+<h3 id="overview"><a class="header" href="#overview">Overview</a></h3>
 <ul>
-<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
-<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
-<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+<li>Bubble Sort is a comparison-based algorithm that repeatedly steps through the array, compares adjacent elements, and swaps them if they are in the wrong order.</li>
+<li>Its time complexity is (O(n^2)) in the worst and average cases, making it inefficient for large datasets.</li>
 </ul>
+<h3 id="code-explanation"><a class="header" href="#code-explanation">Code Explanation</a></h3>
+<h4 id="1-headers-and-libraries"><a class="header" href="#1-headers-and-libraries">1. <strong>Headers and Libraries</strong></a></h4>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+</code></pre>
+<ul>
+<li><code>stdio.h</code> is included for input/output operations using <code>printf</code> and <code>scanf</code>.</li>
+</ul>
+<h4 id="2-swap-function"><a class="header" href="#2-swap-function">2. <strong>Swap Function</strong></a></h4>
+<pre><code class="language-c">void swap(int* arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+</code></pre>
+<ul>
+<li>A helper function to swap two elements in an array.</li>
+<li>Parameters:
+<ul>
+<li><code>arr</code>: The array in which elements will be swapped.</li>
+<li><code>i</code> and <code>j</code>: The indices of the elements to swap.</li>
+</ul>
+</li>
+<li>Uses a temporary variable to perform the swap.</li>
+</ul>
+<h4 id="3-bubble-sort-implementation"><a class="header" href="#3-bubble-sort-implementation">3. <strong>Bubble Sort Implementation</strong></a></h4>
+<pre><code class="language-c">void bubbleSort(int arr[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+      
+        // Last i elements are already sorted
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] &gt; arr[j + 1])
+                swap(arr, j, j + 1);
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>The sorting function takes an array <code>arr</code> and its size <code>n</code> as parameters.</li>
+<li>Outer loop:
+<ul>
+<li>Runs (n-1) times because, with each pass, the largest unsorted element "bubbles up" to its correct position.</li>
+</ul>
+</li>
+<li>Inner loop:
+<ul>
+<li>Compares adjacent elements and swaps them if out of order.</li>
+<li>Reduces the number of comparisons in each subsequent pass since the last <code>i</code> elements are already sorted.</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-main-function"><a class="header" href="#4-main-function">4. <strong>Main Function</strong></a></h4>
+<pre><code class="language-c">int main() {
+    int arr[] = { 6, 0, 3, 5 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Calling bubble sort on array arr
+    bubbleSort(arr, n);
+
+    for (int i = 0; i &lt; n; i++)
+        printf("%d ", arr[i]);
+
+    return 0;
+}
+</code></pre>
+<ul>
+<li>Array <code>arr</code> is initialized with unsorted integers <code>{6, 0, 3, 5}</code>.</li>
+<li>The size of the array is calculated as <code>sizeof(arr) / sizeof(arr[0])</code>.</li>
+<li>The <code>bubbleSort</code> function is called to sort the array.</li>
+<li>A loop is used to print the sorted array.</li>
+</ul>
+<h3 id="sample-output"><a class="header" href="#sample-output">Sample Output</a></h3>
+<p>For the given array <code>{6, 0, 3, 5}</code>, the output after sorting will be:</p>
+<pre><code>0 3 5 6
+</code></pre>
+<h3 id="key-features"><a class="header" href="#key-features">Key Features</a></h3>
+<ol>
+<li><strong>Modular Design</strong>:
+<ul>
+<li>The sorting logic is encapsulated in the <code>bubbleSort</code> function.</li>
+<li>The <code>swap</code> function enhances code readability and reusability.</li>
+</ul>
+</li>
+<li><strong>Simplicity</strong>:
+<ul>
+<li>Bubble Sort is easy to implement and understand, making it suitable for educational purposes.</li>
+</ul>
+</li>
+</ol>
+<h3 id="limitations"><a class="header" href="#limitations">Limitations</a></h3>
+<ul>
+<li>Inefficient for large datasets due to its (O(n^2)) complexity.</li>
+<li>Better sorting algorithms like Merge Sort or Quick Sort are more suitable for performance-critical applications.</li>
+</ul>
+<h3 id="possible-improvements"><a class="header" href="#possible-improvements">Possible Improvements</a></h3>
+<ol>
+<li><strong>Optimization</strong>:
+<ul>
+<li>Add a flag to check if any swaps were made in the current pass. If no swaps are made, the array is already sorted, and the algorithm can terminate early.</li>
+</ul>
+</li>
+<li><strong>User Input</strong>:
+<ul>
+<li>Allow the user to input the array dynamically instead of hardcoding it.</li>
+</ul>
+</li>
+</ol>
+<h3 id="full-code"><a class="header" href="#full-code">Full Code:</a></h3>
+<pre><code class="language-c">// C program for implementation of Bubble sort
+
+#include &lt;stdio.h&gt;
+
+void swap(int* arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+      
+        // Last i elements are already in place, so the loop
+        // will only num n - i - 1 times
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] &gt; arr[j + 1])
+                swap(arr, j, j + 1);
+        }
+    }
+}
+
+int main() {
+    int arr[] = { 6, 0, 3, 5 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Calling bubble sort on array arr
+    bubbleSort(arr, n);
+
+    for (int i = 0; i &lt; n; i++)
+        printf("%d ", arr[i]);
+
+    return 0;
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/fundamentals/card_deck.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/fundamentals/double_space_file.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -193,11 +334,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/data_structures/binary_tree.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/fundamentals/card_deck.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/fundamentals/double_space_file.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
