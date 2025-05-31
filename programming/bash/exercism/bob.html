@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Scrabble Score Counter - Debugging Grimoire</title>
+        <title>Bob - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -102,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -137,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -166,55 +166,59 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="bash-week---scrabble-score-counter"><a class="header" href="#bash-week---scrabble-score-counter">Bash Week - Scrabble Score Counter</a></h2>
-<p>Using cases, this will take a word as an input and calculate its value if played in Scrabble.
-Handles edge cases like any non alphabetic characters: in that case, no point is counted.</p>
-<p>For example, the word "cabbage" is worth 14 points:</p>
-<pre><code>3 points for C
-1 point for A
-3 points for B
-3 points for B
-1 point for A
-2 points for G
-1 point for E
-</code></pre>
+                        <h2 id="bash-week---bobs-invocation-with-regular-expressions"><a class="header" href="#bash-week---bobs-invocation-with-regular-expressions">Bash Week - Bob's Invocation (with Regular Expressions)</a></h2>
+<p>This is basically a primitive version of an AI, with a different output depending on the text being inputted. It works as follows:</p>
+<ul>
+<li>The input ends with a question mark: answers: "Sure."</li>
+<li>The input is in uppercase: answers "Whoa, chill out!"</li>
+<li>The input is silence (either nothing or spaces): answers "Fine, be that way!"</li>
+<li>The input is both a question and in uppercase: answers "Calm down, I know what I'm doing!"</li>
+</ul>
 <pre><code class="language-bash">#!/usr/bin/env bash
 
-i=${1,,}
+input="$1"
+trimmed_input="${input//[^a-zA-Z]/}"
+trimmed_input2=$(tr -d ' \t\r' &lt;&lt;&lt;"$input")
 
-if [[ ! "$i" =~ [a-z] ]]; then
-  echo 0
-  exit 0
+is_uppercase=false
+is_question=false
+is_silence=false
+
+if [[ "$trimmed_input" =~ ^[[:upper:]]+$ ]]; then
+  is_uppercase=true
 fi
 
-total=0
+if [[ "$trimmed_input2" == *\? ]]; then
+  is_question=true
+fi
 
-for ((j = 0; j &lt; ${#i}; j++)); do
-  char="${i:j:1}"
-  case "$char" in
-  [aeioulnrst]) ((total += 1)) ;;
-  [dg]) ((total += 2)) ;;
-  [bcmp]) ((total += 3)) ;;
-  [fhvwy]) ((total += 4)) ;;
-  [k]) ((total += 5)) ;;
-  [jx]) ((total += 8)) ;;
-  [qz]) ((total += 10)) ;;
-  *) ((total += 0)) ;;
-  esac
-done
+if [[ -z "$trimmed_input2" ]]; then
+  is_silence=true
+fi
 
-echo "$total"
+if [[ "$is_silence" == true ]]; then
+  echo "Fine. Be that way!"
+elif [[ "$is_uppercase" == true &amp;&amp; "$is_question" == true ]]; then
+  echo "Calm down, I know what I'm doing!"
+elif [[ "$is_uppercase" == true ]]; then
+  echo "Whoa, chill out!"
+elif [[ "$is_question" == true ]]; then
+  echo "Sure."
+else
+  echo "Whatever."
+fi
+
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/bob.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/bash/exercism/hamming.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/armstrong.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/bash/exercism/scrabble.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -224,11 +228,11 @@ echo "$total"
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/bob.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/bash/exercism/hamming.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/armstrong.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/bash/exercism/scrabble.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -243,13 +247,13 @@ echo "$total"
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

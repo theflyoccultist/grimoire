@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Bash Completion Tool - Debugging Grimoire</title>
+        <title>Curl Guide - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,36 +166,21 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
-<p>Verify the package is installed:</p>
-<pre><code class="language-bash">dpkg -l | grep bash-completion
+                        <h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
+<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
 </code></pre>
-<p>If nothing shows up:</p>
-<pre><code class="language-bash">
-sudo apt install bash-completion
-</code></pre>
-<p>Reload your .bashrc:</p>
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-<p>Test it:
-Try typing something like:</p>
-<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>You should see suggestions like checkout, cherry-pick, etc.</p>
-<p>Or try:</p>
-<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>And see if it lists known hosts.</p>
+<p>1..200: number of requests
+http://localhost:4567: the URL that needs to be tested</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/bash/grep.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/grep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/bash/exercism/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +190,11 @@ Try typing something like:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/bash/grep.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/grep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/bash/exercism/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

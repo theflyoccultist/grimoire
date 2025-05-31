@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Bash Completion Tool - Debugging Grimoire</title>
+        <title>Fizzbuzz but cursed - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -102,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -137,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -166,36 +166,71 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
-<p>Verify the package is installed:</p>
-<pre><code class="language-bash">dpkg -l | grep bash-completion
+                        <h2 id="-bash-week--fizzbuzz-but-cursed-plingplangplong-edition"><a class="header" href="#-bash-week--fizzbuzz-but-cursed-plingplangplong-edition">🐚 Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)</a></h2>
+<p>This is an advanced FizzBuzz-style exercise, adapted for Bash with <strong>O(1)</strong> performance.
+No loops. No Python crutches. Just raw shell logic.</p>
+<h3 id="description"><a class="header" href="#description">Description:</a></h3>
+<p>For a given input, if it's divisible by:</p>
+<ul>
+<li>3 → output "Pling"</li>
+<li>5 → output "Plang"</li>
+<li>7 → output "Plong"</li>
+</ul>
+<p>If none of the above, print the number itself.</p>
+<h3 id="initial-logic"><a class="header" href="#initial-logic">Initial logic:</a></h3>
+<p>This simple program checks if the input number is equal to a modulo of either 3, 5 or 7. This operation however does not take the case where there's several true cases.</p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+if [ $(("$1" % 3)) -eq 0 ]; then
+  echo "Pling"
+elif [ $(("$1" % 5)) -eq 0 ]; then
+  echo "Plang"
+elif [ $(("$1" % 7)) -eq 0 ]; then
+  echo "Plong"
+else
+  echo "$1"
+fi
 </code></pre>
-<p>If nothing shows up:</p>
-<pre><code class="language-bash">
-sudo apt install bash-completion
+<h3 id="new-version"><a class="header" href="#new-version">New Version:</a></h3>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+sound=""
+(($1 % 3 == 0)) &amp;&amp; sound+="Pling"
+(($1 % 5 == 0)) &amp;&amp; sound+="Plang"
+(($1 % 7 == 0)) &amp;&amp; sound+="Plong"
+
+echo "${sound:-$1}
 </code></pre>
-<p>Reload your .bashrc:</p>
-<pre><code class="language-bash">source ~/.bashrc
+<p>Notes:</p>
+<ul>
+<li>Uses string concatenation to combine results from multiple modulo checks.</li>
+<li>Uses Bash parameter expansion ${sound:-$1} to fallback to the number if sound is empty.</li>
+</ul>
+<pre><code class="language-bash">echo "${sound: -$1}"
 </code></pre>
-<p>Test it:
-Try typing something like:</p>
-<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
+<ul>
+<li>
+<p>It’s Bash's way of saying: “If sound is unset or null, use $1 instead.”</p>
+</li>
+<li>
+<p>It’s lazy evaluation like Python’s x if x else y, but uglier and more prone to being misread after midnight.</p>
+</li>
+<li>
+<p>C equivalent:</p>
+</li>
+</ul>
+<pre><code class="language-c">x ? x : y
 </code></pre>
-<p>You should see suggestions like checkout, cherry-pick, etc.</p>
-<p>Or try:</p>
-<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>And see if it lists known hosts.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/bash/exercism/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/grep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/bash/exercism/hamming.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +240,11 @@ Try typing something like:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/bash/exercism/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/grep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/bash/exercism/hamming.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -224,13 +259,13 @@ Try typing something like:</p>
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

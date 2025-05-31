@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Bash Completion Tool - Debugging Grimoire</title>
+        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -102,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -137,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -166,36 +166,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
-<p>Verify the package is installed:</p>
-<pre><code class="language-bash">dpkg -l | grep bash-completion
+                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li><code>getstr()</code> for reading strings from the user</li>
+<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
+<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
+</ul>
+<pre><code class="language-c">// Working with user input
+#include &lt;ncurses.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+  char msg[] = "Enter a string";
+  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
+
+  int row, col;
+  initscr();
+  getmaxyx(stdscr, row, col);
+
+  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
+  getstr(str);  // reads a line of text
+
+  mvprintw(LINES - 2, 0, "You entered: %s", str);
+  getch();
+  endwin();
+
+  return 0;
+}
 </code></pre>
-<p>If nothing shows up:</p>
-<pre><code class="language-bash">
-sudo apt install bash-completion
+<blockquote>
+<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
+</blockquote>
+<hr />
+<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
+<li>Highlighting selections with <code>A_REVERSE</code></li>
+<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
+<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+</ul>
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  cbreak();
+
+  int yMax, xMax;
+  getmaxyx(stdscr, yMax, xMax);
+
+  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
+  box(menuwin, 0, 0);
+  refresh();
+  wrefresh(menuwin);
+
+  keypad(menuwin, true);
+
+  const char *choices[3] = {"Walk", "Jog", "Run"};
+  int choice;
+  int highlight = 0;
+
+  while (1) {
+    for (int i = 0; i &lt; 3; ++i) {
+      if (i == highlight)
+        wattron(menuwin, A_REVERSE);
+
+      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
+
+      wattroff(menuwin, A_REVERSE);
+    }
+
+    choice = wgetch(menuwin);
+
+    switch (choice) {
+      case KEY_UP:
+        highlight--;
+        if (highlight &lt; 0)
+          highlight = 0;
+        break;
+      case KEY_DOWN:
+        highlight++;
+        if (highlight &gt; 2)
+          highlight = 2;
+        break;
+      default:
+        break;
+    }
+
+    if (choice == 10)  // Enter key
+      break;
+  }
+
+  clear();
+  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
+  refresh();
+
+  getch();
+  endwin();
+  return 0;
+}
 </code></pre>
-<p>Reload your .bashrc:</p>
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-<p>Test it:
-Try typing something like:</p>
-<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>You should see suggestions like checkout, cherry-pick, etc.</p>
-<p>Or try:</p>
-<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>And see if it lists known hosts.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/grep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +287,11 @@ Try typing something like:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/grep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -224,13 +306,13 @@ Try typing something like:</p>
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

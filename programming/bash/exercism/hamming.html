@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Bash Completion Tool - Debugging Grimoire</title>
+        <title>DNA Hamming - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -102,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -137,7 +137,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -166,36 +166,47 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
-<p>Verify the package is installed:</p>
-<pre><code class="language-bash">dpkg -l | grep bash-completion
+                        <h2 id="-bash-week--hamming-distance-spell-char-by-char-comparison-final-form"><a class="header" href="#-bash-week--hamming-distance-spell-char-by-char-comparison-final-form">🧪 Bash Week — Hamming Distance Spell (Char-by-Char Comparison, Final Form)</a></h2>
+<p>It calculates the Hamming distance (number of differing characters) between two equal-length strings.</p>
+<h3 id="bash-spell"><a class="header" href="#bash-spell">Bash Spell:</a></h3>
+<pre><code class="language-bash">#!/usr/bin/env bash
+
+if [[ $# -ne 2 ]]; then
+  echo "Usage: $0 &lt;string1&gt; &lt;string2&gt;"
+  exit 1
+elif [[ ${#1} -ne ${#2} ]]; then
+  echo "strands must be of equal length"
+  exit 1
+else
+  count=0
+  for ((i = 0; i &lt; ${#1}; i++)); do
+    a="${1:$i:1}"
+    b="${2:$i:1}"
+
+    if [[ "$a" != "$b" ]]; then
+      ((count++))
+    fi
+  done
+  echo "$count"
+fi
 </code></pre>
-<p>If nothing shows up:</p>
-<pre><code class="language-bash">
-sudo apt install bash-completion
-</code></pre>
-<p>Reload your .bashrc:</p>
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-<p>Test it:
-Try typing something like:</p>
-<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>You should see suggestions like checkout, cherry-pick, etc.</p>
-<p>Or try:</p>
-<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
-</code></pre>
-<p>And see if it lists known hosts.</p>
+<p>Notes:</p>
+<ul>
+<li>Input validation ensures exactly two args and equal string length.</li>
+<li>Uses Bash string slicing to compare characters by index.</li>
+<li>Avoids off-by-one or miscounting bugs from early exits.</li>
+<li>Ideal for scripting challenges, interviews, or shell-based logic tasks.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/bash/exercism/raindrops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/grep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/bash/exercism/bob.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +216,11 @@ Try typing something like:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/bash/exercism/raindrops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/grep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/bash/exercism/bob.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -224,13 +235,13 @@ Try typing something like:</p>
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

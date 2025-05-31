@@ -1405,42 +1405,20 @@ Set a password (optional, overkill for local but useful for staging/prod):</li>
 <p>Confirm it's only bound to localhost:</p>
 <pre><code class="language-bash">sudo ss -tlnp | grep redis
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
-<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
-</code></pre>
-<p>1..200: number of requests
-http://localhost:4567: the URL that needs to be tested</p>
-<h1 id="-basic-grep-guide"><a class="header" href="#-basic-grep-guide">🔍 Basic Grep Guide</a></h1>
-<ul>
-<li>Search for a word in all .md files</li>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><ul>
+<li>
+<p><code>SPACE + K</code> = syntax documentation</p>
+</li>
+<li>
+<p><code>SPACE + e</code> = open nvim-tree</p>
+</li>
+<li>
+<p><code>dd</code> + <code>p</code> = cut and paste, <code>yy</code> + <code>p</code> = copy and paste</p>
+</li>
+<li>
+<p><code>SHIFT + V</code> = Select a block of text. <code>gc</code> = Comment out / uncomment</p>
+</li>
 </ul>
-<pre><code class="language-sh">grep "keyword" *.md
-</code></pre>
-<ul>
-<li>Search recursively through directories</li>
-</ul>
-<pre><code class="language-sh">grep -r "keyword" .
-</code></pre>
-<ul>
-<li>Ignore case</li>
-</ul>
-<pre><code class="language-sh">grep -i "keyword" filename.md
-</code></pre>
-<ul>
-<li>Show line numbers</li>
-</ul>
-<pre><code class="language-sh">grep -n "keyword" filename.md
-</code></pre>
-<ul>
-<li>Combine: recursive, case-insensitive, line numbers</li>
-</ul>
-<pre><code class="language-sh">grep -rin "keyword" .
-</code></pre>
-<ul>
-<li>Use regular expressions (careful—this is where it gets spicy)</li>
-</ul>
-<pre><code class="language-sh">grep -E "foo|bar" file.md
-</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="create-a-new-repository-from-the-command-line"><a class="header" href="#create-a-new-repository-from-the-command-line">Create a new repository from the command line</a></h3>
 <pre><code class="language-bash">echo "# http_server" &gt;&gt; README.md
 git init
@@ -2355,7 +2333,9 @@ SELECT *
 <li>If you are getting errors, try writing the function without subqueries.</li>
 <li>SQL: Practice makes muscle memory.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bash"><a class="header" href="#bash">Bash</a></h1>
+<p>Basically impossible to escape from if you are using Linux, you'd be using it everyday for all sorts of stuff.</p>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
 <p>Verify the package is installed:</p>
 <pre><code class="language-bash">dpkg -l | grep bash-completion
 </code></pre>
@@ -2375,6 +2355,43 @@ Try typing something like:</p>
 <pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
 </code></pre>
 <p>And see if it lists known hosts.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="-basic-grep-guide"><a class="header" href="#-basic-grep-guide">🔍 Basic Grep Guide</a></h1>
+<ul>
+<li>Search for a word in all .md files</li>
+</ul>
+<pre><code class="language-sh">grep "keyword" *.md
+</code></pre>
+<ul>
+<li>Search recursively through directories</li>
+</ul>
+<pre><code class="language-sh">grep -r "keyword" .
+</code></pre>
+<ul>
+<li>Ignore case</li>
+</ul>
+<pre><code class="language-sh">grep -i "keyword" filename.md
+</code></pre>
+<ul>
+<li>Show line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -n "keyword" filename.md
+</code></pre>
+<ul>
+<li>Combine: recursive, case-insensitive, line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -rin "keyword" .
+</code></pre>
+<ul>
+<li>Use regular expressions (careful—this is where it gets spicy)</li>
+</ul>
+<pre><code class="language-sh">grep -E "foo|bar" file.md
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
+<pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
+</code></pre>
+<p>1..200: number of requests
+http://localhost:4567: the URL that needs to be tested</p>
+<div style="break-before: page; page-break-before: always;"></div><p>Sort of mini projects done in Bash, it is worth adding because despite the language's limitations, you can do quite a lot with it.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="-bash-week--fizzbuzz-but-cursed-plingplangplong-edition"><a class="header" href="#-bash-week--fizzbuzz-but-cursed-plingplangplong-edition">🐚 Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)</a></h2>
 <p>This is an advanced FizzBuzz-style exercise, adapted for Bash with <strong>O(1)</strong> performance.
 No loops. No Python crutches. Just raw shell logic.</p>
@@ -2563,7 +2580,9 @@ done
 
 [ "$1" == "$result" ] &amp;&amp; echo true || echo false
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C</a></h1>
+<p>Very old, very fast and minimal, basically never goes out of style.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
 <p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
 <ol>
 <li>
@@ -4427,7 +4446,348 @@ Inorder traversal of the binary tree:
 <ul>
 <li>The in-order traversal prints the values in ascending order: left subtree → root → right subtree.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C++</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="ncurses-new-curses"><a class="header" href="#ncurses-new-curses">ncurses (new curses)</a></h2>
+<p>Programming library for creating textual user interfaces (TUIs) that work across a wide variety of terminals.</p>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">ncurses video tutorials</a></li>
+<li><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">HOWTO Docs</a></li>
+<li><a href="https://www.youtube.com/user/bryceslashgaming">Advanced video tutorials</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="-setup-makefile"><a class="header" href="#-setup-makefile">📦 Setup: Makefile</a></h3>
+<pre><code class="language-makefile">all: intro
+
+intro: intro.c
+	gcc -o output intro.c -lncurses
+</code></pre>
+<p>Simple and essential. Without <code>-lncurses</code>, nothing works and the curses gods laugh at you.</p>
+<hr />
+<h3 id="-chapter-1-hello-world-but-make-it-terminal"><a class="header" href="#-chapter-1-hello-world-but-make-it-terminal">✨ Chapter 1: Hello World (But Make It Terminal)</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li><code>initscr()</code>, <code>printw</code>, <code>refresh</code>, <code>getch</code>, and <code>endwin</code></li>
+<li>Cursor positioning with <code>move()</code></li>
+<li>Replacing <code>printf</code> with <code>printw</code> because this is now a <del>windowed</del> world.</li>
+</ul>
+<pre><code class="language-c">// Hello world - moving curses
+
+#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  // Initialize the screen
+  // sets up memory and clears the screen
+  initscr();
+
+  int x, y;
+  x = y = 10;
+
+  // moves the cursor to the specified location
+  // ncurses works with y, then x axis
+  move(y, x);
+
+  // prints string(const char *)
+  printw("Hello World");
+
+  // refreshes the screen to match what's in memory
+  refresh();
+
+  // what's for user input, returns int value of that key
+  int c = getch();
+
+  // clears the screen
+  clear();
+
+  mvprintw(0, 0, "%d", c);
+
+  getch();
+
+  // deallocates memory and ends ncurses
+  endwin();
+
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="-chapter-2-your-first-box"><a class="header" href="#-chapter-2-your-first-box">🧱 Chapter 2: Your First Box</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li>Basic window creation with <code>newwin</code></li>
+<li>Drawing a border with <code>box()</code></li>
+<li>Printing inside a window with <code>mvwprintw</code></li>
+</ul>
+<pre><code class="language-c">// Basics of windows
+
+#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  int height = 10, width = 20, start_y = 10, start_x = 10;
+
+  WINDOW *win = newwin(height, width, start_y, start_x);
+  refresh();
+
+  box(win, 0, 0);
+  mvwprintw(win, 1, 1, "this is my box");
+  wrefresh(win);
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="-chapter-3-dialog-box-with-custom-borders"><a class="header" href="#-chapter-3-dialog-box-with-custom-borders">📦 Chapter 3: Dialog Box with Custom Borders</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li><code>cbreak()</code>, <code>raw()</code>, and <code>noecho()</code> (user input control)</li>
+<li>Custom borders with <code>wborder()</code></li>
+<li>ASCII fun with corner and edge characters</li>
+</ul>
+<pre><code class="language-c">// Display a dialog box in ncurses
+
+#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  /* NCURSES START */
+  initscr();
+  cbreak(); // lets you exit the program with Ctrl + C. Default behavior
+  raw();    // takes all input as raw input
+  noecho(); // user input does not show up on screen
+
+  int height = 10, width = 20, start_y = 10, start_x = 10;
+  
+  WINDOW *win = newwin(height, width, start_y, start_x);
+  refresh();
+
+  char c = '+'; // workaround if you don't know ASCII values
+  char space = ' ';
+
+  // box(win, (int)c, 104); // these are ASCII values
+
+  // a more fine tuned box
+  int left = 103, right = 103, top = 104;
+  int bottom = (int)space;
+  int tlc = (int c), trc = (int)c, blc = bottom, brc = bottom;
+  
+  wborder(win, left, right, top, bottom, tlc, trc, blc, brc);
+  mvwprintw(win, 2, 2, "my box");
+  wrefresh(win);
+
+  getch();
+  getch();
+
+  endwin();
+  /* NCURSES END */
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="-chapter-4-attributes-and-colors"><a class="header" href="#-chapter-4-attributes-and-colors">🎨 Chapter 4: Attributes and Colors</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li><code>has_colors()</code>, <code>start_color()</code>, <code>init_pair()</code></li>
+<li><code>COLOR_PAIR()</code>, <code>attron</code>, <code>attroff</code></li>
+<li>Changing color definitions with <code>init_color()</code></li>
+<li>Text attributes like <code>A_BOLD</code>, <code>A_BLINK</code>, <code>A_REVERSE</code></li>
+</ul>
+<pre><code class="language-c">// Attributes and colors
+
+#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  /* NCURSES START */
+  initscr();
+  noecho();
+
+  if (!has_colors()) {
+    printw("No colors detected");
+    getch();
+    return -1;
+  }
+  
+  start_color();
+  init_pair(1, COLOR_CYAN, COLOR_MAGENTA); // pair number 1
+  
+  /*
+   * COLOR_PAIR(n)
+   * COLOR_BLACK    0
+   * COLOR_RED      1
+   * COLOR_GREEN    2
+   * COLOR_YELLOW   3
+   * COLOR_BLUE     4
+   * COLOR_MAGENTA  5
+   * COLOR_CYAN     6
+   * COLOR_WHITE    7
+   */
+
+
+  // To change colors
+  if (can_change_color()) {
+    printw("Can change color");
+    init_color(COLOR_CYAN, 123, 122, 138);
+  }
+
+  attron(COLOR_PAIR(1));
+  printw("Test");
+  attroff(COLOR_PAIR(1));
+
+  /*
+    A_NORMAL        Normal display (no highlight)
+    A_STANDOUT      Best highlighting mode of the terminal.
+    A_UNDERLINE     Underlining
+    A_REVERSE       Reverse video
+    A_BLINK         Blinking
+    A_DIM           Half bright
+    A_BOLD          Extra bright or bold
+    A_PROTECT       Protected mode
+    A_INVIS         Invisible or blank mode
+    A_ALTCHARSET    Alternate character set
+    A_CHARTEXT      Bit-mask to extract a character
+    COLOR_PAIR(n)   Color-pair number n
+  */
+
+  getch();
+  endwin();
+  /* NCURSES END */
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="-chapter-5-the-beginnings-of-a-menu"><a class="header" href="#-chapter-5-the-beginnings-of-a-menu">📋 Chapter 5: The Beginnings of a Menu</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li>More <code>WINDOW</code> geometry functions: <code>getyx</code>, <code>getbegyx</code>, <code>getmaxyx</code></li>
+<li>Laying the groundwork for interactive menu systems</li>
+</ul>
+<pre><code class="language-c">// Build a menu with ncurses
+
+#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  cbreak();
+
+  int y, x, yBeg, xBeg, yMax, xMax;
+
+  WINDOW *win = newwin(10, 20, 10, 10);
+
+  getyx(stdscr, y, x);
+  getbegyx(win, yBeg, xBeg);
+  getmaxyx(stdscr, yMax, xMax);
+
+  mvprintw(yMax / 2, xMax / 2, "%d %d", yBeg, xBeg);
+  // printw("%d %d %d %d %d %d", y, x, yBeg, xBeg, yMax, xMax);
+
+  // make sure the program waits before exiting
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li><code>getstr()</code> for reading strings from the user</li>
+<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
+<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
+</ul>
+<pre><code class="language-c">// Working with user input
+#include &lt;ncurses.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+  char msg[] = "Enter a string";
+  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
+
+  int row, col;
+  initscr();
+  getmaxyx(stdscr, row, col);
+
+  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
+  getstr(str);  // reads a line of text
+
+  mvprintw(LINES - 2, 0, "You entered: %s", str);
+  getch();
+  endwin();
+
+  return 0;
+}
+</code></pre>
+<blockquote>
+<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
+</blockquote>
+<hr />
+<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
+<p><strong>Concepts introduced:</strong></p>
+<ul>
+<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
+<li>Highlighting selections with <code>A_REVERSE</code></li>
+<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
+<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+</ul>
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  cbreak();
+
+  int yMax, xMax;
+  getmaxyx(stdscr, yMax, xMax);
+
+  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
+  box(menuwin, 0, 0);
+  refresh();
+  wrefresh(menuwin);
+
+  keypad(menuwin, true);
+
+  const char *choices[3] = {"Walk", "Jog", "Run"};
+  int choice;
+  int highlight = 0;
+
+  while (1) {
+    for (int i = 0; i &lt; 3; ++i) {
+      if (i == highlight)
+        wattron(menuwin, A_REVERSE);
+
+      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
+
+      wattroff(menuwin, A_REVERSE);
+    }
+
+    choice = wgetch(menuwin);
+
+    switch (choice) {
+      case KEY_UP:
+        highlight--;
+        if (highlight &lt; 0)
+          highlight = 0;
+        break;
+      case KEY_DOWN:
+        highlight++;
+        if (highlight &gt; 2)
+          highlight = 2;
+        break;
+      default:
+        break;
+    }
+
+    if (choice == 10)  // Enter key
+      break;
+  }
+
+  clear();
+  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
+  refresh();
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="c-1"><a class="header" href="#c-1">C++</a></h1>
 <h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
 <p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
 <p>It is definitely a language to use with precaution, a language you could lose yourself into, for better or for worse.</p>
@@ -6659,6 +7019,192 @@ while (!stack.empty()) {
 <li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
 <li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-c-class-inheritance--polymorphism--with-a-3d-geometry-twist"><a class="header" href="#-c-class-inheritance--polymorphism--with-a-3d-geometry-twist">🧙‍♀️ C++ Class Inheritance &amp; Polymorphism – With a 3D Geometry Twist</a></h2>
+<h3 id="-base-class--point2d"><a class="header" href="#-base-class--point2d">🧱 Base Class – Point2D</a></h3>
+<pre><code class="language-cpp">class Point2D {
+protected:
+    float x, y;
+
+public:
+    Point2D(float x = 0, float y = 0) : x(x), y(y) {}
+
+    virtual void print() const {
+        std::cout &lt;&lt; "Point2D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+
+    virtual ~Point2D() {} // Always virtual destructor for polymorphic base
+};
+</code></pre>
+<ul>
+<li><code>protected</code>: accessible to subclasses, but hidden from the outside world like a locked diary.</li>
+<li><code>virtual</code>: magic keyword that enables polymorphism (late binding).</li>
+<li>Destructor is virtual so your objects don’t leave memory corpses behind. 👻</li>
+</ul>
+<hr />
+<h3 id="-subclass--point3d"><a class="header" href="#-subclass--point3d">🌌 Subclass – Point3D</a></h3>
+<pre><code class="language-cpp">class Point3D : public Point2D {
+    float z;
+
+public:
+    Point3D(float x = 0, float y = 0, float z = 0) : Point2D(x, y), z(z) {}
+
+    void print() const override {
+        std::cout &lt;&lt; "Point3D(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ", " &lt;&lt; z &lt;&lt; ")" &lt;&lt; std::endl;
+    }
+};
+</code></pre>
+<ul>
+<li><code>public</code> inheritance: “yes, I’m extending the public interface, not hiding it.”</li>
+<li><code>override</code>: optional, but makes the compiler scream if you mess up a virtual override (bless her).</li>
+</ul>
+<hr />
+<h3 id="-polymorphism-in-action"><a class="header" href="#-polymorphism-in-action">🧪 Polymorphism in Action</a></h3>
+<pre><code class="language-cpp">void describePoint(const Point2D&amp; p) {
+    p.print();
+}
+
+int main() {
+    Point2D p2(1, 2);
+    Point3D p3(3, 4, 5);
+
+    describePoint(p2); // prints Point2D(1, 2)
+    describePoint(p3); // prints Point3D(3, 4, 5) – polymorphism magic!
+}
+</code></pre>
+<ul>
+<li>This is the power move: a <code>Point2D</code> reference holds a <code>Point3D</code> object, but still calls the right method.</li>
+<li>No casting. No mess. Just vibes. 🎩✨</li>
+</ul>
+<hr />
+<h3 id="-what-if-you-forget-virtual"><a class="header" href="#-what-if-you-forget-virtual">💀 What If You Forget <code>virtual</code>?</a></h3>
+<p>If you remove <code>virtual</code> from <code>Point2D::print()</code>, then the method won’t get overridden at runtime — you’ll always call the base version. This is what we call... <em>a tragic plot twist.</em></p>
+<hr />
+<h3 id="-when-to-use-this"><a class="header" href="#-when-to-use-this">🔮 When to Use This</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Use Case</th><th>Inheritance?</th></tr></thead><tbody>
+<tr><td>You need multiple related types that behave differently</td><td><strong>Yes</strong></td></tr>
+<tr><td>You want to generalize with base class pointers or references</td><td><strong>Yes</strong></td></tr>
+<tr><td>You’re sharing behavior across <em>unrelated</em> classes</td><td><strong>No</strong>, use composition/templates</td></tr>
+<tr><td>You don’t want to deal with destructor landmines</td><td><strong>Use smart pointers</strong>, queen</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h2 id="-c-shapes-with-oop"><a class="header" href="#-c-shapes-with-oop">📐 C++ Shapes with OOP</a></h2>
+<h3 id="-concept"><a class="header" href="#-concept">🧠 Concept</a></h3>
+<p>In object-oriented design, <strong>shapes</strong> are abstractions made up of <strong>points</strong> and behaviors (like calculating area, or drawing). By using <strong>inheritance</strong> and <strong>polymorphism</strong>, we create a base <code>Shape</code> class and specialize it into specific geometric forms like <code>Triangle</code>, <code>Circle</code>, etc.</p>
+<h3 id="-why-use-inheritance-here"><a class="header" href="#-why-use-inheritance-here">💡 Why Use Inheritance Here?</a></h3>
+<ul>
+<li>Shared interface via base class: <code>Shape</code> defines what a shape <em>can do</em>.</li>
+<li>Specialization via subclasses: Each shape has its own way to draw and compute area.</li>
+<li>Allows dynamic polymorphism: store and manipulate shapes through base class pointers (<code>Shape*</code>), but still get the <em>actual</em> shape behavior.</li>
+</ul>
+<h3 id="-base-class-shape"><a class="header" href="#-base-class-shape">🧱 Base Class: Shape</a></h3>
+<pre><code class="language-cpp">class Shape {
+public:
+    virtual void draw() const = 0;
+    virtual float area() const = 0;
+    virtual ~Shape() {}
+};
+</code></pre>
+<ul>
+<li>Declares pure virtual methods = <strong>abstract class</strong>.</li>
+<li>No objects of <code>Shape</code> directly; it’s just a blueprint.</li>
+<li>Destructor is virtual to ensure correct cleanup when using base pointers.</li>
+</ul>
+<hr />
+<h3 id="-triangle"><a class="header" href="#-triangle">🔺 Triangle</a></h3>
+<ul>
+<li>Defined by 3 points.</li>
+<li>Area is computed using <strong>Heron's formula</strong>.</li>
+<li>Inherits from <code>Shape</code>.</li>
+</ul>
+<hr />
+<h3 id="-circle"><a class="header" href="#-circle">🔵 Circle</a></h3>
+<ul>
+<li>Defined by center + radius.</li>
+<li>Area is <code>πr²</code>.</li>
+<li>Also overrides <code>draw()</code> and <code>area()</code>.</li>
+</ul>
+<hr />
+<h3 id="-polymorphic-usage"><a class="header" href="#-polymorphic-usage">🧪 Polymorphic Usage</a></h3>
+<pre><code class="language-cpp">std::vector&lt;Shape*&gt; scene;
+scene.push_back(new Triangle(...));
+scene.push_back(new Circle(...));
+for (Shape* s : scene) {
+    s-&gt;draw();
+    std::cout &lt;&lt; s-&gt;area();
+}
+</code></pre>
+<p>This allows us to treat all shapes <em>uniformly</em> while letting each class decide how to behave. That’s <strong>real polymorphism energy</strong>.</p>
+<hr />
+<h3 id="full-code-1"><a class="header" href="#full-code-1">Full code</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;math.h&gt;
+#include &lt;vector&gt;
+
+struct Point2D {
+  float x, y;
+};
+
+// virtual forces subclasses to implement
+class Shape {
+public:
+  virtual void draw() const = 0;
+  virtual float area() const = 0;
+  virtual ~Shape() {}
+};
+
+class Triangle : public Shape {
+  Point2D a, b, c;
+
+  float distance(const Point2D &amp;p1, const Point2D &amp;p2) const {
+    return std::hypot(p2.x - p1.x, p2.y - p1.y);
+  }
+
+public:
+  Triangle(Point2D a, Point2D b, Point2D c) : a(a), b(b), c(c) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing triangle between A, B, C.\n";
+  }
+
+  float area() const override {
+    // Heron’s formula because we fancy
+    float ab = distance(a, b);
+    float bc = distance(b, c);
+    float ca = distance(c, a);
+    float s = (ab + bc + ca) / 2;
+    return std::sqrt(s * (s - ab) * (s - bc) * (s - ca));
+  }
+};
+
+class Circle : public Shape {
+  Point2D center;
+  float radius;
+
+public:
+  Circle(Point2D c, float r) : center(c), radius(r) {}
+
+  void draw() const override {
+    std::cout &lt;&lt; "Drawing circle at (" &lt;&lt; center.x &lt;&lt; ", " &lt;&lt; center.y
+              &lt;&lt; ") with radius " &lt;&lt; radius &lt;&lt; "\n";
+  }
+
+  float area() const override { return M_PI * radius * radius; }
+};
+
+int main() {
+  std::vector&lt;Shape *&gt; scene;
+  scene.push_back(new Triangle({0, 0}, {1, 0}, {0, 1}));
+  scene.push_back(new Circle({0, 0}, 5));
+
+  for (Shape *shape : scene) {
+    shape-&gt;draw();
+    std::cout &lt;&lt; "Area: " &lt;&lt; shape-&gt;area() &lt;&lt; "\n";
+  }
+
+  // free memory
+  for (Shape *shape : scene)
+    delete shape;
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>

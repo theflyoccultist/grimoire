@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Bash Completion Tool - Debugging Grimoire</title>
+        <title>Grep Guide - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,36 +166,47 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="step-by-step-bash-completion-check-up-"><a class="header" href="#step-by-step-bash-completion-check-up-">Step-by-Step Bash Completion Check-Up 💅</a></h3>
-<p>Verify the package is installed:</p>
-<pre><code class="language-bash">dpkg -l | grep bash-completion
+                        <h1 id="-basic-grep-guide"><a class="header" href="#-basic-grep-guide">🔍 Basic Grep Guide</a></h1>
+<ul>
+<li>Search for a word in all .md files</li>
+</ul>
+<pre><code class="language-sh">grep "keyword" *.md
 </code></pre>
-<p>If nothing shows up:</p>
-<pre><code class="language-bash">
-sudo apt install bash-completion
+<ul>
+<li>Search recursively through directories</li>
+</ul>
+<pre><code class="language-sh">grep -r "keyword" .
 </code></pre>
-<p>Reload your .bashrc:</p>
-<pre><code class="language-bash">source ~/.bashrc
+<ul>
+<li>Ignore case</li>
+</ul>
+<pre><code class="language-sh">grep -i "keyword" filename.md
 </code></pre>
-<p>Test it:
-Try typing something like:</p>
-<pre><code class="language-bash">git ch&lt;TAB&gt;&lt;TAB&gt;
+<ul>
+<li>Show line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -n "keyword" filename.md
 </code></pre>
-<p>You should see suggestions like checkout, cherry-pick, etc.</p>
-<p>Or try:</p>
-<pre><code>ssh &lt;TAB&gt;&lt;TAB&gt;
+<ul>
+<li>Combine: recursive, case-insensitive, line numbers</li>
+</ul>
+<pre><code class="language-sh">grep -rin "keyword" .
 </code></pre>
-<p>And see if it lists known hosts.</p>
+<ul>
+<li>Use regular expressions (careful—this is where it gets spicy)</li>
+</ul>
+<pre><code class="language-sh">grep -E "foo|bar" file.md
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/bash/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/bash/bash-completion.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/bash/grep.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/bash/curl.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +216,11 @@ Try typing something like:</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/bash/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/bash/bash-completion.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/bash/grep.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/bash/curl.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
