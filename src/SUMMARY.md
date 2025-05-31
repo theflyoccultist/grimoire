@@ -51,6 +51,8 @@
       - [Armstrong Numbers](programming/bash/exercism/armstrong.md)
 
   - [C 🏗️](programming/c/README.md)
+    - [Good To Know](programming/c/gtk/README.md)
+      - [Makefiles: for Multiple File Projects](programming/c/gtk/makefiles.md)
     - [Fundamentals](programming/c/fundamentals/README.md)
       - [Usage of enums](programming/c/fundamentals/enum.md)
       - [Usage of cases (switch-case)](programming/c/fundamentals/weekday.md)
@@ -68,6 +70,8 @@
     - [ncurses](programming/c/ncurses/README.md)
       - [Getting Started](programming/c/ncurses/chpt1_5.md)
       - [User Input in Menu and Arrow Keys](programming/c/ncurses/chpt6_7.md)
+      - [A Rogue Like Game Engine](programming/c/ncurses/chpt8.md)
+      - [Input Modes, Color Witchcraft, Ctrl+char](/src/programming/c/ncurses/chpt9_11.md)
 
   - [C++ 🤖](programming/cpp/README.md)
     - [Fundamentals](programming/cpp/fundamentals/README.md)
