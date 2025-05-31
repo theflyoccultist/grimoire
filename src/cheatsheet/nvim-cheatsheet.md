@@ -1,5 +1,6 @@
-`SPACE + K` = syntax documentation
-`SPACE + e` = open nvim-tree
+- `SPACE + K` = syntax documentation
+- `SPACE + e` = open nvim-tree
 
-`SHIFT + V` = Select a block of text
-Press `gc` = They will be commented out.
+- `dd` + `p` = cut and paste, `yy` + `p` = copy and paste
+
+- `SHIFT + V` = Select a block of text. `gc` = Comment out / uncomment
