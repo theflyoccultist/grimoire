@@ -1,4 +1,12 @@
-# C++
+# C++ 🤖
+
+Welcome to my C++ notes. Categorized for your sanity and mine.
+
+- [Fundamentals](fundamentals/)
+- [Object-Oriented Programming](oop/README.md)
+- [Language Features](features/)
+- [Practical Examples](examples/)
+
 
 ## Personal Story
 Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.
