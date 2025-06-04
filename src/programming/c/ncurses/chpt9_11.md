@@ -1,4 +1,4 @@
-### 📚 Chapters 9–10–11: Input Modes, Color Witchcraft, and Keyboard Sorcery
+### 📚 Input Modes, Color Witchcraft, and Keyboard Sorcery
 
 ---
 
