@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>A Rogue Like Game Engine - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,48 +166,108 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
+                        <h2 id="chapter-8-a-rogue-like-game-engine"><a class="header" href="#chapter-8-a-rogue-like-game-engine">Chapter 8: A Rogue like Game Engine</a></h2>
 <ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
+<li>Movements, walls, boundaries, breadcrumbs.</li>
 </ul>
-<pre><code class="language-c">// Working with user input
+<p>This is the demo for a tiny rogue-like engine, a <code>@</code> character leaving <code>.</code> bread crumbs wherever it goes.</p>
+<p>It is using several files with <code>struct</code> which are the equivalent of constructors in C++. Methods becomes plain old functions.
+Everything is pointer based.</p>
+<h3 id="playerh"><a class="header" href="#playerh"><code>player.h</code></a></h3>
+<pre><code class="language-c">#ifndef PLAYER_H
+#define PLAYER_H
+
 #include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
 
-int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
+typedef struct Player {
+  int yLoc, xLoc;
+  int yMax, xMax;
+  char character;
+  WINDOW *curwin;
+} Player;
 
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
+Player *create_player(WINDOW *win, int y, int x, char c);
+void move_up(Player *p);
+void move_down(Player *p);
+void move_left(Player *p);
+void move_right(Player *p);
+int get_input(Player *p);
+void display_player(Player *p);
 
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
+#endif
+</code></pre>
+<h3 id="playerc-implementation"><a class="header" href="#playerc-implementation"><code>player.c</code> Implementation</a></h3>
+<pre><code class="language-c">#include "player.h"
+#include &lt;stdlib.h&gt;
 
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
+Player *create_player(WINDOW *win, int y, int x, char c) {
+  Player *p = (Player *)malloc(sizeof(Player));
+  p-&gt;curwin = win;
+  p-&gt;yLoc = y;
+  p-&gt;xLoc = x;
+  getmaxyx(win, p-&gt;yMax, p-&gt;xMax);
+  keypad(win, TRUE);
+  p-&gt;character = c;
+  return p;
+}
 
-  return 0;
+void move_up(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;yLoc--;
+  if (p-&gt;yLoc &lt; 1)
+    p-&gt;yLoc = 1;
+}
+
+void move_down(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;yLoc++;
+  if (p-&gt;yLoc &gt; p-&gt;yMax - 2)
+    p-&gt;yLoc = p-&gt;yMax - 2;
+}
+
+void move_left(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;xLoc--;
+  if (p-&gt;xLoc &lt; 1)
+    p-&gt;xLoc = 1;
+}
+
+void move_right(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;xLoc++;
+  if (p-&gt;xLoc &gt; p-&gt;xMax - 2)
+    p-&gt;xLoc = p-&gt;xMax - 2;
+}
+
+int get_input(Player *p) {
+  int choice = wgetch(p-&gt;curwin);
+  switch (choice) {
+    case KEY_UP:
+      move_up(p);
+      break;
+    case KEY_DOWN:
+      move_down(p);
+      break;
+    case KEY_LEFT:
+      move_left(p);
+      break;
+    case KEY_RIGHT:
+      move_right(p);
+      break;
+    default:
+      break;
+  }
+  return choice;
+}
+
+void display_player(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, p-&gt;character);
 }
 </code></pre>
-<blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
-</blockquote>
-<hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
-</ul>
-<pre><code class="language-c">#include &lt;ncurses.h&gt;
+<h3 id="mainc"><a class="header" href="#mainc"><code>main.c</code></a></h3>
+<pre><code class="language-c">#include "player.h"
+#include &lt;ncurses.h&gt;
+#include &lt;stdlib.h&gt;
 
 int main(int argc, char **argv) {
   initscr();
@@ -217,67 +277,39 @@ int main(int argc, char **argv) {
   int yMax, xMax;
   getmaxyx(stdscr, yMax, xMax);
 
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
+  WINDOW *playwin = newwin(20, 50, (yMax / 2) - 10, 10);
+  box(playwin, 0, 0);
   refresh();
-  wrefresh(menuwin);
+  wrefresh(playwin);
 
-  keypad(menuwin, true);
+  Player *p = create_player(playwin, 1, 1, '@');
 
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
+  do {
+    display_player(p);
+    wrefresh(playwin);
+  } while (get_input(p) != 'x');
 
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
-
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
-
-      wattroff(menuwin, A_REVERSE);
-    }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
-  }
-
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
-
-  getch();
   endwin();
+  free(p);
   return 0;
 }
+</code></pre>
+<h3 id="makefile"><a class="header" href="#makefile">Makefile</a></h3>
+<pre><code class="language-Makefile">all: player
+
+player: main.c player.c player.h
+	gcc -Wall -o output main.c player.c -lncurses
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt6_7.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt9_11.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +319,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt6_7.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt9_11.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

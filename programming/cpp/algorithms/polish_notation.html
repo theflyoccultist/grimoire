@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Poker Monte Carlo Simulation - Debugging Grimoire</title>
+        <title>Reverse Polish Notation - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,264 +166,120 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now"><a class="header" href="#poker-monte-carlo-simulation-the-final-boss-of-single-iterators-for-now">Poker Monte Carlo Simulation: The Final Boss of Single Iterators (for now)</a></h1>
-<p>This simulation is a chaotic but disciplined demonstration of core C++ features, data structures, and algorithmic logic. Here's what it leverages:</p>
+                        <h2 id="polish-notation"><a class="header" href="#polish-notation">Polish Notation</a></h2>
 <ul>
-<li>
-<p><code>enum class</code>: a scoped, type-safe alternative to traditional C-style enums.</p>
-<ul>
-<li>Syntax: <code>enum class Identifier : integral_type { list };</code></li>
-<li>Example:
-<pre><code class="language-cpp">enum class Color { RED, GREEN, BLUE };
-enum class Spotlight { RED, YELLOW, GREEN };
-</code></pre>
-</li>
-<li>In old-style enums, <code>RED</code> would be ambiguous if used in the same scope.</li>
-<li>With <code>enum class</code>, <code>Color::RED</code> and <code>Spotlight::RED</code> are completely distinct.</li>
-<li><code>::</code> is called the <strong>scope resolution operator</strong>.</li>
-<li>By default, the underlying type is int; but you can specify something smaller like <code>short</code> or <code>unsigned</code> (as long as it's integral).</li>
+<li>No parenthesis: <code>(3 + 4)</code> -&gt; <code>+ 3 4</code></li>
 </ul>
-</li>
-<li>
-<p>Custom <code>card</code> data type: modeled using <code>enum class</code> for suits and a <code>pips</code> class to represent values (1 to 13). Together, they form an easily extensible system for identifying and comparing cards.</p>
-</li>
-<li>
-<p><code>std::vector&lt;T&gt;</code>, dynamic arrays that shrink and grow as needed. Also a great workaround to avoid using <code>new</code> and <code>delete</code>, something you would use if you're asking for problems. Vectors also provides iterator support for algorithms like <code>std::shuffle</code> and <code>std::sort</code>.</p>
-</li>
-<li>
-<p>Modern RNG:</p>
-<ul>
-<li><code>std::random_shuffle()</code> is deprecated.</li>
-<li>The correct modern approach is:
-<pre><code class="language-cpp">std::random_device rd;
-std::mt19937 g(rd());
-std::shuffle(deck.begin(), deck.end(), g);
-</code></pre>
-</li>
-<li><code>std::mt19937</code> is a Mersenne Twister engine, high-quality and widely used.</li>
-<li><code>std::random_device</code> provides a non-deterministic seed (if supported by the system).</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h4 id="stdmap"><a class="header" href="#stdmap"><code>std::map</code>:</a></h4>
-<p>To classify hands like pairs, three-of-a-kinds, full houses, and four-of-a-kinds, I used <code>std::map</code> as a clean alternative to writing multiple functions for each case.</p>
-<ul>
-<li>
-<p>A <code>std::map&lt;Key, Value&gt;</code> stores <strong>key-value pairs</strong>, sorted by key in <strong>ascending order</strong> by default.</p>
-</li>
-<li>
-<p>In this simulation, the <strong>key</strong> is the pip value (card number), and the <strong>value</strong> is the count of how many times it appears in a hand.</p>
-</li>
-<li>
-<p>This allows a single pass over the hand to collect <strong>all frequency data</strong>, which can then be used to identify any relevant hand:</p>
-<ul>
-<li>A key with a value of <code>4</code> → Four of a Kind</li>
-<li>A key with a value of <code>3</code> and another with <code>2</code> → Full House</li>
-<li>Two keys with value <code>2</code> → Two Pair</li>
-<li>One key with value <code>2</code> → One Pair</li>
-</ul>
-</li>
-</ul>
-<p>Example usage:</p>
-<pre><code class="language-cpp">std::map&lt;int, int&gt; pip_counts;
-for (const card&amp; c : hand) {
-    pip_counts[c.get_pips().get_pips()]++;
-}
-</code></pre>
-<ul>
-<li>Unlike <code>unordered_map</code>, which is backed by a hash table and has no guaranteed order, <code>std::map</code> keeps things <strong>sorted</strong>, which may help with debug output or extensions like detecting the highest kicker.</li>
-</ul>
-<p>Using this map, a single <code>classify_hand()</code> function was enough to identify all hand types based on how many identical pip values were found.</p>
-<hr />
-<h3 id="suggestions-for-improvements"><a class="header" href="#suggestions-for-improvements">Suggestions for improvements</a></h3>
-<ul>
-<li>Detecting royal flushes</li>
-<li>Analyzing average hand value</li>
-<li>Plotting probabilities as a histogram</li>
-</ul>
-<hr />
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;array&gt;
-#include &lt;cassert&gt;
-#include &lt;iostream&gt;
-#include &lt;map&gt;
-#include &lt;ostream&gt;
-#include &lt;random&gt;
-#include &lt;vector&gt;
+<p>Example: <code>(9 + 6) * (3 - 2)</code> -&gt; <code>9 6 + 3 2 - *</code></p>
+<h3 id="a-simple-calculator-for-polish-notations"><a class="header" href="#a-simple-calculator-for-polish-notations">A simple calculator for Polish notations:</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;stack&gt;
+#include &lt;string&gt;
 
-enum class suit : short { SPADE, HEART, DIAMOND, CLUB };
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const suit &amp;s) {
-  return out &lt;&lt; static_cast&lt;int&gt;(s);
-}
+int evaluate_rpn(const std::string &amp;expr) {
+  std::stack&lt;int&gt; stk;
+  std::istringstream iss(expr);
+  std::string token;
 
-class pips {
-public:
-  pips(int val) : v(val) { assert(v &gt; 0 &amp;&amp; v &lt; 14); }
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const pips &amp;p) {
-    out &lt;&lt; p.v;
-    return out;
-  };
-  int get_pips() { return v; }
-
-private:
-  int v;
-};
-
-class card {
-public:
-  card() : s(suit::SPADE), v(1) {}
-  card(suit s, pips v) : s(s), v(v) {}
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const card &amp;c);
-  const suit get_suit() { return s; }
-  pips get_pips() const { return v; }
-
-private:
-  suit s;
-  pips v;
-};
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const card &amp;c) {
-  out &lt;&lt; c.v &lt;&lt; c.s;
-  return out;
-}
-
-void init_deck(std::vector&lt;card&gt; &amp;d) {
-  const std::array&lt;suit, 4&gt; all_suits = {suit::SPADE, suit::HEART,
-                                         suit::DIAMOND, suit::CLUB};
-
-  for (const auto &amp;s : all_suits) {
-    for (int p = 1; p &lt; 14; ++p) {
-      d.emplace_back(s, pips(p));
+  while (iss &gt;&gt; token) {
+    if (isdigit(token[0])) {
+      stk.push(std::stoi(token));
+    } else {
+      int b = stk.top();
+      stk.pop();
+      int a = stk.top();
+      stk.pop();
+      if (token == "+")
+        stk.push(a + b);
+      else if (token == "-")
+        stk.push(a - b);
+      else if (token == "*")
+        stk.push(a * b);
+      else if (token == "/")
+        stk.push(a / b);
     }
   }
-}
-
-void print(std::vector&lt;card&gt; &amp;deck) {
-  for (auto cardval : deck)
-    std::cout &lt;&lt; cardval &lt;&lt; "\n";
-}
-
-void classify_hand(std::vector&lt;card&gt; &amp;hand, int &amp;pairs, int &amp;trips,
-                   int &amp;quads) {
-  std::map&lt;int, int&gt; pip_count;
-
-  for (const card &amp;c : hand) {
-    int pip = c.get_pips().get_pips();
-    pip_count[pip]++;
-  }
-
-  pairs = 0;
-  trips = 0;
-  quads = 0;
-
-  for (const auto &amp;[pip, count] : pip_count) {
-    if (count == 2)
-      pairs++;
-    else if (count == 3)
-      trips++;
-    else if (count == 4)
-      quads++;
-  }
-}
-
-bool is_flush(std::vector&lt;card&gt; &amp;hand) {
-  suit s = hand[0].get_suit();
-  for (auto p = hand.begin() + 1; p != hand.end(); ++p)
-    if (s != p-&gt;get_suit())
-      return false;
-  return true;
-}
-
-bool is_consecutive(int *pips) {
-  for (int i = 1; i &lt; 5; ++i)
-    if (pips[i] != pips[i - 1] + 1)
-      return false;
-  return true;
-}
-
-bool is_straight(std::vector&lt;card&gt; &amp;hand) {
-  int pips_v[5];
-  for (int i = 0; i &lt; 5; ++i)
-    pips_v[i] = hand[i].get_pips().get_pips();
-
-  std::sort(pips_v, pips_v + 5);
-
-  // Ace high: 10-J-Q-K-A
-  if (pips_v[0] == 1 &amp;&amp; pips_v[1] == 10)
-    return pips_v[1] == 10 &amp;&amp; pips_v[2] == 11 &amp;&amp; pips_v[3] == 12 &amp;&amp;
-           pips_v[4] == 13;
-
-  // regular straight
-  return is_consecutive(pips_v);
-}
-
-bool is_straight_flush(std::vector&lt;card&gt; &amp;hand) {
-  return is_flush(hand) &amp;&amp; is_straight(hand);
+  return stk.top();
 }
 
 int main() {
-  std::vector&lt;card&gt; deck(52);
-  srand(time(nullptr));
-  init_deck(deck);
-  int how_many;
-  int high_card = 0, one_pair = 0, two_pair = 0, three_ofa_kind = 0,
-      four_of_akind = 0, full_house = 0;
-  int flush_count = 0, str_count = 0, str_flush_count = 0;
-  std::cout &lt;&lt; "How many shuffles? ";
-  std::cin &gt;&gt; how_many;
-
-  std::random_device rd;
-  std::mt19937 g(rd());
-  for (int loop = 0; loop &lt; how_many; ++loop) {
-    std::shuffle(deck.begin(), deck.end(), g);
-    std::vector&lt;card&gt; hand(deck.begin(), deck.begin() + 5);
-
-    int pairs = 0, trips = 0, quads = 0;
-    classify_hand(hand, pairs, trips, quads);
-
-    if (is_flush(hand))
-      flush_count++;
-    else if (is_straight(hand))
-      str_count++;
-    else if (is_straight_flush(hand))
-      str_flush_count++;
-
-    else if (quads == 1)
-      four_of_akind++;
-    else if (trips == 1 &amp;&amp; pairs == 1)
-      full_house++;
-    else if (trips == 1)
-      three_ofa_kind++;
-    else if (pairs == 2)
-      two_pair++;
-    else if (pairs == 1)
-      one_pair++;
-    else
-      high_card++;
-  }
-
-  std::cout &lt;&lt; "High Card: " &lt;&lt; high_card &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Pair: " &lt;&lt; one_pair &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Two Pairs: " &lt;&lt; two_pair &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Three of a kind: " &lt;&lt; three_ofa_kind &lt;&lt; " out of " &lt;&lt; how_many
-            &lt;&lt; "\n";
-
-  std::cout &lt;&lt; "Straights: " &lt;&lt; str_count &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Flushes: " &lt;&lt; flush_count &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Full House: " &lt;&lt; full_house &lt;&lt; " out of " &lt;&lt; how_many &lt;&lt; "\n";
-  std::cout &lt;&lt; "Four of a kind: " &lt;&lt; four_of_akind &lt;&lt; " out of " &lt;&lt; how_many
-            &lt;&lt; "\n";
-  std::cout &lt;&lt; "Straight Flushes: " &lt;&lt; str_flush_count &lt;&lt; " out of " &lt;&lt; how_many
-            &lt;&lt; "\n";
+  std::cout &lt;&lt; evaluate_rpn("3 5 2 * +") &lt;&lt; std::endl;
+  return 0;
 }
 </code></pre>
+<hr />
+<h3 id="whats-actually-happening-in-3-5-2--"><a class="header" href="#whats-actually-happening-in-3-5-2--">What’s Actually Happening in <code>3 5 2 * +</code></a></h3>
+<p>This is <strong>postfix</strong> notation. Think of it like:</p>
+<blockquote>
+<p>“I’ll give you the numbers, and then tell you what to do with them.”</p>
+</blockquote>
+<hr />
+<h3 id="step-by-step-breakdown"><a class="header" href="#step-by-step-breakdown">Step-by-step Breakdown</a></h3>
+<p>Expression: <code>3 5 2 * +</code></p>
+<ol>
+<li>
+<p>Read <code>3</code> → push to the stack
+🥞 Stack: <code>[3]</code></p>
+</li>
+<li>
+<p>Read <code>5</code> → push to the stack
+🥞 Stack: <code>[3, 5]</code></p>
+</li>
+<li>
+<p>Read <code>2</code> → push to the stack
+🥞 Stack: <code>[3, 5, 2]</code></p>
+</li>
+<li>
+<p>Read <code>*</code> → pop <code>2</code> and <code>5</code>, multiply them → push result</p>
+<ul>
+<li><code>5 * 2 = 10</code>
+🥞 Stack: <code>[3, 10]</code></li>
+</ul>
+</li>
+<li>
+<p>Read <code>+</code> → pop <code>10</code> and <code>3</code>, add them → push result</p>
+<ul>
+<li><code>3 + 10 = 13</code>
+🥞 Stack: <code>[13]</code></li>
+</ul>
+</li>
+</ol>
+<p>Result = 13
+You just evaluated <code>3 + (5 * 2)</code> <strong>without parentheses</strong> and without caring about precedence rules.</p>
+<hr />
+<p>RPN <strong>implicitly does “inwards” operations first</strong> — the <strong>deepest nested expressions get evaluated earliest</strong>. But it doesn't track them using parentheses or operator precedence like infix notation. Instead, the <strong>stack</strong> handles that naturally, because operations only happen when operands are ready.</p>
+<hr />
+<h3 id="-infix--rpn-mental-gymnastics"><a class="header" href="#-infix--rpn-mental-gymnastics">🔁 Infix → RPN Mental Gymnastics</a></h3>
+<p>Let’s take:</p>
+<pre><code class="language-text">(4 + 2) * (3 - 1)
+</code></pre>
+<p>RPN version:</p>
+<pre><code class="language-text">4 2 + 3 1 - *
+</code></pre>
+<p>Why?</p>
+<ul>
+<li><code>4 2 +</code> → gives you 6</li>
+<li><code>3 1 -</code> → gives you 2</li>
+<li>Then <code>*</code> → <code>6 * 2 = 12</code></li>
+</ul>
+<p>The operators are applied <strong>only when their operands are present</strong>, and everything is <strong>processed left to right</strong>. No drama, no ambiguity, no parentheses.</p>
+<hr />
+<h3 id="-why-you-should-care"><a class="header" href="#-why-you-should-care">💡 Why You Should Care</a></h3>
+<p>If you ever:</p>
+<ul>
+<li>Write a compiler or interpreter,</li>
+<li>Build a virtual machine (JITs for example),</li>
+<li>Design an AI rule engine,</li>
+<li>Or implement a Lisp-style scripting language,</li>
+</ul>
+<p>…you’ll want <strong>RPN-style evaluation</strong>. It’s efficient, deterministic, and ridiculously elegant.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/examples/generate-graph.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/algorithms/alpha_beta.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -437,7 +293,7 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/examples/generate-graph.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/algorithms/alpha_beta.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

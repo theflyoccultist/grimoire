@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>Input Modes, Color Witchcraft, Ctrl+char - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,104 +166,97 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
-</ul>
-<pre><code class="language-c">// Working with user input
-#include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
-
-int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
-
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
-
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
-
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
-
-  return 0;
-}
-</code></pre>
-<blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
-</blockquote>
+                        <h3 id="-input-modes-color-witchcraft-and-keyboard-sorcery"><a class="header" href="#-input-modes-color-witchcraft-and-keyboard-sorcery">📚 Input Modes, Color Witchcraft, and Keyboard Sorcery</a></h3>
 <hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
+<h4 id="-chapter-9-input-timing--modes"><a class="header" href="#-chapter-9-input-timing--modes"><strong>🧩 Chapter 9: Input Timing &amp; Modes</strong></a></h4>
+<p><strong>Learn the nuanced differences between:</strong></p>
 <ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+<li><code>cbreak()</code> – reads input <em>immediately</em>, char by char (but still blocks).</li>
+<li><code>halfdelay(t)</code> – like cbreak, but <code>getch()</code> times out after <em>tenths of a second</em>.</li>
+<li><code>nodelay(stdscr, TRUE)</code> – makes <code>getch()</code> non-blocking entirely.</li>
+<li><code>timeout(ms)</code> – <code>getch()</code> blocks for up to <code>ms</code> milliseconds.</li>
 </ul>
 <pre><code class="language-c">#include &lt;ncurses.h&gt;
+#include &lt;stdbool.h&gt;
 
 int main(int argc, char **argv) {
   initscr();
   noecho();
-  cbreak();
 
-  int yMax, xMax;
-  getmaxyx(stdscr, yMax, xMax);
+  // Input mode options (uncomment to test different ones)
+  cbreak();                 // read instantly but still blocks
+  // halfdelay(10);         // waits up to 1s (10 * 0.1s)
+  // nodelay(stdscr, TRUE); // never blocks
+  timeout(500);             // wait 500ms max for input
 
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
-  refresh();
-  wrefresh(menuwin);
-
-  keypad(menuwin, true);
-
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
-
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
-
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
-
-      wattroff(menuwin, A_REVERSE);
-    }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
+  int c;
+  while ((c = getch()) != 'x') {
+    printw("%d\n", c);
   }
 
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h4 id="-chapter-10-color-and-attribute-combos"><a class="header" href="#-chapter-10-color-and-attribute-combos"><strong>🎨 Chapter 10: Color and Attribute Combos</strong></a></h4>
+<p><strong>Level up your <code>ncurses</code> glam</strong> with:</p>
+<ul>
+<li>Multiple color pairs</li>
+<li>Mixing colors with attributes like <code>A_REVERSE</code></li>
+<li>Creating <code>chtype</code> values with embedded style</li>
+</ul>
+<pre><code class="language-c">#include &lt;curses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  if (!has_colors()) {
+    endwin();
+    printf("Color can't be used.\n");
+    return 1;
+  }
+
+  start_color();
+
+  init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(2, COLOR_RED, COLOR_BLACK);
+
+  attron(A_REVERSE | COLOR_PAIR(2));
+  mvaddch(5, 5, 'a');
+  mvaddch(5, 6, 'b');
+  mvaddch(5, 7, 'c');
+  attroff(A_REVERSE | COLOR_PAIR(2));
+
+  // Color + attribute embedded in a single value
+  chtype c = '@' | A_REVERSE | COLOR_PAIR(1);
+  mvaddch(9, 5, c);
 
   getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h4 id="-chapter-11-ctrl-key-handling"><a class="header" href="#-chapter-11-ctrl-key-handling"><strong>⌨️ Chapter 11: Ctrl Key Handling</strong></a></h4>
+<p><strong>Detect Ctrl + key combos like a boss</strong>
+(e.g., for shortcuts or a baby <code>nano</code> editor vibe)</p>
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+#define ctrl(x) ((x) &amp; 0x1F)
+// Shift detection? Sorry hun, not in this terminal's reality
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+
+  char ch;
+  while ((ch = getch())) {
+    mvprintw(1, 0, "KEY NAME : %s - 0x%02x\n", keyname(ch), ch);
+    if (ch == ctrl('a')) {
+      mvprintw(0, 0, "Detected Ctrl+A!");
+    }
+  }
+
   endwin();
   return 0;
 }
@@ -273,11 +266,11 @@ int main(int argc, char **argv) {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt12.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +280,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt12.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

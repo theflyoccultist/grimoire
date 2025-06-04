@@ -2582,7 +2582,7 @@ done
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C</a></h1>
 <p>Very old, very fast and minimal, basically never goes out of style.</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
 <p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
 <ol>
 <li>
@@ -4787,6 +4787,802 @@ int main(int argc, char **argv) {
   return 0;
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="chapter-8-a-rogue-like-game-engine"><a class="header" href="#chapter-8-a-rogue-like-game-engine">Chapter 8: A Rogue like Game Engine</a></h2>
+<ul>
+<li>Movements, walls, boundaries, breadcrumbs.</li>
+</ul>
+<p>This is the demo for a tiny rogue-like engine, a <code>@</code> character leaving <code>.</code> bread crumbs wherever it goes.</p>
+<p>It is using several files with <code>struct</code> which are the equivalent of constructors in C++. Methods becomes plain old functions.
+Everything is pointer based.</p>
+<h3 id="playerh"><a class="header" href="#playerh"><code>player.h</code></a></h3>
+<pre><code class="language-c">#ifndef PLAYER_H
+#define PLAYER_H
+
+#include &lt;ncurses.h&gt;
+
+typedef struct Player {
+  int yLoc, xLoc;
+  int yMax, xMax;
+  char character;
+  WINDOW *curwin;
+} Player;
+
+Player *create_player(WINDOW *win, int y, int x, char c);
+void move_up(Player *p);
+void move_down(Player *p);
+void move_left(Player *p);
+void move_right(Player *p);
+int get_input(Player *p);
+void display_player(Player *p);
+
+#endif
+</code></pre>
+<h3 id="playerc-implementation"><a class="header" href="#playerc-implementation"><code>player.c</code> Implementation</a></h3>
+<pre><code class="language-c">#include "player.h"
+#include &lt;stdlib.h&gt;
+
+Player *create_player(WINDOW *win, int y, int x, char c) {
+  Player *p = (Player *)malloc(sizeof(Player));
+  p-&gt;curwin = win;
+  p-&gt;yLoc = y;
+  p-&gt;xLoc = x;
+  getmaxyx(win, p-&gt;yMax, p-&gt;xMax);
+  keypad(win, TRUE);
+  p-&gt;character = c;
+  return p;
+}
+
+void move_up(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;yLoc--;
+  if (p-&gt;yLoc &lt; 1)
+    p-&gt;yLoc = 1;
+}
+
+void move_down(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;yLoc++;
+  if (p-&gt;yLoc &gt; p-&gt;yMax - 2)
+    p-&gt;yLoc = p-&gt;yMax - 2;
+}
+
+void move_left(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;xLoc--;
+  if (p-&gt;xLoc &lt; 1)
+    p-&gt;xLoc = 1;
+}
+
+void move_right(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, '.');
+  p-&gt;xLoc++;
+  if (p-&gt;xLoc &gt; p-&gt;xMax - 2)
+    p-&gt;xLoc = p-&gt;xMax - 2;
+}
+
+int get_input(Player *p) {
+  int choice = wgetch(p-&gt;curwin);
+  switch (choice) {
+    case KEY_UP:
+      move_up(p);
+      break;
+    case KEY_DOWN:
+      move_down(p);
+      break;
+    case KEY_LEFT:
+      move_left(p);
+      break;
+    case KEY_RIGHT:
+      move_right(p);
+      break;
+    default:
+      break;
+  }
+  return choice;
+}
+
+void display_player(Player *p) {
+  mvwaddch(p-&gt;curwin, p-&gt;yLoc, p-&gt;xLoc, p-&gt;character);
+}
+</code></pre>
+<h3 id="mainc"><a class="header" href="#mainc"><code>main.c</code></a></h3>
+<pre><code class="language-c">#include "player.h"
+#include &lt;ncurses.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  cbreak();
+
+  int yMax, xMax;
+  getmaxyx(stdscr, yMax, xMax);
+
+  WINDOW *playwin = newwin(20, 50, (yMax / 2) - 10, 10);
+  box(playwin, 0, 0);
+  refresh();
+  wrefresh(playwin);
+
+  Player *p = create_player(playwin, 1, 1, '@');
+
+  do {
+    display_player(p);
+    wrefresh(playwin);
+  } while (get_input(p) != 'x');
+
+  endwin();
+  free(p);
+  return 0;
+}
+</code></pre>
+<h3 id="makefile"><a class="header" href="#makefile">Makefile</a></h3>
+<pre><code class="language-Makefile">all: player
+
+player: main.c player.c player.h
+	gcc -Wall -o output main.c player.c -lncurses
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="-input-modes-color-witchcraft-and-keyboard-sorcery"><a class="header" href="#-input-modes-color-witchcraft-and-keyboard-sorcery">📚 Input Modes, Color Witchcraft, and Keyboard Sorcery</a></h3>
+<hr />
+<h4 id="-chapter-9-input-timing--modes"><a class="header" href="#-chapter-9-input-timing--modes"><strong>🧩 Chapter 9: Input Timing &amp; Modes</strong></a></h4>
+<p><strong>Learn the nuanced differences between:</strong></p>
+<ul>
+<li><code>cbreak()</code> – reads input <em>immediately</em>, char by char (but still blocks).</li>
+<li><code>halfdelay(t)</code> – like cbreak, but <code>getch()</code> times out after <em>tenths of a second</em>.</li>
+<li><code>nodelay(stdscr, TRUE)</code> – makes <code>getch()</code> non-blocking entirely.</li>
+<li><code>timeout(ms)</code> – <code>getch()</code> blocks for up to <code>ms</code> milliseconds.</li>
+</ul>
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+#include &lt;stdbool.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+
+  // Input mode options (uncomment to test different ones)
+  cbreak();                 // read instantly but still blocks
+  // halfdelay(10);         // waits up to 1s (10 * 0.1s)
+  // nodelay(stdscr, TRUE); // never blocks
+  timeout(500);             // wait 500ms max for input
+
+  int c;
+  while ((c = getch()) != 'x') {
+    printw("%d\n", c);
+  }
+
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h4 id="-chapter-10-color-and-attribute-combos"><a class="header" href="#-chapter-10-color-and-attribute-combos"><strong>🎨 Chapter 10: Color and Attribute Combos</strong></a></h4>
+<p><strong>Level up your <code>ncurses</code> glam</strong> with:</p>
+<ul>
+<li>Multiple color pairs</li>
+<li>Mixing colors with attributes like <code>A_REVERSE</code></li>
+<li>Creating <code>chtype</code> values with embedded style</li>
+</ul>
+<pre><code class="language-c">#include &lt;curses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  if (!has_colors()) {
+    endwin();
+    printf("Color can't be used.\n");
+    return 1;
+  }
+
+  start_color();
+
+  init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(2, COLOR_RED, COLOR_BLACK);
+
+  attron(A_REVERSE | COLOR_PAIR(2));
+  mvaddch(5, 5, 'a');
+  mvaddch(5, 6, 'b');
+  mvaddch(5, 7, 'c');
+  attroff(A_REVERSE | COLOR_PAIR(2));
+
+  // Color + attribute embedded in a single value
+  chtype c = '@' | A_REVERSE | COLOR_PAIR(1);
+  mvaddch(9, 5, c);
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h4 id="-chapter-11-ctrl-key-handling"><a class="header" href="#-chapter-11-ctrl-key-handling"><strong>⌨️ Chapter 11: Ctrl Key Handling</strong></a></h4>
+<p><strong>Detect Ctrl + key combos like a boss</strong>
+(e.g., for shortcuts or a baby <code>nano</code> editor vibe)</p>
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+#define ctrl(x) ((x) &amp; 0x1F)
+// Shift detection? Sorry hun, not in this terminal's reality
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+
+  char ch;
+  while ((ch = getch())) {
+    mvprintw(1, 0, "KEY NAME : %s - 0x%02x\n", keyname(ch), ch);
+    if (ch == ctrl('a')) {
+      mvprintw(0, 0, "Detected Ctrl+A!");
+    }
+  }
+
+  endwin();
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="menubar-with-ncurses"><a class="header" href="#menubar-with-ncurses">MenuBar with ncurses</a></h2>
+<p><code>Makefile</code></p>
+<pre><code class="language-Makefile">all: menu
+
+menu: main.c menu.c submenu.c
+	gcc -Wall -o menu main.c menu.c submenu.c -lncurses
+</code></pre>
+<hr />
+<p><code>main.c</code></p>
+<pre><code class="language-c">#include "menu.h"
+#include "submenu.h"
+#include &lt;curses.h&gt;
+
+int main() {
+  initscr();
+  noecho();
+  curs_set(0);
+
+  int yMax, xMax;
+  getmaxyx(stdscr, yMax, xMax);
+  WINDOW *win = newwin(yMax / 2, xMax / 2, yMax / 4, xMax / 4);
+  box(win, 0, 0);
+
+  const char *file_items[] = {"open", "save", "quit", NULL};
+  const char *edit_items[] = {"cut", "copy", "paste", NULL};
+  const char *opt_items[] = {"settings", "lorem", "ipsum", NULL};
+
+  Menu menus[] = {
+      {2, "file", 'f', file_items},
+      {7, "edit", 'e', edit_items},
+      {12, "options", 'o', opt_items},
+  };
+
+  int num_menus = sizeof(menus) / sizeof(Menu);
+
+  draw_menus(win, menus, num_menus);
+  wrefresh(win);
+
+  char ch;
+  int active_index = -1;
+  while ((ch = wgetch(win))) {
+    unhighlight_all(win, menus, num_menus);
+
+    for (int i = 0; i &lt; num_menus; i++) {
+      if (ch == menus[i].trigger) {
+        highlight_menu(win, menus[i]);
+        clear_submenu_area(win);
+        active_index = i;
+      }
+      if (ch == ' ') {
+        if (active_index != -1) {
+          show_submenu(win, menus[active_index]);
+          wrefresh(win);
+        }
+      }
+    }
+  }
+
+  wrefresh(win);
+
+  endwin();
+  return 0;
+}
+
+</code></pre>
+<p>Note the <code>const char *...items</code>:
+these are how you would do an array of strings in c.
+Note <code>bool submenu_open</code>:</p>
+<hr />
+<p><code>menu.h</code></p>
+<pre><code class="language-c">#ifndef MENU_H
+#define MENU_H
+
+#include &lt;curses.h&gt;
+
+// top level menu label
+typedef struct Menu {
+  int start_x;
+  const char *text;
+  char trigger;
+  const char **submenu;
+} Menu;
+
+typedef struct MenuItem {
+  const char *label;
+  int x;
+} MenuItem;
+
+void draw_menus(WINDOW *win, Menu menus[], int count);
+
+void highlight_menu(WINDOW *win, Menu menu);
+
+void unhighlight_all(WINDOW *win, Menu menus[], int count);
+
+#endif // !_MENU_H_
+</code></pre>
+<p>Note how the structs are defined with <code>typedef struct ... { ... }</code>. These are for how you would structure your memory.</p>
+<hr />
+<p><code>menu.c</code></p>
+<pre><code class="language-c">#include "menu.h"
+#include &lt;curses.h&gt;
+
+void draw_menus(WINDOW *win, Menu menus[], int count) {
+  for (int i = 0; i &lt; count; i++) {
+    mvwprintw(win, 0, menus[i].start_x, "%s", menus[i].text);
+  }
+}
+
+void highlight_menu(WINDOW *win, Menu menu) {
+  wattron(win, A_STANDOUT);
+  mvwprintw(win, 0, menu.start_x, "%s", menu.text);
+  wattroff(win, A_STANDOUT);
+}
+
+void unhighlight_all(WINDOW *win, Menu menus[], int count) {
+  for (int i = 0; i &lt; count; i++) {
+    mvwprintw(win, 0, menus[i].start_x, "%s", menus[i].text);
+  }
+}
+</code></pre>
+<p>Take a look at the <code>wattron</code> and <code>wattroff</code> functions. Short for Window Attributes. This acts as a toggle.</p>
+<hr />
+<p><code>submenu.h</code></p>
+<pre><code class="language-c">#ifndef SUBMENU_h
+#define SUBMENU_h
+
+#include "menu.h"
+#include &lt;curses.h&gt;
+
+void show_submenu(WINDOW *win, Menu menu);
+void clear_submenu_area(WINDOW *win);
+
+#endif
+</code></pre>
+<p>This is here so that functions from <code>submenu.c</code> can be called from different files, as long as they <code>#include "submenu.h"</code>.</p>
+<hr />
+<p><code>submenu.c</code></p>
+<pre><code class="language-c">#include "submenu.h"
+#include "menu.h"
+#include &lt;curses.h&gt;
+
+void show_submenu(WINDOW *win, Menu menu) {
+  int y = 1;
+  for (int i = 0; menu.submenu[i] != NULL; i++) {
+    mvwprintw(win, y++, menu.start_x, "--&gt; %s", menu.submenu[i]);
+  }
+}
+
+void clear_submenu_area(WINDOW *win) {
+  int width = getmaxx(win);
+  for (int i = 1; i &lt;= 5; i++) {
+    mvwprintw(win, i, 1, "%*s", width - 2, " ");
+  }
+}
+</code></pre>
+<h3 id="how-to-use-the-program"><a class="header" href="#how-to-use-the-program">How to use the program:</a></h3>
+<ul>
+<li>Press f for file, e for edit and o for options to highlight that menu item.</li>
+<li>Press the space key to display submenus.</li>
+<li>Press the menu item key again to hide the submenu.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="ncurses-routines-in-rapid-succession"><a class="header" href="#ncurses-routines-in-rapid-succession">ncurses Routines in Rapid Succession</a></h2>
+<hr />
+<h3 id="chapter-13-chgat-mvchgat-wchgat-mvwchgat"><a class="header" href="#chapter-13-chgat-mvchgat-wchgat-mvwchgat">Chapter 13: <code>chgat</code>, <code>mvchgat</code>, <code>wchgat</code>, <code>mvwchgat</code></a></h3>
+<p><code>chgat</code> style functions modify the attributes of a sequence of characters already printed on the screen, without reprinting them.</p>
+<ul>
+<li>Fast and visually smooth for highlighting and toggling styles without redrawing full lines.</li>
+</ul>
+<p>Common Signature:</p>
+<pre><code class="language-c">chgat(int n, attr_t attr, short color_pair, const void *opts);
+</code></pre>
+<ul>
+<li><code>n</code>: Number of characters to affect. Use <code>-1</code> to go to end of line.</li>
+<li><code>attr</code>: Attribute flags like <code>A_BOLD</code>, <code>A_REVERSE</code>, etc.</li>
+<li><code>color_pair</code>: The index of the color pair (from init_pair).</li>
+<li><code>opts</code>: Always <code>NULL</code>. Reserved for future cursed extensions.</li>
+</ul>
+<p>The Family Tree:</p>
+<div class="table-wrapper"><table><thead><tr><th>Function</th><th>Context</th><th>Cursor Affects?</th><th>Uses a <code>WINDOW</code>?</th><th>Coordinates?</th></tr></thead><tbody>
+<tr><td><code>chgat()</code></td><td>stdscr</td><td>Yes</td><td>No</td><td>Current pos</td></tr>
+<tr><td><code>mvchgat()</code></td><td>stdscr</td><td>Yes</td><td>No</td><td>Moves cursor</td></tr>
+<tr><td><code>wchgat()</code></td><td>custom window</td><td>Yes</td><td>Yes</td><td>Current pos</td></tr>
+<tr><td><code>mvwchgat()</code></td><td>custom window</td><td>Yes</td><td>Yes</td><td>Moves cursor</td></tr>
+</tbody></table>
+</div>
+<p>💡 Practical Differences
+🧼 chgat()</p>
+<ul>
+<li>Applies to the default window (stdscr)</li>
+<li>Starts at the current cursor position</li>
+<li>Doesn’t move the cursor, just modifies stuff starting from it</li>
+</ul>
+<p>🚶 mvchgat(y, x, ...)</p>
+<ul>
+<li>Moves the cursor to (y, x) on stdscr</li>
+<li>Then applies the attribute change from there</li>
+<li>Returns the cursor to the position after the change</li>
+</ul>
+<p>🪟 wchgat(win, ...)</p>
+<ul>
+<li>Applies to a specific WINDOW</li>
+<li>Uses the window's cursor position</li>
+<li>Use this when you’ve made custom windows (menus, popups, etc.)</li>
+</ul>
+<p>🧭 mvwchgat(win, y, x, ...)</p>
+<ul>
+<li>Moves cursor to (y, x) within a specific window</li>
+<li>Applies changes from there</li>
+</ul>
+<p>Highlighting a section of text:</p>
+<pre><code class="language-c">mvprintw(0, 0, "This is a test line.");
+mvchgat(0, 10, 4, A_REVERSE, 1, NULL); // highlights "test"
+</code></pre>
+<p>Using it in a custom window:</p>
+<pre><code class="language-c">WINDOW *win = newwin(10, 30, 5, 5);
+mvwprintw(win, 1, 2, "Item 1   Item 2   Item 3");
+mvwchgat(win, 1, 2, 6, A_STANDOUT, 2, NULL); // highlights "Item 1"
+</code></pre>
+<p>Gotchas:</p>
+<ul>
+<li>These functions don’t change what’s written, only how it looks.</li>
+<li>If you overwrite the text afterward, the attributes are lost unless reapplied.</li>
+<li>You must call <code>refresh()</code> (or <code>wrefresh()</code>) afterward to actually see the effect.</li>
+</ul>
+<hr />
+<h3 id="chapter-14-clrtoeol--clrtobot--erase--refresh"><a class="header" href="#chapter-14-clrtoeol--clrtobot--erase--refresh">Chapter 14: <code>clrtoeol</code> / <code>clrtobot</code> + <code>erase()</code> / <code>refresh()</code></a></h3>
+<p>The two terminal janitors:</p>
+<ul>
+<li><code>clrtoeol()</code> cleans from the cursor to the end of the current line.</li>
+<li><code>clrtobot()</code> wipes everything from the cursor down to the bottom of the window, including the current line.</li>
+</ul>
+<hr />
+<p><code>erase()</code> and <code>clear()</code> may seem similar on the surface, but underneath, they are a little bit different.</p>
+<p><code>erase()</code> : Clears the window's contents in memory, but does not force an immediate redraw of the screen.</p>
+<ul>
+<li>Works silently with your next <code>refresh()</code> or <code>wrefresh()</code>.</li>
+<li>Ideal for partial updates, flickerless redraws.</li>
+</ul>
+<pre><code class="language-c">erase();       // marks the stdscr for clearing
+refresh();     // now it actually shows the cleared screen
+</code></pre>
+<p><code>clear()</code> : Same as <code>erase()</code>, but also tells curses to clear the physical screen completely on the next <code>refresh()</code>.</p>
+<ul>
+<li>The terminal acts as if it was just launched.</li>
+<li>Can cause flickering</li>
+<li>Good for a fresh, guaranteed blank state.</li>
+</ul>
+<pre><code class="language-c">clear();       // like erase() + "I said CLEAR DAMN IT"
+refresh();
+</code></pre>
+<hr />
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  refresh();
+
+  printw("Hello");
+  mvprintw(1, 0, "PwatPwat");
+  move(0, 1);
+  getch();
+  // clear routines
+  // to the end of line
+  clrtoeol();
+  getch();
+
+  mvprintw(2, 0, "To clean");
+  mvprintw(3, 0, "To clean");
+  mvprintw(5, 0, "To clean");
+  mvprintw(10, 0, "To clean");
+  move(2, 5);
+  getch();
+
+  // to the bottom
+  clrtobot();
+  getch();
+
+  // erase(); soft clear
+  // clear(); definitely clear
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-15-leaveok--immedok--scrollok"><a class="header" href="#chapter-15-leaveok--immedok--scrollok">Chapter 15: <code>leaveok</code> / <code>immedok</code> / <code>scrollok</code></a></h3>
+<h4 id="leaveokwin-true"><a class="header" href="#leaveokwin-true"><code>leaveok(win, TRUE)</code></a></h4>
+<ul>
+<li>Don't care where the cursor is, just leave it wherever.</li>
+<li>Prevents <code>ncurses</code> from moving the hardware cursor.</li>
+<li>Skips cursor repositioning.</li>
+<li>It's fast.</li>
+</ul>
+<h4 id="immedokwin-true"><a class="header" href="#immedokwin-true"><code>immedok(win, TRUE)</code></a></h4>
+<ul>
+<li>Every time I change the window, update it immediately.</li>
+<li>Forces <code>wrefresh(win)</code> automatically after every <code>waddch()</code>, <code>mvwprintw()</code>, etc.</li>
+<li>Slower, but more dynamic and automatic.</li>
+</ul>
+<h4 id="scrollokwin-true"><a class="header" href="#scrollokwin-true"><code>scrollok(win, TRUE)</code></a></h4>
+<ul>
+<li>If we hit the bottom, just scroll the window down.</li>
+<li>Enables automatic scrolling when adding text past the bottom line.</li>
+<li>Useful for chat logs, terminal output windows, logs, etc.</li>
+<li>Requires enough space (and usually <code>idlok()</code> too for smooth scrolling).</li>
+</ul>
+<hr />
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  refresh();
+
+  WINDOW *win = newwin(5, 8, 10, 10);
+  box(win, 0, 0);
+
+  /* 
+  // don't really need to know where the cursor is
+  leaveok(win, true);
+  wmove(win, 1, 2);
+  wgetch(win);
+  */
+
+  /* 
+  // refresh immediately
+  immedok(win, true);
+  waddch(win, 'a');
+  */
+
+  /* 
+  // allow continuous scrolling
+  scrollok(win, true);
+  int counter = 0;
+  while (true) {
+    chtype ch = (counter % 10) + '0';
+    waddch(win, ch);
+    wrefresh(win);
+    counter++;
+  }
+  */
+
+  // clearok(WINDOW *, bool)
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<h3 id="chapter-16-background-routines-bkgdset--bkgd--wbkgdset--wbkgd"><a class="header" href="#chapter-16-background-routines-bkgdset--bkgd--wbkgdset--wbkgd">Chapter 16: Background Routines (<code>bkgdset</code> / <code>bkgd</code> / <code>wbkgdset</code> / <code>wbkgd</code>)</a></h3>
+<p>Those are routines to manipulate the background of a named window.</p>
+<pre><code class="language-c">// Background routines
+#include &lt;ncurses.h&gt;
+
+int main() {
+  initscr();
+  refresh();
+  clear();
+
+  if (!has_colors()) {
+    return 1;
+  }
+  start_color();
+  init_pair(1, COLOR_BLACK, COLOR_RED);
+  init_pair(2, COLOR_WHITE, COLOR_BLUE);
+
+  // setting attributes for the future
+  bkgdset(COLOR_PAIR(1));
+  addch('a');
+  refresh();
+
+  /*
+  bkgd('a'); fill the background
+  addch('u');
+  */
+
+  /*
+  // bkgd vs wbkgd
+  bkgd(COLOR_PAIR(1));
+  refresh();
+  */
+
+  WINDOW *win = newwin(10, 25, 10, 10);
+
+  wbkgdset(win, COLOR_PAIR(2));
+  wclear(win);
+  wrefresh(win);
+
+  /*
+  wbkgd(win, COLOR_PAIR(2));
+  box(win, 0, 0);
+  wrefresh(win);
+  */
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<h3 id="chapter-17-free-window-memory-with-delwin"><a class="header" href="#chapter-17-free-window-memory-with-delwin">Chapter 17 Free Window memory with <code>delwin()</code>:</a></h3>
+<ul>
+<li><code>newwin()</code> allocates memory for a WINDOW structure.</li>
+<li><code>delwin()</code> deallocates that memory, it's like <code>free()</code> for windows.</li>
+</ul>
+<p>🧼 When to use delwin():</p>
+<p>✅ Use it:</p>
+<ul>
+<li>When a window is no longer needed (e.g., after closing a dialog box).</li>
+<li>After calling wclear() and wrefresh() to visually wipe it off the screen.</li>
+<li>In well-structured code where windows are dynamically created and destroyed.</li>
+</ul>
+<p>🚫 You can skip it:</p>
+<ul>
+<li>In small toy programs or examples where the window is static and only created once.</li>
+<li>If the program ends right after and the OS will clean up anyway (but that's lazy energy).</li>
+</ul>
+<pre><code class="language-c">// Deleting Window Memory
+// Increase security with delwin()
+
+#include &lt;curses.h&gt;
+#include &lt;ncurses.h&gt;
+
+int main() {
+  initscr();
+
+  WINDOW *test_win = newwin(10, 25, 0, 0);
+  box(test_win, 0, 0);
+  refresh();
+  wrefresh(test_win);
+
+  getch();
+
+  wclear(test_win);
+  wrefresh(test_win);
+  // ensure all associated memory for WINDOW is deleted
+  // but, does not erase the visual portion on its own.
+  // Use wclear(win) and wrefresh(win) first to do so.
+  delwin(test_win);
+
+  refresh();
+  // wrefresh(test_win); // referencing it after it's been deleted can cause a
+  // segfault
+  getch();
+
+  endwin();
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="more-cool-features"><a class="header" href="#more-cool-features">More Cool Features</a></h2>
+<hr />
+<h3 id="chapter-18-define-your-own-color-palettes"><a class="header" href="#chapter-18-define-your-own-color-palettes">Chapter 18: Define Your Own Color Palettes</a></h3>
+<ul>
+<li><code>init_color(short color_number, short r, short g, short b)</code> uses values from 0 to 1000, not 255.</li>
+<li>Custom colors are global: once you redefine <code>COLOR_GREEN</code>, that's what it means from now on.</li>
+</ul>
+<pre><code class="language-c">#include &lt;curses.h&gt;
+#include &lt;ncurses.h&gt;
+
+int main() {
+  initscr();
+
+  // check for color support
+  if (!has_colors() || !can_change_color()) {
+    printw("Your terminal does not support colors.");
+    getch();
+    return 1;
+  }
+  start_color();
+
+  // Query how many you get
+  printw("COLORS      : %d\n", COLORS);
+  printw("COLOR_PAIRS : %d\n", COLOR_PAIRS);
+
+  // Redefine COLOR_CYAN
+  init_color(COLOR_CYAN, 1000, 200, 800);
+  init_pair(1, COLOR_CYAN, COLOR_BLACK);
+  attron(COLOR_PAIR(1));
+  printw("Custom color magenta-ish cyan?\n");
+  attroff(COLOR_PAIR(1));
+
+  getch();
+
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-19-character-management-delch-wdelch-mvdelch-mvwdelch"><a class="header" href="#chapter-19-character-management-delch-wdelch-mvdelch-mvwdelch">Chapter 19: Character Management (<code>delch</code>, <code>wdelch</code>, <code>mvdelch</code>, <code>mvwdelch</code>)</a></h3>
+<pre><code class="language-c">// routines for character management
+
+#include &lt;ncurses.h&gt;
+int main() {
+  initscr();
+  noecho();
+
+  printw("Hello from the underworld");
+  getch();
+
+  // Deletes a character, defined by move(y, x);
+  // move(0, 9)
+  // delch();
+  // wdelch(WINDOW);
+
+  // Achieves the same results as above
+  mvdelch(0, 9);
+
+  // performs within the window
+  // WINDOW *win = newwin(10, 25, 5, 5);
+  // box(win, 0, 0);
+  // refresh();
+  // wrefresh(win);
+  //
+  // mvwprintw(win, 1, 1, "hello this is more text");
+  // wgetch(win);
+  // mvwdelch(win, 1, 10);
+  // wgetch(win);
+
+  getch();
+
+  endwin();
+
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-20-line-management-insertln-deleteln-insdelln"><a class="header" href="#chapter-20-line-management-insertln-deleteln-insdelln">Chapter 20: Line Management (<code>insertln</code>, <code>deleteln</code>, <code>insdelln</code>)</a></h3>
+<pre><code class="language-c">// function to add / remove lines
+
+#include &lt;curses.h&gt;
+
+int main() {
+  initscr();
+  noecho();
+
+  WINDOW *win = newwin(4, 25, 5, 5);
+  refresh();
+  wrefresh(win);
+
+  mvwprintw(win, 0, 0, "1 Line of Text here");
+  mvwprintw(win, 1, 0, "2 Line of Text here");
+  mvwprintw(win, 2, 0, "3 Line of Text here");
+  mvwprintw(win, 3, 0, "4 Line of Text here");
+
+  wmove(win, 1, 0);
+  wgetch(win);
+
+  // inserts a line wherever the cursor it. needs a wmove().
+  // Moves every other lines -1
+  // winsertln(win);
+
+  // deletes the line, again at the position determined by wmove()
+  // also moves other lines
+  wdeleteln(win);
+
+  // deletes or inserts lines, determined by the second int argument
+  // (positive int to add, negative int to remove).
+  winsdelln(win, -2);
+
+  // No more room for lines? the bottom ones gets deleted first.
+
+  wgetch(win);
+  endwin();
+  return 0;
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c-"><a class="header" href="#c-">C++ 🤖</a></h1>
 <p>Welcome to my C++ notes. Categorized for your sanity and mine.</p>
 <ul>
@@ -6148,6 +6944,222 @@ int main() {
     delete shape;
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="move-semantics"><a class="header" href="#move-semantics">Move semantics</a></h2>
+<ul>
+<li>
+<p>In C++11 there is a sequential container class defined in <code>&lt;array&gt;</code> that specifies at compile time a fixed length array.</p>
+</li>
+<li>
+<p>Vectors: expandable. Has more features.
+But not without a cost.</p>
+</li>
+<li>
+<p>Go back to basic C arrays? Discipline yourself to not get off by one errors, memory leaks and etc...</p>
+</li>
+<li>
+<p>Use <code>std::array</code>! Maintain efficiency of raw arrays, but has now added functionality.</p>
+</li>
+<li>
+<p>It supports move semantics (And RAII): we will learn about those features.</p>
+</li>
+</ul>
+<pre><code class="language-cpp">template &lt;class T, int n&gt;
+
+class my_container {
+public:
+  my_container() { a = new T[n]; };
+  ~my_container() { delete[] a; };
+
+private:
+  T *a;
+};
+</code></pre>
+<ul>
+<li>However this code requires manual memory cleanup, uses raw pointers and so a lot to worry about. By using <code>std::array</code> you can get rid of those problems.</li>
+</ul>
+<h3 id="some-further-constructions"><a class="header" href="#some-further-constructions">Some further constructions</a></h3>
+<pre><code class="language-cpp">template &lt;class T, int n&gt;
+
+class my_container {
+public:
+  my_container() { a = new T[n]; };
+  ~my_container() { delete[] a; };
+
+  explicit my_container(T *b) : my_container() {
+    for (int i = 0; i &lt; n; ++i)
+      a[i] = b[i];
+  }
+</code></pre>
+<ul>
+<li><code>explicit</code> suppresses automatic coercion.</li>
+<li>Delegate construction and enhance code reuse.</li>
+</ul>
+<pre><code class="language-cpp">  my_container(const my_container &amp;b) : my_container() {
+    for (int i = 0; i &lt; n; ++i)
+      a[i] = b.a[i];
+  }
+</code></pre>
+<ul>
+<li>Ordinary copy constructor - again with constructor delegation.</li>
+</ul>
+<pre><code class="language-cpp">private:
+  T *a;
+};
+</code></pre>
+<p>Typical constructors for a class:</p>
+<ul>
+<li>Default : void signature</li>
+<li>Conversion constructor: single argument (we use explicit)</li>
+<li>Copy constructor: <code>const class Type&amp;</code></li>
+</ul>
+<h3 id="move-constructor"><a class="header" href="#move-constructor">Move constructor</a></h3>
+<pre><code class="language-cpp">  my_container(my_container &amp;&amp;b) noexcept {
+    a = b.a;
+    b.a = nullptr;
+  }
+</code></pre>
+<p>Contents are "moved" not copied.</p>
+<ul>
+<li><code>noexcept</code>: I don't do anything that will create an exception.</li>
+<li>Shallow copy : b disappears.</li>
+<li>This operation doesn't slow down even with a large number of datasets. Constant time algorithm.</li>
+<li>Use of <code>&amp;&amp;</code> to mean an <code>rvalue</code> address.</li>
+</ul>
+<p>You might want to overload the = operator:</p>
+<pre><code class="language-cpp">  my_container &amp;operator=(my_container &amp;&amp;b) noexcept {
+    a = b.a;
+    b.a = nullptr;
+    return *this;
+  }
+</code></pre>
+<ul>
+<li><code>std::move() static_cast&lt;T&amp;&amp;&gt;(t)</code> - destructive assignment</li>
+<li>More efficient because all the assignments are referential.</li>
+</ul>
+<h3 id="efficient-swap-with-move-semantics"><a class="header" href="#efficient-swap-with-move-semantics">Efficient swap with move semantics</a></h3>
+<p>We know that my_container temp won't be reused later, so it can disappear.
+Perfect use for move semantics.</p>
+<pre><code class="language-cpp">  void swap(my_container &amp;b) {
+    my_container temp = std::move(b);
+    b = std::move(*this);
+    *this = std::move(temp);
+  }
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-part-2-the-deeper-arcana-of-move-semantics"><a class="header" href="#-part-2-the-deeper-arcana-of-move-semantics">🧪 PART 2: The Deeper Arcana of Move Semantics</a></h2>
+<h3 id="-1-stdmove--the-blessing-of-transfer"><a class="header" href="#-1-stdmove--the-blessing-of-transfer">💫 1. <code>std::move</code> — <em>The Blessing of Transfer</em></a></h3>
+<p>Despite the name, <code>std::move</code> <strong>does not move anything</strong>.</p>
+<p>What it really does is <strong>cast a spell</strong> that tells the compiler:</p>
+<blockquote>
+<p>“Hey, I solemnly swear I won't use this object anymore. You can steal its soul now.”</p>
+</blockquote>
+<p>So instead of:</p>
+<pre><code class="language-cpp">T a = b; // Copy
+</code></pre>
+<p>You go:</p>
+<pre><code class="language-cpp">T a = std::move(b); // Move. b is now a shell of its former self.
+</code></pre>
+<p>🔮 Without <code>std::move</code>, your move constructor never even gets called. Because C++ won’t move something unless you <em>explicitly</em> say "I’m done with it."</p>
+<hr />
+<h3 id="-2-stdunique_ptrt--the-sacred-raii-relic"><a class="header" href="#-2-stdunique_ptrt--the-sacred-raii-relic">🦴 2. <code>std::unique_ptr&lt;T[]&gt;</code> — <em>The Sacred RAII Relic</em></a></h3>
+<p>You're tired of writing this, aren’t you?</p>
+<pre><code class="language-cpp">a = new T[n];
+delete[] a;
+</code></pre>
+<p>It’s giving ✨trauma✨.</p>
+<p>Instead, you do:</p>
+<pre><code class="language-cpp">#include &lt;memory&gt;
+
+std::unique_ptr&lt;T[]&gt; a;
+
+a = std::make_unique&lt;T[]&gt;(n);
+</code></pre>
+<ul>
+<li>Automatically deletes the memory when the object goes out of scope.</li>
+<li>You can still move it, but you <strong>can’t copy</strong>—because it’s <em>unique</em>, like your trauma and your playlist.</li>
+</ul>
+<p>Move constructor becomes dead simple:</p>
+<pre><code class="language-cpp">my_container(my_container&amp;&amp; other) noexcept = default;
+my_container&amp; operator=(my_container&amp;&amp; other) noexcept = default;
+</code></pre>
+<p>Let the STL do the heavy lifting while you sip iced coffee like a grown-up.</p>
+<hr />
+<h3 id="-3-stdexchange--the-elegant-memory-swap-spell"><a class="header" href="#-3-stdexchange--the-elegant-memory-swap-spell">🧼 3. <code>std::exchange</code> — <em>The Elegant Memory Swap Spell</em></a></h3>
+<p>Instead of this clunky mess:</p>
+<pre><code class="language-cpp">a = b.a;
+b.a = nullptr;
+</code></pre>
+<p>You say:</p>
+<pre><code class="language-cpp">a = std::exchange(b.a, nullptr);
+</code></pre>
+<p>Which means:</p>
+<blockquote>
+<p>"Set <code>a</code> to <code>b.a</code>, and reset <code>b.a</code> to <code>nullptr</code>, all in one sexy move."</p>
+</blockquote>
+<p>Perfect for move constructors and move assignment.</p>
+<hr />
+<h3 id="-4-pro-level-move-assignment-the-real-grownup-version"><a class="header" href="#-4-pro-level-move-assignment-the-real-grownup-version">🧝‍♀️ 4. Pro-Level Move Assignment: The Real Grownup Version</a></h3>
+<pre><code class="language-cpp">my_container&amp; operator=(my_container&amp;&amp; other) noexcept {
+    if (this != &amp;other) {
+        delete[] a;
+        a = std::exchange(other.a, nullptr);
+    }
+    return *this;
+}
+</code></pre>
+<ul>
+<li>Safe</li>
+<li>Clean</li>
+<li>Self-assignment-proof</li>
+<li>Doesn’t leak</li>
+<li>Doesn’t double-free</li>
+</ul>
+<p>This is C++ that smells like sandalwood, not burnt malloc.</p>
+<hr />
+<h3 id="-what-your-glow-up-class-might-look-like"><a class="header" href="#-what-your-glow-up-class-might-look-like">🏁 What Your Glow-Up Class Might Look Like</a></h3>
+<pre><code class="language-cpp">template &lt;typename T, int n&gt;
+class my_container {
+public:
+    my_container() : a(std::make_unique&lt;T[]&gt;(n)) {}
+
+    explicit my_container(const T* b) : my_container() {
+        std::copy(b, b + n, a.get());
+    }
+
+    my_container(const my_container&amp; other) : my_container() {
+        std::copy(other.a.get(), other.a.get() + n, a.get());
+    }
+
+    my_container&amp; operator=(const my_container&amp; other) {
+        if (this != &amp;other) {
+            std::copy(other.a.get(), other.a.get() + n, a.get());
+        }
+        return *this;
+    }
+
+    // Move semantics: default is enough when using unique_ptr
+    my_container(my_container&amp;&amp;) noexcept = default;
+    my_container&amp; operator=(my_container&amp;&amp;) noexcept = default;
+
+    void swap(my_container&amp; other) noexcept {
+        std::swap(a, other.a);
+    }
+
+private:
+    std::unique_ptr&lt;T[]&gt; a;
+};
+</code></pre>
+<p>Just look at her. <em>She doesn’t even need a destructor anymore.</em> She’s efficient. She’s safe. She’s <strong>modern</strong>.</p>
+<hr />
+<h3 id="-tldr--the-mystic-moves"><a class="header" href="#-tldr--the-mystic-moves">👑 TL;DR – The Mystic Moves</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Concept</th><th>Incantation</th><th>What It Does</th></tr></thead><tbody>
+<tr><td><code>std::move(obj)</code></td><td>"Take this, I’m done with it."</td><td>Enables move constructor/assign</td></tr>
+<tr><td><code>std::unique_ptr</code></td><td>"I will own this alone."</td><td>RAII for heap memory</td></tr>
+<tr><td><code>std::exchange()</code></td><td>"Take this, and replace it with that."</td><td>Swaps a value and returns old</td></tr>
+<tr><td><code>= default</code></td><td>"I trust the STL gods to handle this."</td><td>Autogenerate move/copy properly</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p>You want me to walk you through adapting your current class with <code>unique_ptr</code> line by line next? Or maybe go further into move-only types and real STL container internals? Just say the magic word, sorceress 🧙‍♀️✨</p>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-templates-in-c-"><a class="header" href="#introduction-to-templates-in-c-">Introduction to Templates in C++ 💀</a></h1>
 <p>Templates are one of C++’s most powerful and frightening features. They let you write generic code that can work with multiple data types without duplication. But they also have the potential to turn your code into an unreadable mess of cryptic compiler errors if misused.</p>
 <p>In these examples, we’ll look at two ways templates are used:</p>
@@ -6774,252 +7786,6 @@ int main() {
   return 0;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
-<p>A Minimum Spanning Tree (MST) of a connected weighted undirected graph is a sub graph that connects all the vertices while minimizing the total edge weight. It has the following properties:</p>
-<ul>
-<li>It spans all vertices of the original graph.</li>
-<li>It contains no cycles.</li>
-<li>The sum of its edge weights is minimal among all spanning trees.</li>
-</ul>
-<p>Key points about MST:</p>
-<ul>
-<li>It provides a way to connect all nodes in a network with the least amount of wire/cable.</li>
-<li>In computer networks, it helps in designing efficient communication networks.</li>
-<li>In transportation systems, it aids in finding the shortest path between multiple destinations.</li>
-</ul>
-<h3 id="history-of-kruskals-algorithm"><a class="header" href="#history-of-kruskals-algorithm">History of Kruskal's Algorithm</a></h3>
-<p>Kruskal's algorithm was developed by Joseph Kruskal in 1956. It was one of the first algorithms to solve the Minimum Spanning Tree problem efficiently.</p>
-<ul>
-<li>Initially, it was designed for electrical engineering applications but later found widespread use in computer science.</li>
-</ul>
-<h3 id="my-implementation"><a class="header" href="#my-implementation">My Implementation</a></h3>
-<p>To achieve this, I was given a pseudocode to start with.</p>
-<ul>
-<li>Create a forest F (set of trees) where each vertex in the graph is a separate tree.</li>
-<li>Create a set S containing all the edges in the graph.
-While S is nonempty and F is not yet spanning:
-<ul>
-<li>remove an edge with minimum weight from S</li>
-<li>if that edge connects two different trees, then add it to the forest, combining two trees into a single tree</li>
-<li>otherwise discard that edge.</li>
-</ul>
-</li>
-<li>at the termination of the algorithm, the forest has only one component and forms a minimum spanning tree of the graph.</li>
-</ul>
-<p>I have tried to keep the approach structured with class constructors, while the functions <code>KruskalMST()</code>, <code>add_edge()</code> and <code>computeMST()</code> serves to execute them. The results are shown at the end thanks to the <code>printMST()</code> function. The <code>main()</code> function is just there to route it all together.</p>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;utility&gt;
-#include &lt;vector&gt;
-
-// Initialize edges and operator overloading
-struct Edge {
-  int u, v, weight;
-  bool operator&lt;(const Edge &amp;other) const { return weight &lt; other.weight; }
-};
-
-class KruskalMST {
-public:
-  // Constructor declarations
-  KruskalMST(int n);
-  void add_edge(int u, int v, int weight);
-  void computeMST();
-  void printMST();
-
-private:
-  // Build trees
-  std::vector&lt;Edge&gt; edges;
-  std::vector&lt;Edge&gt; mst;
-  std::vector&lt;int&gt; parent, rank;
-  int num_vertices;
-
-  // Initialization
-  void make_set(int v) {
-    parent[v] = v;
-    rank[v] = 0;
-  }
-
-  // Path compression
-  int find_set(int v) {
-    if (v == parent[v])
-      return v;
-    return parent[v] = find_set(parent[v]);
-  }
-
-  // Union by rank
-  void union_sets(int a, int b) {
-    a = find_set(a);
-    b = find_set(b);
-    if (a != b) {
-      if (rank[a] &lt; rank[b])
-        std::swap(a, b);
-      parent[b] = a;
-      if (rank[a] == rank[b])
-        rank[a]++;
-    }
-  }
-};
-
-void KruskalMST::add_edge(int u, int v, int weight) {
-  edges.push_back({u, v, weight});
-
-  if (u &gt;= num_vertices || v &gt;= num_vertices) {
-    std::cerr &lt;&lt; "Invalid edge: " &lt;&lt; u &lt;&lt; " - " &lt;&lt; v &lt;&lt; "\n";
-    return;
-  }
-}
-
-void KruskalMST::computeMST() {
-  std::sort(edges.begin(), edges.end());
-
-  for (Edge e : edges) {
-    if (find_set(e.u) != find_set(e.v)) {
-      mst.push_back(e);
-      union_sets(e.u, e.v);
-    }
-  }
-}
-// Executing the algorithm itself
-KruskalMST::KruskalMST(int n) {
-  num_vertices = n;
-  parent.resize(n);
-  rank.resize(n);
-
-  for (int i = 0; i &lt; n; ++i)
-    make_set(i);
-}
-
-// Function to print results
-void KruskalMST::printMST() {
-  int tot_weight = 0;
-
-  std::cout &lt;&lt; "Edges in the MST are \n";
-  for (const Edge &amp;e : mst) {
-    std::cout &lt;&lt; e.u &lt;&lt; "--" &lt;&lt; e.v &lt;&lt; " : " &lt;&lt; e.weight &lt;&lt; "\n";
-    tot_weight += e.weight;
-  }
-
-  std::cout &lt;&lt; "\nTotal weight is: " &lt;&lt; tot_weight &lt;&lt; "\n";
-};
-
-// Testing above functions
-int main() {
-  KruskalMST graph(9);
-
-  graph.add_edge(0, 3, 8);
-  graph.add_edge(2, 5, 5);
-  graph.add_edge(6, 1, 7);
-
-  graph.computeMST();
-  graph.printMST();
-
-  return 0;
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
-<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
-<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
-<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
-<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
-<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
-<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
-</tbody></table>
-</div>
-<hr />
-<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
-<ul>
-<li><strong>You only care if a path exists</strong> between one side and the other.</li>
-<li><strong>You don’t care how long the path is.</strong></li>
-</ul>
-<p>✅ So <strong>DFS is perfect</strong>:</p>
-<ul>
-<li>Fast</li>
-<li>Low overhead</li>
-<li>Easy to implement</li>
-<li>Works great for this use case</li>
-</ul>
-<hr />
-<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
-<hr />
-<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
-<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
-<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
-<ul>
-<li>We don't care how long the path is—just whether one exists.</li>
-<li>DFS is lightweight and simple for this use case.</li>
-<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
-</ul>
-<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
-<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
-std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
-
-// Start from the player’s border cells
-for (int i = 0; i &lt; board_size; ++i)
-  if (border_cell[i] == player)
-    stack.push({x, y});
-
-while (!stack.empty()) {
-  Point current = stack.top();
-  stack.pop();
-
-  // Skip visited
-  if (visited[current.x][current.y]) continue;
-  visited[current.x][current.y] = true;
-
-  // Check if we reached the goal edge
-  if (current.y == board_size - 1) return true;
-
-  // Explore neighbors
-  for (auto n : get_neighbors(current.x, current.y))
-    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
-      stack.push(n);
-}
-</code></pre>
-<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
-<ul>
-<li>Use a queue instead of a stack.</li>
-<li>Use it when path length matters (e.g. shortest route to victory).</li>
-<li>Slightly more memory-intensive in wide boards.</li>
-</ul>
-<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
-<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
-<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
-<pre><code class="language-cpp">class Graph {
-  int V;
-  std::list&lt;int&gt;* adj;
-
-  // ... constructor, addEdge, etc.
-
-  void BFS(int start) {
-    bool* visited = new bool[V];
-    std::fill(visited, visited + V, false);
-
-    std::list&lt;int&gt; queue;
-    visited[start] = true;
-    queue.push_back(start);
-
-    while (!queue.empty()) {
-      int node = queue.front();
-      queue.pop_front();
-      // Process node...
-
-      for (auto neighbor : adj[node]) {
-        if (!visited[neighbor]) {
-          visited[neighbor] = true;
-          queue.push_back(neighbor);
-        }
-      }
-    }
-
-    delete[] visited;
-  }
-};
-</code></pre>
-<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
-<ul>
-<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
-<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
-</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="output-a-random-graph-in-c"><a class="header" href="#output-a-random-graph-in-c">Output a Random Graph in C++</a></h1>
 <p>Context: Refactor of an instructor-provided codebase to generate a random undirected graph with cost and color data. Original code was a memory-leaking, segfault-happy mess.</p>
 <p>Generate a random graph using a 2D adjacency matrix, apply weights (cost) and labels (color) to edges, and export the result to a .txt file.</p>
@@ -7373,6 +8139,431 @@ int main() {
             &lt;&lt; "\n";
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
+<p>A Minimum Spanning Tree (MST) of a connected weighted undirected graph is a sub graph that connects all the vertices while minimizing the total edge weight. It has the following properties:</p>
+<ul>
+<li>It spans all vertices of the original graph.</li>
+<li>It contains no cycles.</li>
+<li>The sum of its edge weights is minimal among all spanning trees.</li>
+</ul>
+<p>Key points about MST:</p>
+<ul>
+<li>It provides a way to connect all nodes in a network with the least amount of wire/cable.</li>
+<li>In computer networks, it helps in designing efficient communication networks.</li>
+<li>In transportation systems, it aids in finding the shortest path between multiple destinations.</li>
+</ul>
+<h3 id="history-of-kruskals-algorithm"><a class="header" href="#history-of-kruskals-algorithm">History of Kruskal's Algorithm</a></h3>
+<p>Kruskal's algorithm was developed by Joseph Kruskal in 1956. It was one of the first algorithms to solve the Minimum Spanning Tree problem efficiently.</p>
+<ul>
+<li>Initially, it was designed for electrical engineering applications but later found widespread use in computer science.</li>
+</ul>
+<h3 id="my-implementation"><a class="header" href="#my-implementation">My Implementation</a></h3>
+<p>To achieve this, I was given a pseudocode to start with.</p>
+<ul>
+<li>Create a forest F (set of trees) where each vertex in the graph is a separate tree.</li>
+<li>Create a set S containing all the edges in the graph.
+While S is nonempty and F is not yet spanning:
+<ul>
+<li>remove an edge with minimum weight from S</li>
+<li>if that edge connects two different trees, then add it to the forest, combining two trees into a single tree</li>
+<li>otherwise discard that edge.</li>
+</ul>
+</li>
+<li>at the termination of the algorithm, the forest has only one component and forms a minimum spanning tree of the graph.</li>
+</ul>
+<p>I have tried to keep the approach structured with class constructors, while the functions <code>KruskalMST()</code>, <code>add_edge()</code> and <code>computeMST()</code> serves to execute them. The results are shown at the end thanks to the <code>printMST()</code> function. The <code>main()</code> function is just there to route it all together.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+// Initialize edges and operator overloading
+struct Edge {
+  int u, v, weight;
+  bool operator&lt;(const Edge &amp;other) const { return weight &lt; other.weight; }
+};
+
+class KruskalMST {
+public:
+  // Constructor declarations
+  KruskalMST(int n);
+  void add_edge(int u, int v, int weight);
+  void computeMST();
+  void printMST();
+
+private:
+  // Build trees
+  std::vector&lt;Edge&gt; edges;
+  std::vector&lt;Edge&gt; mst;
+  std::vector&lt;int&gt; parent, rank;
+  int num_vertices;
+
+  // Initialization
+  void make_set(int v) {
+    parent[v] = v;
+    rank[v] = 0;
+  }
+
+  // Path compression
+  int find_set(int v) {
+    if (v == parent[v])
+      return v;
+    return parent[v] = find_set(parent[v]);
+  }
+
+  // Union by rank
+  void union_sets(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+      if (rank[a] &lt; rank[b])
+        std::swap(a, b);
+      parent[b] = a;
+      if (rank[a] == rank[b])
+        rank[a]++;
+    }
+  }
+};
+
+void KruskalMST::add_edge(int u, int v, int weight) {
+  edges.push_back({u, v, weight});
+
+  if (u &gt;= num_vertices || v &gt;= num_vertices) {
+    std::cerr &lt;&lt; "Invalid edge: " &lt;&lt; u &lt;&lt; " - " &lt;&lt; v &lt;&lt; "\n";
+    return;
+  }
+}
+
+void KruskalMST::computeMST() {
+  std::sort(edges.begin(), edges.end());
+
+  for (Edge e : edges) {
+    if (find_set(e.u) != find_set(e.v)) {
+      mst.push_back(e);
+      union_sets(e.u, e.v);
+    }
+  }
+}
+// Executing the algorithm itself
+KruskalMST::KruskalMST(int n) {
+  num_vertices = n;
+  parent.resize(n);
+  rank.resize(n);
+
+  for (int i = 0; i &lt; n; ++i)
+    make_set(i);
+}
+
+// Function to print results
+void KruskalMST::printMST() {
+  int tot_weight = 0;
+
+  std::cout &lt;&lt; "Edges in the MST are \n";
+  for (const Edge &amp;e : mst) {
+    std::cout &lt;&lt; e.u &lt;&lt; "--" &lt;&lt; e.v &lt;&lt; " : " &lt;&lt; e.weight &lt;&lt; "\n";
+    tot_weight += e.weight;
+  }
+
+  std::cout &lt;&lt; "\nTotal weight is: " &lt;&lt; tot_weight &lt;&lt; "\n";
+};
+
+// Testing above functions
+int main() {
+  KruskalMST graph(9);
+
+  graph.add_edge(0, 3, 8);
+  graph.add_edge(2, 5, 5);
+  graph.add_edge(6, 1, 7);
+
+  graph.computeMST();
+  graph.printMST();
+
+  return 0;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
+<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
+<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
+<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
+<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
+<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
+<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
+<ul>
+<li><strong>You only care if a path exists</strong> between one side and the other.</li>
+<li><strong>You don’t care how long the path is.</strong></li>
+</ul>
+<p>✅ So <strong>DFS is perfect</strong>:</p>
+<ul>
+<li>Fast</li>
+<li>Low overhead</li>
+<li>Easy to implement</li>
+<li>Works great for this use case</li>
+</ul>
+<hr />
+<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
+<hr />
+<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
+<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
+<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<ul>
+<li>We don't care how long the path is—just whether one exists.</li>
+<li>DFS is lightweight and simple for this use case.</li>
+<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+</ul>
+<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
+<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
+std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
+
+// Start from the player’s border cells
+for (int i = 0; i &lt; board_size; ++i)
+  if (border_cell[i] == player)
+    stack.push({x, y});
+
+while (!stack.empty()) {
+  Point current = stack.top();
+  stack.pop();
+
+  // Skip visited
+  if (visited[current.x][current.y]) continue;
+  visited[current.x][current.y] = true;
+
+  // Check if we reached the goal edge
+  if (current.y == board_size - 1) return true;
+
+  // Explore neighbors
+  for (auto n : get_neighbors(current.x, current.y))
+    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
+      stack.push(n);
+}
+</code></pre>
+<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<ul>
+<li>Use a queue instead of a stack.</li>
+<li>Use it when path length matters (e.g. shortest route to victory).</li>
+<li>Slightly more memory-intensive in wide boards.</li>
+</ul>
+<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
+<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
+<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
+<pre><code class="language-cpp">class Graph {
+  int V;
+  std::list&lt;int&gt;* adj;
+
+  // ... constructor, addEdge, etc.
+
+  void BFS(int start) {
+    bool* visited = new bool[V];
+    std::fill(visited, visited + V, false);
+
+    std::list&lt;int&gt; queue;
+    visited[start] = true;
+    queue.push_back(start);
+
+    while (!queue.empty()) {
+      int node = queue.front();
+      queue.pop_front();
+      // Process node...
+
+      for (auto neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push_back(neighbor);
+        }
+      }
+    }
+
+    delete[] visited;
+  }
+};
+</code></pre>
+<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
+<ul>
+<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="alpha-beta-pruning"><a class="header" href="#alpha-beta-pruning">Alpha Beta Pruning</a></h2>
+<ul>
+<li>
+<p>Leaf nodes are evaluated on a scale</p>
+</li>
+<li>
+<p>Larger negative value in minimizer will win</p>
+</li>
+<li>
+<p>Larger positive value in maximizer will win</p>
+</li>
+<li>
+<p>Values are backed up by the tree : alternate max and min.</p>
+</li>
+<li>
+<p>Maximizer : I can at least get alpha <code>-∞</code></p>
+</li>
+<li>
+<p>Minimizer : I can at least get beta <code>+∞</code></p>
+</li>
+<li>
+<p>Optimum is when best moves are being considered.</p>
+</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+const int MAX = std::numeric_limits&lt;int&gt;::max();
+const int MIN = std::numeric_limits&lt;int&gt;::min();
+
+int minimax(int depth, int node_index, bool max_player, int values[], int alpha, int beta) {
+  if (depth == 3)
+    return values[node_index];
+
+  if (max_player) {
+    int best = MIN;
+
+    for (int i = 0; i &lt; 2; i++) {
+      int val = minimax(depth + 1, node_index * 2 + i, false, values, alpha, beta);
+      best = std::max(best, val);
+      alpha = std::max(alpha, best);
+
+      if (beta &lt;= alpha)
+        break;
+    }
+    return best;
+  } else {
+    int best = MAX;
+
+    for (int i = 0; i &lt; 2; i++) {
+      int val = minimax(depth + 1, node_index * 2 + i, true, values, alpha, beta);
+      best = std::min(best, val);
+      beta = std::min(beta, best);
+
+      if (beta &lt;= alpha)
+        break;
+    }
+    return best;
+  }
+}
+
+int main() {
+  int values[8] = {3, 8, 1, 3, 4, 8, 4, 6};
+
+  std::cout &lt;&lt; "The optimal value is: "
+            &lt;&lt; minimax(0, 0, true, values, MIN, MAX) &lt;&lt; std::endl;
+
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="polish-notation"><a class="header" href="#polish-notation">Polish Notation</a></h2>
+<ul>
+<li>No parenthesis: <code>(3 + 4)</code> -&gt; <code>+ 3 4</code></li>
+</ul>
+<p>Example: <code>(9 + 6) * (3 - 2)</code> -&gt; <code>9 6 + 3 2 - *</code></p>
+<h3 id="a-simple-calculator-for-polish-notations"><a class="header" href="#a-simple-calculator-for-polish-notations">A simple calculator for Polish notations:</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;stack&gt;
+#include &lt;string&gt;
+
+int evaluate_rpn(const std::string &amp;expr) {
+  std::stack&lt;int&gt; stk;
+  std::istringstream iss(expr);
+  std::string token;
+
+  while (iss &gt;&gt; token) {
+    if (isdigit(token[0])) {
+      stk.push(std::stoi(token));
+    } else {
+      int b = stk.top();
+      stk.pop();
+      int a = stk.top();
+      stk.pop();
+      if (token == "+")
+        stk.push(a + b);
+      else if (token == "-")
+        stk.push(a - b);
+      else if (token == "*")
+        stk.push(a * b);
+      else if (token == "/")
+        stk.push(a / b);
+    }
+  }
+  return stk.top();
+}
+
+int main() {
+  std::cout &lt;&lt; evaluate_rpn("3 5 2 * +") &lt;&lt; std::endl;
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="whats-actually-happening-in-3-5-2--"><a class="header" href="#whats-actually-happening-in-3-5-2--">What’s Actually Happening in <code>3 5 2 * +</code></a></h3>
+<p>This is <strong>postfix</strong> notation. Think of it like:</p>
+<blockquote>
+<p>“I’ll give you the numbers, and then tell you what to do with them.”</p>
+</blockquote>
+<hr />
+<h3 id="step-by-step-breakdown"><a class="header" href="#step-by-step-breakdown">Step-by-step Breakdown</a></h3>
+<p>Expression: <code>3 5 2 * +</code></p>
+<ol>
+<li>
+<p>Read <code>3</code> → push to the stack
+🥞 Stack: <code>[3]</code></p>
+</li>
+<li>
+<p>Read <code>5</code> → push to the stack
+🥞 Stack: <code>[3, 5]</code></p>
+</li>
+<li>
+<p>Read <code>2</code> → push to the stack
+🥞 Stack: <code>[3, 5, 2]</code></p>
+</li>
+<li>
+<p>Read <code>*</code> → pop <code>2</code> and <code>5</code>, multiply them → push result</p>
+<ul>
+<li><code>5 * 2 = 10</code>
+🥞 Stack: <code>[3, 10]</code></li>
+</ul>
+</li>
+<li>
+<p>Read <code>+</code> → pop <code>10</code> and <code>3</code>, add them → push result</p>
+<ul>
+<li><code>3 + 10 = 13</code>
+🥞 Stack: <code>[13]</code></li>
+</ul>
+</li>
+</ol>
+<p>Result = 13
+You just evaluated <code>3 + (5 * 2)</code> <strong>without parentheses</strong> and without caring about precedence rules.</p>
+<hr />
+<p>RPN <strong>implicitly does “inwards” operations first</strong> — the <strong>deepest nested expressions get evaluated earliest</strong>. But it doesn't track them using parentheses or operator precedence like infix notation. Instead, the <strong>stack</strong> handles that naturally, because operations only happen when operands are ready.</p>
+<hr />
+<h3 id="-infix--rpn-mental-gymnastics"><a class="header" href="#-infix--rpn-mental-gymnastics">🔁 Infix → RPN Mental Gymnastics</a></h3>
+<p>Let’s take:</p>
+<pre><code class="language-text">(4 + 2) * (3 - 1)
+</code></pre>
+<p>RPN version:</p>
+<pre><code class="language-text">4 2 + 3 1 - *
+</code></pre>
+<p>Why?</p>
+<ul>
+<li><code>4 2 +</code> → gives you 6</li>
+<li><code>3 1 -</code> → gives you 2</li>
+<li>Then <code>*</code> → <code>6 * 2 = 12</code></li>
+</ul>
+<p>The operators are applied <strong>only when their operands are present</strong>, and everything is <strong>processed left to right</strong>. No drama, no ambiguity, no parentheses.</p>
+<hr />
+<h3 id="-why-you-should-care"><a class="header" href="#-why-you-should-care">💡 Why You Should Care</a></h3>
+<p>If you ever:</p>
+<ul>
+<li>Write a compiler or interpreter,</li>
+<li>Build a virtual machine (JITs for example),</li>
+<li>Design an AI rule engine,</li>
+<li>Or implement a Lisp-style scripting language,</li>
+</ul>
+<p>…you’ll want <strong>RPN-style evaluation</strong>. It’s efficient, deterministic, and ridiculously elegant.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
@@ -8027,6 +9218,11 @@ end
 </code></pre>
 <p>This ensures fast load times, clean UX, and a backend that acts like a proper gatekeeper of database sanity.</p>
 <div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
+<p>To explore for Python Street Cred:</p>
+<pre><code>os, sys, pathlib, subprocess, logging, argparse/click/typer
+paramiko, fabric, psutil, pyyaml/json
+requests, dotenv, venv, black, pytest
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
 <pre><code class="language-python">number = 7
 user_input = input("Enter 'y' if you would like to play: ").lower()

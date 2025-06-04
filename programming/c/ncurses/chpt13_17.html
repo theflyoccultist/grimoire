@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Utilities - Debugging Grimoire</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Debugging Grimoire</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="ncurses-routines-in-rapid-succession"><a class="header" href="#ncurses-routines-in-rapid-succession">ncurses Routines in Rapid Succession</a></h2>
+<hr />
+<h3 id="chapter-13-chgat-mvchgat-wchgat-mvwchgat"><a class="header" href="#chapter-13-chgat-mvchgat-wchgat-mvwchgat">Chapter 13: <code>chgat</code>, <code>mvchgat</code>, <code>wchgat</code>, <code>mvwchgat</code></a></h3>
+<p><code>chgat</code> style functions modify the attributes of a sequence of characters already printed on the screen, without reprinting them.</p>
+<ul>
+<li>Fast and visually smooth for highlighting and toggling styles without redrawing full lines.</li>
+</ul>
+<p>Common Signature:</p>
+<pre><code class="language-c">chgat(int n, attr_t attr, short color_pair, const void *opts);
+</code></pre>
+<ul>
+<li><code>n</code>: Number of characters to affect. Use <code>-1</code> to go to end of line.</li>
+<li><code>attr</code>: Attribute flags like <code>A_BOLD</code>, <code>A_REVERSE</code>, etc.</li>
+<li><code>color_pair</code>: The index of the color pair (from init_pair).</li>
+<li><code>opts</code>: Always <code>NULL</code>. Reserved for future cursed extensions.</li>
+</ul>
+<p>The Family Tree:</p>
+<div class="table-wrapper"><table><thead><tr><th>Function</th><th>Context</th><th>Cursor Affects?</th><th>Uses a <code>WINDOW</code>?</th><th>Coordinates?</th></tr></thead><tbody>
+<tr><td><code>chgat()</code></td><td>stdscr</td><td>Yes</td><td>No</td><td>Current pos</td></tr>
+<tr><td><code>mvchgat()</code></td><td>stdscr</td><td>Yes</td><td>No</td><td>Moves cursor</td></tr>
+<tr><td><code>wchgat()</code></td><td>custom window</td><td>Yes</td><td>Yes</td><td>Current pos</td></tr>
+<tr><td><code>mvwchgat()</code></td><td>custom window</td><td>Yes</td><td>Yes</td><td>Moves cursor</td></tr>
+</tbody></table>
+</div>
+<p>💡 Practical Differences
+🧼 chgat()</p>
+<ul>
+<li>Applies to the default window (stdscr)</li>
+<li>Starts at the current cursor position</li>
+<li>Doesn’t move the cursor, just modifies stuff starting from it</li>
+</ul>
+<p>🚶 mvchgat(y, x, ...)</p>
+<ul>
+<li>Moves the cursor to (y, x) on stdscr</li>
+<li>Then applies the attribute change from there</li>
+<li>Returns the cursor to the position after the change</li>
+</ul>
+<p>🪟 wchgat(win, ...)</p>
+<ul>
+<li>Applies to a specific WINDOW</li>
+<li>Uses the window's cursor position</li>
+<li>Use this when you’ve made custom windows (menus, popups, etc.)</li>
+</ul>
+<p>🧭 mvwchgat(win, y, x, ...)</p>
+<ul>
+<li>Moves cursor to (y, x) within a specific window</li>
+<li>Applies changes from there</li>
+</ul>
+<p>Highlighting a section of text:</p>
+<pre><code class="language-c">mvprintw(0, 0, "This is a test line.");
+mvchgat(0, 10, 4, A_REVERSE, 1, NULL); // highlights "test"
+</code></pre>
+<p>Using it in a custom window:</p>
+<pre><code class="language-c">WINDOW *win = newwin(10, 30, 5, 5);
+mvwprintw(win, 1, 2, "Item 1   Item 2   Item 3");
+mvwchgat(win, 1, 2, 6, A_STANDOUT, 2, NULL); // highlights "Item 1"
+</code></pre>
+<p>Gotchas:</p>
+<ul>
+<li>These functions don’t change what’s written, only how it looks.</li>
+<li>If you overwrite the text afterward, the attributes are lost unless reapplied.</li>
+<li>You must call <code>refresh()</code> (or <code>wrefresh()</code>) afterward to actually see the effect.</li>
+</ul>
+<hr />
+<h3 id="chapter-14-clrtoeol--clrtobot--erase--refresh"><a class="header" href="#chapter-14-clrtoeol--clrtobot--erase--refresh">Chapter 14: <code>clrtoeol</code> / <code>clrtobot</code> + <code>erase()</code> / <code>refresh()</code></a></h3>
+<p>The two terminal janitors:</p>
+<ul>
+<li><code>clrtoeol()</code> cleans from the cursor to the end of the current line.</li>
+<li><code>clrtobot()</code> wipes everything from the cursor down to the bottom of the window, including the current line.</li>
+</ul>
+<hr />
+<p><code>erase()</code> and <code>clear()</code> may seem similar on the surface, but underneath, they are a little bit different.</p>
+<p><code>erase()</code> : Clears the window's contents in memory, but does not force an immediate redraw of the screen.</p>
+<ul>
+<li>Works silently with your next <code>refresh()</code> or <code>wrefresh()</code>.</li>
+<li>Ideal for partial updates, flickerless redraws.</li>
+</ul>
+<pre><code class="language-c">erase();       // marks the stdscr for clearing
+refresh();     // now it actually shows the cleared screen
+</code></pre>
+<p><code>clear()</code> : Same as <code>erase()</code>, but also tells curses to clear the physical screen completely on the next <code>refresh()</code>.</p>
+<ul>
+<li>The terminal acts as if it was just launched.</li>
+<li>Can cause flickering</li>
+<li>Good for a fresh, guaranteed blank state.</li>
+</ul>
+<pre><code class="language-c">clear();       // like erase() + "I said CLEAR DAMN IT"
+refresh();
+</code></pre>
+<hr />
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  refresh();
+
+  printw("Hello");
+  mvprintw(1, 0, "PwatPwat");
+  move(0, 1);
+  getch();
+  // clear routines
+  // to the end of line
+  clrtoeol();
+  getch();
+
+  mvprintw(2, 0, "To clean");
+  mvprintw(3, 0, "To clean");
+  mvprintw(5, 0, "To clean");
+  mvprintw(10, 0, "To clean");
+  move(2, 5);
+  getch();
+
+  // to the bottom
+  clrtobot();
+  getch();
+
+  // erase(); soft clear
+  // clear(); definitely clear
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-15-leaveok--immedok--scrollok"><a class="header" href="#chapter-15-leaveok--immedok--scrollok">Chapter 15: <code>leaveok</code> / <code>immedok</code> / <code>scrollok</code></a></h3>
+<h4 id="leaveokwin-true"><a class="header" href="#leaveokwin-true"><code>leaveok(win, TRUE)</code></a></h4>
+<ul>
+<li>Don't care where the cursor is, just leave it wherever.</li>
+<li>Prevents <code>ncurses</code> from moving the hardware cursor.</li>
+<li>Skips cursor repositioning.</li>
+<li>It's fast.</li>
+</ul>
+<h4 id="immedokwin-true"><a class="header" href="#immedokwin-true"><code>immedok(win, TRUE)</code></a></h4>
+<ul>
+<li>Every time I change the window, update it immediately.</li>
+<li>Forces <code>wrefresh(win)</code> automatically after every <code>waddch()</code>, <code>mvwprintw()</code>, etc.</li>
+<li>Slower, but more dynamic and automatic.</li>
+</ul>
+<h4 id="scrollokwin-true"><a class="header" href="#scrollokwin-true"><code>scrollok(win, TRUE)</code></a></h4>
+<ul>
+<li>If we hit the bottom, just scroll the window down.</li>
+<li>Enables automatic scrolling when adding text past the bottom line.</li>
+<li>Useful for chat logs, terminal output windows, logs, etc.</li>
+<li>Requires enough space (and usually <code>idlok()</code> too for smooth scrolling).</li>
+</ul>
+<hr />
+<pre><code class="language-c">#include &lt;ncurses.h&gt;
+
+int main(int argc, char **argv) {
+  initscr();
+  noecho();
+  refresh();
+
+  WINDOW *win = newwin(5, 8, 10, 10);
+  box(win, 0, 0);
+
+  /* 
+  // don't really need to know where the cursor is
+  leaveok(win, true);
+  wmove(win, 1, 2);
+  wgetch(win);
+  */
+
+  /* 
+  // refresh immediately
+  immedok(win, true);
+  waddch(win, 'a');
+  */
+
+  /* 
+  // allow continuous scrolling
+  scrollok(win, true);
+  int counter = 0;
+  while (true) {
+    chtype ch = (counter % 10) + '0';
+    waddch(win, ch);
+    wrefresh(win);
+    counter++;
+  }
+  */
+
+  // clearok(WINDOW *, bool)
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<h3 id="chapter-16-background-routines-bkgdset--bkgd--wbkgdset--wbkgd"><a class="header" href="#chapter-16-background-routines-bkgdset--bkgd--wbkgdset--wbkgd">Chapter 16: Background Routines (<code>bkgdset</code> / <code>bkgd</code> / <code>wbkgdset</code> / <code>wbkgd</code>)</a></h3>
+<p>Those are routines to manipulate the background of a named window.</p>
+<pre><code class="language-c">// Background routines
+#include &lt;ncurses.h&gt;
+
+int main() {
+  initscr();
+  refresh();
+  clear();
+
+  if (!has_colors()) {
+    return 1;
+  }
+  start_color();
+  init_pair(1, COLOR_BLACK, COLOR_RED);
+  init_pair(2, COLOR_WHITE, COLOR_BLUE);
+
+  // setting attributes for the future
+  bkgdset(COLOR_PAIR(1));
+  addch('a');
+  refresh();
+
+  /*
+  bkgd('a'); fill the background
+  addch('u');
+  */
+
+  /*
+  // bkgd vs wbkgd
+  bkgd(COLOR_PAIR(1));
+  refresh();
+  */
+
+  WINDOW *win = newwin(10, 25, 10, 10);
+
+  wbkgdset(win, COLOR_PAIR(2));
+  wclear(win);
+  wrefresh(win);
+
+  /*
+  wbkgd(win, COLOR_PAIR(2));
+  box(win, 0, 0);
+  wrefresh(win);
+  */
+
+  getch();
+  endwin();
+  return 0;
+}
+</code></pre>
+<h3 id="chapter-17-free-window-memory-with-delwin"><a class="header" href="#chapter-17-free-window-memory-with-delwin">Chapter 17 Free Window memory with <code>delwin()</code>:</a></h3>
+<ul>
+<li><code>newwin()</code> allocates memory for a WINDOW structure.</li>
+<li><code>delwin()</code> deallocates that memory, it's like <code>free()</code> for windows.</li>
+</ul>
+<p>🧼 When to use delwin():</p>
+<p>✅ Use it:</p>
+<ul>
+<li>When a window is no longer needed (e.g., after closing a dialog box).</li>
+<li>After calling wclear() and wrefresh() to visually wipe it off the screen.</li>
+<li>In well-structured code where windows are dynamically created and destroyed.</li>
+</ul>
+<p>🚫 You can skip it:</p>
+<ul>
+<li>In small toy programs or examples where the window is static and only created once.</li>
+<li>If the program ends right after and the OS will clean up anyway (but that's lazy energy).</li>
+</ul>
+<pre><code class="language-c">// Deleting Window Memory
+// Increase security with delwin()
+
+#include &lt;curses.h&gt;
+#include &lt;ncurses.h&gt;
+
+int main() {
+  initscr();
+
+  WINDOW *test_win = newwin(10, 25, 0, 0);
+  box(test_win, 0, 0);
+  refresh();
+  wrefresh(test_win);
+
+  getch();
+
+  wclear(test_win);
+  wrefresh(test_win);
+  // ensure all associated memory for WINDOW is deleted
+  // but, does not erase the visual portion on its own.
+  // Use wclear(win) and wrefresh(win) first to do so.
+  delwin(test_win);
+
+  refresh();
+  // wrefresh(test_win); // referencing it after it's been deleted can cause a
+  // segfault
+  getch();
+
+  endwin();
+  return 0;
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt18_20.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt18_20.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

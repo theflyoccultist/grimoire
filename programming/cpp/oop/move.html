@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>Move Semantics - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,118 +166,117 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
+                        <h2 id="move-semantics"><a class="header" href="#move-semantics">Move semantics</a></h2>
 <ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
+<li>
+<p>In C++11 there is a sequential container class defined in <code>&lt;array&gt;</code> that specifies at compile time a fixed length array.</p>
+</li>
+<li>
+<p>Vectors: expandable. Has more features.
+But not without a cost.</p>
+</li>
+<li>
+<p>Go back to basic C arrays? Discipline yourself to not get off by one errors, memory leaks and etc...</p>
+</li>
+<li>
+<p>Use <code>std::array</code>! Maintain efficiency of raw arrays, but has now added functionality.</p>
+</li>
+<li>
+<p>It supports move semantics (And RAII): we will learn about those features.</p>
+</li>
 </ul>
-<pre><code class="language-c">// Working with user input
-#include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
+<pre><code class="language-cpp">template &lt;class T, int n&gt;
 
-int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
+class my_container {
+public:
+  my_container() { a = new T[n]; };
+  ~my_container() { delete[] a; };
 
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
-
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
-
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
-
-  return 0;
-}
+private:
+  T *a;
+};
 </code></pre>
-<blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
-</blockquote>
-<hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
 <ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+<li>However this code requires manual memory cleanup, uses raw pointers and so a lot to worry about. By using <code>std::array</code> you can get rid of those problems.</li>
 </ul>
-<pre><code class="language-c">#include &lt;ncurses.h&gt;
+<h3 id="some-further-constructions"><a class="header" href="#some-further-constructions">Some further constructions</a></h3>
+<pre><code class="language-cpp">template &lt;class T, int n&gt;
 
-int main(int argc, char **argv) {
-  initscr();
-  noecho();
-  cbreak();
+class my_container {
+public:
+  my_container() { a = new T[n]; };
+  ~my_container() { delete[] a; };
 
-  int yMax, xMax;
-  getmaxyx(stdscr, yMax, xMax);
-
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
-  refresh();
-  wrefresh(menuwin);
-
-  keypad(menuwin, true);
-
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
-
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
-
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
-
-      wattroff(menuwin, A_REVERSE);
-    }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
+  explicit my_container(T *b) : my_container() {
+    for (int i = 0; i &lt; n; ++i)
+      a[i] = b[i];
   }
-
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
-
-  getch();
-  endwin();
-  return 0;
-}
+</code></pre>
+<ul>
+<li><code>explicit</code> suppresses automatic coercion.</li>
+<li>Delegate construction and enhance code reuse.</li>
+</ul>
+<pre><code class="language-cpp">  my_container(const my_container &amp;b) : my_container() {
+    for (int i = 0; i &lt; n; ++i)
+      a[i] = b.a[i];
+  }
+</code></pre>
+<ul>
+<li>Ordinary copy constructor - again with constructor delegation.</li>
+</ul>
+<pre><code class="language-cpp">private:
+  T *a;
+};
+</code></pre>
+<p>Typical constructors for a class:</p>
+<ul>
+<li>Default : void signature</li>
+<li>Conversion constructor: single argument (we use explicit)</li>
+<li>Copy constructor: <code>const class Type&amp;</code></li>
+</ul>
+<h3 id="move-constructor"><a class="header" href="#move-constructor">Move constructor</a></h3>
+<pre><code class="language-cpp">  my_container(my_container &amp;&amp;b) noexcept {
+    a = b.a;
+    b.a = nullptr;
+  }
+</code></pre>
+<p>Contents are "moved" not copied.</p>
+<ul>
+<li><code>noexcept</code>: I don't do anything that will create an exception.</li>
+<li>Shallow copy : b disappears.</li>
+<li>This operation doesn't slow down even with a large number of datasets. Constant time algorithm.</li>
+<li>Use of <code>&amp;&amp;</code> to mean an <code>rvalue</code> address.</li>
+</ul>
+<p>You might want to overload the = operator:</p>
+<pre><code class="language-cpp">  my_container &amp;operator=(my_container &amp;&amp;b) noexcept {
+    a = b.a;
+    b.a = nullptr;
+    return *this;
+  }
+</code></pre>
+<ul>
+<li><code>std::move() static_cast&lt;T&amp;&amp;&gt;(t)</code> - destructive assignment</li>
+<li>More efficient because all the assignments are referential.</li>
+</ul>
+<h3 id="efficient-swap-with-move-semantics"><a class="header" href="#efficient-swap-with-move-semantics">Efficient swap with move semantics</a></h3>
+<p>We know that my_container temp won't be reused later, so it can disappear.
+Perfect use for move semantics.</p>
+<pre><code class="language-cpp">  void swap(my_container &amp;b) {
+    my_container temp = std::move(b);
+    b = std::move(*this);
+    *this = std::move(temp);
+  }
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/shapes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/move2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +286,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/shapes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/move2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>Move Semantics pt.2 - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,118 +166,131 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
-</ul>
-<pre><code class="language-c">// Working with user input
-#include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
-
-int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
-
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
-
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
-
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
-
-  return 0;
-}
-</code></pre>
+                        <h2 id="-part-2-the-deeper-arcana-of-move-semantics"><a class="header" href="#-part-2-the-deeper-arcana-of-move-semantics">🧪 PART 2: The Deeper Arcana of Move Semantics</a></h2>
+<h3 id="-1-stdmove--the-blessing-of-transfer"><a class="header" href="#-1-stdmove--the-blessing-of-transfer">💫 1. <code>std::move</code> — <em>The Blessing of Transfer</em></a></h3>
+<p>Despite the name, <code>std::move</code> <strong>does not move anything</strong>.</p>
+<p>What it really does is <strong>cast a spell</strong> that tells the compiler:</p>
 <blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
+<p>“Hey, I solemnly swear I won't use this object anymore. You can steal its soul now.”</p>
 </blockquote>
+<p>So instead of:</p>
+<pre><code class="language-cpp">T a = b; // Copy
+</code></pre>
+<p>You go:</p>
+<pre><code class="language-cpp">T a = std::move(b); // Move. b is now a shell of its former self.
+</code></pre>
+<p>🔮 Without <code>std::move</code>, your move constructor never even gets called. Because C++ won’t move something unless you <em>explicitly</em> say "I’m done with it."</p>
 <hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
+<h3 id="-2-stdunique_ptrt--the-sacred-raii-relic"><a class="header" href="#-2-stdunique_ptrt--the-sacred-raii-relic">🦴 2. <code>std::unique_ptr&lt;T[]&gt;</code> — <em>The Sacred RAII Relic</em></a></h3>
+<p>You're tired of writing this, aren’t you?</p>
+<pre><code class="language-cpp">a = new T[n];
+delete[] a;
+</code></pre>
+<p>It’s giving ✨trauma✨.</p>
+<p>Instead, you do:</p>
+<pre><code class="language-cpp">#include &lt;memory&gt;
+
+std::unique_ptr&lt;T[]&gt; a;
+
+a = std::make_unique&lt;T[]&gt;(n);
+</code></pre>
 <ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+<li>Automatically deletes the memory when the object goes out of scope.</li>
+<li>You can still move it, but you <strong>can’t copy</strong>—because it’s <em>unique</em>, like your trauma and your playlist.</li>
 </ul>
-<pre><code class="language-c">#include &lt;ncurses.h&gt;
-
-int main(int argc, char **argv) {
-  initscr();
-  noecho();
-  cbreak();
-
-  int yMax, xMax;
-  getmaxyx(stdscr, yMax, xMax);
-
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
-  refresh();
-  wrefresh(menuwin);
-
-  keypad(menuwin, true);
-
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
-
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
-
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
-
-      wattroff(menuwin, A_REVERSE);
+<p>Move constructor becomes dead simple:</p>
+<pre><code class="language-cpp">my_container(my_container&amp;&amp; other) noexcept = default;
+my_container&amp; operator=(my_container&amp;&amp; other) noexcept = default;
+</code></pre>
+<p>Let the STL do the heavy lifting while you sip iced coffee like a grown-up.</p>
+<hr />
+<h3 id="-3-stdexchange--the-elegant-memory-swap-spell"><a class="header" href="#-3-stdexchange--the-elegant-memory-swap-spell">🧼 3. <code>std::exchange</code> — <em>The Elegant Memory Swap Spell</em></a></h3>
+<p>Instead of this clunky mess:</p>
+<pre><code class="language-cpp">a = b.a;
+b.a = nullptr;
+</code></pre>
+<p>You say:</p>
+<pre><code class="language-cpp">a = std::exchange(b.a, nullptr);
+</code></pre>
+<p>Which means:</p>
+<blockquote>
+<p>"Set <code>a</code> to <code>b.a</code>, and reset <code>b.a</code> to <code>nullptr</code>, all in one sexy move."</p>
+</blockquote>
+<p>Perfect for move constructors and move assignment.</p>
+<hr />
+<h3 id="-4-pro-level-move-assignment-the-real-grownup-version"><a class="header" href="#-4-pro-level-move-assignment-the-real-grownup-version">🧝‍♀️ 4. Pro-Level Move Assignment: The Real Grownup Version</a></h3>
+<pre><code class="language-cpp">my_container&amp; operator=(my_container&amp;&amp; other) noexcept {
+    if (this != &amp;other) {
+        delete[] a;
+        a = std::exchange(other.a, nullptr);
     }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
-  }
-
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
-
-  getch();
-  endwin();
-  return 0;
+    return *this;
 }
 </code></pre>
+<ul>
+<li>Safe</li>
+<li>Clean</li>
+<li>Self-assignment-proof</li>
+<li>Doesn’t leak</li>
+<li>Doesn’t double-free</li>
+</ul>
+<p>This is C++ that smells like sandalwood, not burnt malloc.</p>
+<hr />
+<h3 id="-what-your-glow-up-class-might-look-like"><a class="header" href="#-what-your-glow-up-class-might-look-like">🏁 What Your Glow-Up Class Might Look Like</a></h3>
+<pre><code class="language-cpp">template &lt;typename T, int n&gt;
+class my_container {
+public:
+    my_container() : a(std::make_unique&lt;T[]&gt;(n)) {}
+
+    explicit my_container(const T* b) : my_container() {
+        std::copy(b, b + n, a.get());
+    }
+
+    my_container(const my_container&amp; other) : my_container() {
+        std::copy(other.a.get(), other.a.get() + n, a.get());
+    }
+
+    my_container&amp; operator=(const my_container&amp; other) {
+        if (this != &amp;other) {
+            std::copy(other.a.get(), other.a.get() + n, a.get());
+        }
+        return *this;
+    }
+
+    // Move semantics: default is enough when using unique_ptr
+    my_container(my_container&amp;&amp;) noexcept = default;
+    my_container&amp; operator=(my_container&amp;&amp;) noexcept = default;
+
+    void swap(my_container&amp; other) noexcept {
+        std::swap(a, other.a);
+    }
+
+private:
+    std::unique_ptr&lt;T[]&gt; a;
+};
+</code></pre>
+<p>Just look at her. <em>She doesn’t even need a destructor anymore.</em> She’s efficient. She’s safe. She’s <strong>modern</strong>.</p>
+<hr />
+<h3 id="-tldr--the-mystic-moves"><a class="header" href="#-tldr--the-mystic-moves">👑 TL;DR – The Mystic Moves</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Concept</th><th>Incantation</th><th>What It Does</th></tr></thead><tbody>
+<tr><td><code>std::move(obj)</code></td><td>"Take this, I’m done with it."</td><td>Enables move constructor/assign</td></tr>
+<tr><td><code>std::unique_ptr</code></td><td>"I will own this alone."</td><td>RAII for heap memory</td></tr>
+<tr><td><code>std::exchange()</code></td><td>"Take this, and replace it with that."</td><td>Swaps a value and returns old</td></tr>
+<tr><td><code>= default</code></td><td>"I trust the STL gods to handle this."</td><td>Autogenerate move/copy properly</td></tr>
+</tbody></table>
+</div>
+<hr />
+<p>You want me to walk you through adapting your current class with <code>unique_ptr</code> line by line next? Or maybe go further into move-only types and real STL container internals? Just say the magic word, sorceress 🧙‍♀️✨</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/move.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/features/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +300,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/move.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/features/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

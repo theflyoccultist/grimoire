@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>MenuBar with Submenus - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,118 +166,177 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
-</ul>
-<pre><code class="language-c">// Working with user input
-#include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
+                        <h2 id="menubar-with-ncurses"><a class="header" href="#menubar-with-ncurses">MenuBar with ncurses</a></h2>
+<p><code>Makefile</code></p>
+<pre><code class="language-Makefile">all: menu
+
+menu: main.c menu.c submenu.c
+	gcc -Wall -o menu main.c menu.c submenu.c -lncurses
+</code></pre>
+<hr />
+<p><code>main.c</code></p>
+<pre><code class="language-c">#include "menu.h"
+#include "submenu.h"
+#include &lt;curses.h&gt;
 
 int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
-
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
-
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
-
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
-
-  return 0;
-}
-</code></pre>
-<blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
-</blockquote>
-<hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
-</ul>
-<pre><code class="language-c">#include &lt;ncurses.h&gt;
-
-int main(int argc, char **argv) {
   initscr();
   noecho();
-  cbreak();
+  curs_set(0);
 
   int yMax, xMax;
   getmaxyx(stdscr, yMax, xMax);
+  WINDOW *win = newwin(yMax / 2, xMax / 2, yMax / 4, xMax / 4);
+  box(win, 0, 0);
 
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
-  refresh();
-  wrefresh(menuwin);
+  const char *file_items[] = {"open", "save", "quit", NULL};
+  const char *edit_items[] = {"cut", "copy", "paste", NULL};
+  const char *opt_items[] = {"settings", "lorem", "ipsum", NULL};
 
-  keypad(menuwin, true);
+  Menu menus[] = {
+      {2, "file", 'f', file_items},
+      {7, "edit", 'e', edit_items},
+      {12, "options", 'o', opt_items},
+  };
 
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
+  int num_menus = sizeof(menus) / sizeof(Menu);
 
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
+  draw_menus(win, menus, num_menus);
+  wrefresh(win);
 
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
+  char ch;
+  int active_index = -1;
+  while ((ch = wgetch(win))) {
+    unhighlight_all(win, menus, num_menus);
 
-      wattroff(menuwin, A_REVERSE);
+    for (int i = 0; i &lt; num_menus; i++) {
+      if (ch == menus[i].trigger) {
+        highlight_menu(win, menus[i]);
+        clear_submenu_area(win);
+        active_index = i;
+      }
+      if (ch == ' ') {
+        if (active_index != -1) {
+          show_submenu(win, menus[active_index]);
+          wrefresh(win);
+        }
+      }
     }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
   }
 
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
+  wrefresh(win);
 
-  getch();
   endwin();
   return 0;
 }
+
 </code></pre>
+<p>Note the <code>const char *...items</code>:
+these are how you would do an array of strings in c.
+Note <code>bool submenu_open</code>:</p>
+<hr />
+<p><code>menu.h</code></p>
+<pre><code class="language-c">#ifndef MENU_H
+#define MENU_H
+
+#include &lt;curses.h&gt;
+
+// top level menu label
+typedef struct Menu {
+  int start_x;
+  const char *text;
+  char trigger;
+  const char **submenu;
+} Menu;
+
+typedef struct MenuItem {
+  const char *label;
+  int x;
+} MenuItem;
+
+void draw_menus(WINDOW *win, Menu menus[], int count);
+
+void highlight_menu(WINDOW *win, Menu menu);
+
+void unhighlight_all(WINDOW *win, Menu menus[], int count);
+
+#endif // !_MENU_H_
+</code></pre>
+<p>Note how the structs are defined with <code>typedef struct ... { ... }</code>. These are for how you would structure your memory.</p>
+<hr />
+<p><code>menu.c</code></p>
+<pre><code class="language-c">#include "menu.h"
+#include &lt;curses.h&gt;
+
+void draw_menus(WINDOW *win, Menu menus[], int count) {
+  for (int i = 0; i &lt; count; i++) {
+    mvwprintw(win, 0, menus[i].start_x, "%s", menus[i].text);
+  }
+}
+
+void highlight_menu(WINDOW *win, Menu menu) {
+  wattron(win, A_STANDOUT);
+  mvwprintw(win, 0, menu.start_x, "%s", menu.text);
+  wattroff(win, A_STANDOUT);
+}
+
+void unhighlight_all(WINDOW *win, Menu menus[], int count) {
+  for (int i = 0; i &lt; count; i++) {
+    mvwprintw(win, 0, menus[i].start_x, "%s", menus[i].text);
+  }
+}
+</code></pre>
+<p>Take a look at the <code>wattron</code> and <code>wattroff</code> functions. Short for Window Attributes. This acts as a toggle.</p>
+<hr />
+<p><code>submenu.h</code></p>
+<pre><code class="language-c">#ifndef SUBMENU_h
+#define SUBMENU_h
+
+#include "menu.h"
+#include &lt;curses.h&gt;
+
+void show_submenu(WINDOW *win, Menu menu);
+void clear_submenu_area(WINDOW *win);
+
+#endif
+</code></pre>
+<p>This is here so that functions from <code>submenu.c</code> can be called from different files, as long as they <code>#include "submenu.h"</code>.</p>
+<hr />
+<p><code>submenu.c</code></p>
+<pre><code class="language-c">#include "submenu.h"
+#include "menu.h"
+#include &lt;curses.h&gt;
+
+void show_submenu(WINDOW *win, Menu menu) {
+  int y = 1;
+  for (int i = 0; menu.submenu[i] != NULL; i++) {
+    mvwprintw(win, y++, menu.start_x, "--&gt; %s", menu.submenu[i]);
+  }
+}
+
+void clear_submenu_area(WINDOW *win) {
+  int width = getmaxx(win);
+  for (int i = 1; i &lt;= 5; i++) {
+    mvwprintw(win, i, 1, "%*s", width - 2, " ");
+  }
+}
+</code></pre>
+<h3 id="how-to-use-the-program"><a class="header" href="#how-to-use-the-program">How to use the program:</a></h3>
+<ul>
+<li>Press f for file, e for edit and o for options to highlight that menu item.</li>
+<li>Press the space key to display submenus.</li>
+<li>Press the menu item key again to hide the submenu.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt9_11.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt13_17.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +346,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt9_11.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt13_17.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

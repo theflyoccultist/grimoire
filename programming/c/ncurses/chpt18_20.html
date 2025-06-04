@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Dijkstra&#x27;s algorithm - Debugging Grimoire</title>
+        <title>Color palettes, Chars and Lines - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,133 +166,120 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
-<p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
+                        <h2 id="more-cool-features"><a class="header" href="#more-cool-features">More Cool Features</a></h2>
 <hr />
-<h2 id="-key-concepts"><a class="header" href="#-key-concepts">💻 Key Concepts</a></h2>
+<h3 id="chapter-18-define-your-own-color-palettes"><a class="header" href="#chapter-18-define-your-own-color-palettes">Chapter 18: Define Your Own Color Palettes</a></h3>
 <ul>
-<li><strong>Graph Structure</strong>: <code>std::vector&lt;Edge&gt;</code> with an <code>Edge</code> struct holding source, destination, and weight.</li>
-<li><strong>Dijkstra’s Algorithm</strong>: Classic implementation using a <code>distances[]</code> array and a greedy loop with <code>minDistance()</code> helper.</li>
-<li><strong>Random Graph Generation</strong>: Custom <code>generateRandomGraph()</code> function adds edges based on a given density (e.g. 20% or 40%).</li>
+<li><code>init_color(short color_number, short r, short g, short b)</code> uses values from 0 to 1000, not 255.</li>
+<li>Custom colors are global: once you redefine <code>COLOR_GREEN</code>, that's what it means from now on.</li>
 </ul>
-<hr />
-<h2 id="the-code"><a class="header" href="#the-code">The Code</a></h2>
-<pre><code class="language-cpp">#include &lt;ctime&gt;
-#include &lt;iostream&gt;
-#include &lt;limits&gt;
-#include &lt;random&gt;
-#include &lt;set&gt;
-#include &lt;vector&gt;
-
-const int INF = std::numeric_limits&lt;int&gt;::max();
-
-struct Edge {
-  int source;
-  int destination;
-  int weight;
-
-  Edge(int s, int d, int w) : source(s), destination(d), weight(w) {}
-};
-
-class Graph {
-public:
-  Graph(int vertices) : vertices(vertices) {}
-
-  void addEdge(int source, int destination, int weight) {
-    edges.emplace_back(source, destination, weight);
-    edges.emplace_back(destination, source, weight);
-  }
-
-  int getVertices() const { return vertices; }
-  const std::vector&lt;Edge&gt; &amp;getEdges() const { return edges; }
-
-  std::vector&lt;int&gt; Dijkstra(int source) {
-    std::vector&lt;int&gt; distances(vertices, INF);
-    std::vector&lt;int&gt; visited(vertices, 0);
-
-    distances[source] = 0;
-
-    for (int i = 0; i &lt; vertices - 1; ++i) {
-      int u = minDistance(distances, visited);
-      if (u == -1)
-        break;
-
-      visited[u] = 1;
-
-      for (const auto &amp;edge : edges) {
-        if (!visited[edge.destination] &amp;&amp; edge.source == u) {
-          int newDistance = distances[u] + edge.weight;
-          if (newDistance &lt; distances[edge.destination]) {
-            distances[edge.destination] = newDistance;
-          }
-        }
-      }
-    }
-
-    return distances;
-  }
-
-private:
-  int vertices;
-  std::vector&lt;Edge&gt; edges;
-
-  int minDistance(const std::vector&lt;int&gt; &amp;distances,
-                  const std::vector&lt;int&gt; &amp;visited) {
-    int minDist = INF;
-    int minIndex = -1;
-
-    for (int v = 0; v &lt; vertices; ++v) {
-      if (!visited[v] &amp;&amp; distances[v] &lt;= minDist) {
-        minDist = distances[v];
-        minIndex = v;
-      }
-    }
-    return minIndex;
-  }
-};
-
-void generateRandomGraph(Graph &amp;g, int vertices, double density, int minWeight,
-                         int maxWeight) {
-  int maxEdges = vertices * (vertices - 1) / 2;
-  int targetEdges = static_cast&lt;int&gt;(density * maxEdges);
-
-  std::mt19937 rng(static_cast&lt;unsigned int&gt;(time(nullptr)));
-  std::uniform_int_distribution&lt;int&gt; vertexDist(0, vertices - 1);
-  std::uniform_int_distribution&lt;int&gt; weightDist(minWeight, maxWeight);
-
-  std::set&lt;std::pair&lt;int, int&gt;&gt; existingEdges;
-
-  while (static_cast&lt;int&gt;(existingEdges.size()) &lt; targetEdges) {
-    int u = vertexDist(rng);
-    int v = vertexDist(rng);
-
-    if (u != v &amp;&amp; existingEdges.find({u, v}) == existingEdges.end() &amp;&amp;
-        existingEdges.find({u, v}) == existingEdges.end()) {
-      int weight = weightDist(rng);
-      g.addEdge(u, v, weight);
-      existingEdges.insert({u, v});
-    }
-  }
-}
+<pre><code class="language-c">#include &lt;curses.h&gt;
+#include &lt;ncurses.h&gt;
 
 int main() {
-  int vertices = 50;
-  Graph g(vertices);
+  initscr();
 
-  double density = 0.2;
-  generateRandomGraph(g, vertices, density, 1, 10);
-
-  std::vector&lt;int&gt; distances = g.Dijkstra(0);
-
-  int sum = 0;
-
-  for (int i = 1; i &lt; vertices; ++i) {
-    std::cout &lt;&lt; "Distance from 0 to " &lt;&lt; i &lt;&lt; ": " &lt;&lt; distances[i] &lt;&lt; "\n";
-    sum += distances[i];
+  // check for color support
+  if (!has_colors() || !can_change_color()) {
+    printw("Your terminal does not support colors.");
+    getch();
+    return 1;
   }
+  start_color();
 
-  std::cout &lt;&lt; "Average Path : " &lt;&lt; static_cast&lt;float&gt;(sum) / 49.0 &lt;&lt; "\n";
+  // Query how many you get
+  printw("COLORS      : %d\n", COLORS);
+  printw("COLOR_PAIRS : %d\n", COLOR_PAIRS);
 
+  // Redefine COLOR_CYAN
+  init_color(COLOR_CYAN, 1000, 200, 800);
+  init_pair(1, COLOR_CYAN, COLOR_BLACK);
+  attron(COLOR_PAIR(1));
+  printw("Custom color magenta-ish cyan?\n");
+  attroff(COLOR_PAIR(1));
+
+  getch();
+
+  endwin();
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-19-character-management-delch-wdelch-mvdelch-mvwdelch"><a class="header" href="#chapter-19-character-management-delch-wdelch-mvdelch-mvwdelch">Chapter 19: Character Management (<code>delch</code>, <code>wdelch</code>, <code>mvdelch</code>, <code>mvwdelch</code>)</a></h3>
+<pre><code class="language-c">// routines for character management
+
+#include &lt;ncurses.h&gt;
+int main() {
+  initscr();
+  noecho();
+
+  printw("Hello from the underworld");
+  getch();
+
+  // Deletes a character, defined by move(y, x);
+  // move(0, 9)
+  // delch();
+  // wdelch(WINDOW);
+
+  // Achieves the same results as above
+  mvdelch(0, 9);
+
+  // performs within the window
+  // WINDOW *win = newwin(10, 25, 5, 5);
+  // box(win, 0, 0);
+  // refresh();
+  // wrefresh(win);
+  //
+  // mvwprintw(win, 1, 1, "hello this is more text");
+  // wgetch(win);
+  // mvwdelch(win, 1, 10);
+  // wgetch(win);
+
+  getch();
+
+  endwin();
+
+  return 0;
+}
+</code></pre>
+<hr />
+<h3 id="chapter-20-line-management-insertln-deleteln-insdelln"><a class="header" href="#chapter-20-line-management-insertln-deleteln-insdelln">Chapter 20: Line Management (<code>insertln</code>, <code>deleteln</code>, <code>insdelln</code>)</a></h3>
+<pre><code class="language-c">// function to add / remove lines
+
+#include &lt;curses.h&gt;
+
+int main() {
+  initscr();
+  noecho();
+
+  WINDOW *win = newwin(4, 25, 5, 5);
+  refresh();
+  wrefresh(win);
+
+  mvwprintw(win, 0, 0, "1 Line of Text here");
+  mvwprintw(win, 1, 0, "2 Line of Text here");
+  mvwprintw(win, 2, 0, "3 Line of Text here");
+  mvwprintw(win, 3, 0, "4 Line of Text here");
+
+  wmove(win, 1, 0);
+  wgetch(win);
+
+  // inserts a line wherever the cursor it. needs a wmove().
+  // Moves every other lines -1
+  // winsertln(win);
+
+  // deletes the line, again at the position determined by wmove()
+  // also moves other lines
+  wdeleteln(win);
+
+  // deletes or inserts lines, determined by the second int argument
+  // (positive int to add, negative int to remove).
+  winsdelln(win, -2);
+
+  // No more room for lines? the bottom ones gets deleted first.
+
+  wgetch(win);
+  endwin();
   return 0;
 }
 </code></pre>
@@ -301,11 +288,11 @@ int main() {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/examples/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/ncurses/chpt13_17.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/examples/kruskal-mst.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -315,11 +302,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/examples/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/ncurses/chpt13_17.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/examples/kruskal-mst.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

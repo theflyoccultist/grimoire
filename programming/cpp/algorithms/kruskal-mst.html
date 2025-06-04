@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Depth First vs. Breadth First Search - Debugging Grimoire</title>
+        <title>Kruskal&#x27;s MST - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,121 +166,157 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
-<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
-<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
-<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
-<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
-<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
-<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
-</tbody></table>
-</div>
-<hr />
-<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
+                        <h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
+<p>A Minimum Spanning Tree (MST) of a connected weighted undirected graph is a sub graph that connects all the vertices while minimizing the total edge weight. It has the following properties:</p>
 <ul>
-<li><strong>You only care if a path exists</strong> between one side and the other.</li>
-<li><strong>You don’t care how long the path is.</strong></li>
+<li>It spans all vertices of the original graph.</li>
+<li>It contains no cycles.</li>
+<li>The sum of its edge weights is minimal among all spanning trees.</li>
 </ul>
-<p>✅ So <strong>DFS is perfect</strong>:</p>
+<p>Key points about MST:</p>
 <ul>
-<li>Fast</li>
-<li>Low overhead</li>
-<li>Easy to implement</li>
-<li>Works great for this use case</li>
+<li>It provides a way to connect all nodes in a network with the least amount of wire/cable.</li>
+<li>In computer networks, it helps in designing efficient communication networks.</li>
+<li>In transportation systems, it aids in finding the shortest path between multiple destinations.</li>
 </ul>
-<hr />
-<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
-<hr />
-<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
-<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
-<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<h3 id="history-of-kruskals-algorithm"><a class="header" href="#history-of-kruskals-algorithm">History of Kruskal's Algorithm</a></h3>
+<p>Kruskal's algorithm was developed by Joseph Kruskal in 1956. It was one of the first algorithms to solve the Minimum Spanning Tree problem efficiently.</p>
 <ul>
-<li>We don't care how long the path is—just whether one exists.</li>
-<li>DFS is lightweight and simple for this use case.</li>
-<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+<li>Initially, it was designed for electrical engineering applications but later found widespread use in computer science.</li>
 </ul>
-<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
-<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
-std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
-
-// Start from the player’s border cells
-for (int i = 0; i &lt; board_size; ++i)
-  if (border_cell[i] == player)
-    stack.push({x, y});
-
-while (!stack.empty()) {
-  Point current = stack.top();
-  stack.pop();
-
-  // Skip visited
-  if (visited[current.x][current.y]) continue;
-  visited[current.x][current.y] = true;
-
-  // Check if we reached the goal edge
-  if (current.y == board_size - 1) return true;
-
-  // Explore neighbors
-  for (auto n : get_neighbors(current.x, current.y))
-    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
-      stack.push(n);
-}
-</code></pre>
-<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<h3 id="my-implementation"><a class="header" href="#my-implementation">My Implementation</a></h3>
+<p>To achieve this, I was given a pseudocode to start with.</p>
 <ul>
-<li>Use a queue instead of a stack.</li>
-<li>Use it when path length matters (e.g. shortest route to victory).</li>
-<li>Slightly more memory-intensive in wide boards.</li>
+<li>Create a forest F (set of trees) where each vertex in the graph is a separate tree.</li>
+<li>Create a set S containing all the edges in the graph.
+While S is nonempty and F is not yet spanning:
+<ul>
+<li>remove an edge with minimum weight from S</li>
+<li>if that edge connects two different trees, then add it to the forest, combining two trees into a single tree</li>
+<li>otherwise discard that edge.</li>
 </ul>
-<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
-<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
-<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
-<pre><code class="language-cpp">class Graph {
-  int V;
-  std::list&lt;int&gt;* adj;
+</li>
+<li>at the termination of the algorithm, the forest has only one component and forms a minimum spanning tree of the graph.</li>
+</ul>
+<p>I have tried to keep the approach structured with class constructors, while the functions <code>KruskalMST()</code>, <code>add_edge()</code> and <code>computeMST()</code> serves to execute them. The results are shown at the end thanks to the <code>printMST()</code> function. The <code>main()</code> function is just there to route it all together.</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
 
-  // ... constructor, addEdge, etc.
+// Initialize edges and operator overloading
+struct Edge {
+  int u, v, weight;
+  bool operator&lt;(const Edge &amp;other) const { return weight &lt; other.weight; }
+};
 
-  void BFS(int start) {
-    bool* visited = new bool[V];
-    std::fill(visited, visited + V, false);
+class KruskalMST {
+public:
+  // Constructor declarations
+  KruskalMST(int n);
+  void add_edge(int u, int v, int weight);
+  void computeMST();
+  void printMST();
 
-    std::list&lt;int&gt; queue;
-    visited[start] = true;
-    queue.push_back(start);
+private:
+  // Build trees
+  std::vector&lt;Edge&gt; edges;
+  std::vector&lt;Edge&gt; mst;
+  std::vector&lt;int&gt; parent, rank;
+  int num_vertices;
 
-    while (!queue.empty()) {
-      int node = queue.front();
-      queue.pop_front();
-      // Process node...
+  // Initialization
+  void make_set(int v) {
+    parent[v] = v;
+    rank[v] = 0;
+  }
 
-      for (auto neighbor : adj[node]) {
-        if (!visited[neighbor]) {
-          visited[neighbor] = true;
-          queue.push_back(neighbor);
-        }
-      }
+  // Path compression
+  int find_set(int v) {
+    if (v == parent[v])
+      return v;
+    return parent[v] = find_set(parent[v]);
+  }
+
+  // Union by rank
+  void union_sets(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+      if (rank[a] &lt; rank[b])
+        std::swap(a, b);
+      parent[b] = a;
+      if (rank[a] == rank[b])
+        rank[a]++;
     }
-
-    delete[] visited;
   }
 };
+
+void KruskalMST::add_edge(int u, int v, int weight) {
+  edges.push_back({u, v, weight});
+
+  if (u &gt;= num_vertices || v &gt;= num_vertices) {
+    std::cerr &lt;&lt; "Invalid edge: " &lt;&lt; u &lt;&lt; " - " &lt;&lt; v &lt;&lt; "\n";
+    return;
+  }
+}
+
+void KruskalMST::computeMST() {
+  std::sort(edges.begin(), edges.end());
+
+  for (Edge e : edges) {
+    if (find_set(e.u) != find_set(e.v)) {
+      mst.push_back(e);
+      union_sets(e.u, e.v);
+    }
+  }
+}
+// Executing the algorithm itself
+KruskalMST::KruskalMST(int n) {
+  num_vertices = n;
+  parent.resize(n);
+  rank.resize(n);
+
+  for (int i = 0; i &lt; n; ++i)
+    make_set(i);
+}
+
+// Function to print results
+void KruskalMST::printMST() {
+  int tot_weight = 0;
+
+  std::cout &lt;&lt; "Edges in the MST are \n";
+  for (const Edge &amp;e : mst) {
+    std::cout &lt;&lt; e.u &lt;&lt; "--" &lt;&lt; e.v &lt;&lt; " : " &lt;&lt; e.weight &lt;&lt; "\n";
+    tot_weight += e.weight;
+  }
+
+  std::cout &lt;&lt; "\nTotal weight is: " &lt;&lt; tot_weight &lt;&lt; "\n";
+};
+
+// Testing above functions
+int main() {
+  KruskalMST graph(9);
+
+  graph.add_edge(0, 3, 8);
+  graph.add_edge(2, 5, 5);
+  graph.add_edge(6, 1, 7);
+
+  graph.computeMST();
+  graph.printMST();
+
+  return 0;
 </code></pre>
-<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
-<ul>
-<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
-<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
-</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/examples/kruskal-mst.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/algorithms/poker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/examples/generate-graph.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/algorithms/dfs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -290,11 +326,11 @@ while (!stack.empty()) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/examples/kruskal-mst.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/algorithms/poker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/examples/generate-graph.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/algorithms/dfs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

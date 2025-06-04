@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Kruskal&#x27;s MST - Debugging Grimoire</title>
+        <title>Good To Know - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,157 +166,16 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="kruskals-mst-implementation-in-c"><a class="header" href="#kruskals-mst-implementation-in-c">Kruskal's MST Implementation in C++</a></h1>
-<p>A Minimum Spanning Tree (MST) of a connected weighted undirected graph is a sub graph that connects all the vertices while minimizing the total edge weight. It has the following properties:</p>
-<ul>
-<li>It spans all vertices of the original graph.</li>
-<li>It contains no cycles.</li>
-<li>The sum of its edge weights is minimal among all spanning trees.</li>
-</ul>
-<p>Key points about MST:</p>
-<ul>
-<li>It provides a way to connect all nodes in a network with the least amount of wire/cable.</li>
-<li>In computer networks, it helps in designing efficient communication networks.</li>
-<li>In transportation systems, it aids in finding the shortest path between multiple destinations.</li>
-</ul>
-<h3 id="history-of-kruskals-algorithm"><a class="header" href="#history-of-kruskals-algorithm">History of Kruskal's Algorithm</a></h3>
-<p>Kruskal's algorithm was developed by Joseph Kruskal in 1956. It was one of the first algorithms to solve the Minimum Spanning Tree problem efficiently.</p>
-<ul>
-<li>Initially, it was designed for electrical engineering applications but later found widespread use in computer science.</li>
-</ul>
-<h3 id="my-implementation"><a class="header" href="#my-implementation">My Implementation</a></h3>
-<p>To achieve this, I was given a pseudocode to start with.</p>
-<ul>
-<li>Create a forest F (set of trees) where each vertex in the graph is a separate tree.</li>
-<li>Create a set S containing all the edges in the graph.
-While S is nonempty and F is not yet spanning:
-<ul>
-<li>remove an edge with minimum weight from S</li>
-<li>if that edge connects two different trees, then add it to the forest, combining two trees into a single tree</li>
-<li>otherwise discard that edge.</li>
-</ul>
-</li>
-<li>at the termination of the algorithm, the forest has only one component and forms a minimum spanning tree of the graph.</li>
-</ul>
-<p>I have tried to keep the approach structured with class constructors, while the functions <code>KruskalMST()</code>, <code>add_edge()</code> and <code>computeMST()</code> serves to execute them. The results are shown at the end thanks to the <code>printMST()</code> function. The <code>main()</code> function is just there to route it all together.</p>
-<pre><code class="language-cpp">#include &lt;algorithm&gt;
-#include &lt;iostream&gt;
-#include &lt;utility&gt;
-#include &lt;vector&gt;
-
-// Initialize edges and operator overloading
-struct Edge {
-  int u, v, weight;
-  bool operator&lt;(const Edge &amp;other) const { return weight &lt; other.weight; }
-};
-
-class KruskalMST {
-public:
-  // Constructor declarations
-  KruskalMST(int n);
-  void add_edge(int u, int v, int weight);
-  void computeMST();
-  void printMST();
-
-private:
-  // Build trees
-  std::vector&lt;Edge&gt; edges;
-  std::vector&lt;Edge&gt; mst;
-  std::vector&lt;int&gt; parent, rank;
-  int num_vertices;
-
-  // Initialization
-  void make_set(int v) {
-    parent[v] = v;
-    rank[v] = 0;
-  }
-
-  // Path compression
-  int find_set(int v) {
-    if (v == parent[v])
-      return v;
-    return parent[v] = find_set(parent[v]);
-  }
-
-  // Union by rank
-  void union_sets(int a, int b) {
-    a = find_set(a);
-    b = find_set(b);
-    if (a != b) {
-      if (rank[a] &lt; rank[b])
-        std::swap(a, b);
-      parent[b] = a;
-      if (rank[a] == rank[b])
-        rank[a]++;
-    }
-  }
-};
-
-void KruskalMST::add_edge(int u, int v, int weight) {
-  edges.push_back({u, v, weight});
-
-  if (u &gt;= num_vertices || v &gt;= num_vertices) {
-    std::cerr &lt;&lt; "Invalid edge: " &lt;&lt; u &lt;&lt; " - " &lt;&lt; v &lt;&lt; "\n";
-    return;
-  }
-}
-
-void KruskalMST::computeMST() {
-  std::sort(edges.begin(), edges.end());
-
-  for (Edge e : edges) {
-    if (find_set(e.u) != find_set(e.v)) {
-      mst.push_back(e);
-      union_sets(e.u, e.v);
-    }
-  }
-}
-// Executing the algorithm itself
-KruskalMST::KruskalMST(int n) {
-  num_vertices = n;
-  parent.resize(n);
-  rank.resize(n);
-
-  for (int i = 0; i &lt; n; ++i)
-    make_set(i);
-}
-
-// Function to print results
-void KruskalMST::printMST() {
-  int tot_weight = 0;
-
-  std::cout &lt;&lt; "Edges in the MST are \n";
-  for (const Edge &amp;e : mst) {
-    std::cout &lt;&lt; e.u &lt;&lt; "--" &lt;&lt; e.v &lt;&lt; " : " &lt;&lt; e.weight &lt;&lt; "\n";
-    tot_weight += e.weight;
-  }
-
-  std::cout &lt;&lt; "\nTotal weight is: " &lt;&lt; tot_weight &lt;&lt; "\n";
-};
-
-// Testing above functions
-int main() {
-  KruskalMST graph(9);
-
-  graph.add_edge(0, 3, 8);
-  graph.add_edge(2, 5, 5);
-  graph.add_edge(6, 1, 7);
-
-  graph.computeMST();
-  graph.printMST();
-
-  return 0;
-</code></pre>
-
+                        
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/examples/dijkstra.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/examples/dfs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/gtk/makefiles.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -326,11 +185,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/examples/dijkstra.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/examples/dfs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/gtk/makefiles.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

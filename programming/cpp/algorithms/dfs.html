@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>User Input in Menu and Arrow Keys - Debugging Grimoire</title>
+        <title>Depth First vs. Breadth First Search - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -166,118 +166,121 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed"><a class="header" href="#-chapter-6-reading-user-input-in-pure-c-no-c-sorcery-allowed">🧾 Chapter 6: Reading User Input in Pure C (No C++ Sorcery Allowed)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
-<ul>
-<li><code>getstr()</code> for reading strings from the user</li>
-<li>Centered text with <code>mvprintw()</code> and screen dimensions via <code>getmaxyx()</code></li>
-<li>Classic C-style string handling (<code>char[]</code> and <code>strlen()</code>)</li>
-</ul>
-<pre><code class="language-c">// Working with user input
-#include &lt;ncurses.h&gt;
-#include &lt;string.h&gt;
-
-int main() {
-  char msg[] = "Enter a string";
-  char str[80];  // fixed-size buffer (because this is C, not a luxury resort)
-
-  int row, col;
-  initscr();
-  getmaxyx(stdscr, row, col);
-
-  mvprintw(row / 2, (col - strlen(msg)) / 2, "%s", msg);
-  getstr(str);  // reads a line of text
-
-  mvprintw(LINES - 2, 0, "You entered: %s", str);
-  getch();
-  endwin();
-
-  return 0;
-}
-</code></pre>
-<blockquote>
-<p>⚠️ Reminder: <code>getstr()</code> is a bit raw and assumes you won’t type more than 79 characters. If you do, chaos. Handle with care or replace with <code>wgetnstr()</code> for actual safety.</p>
-</blockquote>
+                        <h2 id="-dfs-vs-bfs-when-to-use-what"><a class="header" href="#-dfs-vs-bfs-when-to-use-what">🔍 DFS vs BFS: When to Use What</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><strong>DFS</strong></th><th><strong>BFS</strong></th></tr></thead><tbody>
+<tr><td><strong>Search Style</strong></td><td>Goes deep along a path</td><td>Explores all neighbors level by level</td></tr>
+<tr><td><strong>Data Structure</strong></td><td>Stack (or recursion)</td><td>Queue</td></tr>
+<tr><td><strong>Memory Use</strong></td><td>Lower in wide graphs</td><td>Higher in wide graphs</td></tr>
+<tr><td><strong>Finds Shortest Path?</strong></td><td>❌ No (it may take the scenic route)</td><td>✅ Yes (fewest moves)</td></tr>
+<tr><td><strong>Easier to implement?</strong></td><td>✅ Often simpler for grid/graph traversal</td><td>✅ Also easy with STL queue</td></tr>
+<tr><td><strong>Good for...</strong></td><td>Existence of a path</td><td>Finding optimal path length</td></tr>
+</tbody></table>
+</div>
 <hr />
-<h3 id="-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes"><a class="header" href="#-chapter-7-building-a-menu-with-arrow-keys-real-game-dev-vibes">🎮 Chapter 7: Building a Menu with Arrow Keys (Real Game Dev Vibes)</a></h3>
-<p><strong>Concepts introduced:</strong></p>
+<h3 id="-so-for-your-hex-win-check"><a class="header" href="#-so-for-your-hex-win-check">🧠 So for your <strong>Hex win check</strong>:</a></h3>
 <ul>
-<li>Menu system with <code>const char*</code> and <code>keypad()</code></li>
-<li>Highlighting selections with <code>A_REVERSE</code></li>
-<li>User selection handling with <code>KEY_UP</code>, <code>KEY_DOWN</code>, and Enter (<code>10</code>)</li>
-<li>Fixed buffer index handling to prevent out-of-bounds disasters</li>
+<li><strong>You only care if a path exists</strong> between one side and the other.</li>
+<li><strong>You don’t care how long the path is.</strong></li>
 </ul>
-<pre><code class="language-c">#include &lt;ncurses.h&gt;
+<p>✅ So <strong>DFS is perfect</strong>:</p>
+<ul>
+<li>Fast</li>
+<li>Low overhead</li>
+<li>Easy to implement</li>
+<li>Works great for this use case</li>
+</ul>
+<hr />
+<h3 id="-your-mdbook-entry-could-look-like"><a class="header" href="#-your-mdbook-entry-could-look-like">🧪 Your mdBook Entry Could Look Like:</a></h3>
+<hr />
+<h2 id="dfs-detecting-a-path-between-hex-cells"><a class="header" href="#dfs-detecting-a-path-between-hex-cells">DFS: Detecting a Path Between Hex Cells</a></h2>
+<p>This algorithm is used to determine whether a player has connected their respective sides of the Hex board (left-to-right or top-to-bottom).</p>
+<h3 id="why-dfs"><a class="header" href="#why-dfs">Why DFS?</a></h3>
+<ul>
+<li>We don't care how long the path is—just whether one exists.</li>
+<li>DFS is lightweight and simple for this use case.</li>
+<li>It allows us to “flood” from the border and check if the opposite side is reachable.</li>
+</ul>
+<h3 id="code-sketch-using-a-stack"><a class="header" href="#code-sketch-using-a-stack">Code Sketch (using a stack)</a></h3>
+<pre><code class="language-cpp">std::stack&lt;Point&gt; stack;
+std::vector&lt;std::vector&lt;bool&gt;&gt; visited(board_size, std::vector&lt;bool&gt;(board_size, false));
 
-int main(int argc, char **argv) {
-  initscr();
-  noecho();
-  cbreak();
+// Start from the player’s border cells
+for (int i = 0; i &lt; board_size; ++i)
+  if (border_cell[i] == player)
+    stack.push({x, y});
 
-  int yMax, xMax;
-  getmaxyx(stdscr, yMax, xMax);
+while (!stack.empty()) {
+  Point current = stack.top();
+  stack.pop();
 
-  WINDOW *menuwin = newwin(6, xMax - 12, yMax - 8, 5);
-  box(menuwin, 0, 0);
-  refresh();
-  wrefresh(menuwin);
+  // Skip visited
+  if (visited[current.x][current.y]) continue;
+  visited[current.x][current.y] = true;
 
-  keypad(menuwin, true);
+  // Check if we reached the goal edge
+  if (current.y == board_size - 1) return true;
 
-  const char *choices[3] = {"Walk", "Jog", "Run"};
-  int choice;
-  int highlight = 0;
-
-  while (1) {
-    for (int i = 0; i &lt; 3; ++i) {
-      if (i == highlight)
-        wattron(menuwin, A_REVERSE);
-
-      mvwprintw(menuwin, i + 1, 1, "%s", choices[i]);
-
-      wattroff(menuwin, A_REVERSE);
-    }
-
-    choice = wgetch(menuwin);
-
-    switch (choice) {
-      case KEY_UP:
-        highlight--;
-        if (highlight &lt; 0)
-          highlight = 0;
-        break;
-      case KEY_DOWN:
-        highlight++;
-        if (highlight &gt; 2)
-          highlight = 2;
-        break;
-      default:
-        break;
-    }
-
-    if (choice == 10)  // Enter key
-      break;
-  }
-
-  clear();
-  mvprintw(0, 0, "Your choice: %s", choices[highlight]);
-  refresh();
-
-  getch();
-  endwin();
-  return 0;
+  // Explore neighbors
+  for (auto n : get_neighbors(current.x, current.y))
+    if (!visited[n.x][n.y] &amp;&amp; cells[n.x][n.y] == player)
+      stack.push(n);
 }
 </code></pre>
+<h3 id="bfs-alternative"><a class="header" href="#bfs-alternative">BFS Alternative</a></h3>
+<ul>
+<li>Use a queue instead of a stack.</li>
+<li>Use it when path length matters (e.g. shortest route to victory).</li>
+<li>Slightly more memory-intensive in wide boards.</li>
+</ul>
+<h2 id="bfs-in-graphs"><a class="header" href="#bfs-in-graphs">BFS in Graphs</a></h2>
+<p>Breadth-First Search explores a graph level-by-level using a <strong>queue</strong>. It’s useful for finding the shortest path or testing reachability.</p>
+<h3 id="c-pointer-based-version"><a class="header" href="#c-pointer-based-version">C++ (Pointer-Based Version)</a></h3>
+<pre><code class="language-cpp">class Graph {
+  int V;
+  std::list&lt;int&gt;* adj;
+
+  // ... constructor, addEdge, etc.
+
+  void BFS(int start) {
+    bool* visited = new bool[V];
+    std::fill(visited, visited + V, false);
+
+    std::list&lt;int&gt; queue;
+    visited[start] = true;
+    queue.push_back(start);
+
+    while (!queue.empty()) {
+      int node = queue.front();
+      queue.pop_front();
+      // Process node...
+
+      for (auto neighbor : adj[node]) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push_back(neighbor);
+        }
+      }
+    }
+
+    delete[] visited;
+  }
+};
+</code></pre>
+<h3 id="-gotchas"><a class="header" href="#-gotchas">⚠️ Gotchas:</a></h3>
+<ul>
+<li><code>std::vector&lt;bool&gt;</code> is <strong>not</strong> safe for pointer-like access.</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> if you're doing raw pointer-style stuff in C++.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/algorithms/kruskal-mst.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/algorithms/alpha_beta.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -287,11 +290,11 @@ int main(int argc, char **argv) {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/c/ncurses/chpt1_5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/algorithms/kruskal-mst.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/c/ncurses/chpt8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/algorithms/alpha_beta.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
