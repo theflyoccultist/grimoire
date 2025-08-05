@@ -51,8 +51,6 @@
       - [Armstrong Numbers](programming/bash/exercism/armstrong.md)
 
   - [C 🏗️](programming/c/README.md)
-    - [Good To Know](programming/c/gtk/README.md)
-      - [Makefiles: for Multiple File Projects](programming/c/gtk/makefiles.md)
     - [Fundamentals](programming/c/fundamentals/README.md)
       - [Usage of enums](programming/c/fundamentals/enum.md)
       - [Usage of cases (switch-case)](programming/c/fundamentals/weekday.md)
@@ -78,8 +76,13 @@
 
   - [C++ 🤖](programming/cpp/README.md)
     - [Fundamentals](programming/cpp/fundamentals/README.md)
-      - [Debugging Tools](programming/cpp/fundamentals/debugging-tools.md)
-      - [C++ Fundamentals](programming/cpp/fundamentals/basics.md)
+      - [Arrays](programming/cpp/fundamentals/01-arrays.md)
+      - [Structures](programming/cpp/fundamentals/02-structures.md)
+      - [Pointers](programming/cpp/fundamentals/03-pointers.md)
+      - [Referencing](programming/cpp/fundamentals/04-referencing.md) 
+      - [Pointer to Struct](programming/cpp/fundamentals/05-pointer_to_struct.md)
+      - [Debugging Tools](programming/cpp/fundamentals/debugging-tools.md) 
+      - [Makefiles: for Multiple File Projects](programming/cpp/fundamentals/makefiles.md)
     - [OOP](programming/cpp/oop/README.md)
       - [General OOP Concepts](programming/cpp/oop/oop.md)
       - [Inheritance and derived classes](programming/cpp/oop/inheritance_derived.md)
@@ -103,6 +106,7 @@
       - [Depth First vs. Breadth First Search](programming/cpp/algorithms/dfs.md)
       - [Alpha Beta Pruning](programming/cpp/algorithms/alpha_beta.md)
       - [Reverse Polish Notation](programming/cpp/algorithms/polish_notation.md)
+      - [Referential Garbage Collection](programming/cpp/algorithms/referential_gc.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)

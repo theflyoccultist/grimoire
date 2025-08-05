@@ -69,3 +69,17 @@ git remote set-url origin <NEW_GIT_URL_HERE>
 ```bash
 git reset HEAD^
 ```
+
+### Restore select files to their last committed state:
+
+```sh
+git restore path/to/file1 path/to/file2
+```
+
+### Link to a repo that has been renamed:
+
+```sh
+git remote -v
+git remote set-url origin (new repo name)
+git remote -v
+```

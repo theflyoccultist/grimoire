@@ -1,5 +1,7 @@
 ### User Input: This program asks the user to guess a number and gives feedback.
 
+- Concepts seen: `if / elif / else` conditions.
+
 ```python
 number = 7
 user_input = input("Enter 'y' if you would like to play: ").lower()
@@ -25,9 +27,8 @@ print (f"{age} years old equals to {months} months and {seconds} seconds.")
 
 ### Average Grade Calculation: Calculates average grades for an individual student and a class.
 
-- Creates a variable called student, with a dictionary.
-- The dictionary must contain three keys: 'name', 'school', and 'grades'.
-- The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.
+- Concepts seen: dictionaries.
+- you can store pair data, but you can also store different data types like tuples
 
 ```python
 student = {
@@ -116,5 +117,7 @@ print(name, profession)
 
 head, *tail = [1,2,3,4,5]
 print(head)
+# 1
 print(tail)
+# [2, 3, 4, 5]
 ```

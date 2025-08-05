@@ -5,7 +5,7 @@ Welcome to my C++ notes. Categorized for your sanity and mine.
 - [Fundamentals](fundamentals/)
 - [Object-Oriented Programming](oop/README.md)
 - [Language Features](features/)
-- [Practical Examples](examples/)
+- [Practical Algorithms](algorithms/)
 
 
 ## Personal Story
