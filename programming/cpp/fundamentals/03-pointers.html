@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>How to Use Google Cloud Domain Mapping to setup a Custom Domain to your container - Debugging Grimoire</title>
+        <title>Pointers - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,76 +175,114 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="adding-a-domain-to-google-cloud-run"><a class="header" href="#adding-a-domain-to-google-cloud-run">Adding a Domain to Google Cloud Run</a></h1>
-<p>I have unfortunately decided to swallow my pride and use the Google Cloud UI for this one.</p>
-<h2 id="step-1-set-up-domain-mapping"><a class="header" href="#step-1-set-up-domain-mapping">Step 1: Set Up Domain Mapping</a></h2>
-<ul>
-<li>
-<p>Go to the google cloud console -&gt; select the Cloud Run service.</p>
-</li>
-<li>
-<p>Click <strong>"Manage custom domains"</strong></p>
-</li>
-<li>
-<p>CLick <strong>Add Mapping</strong> -&gt; <strong>"Add service domain mapping"</strong></p>
-</li>
-<li>
-<p><strong>Select the service</strong> you want to map to -&gt; select your deployed project.</p>
-</li>
-<li>
-<p><strong>Enter your domain name</strong> -&gt; Click <strong>"Continue"</strong></p>
-</li>
-<li>
-<p>Google Cloud will <strong>generate DNS records</strong> -&gt; <strong>copy these</strong></p>
-</li>
-</ul>
-<h2 id="step-2-update-dns-settings-in-your-domain-host"><a class="header" href="#step-2-update-dns-settings-in-your-domain-host">Step 2: Update DNS Settings in Your Domain Host**</a></h2>
-<ul>
-<li>
-<p><strong>Go to your domain provider</strong> (Cloudflare, Namecheap, Google Domains, etc.).</p>
-</li>
-<li>
-<p>Paste the DNS records <strong>exactly as given</strong>.</p>
-</li>
-<li>
-<p>If you are using <strong>Cloudflare</strong>, set your records to <strong>"DNS Only"</strong> (disabling proxy mode) so Google can verify them.</p>
-</li>
-</ul>
-<h2 id="step-3-verify-the-dns-changes"><a class="header" href="#step-3-verify-the-dns-changes">Step 3: Verify the DNS Changes</a></h2>
-<ul>
-<li>While waiting, feel free to test your domain name on nslookup.io.</li>
-<li>If the IPv4 and IPv6 addresses matches what Google gave you, then you're good.</li>
-</ul>
-<h2 id="bonus-enable-subdomains"><a class="header" href="#bonus-enable-subdomains">Bonus: Enable Subdomains</a></h2>
-<ul>
-<li>Bonus: in your domain host DNS settings, add * as a host, CNAME as type and ghs.googlehosted.com if you want subdomains.</li>
-</ul>
-<p>-Now any subdomain (<code>blog.yourdomain.com</code>, <code>api.yourdomain.com</code>, etc.) will automatically work.</p>
-<h2 id="fix-if-your-cloud-run-region-doesnt-support-domain-mapping"><a class="header" href="#fix-if-your-cloud-run-region-doesnt-support-domain-mapping">Fix: If Your Cloud Run Region Doesn’t Support Domain Mapping</a></h2>
-<p>🔥 <strong>If you see:</strong></p>
-<p>❌ <em>"Domain mappings are not available in this region."</em></p>
-<p>💀 <strong>Google Cloud decided your region isn’t good enough.</strong></p>
-<ul>
-<li>
-<p><strong>Just edit the YAML file in your repository to switch to a supported one.</strong></p>
-</li>
-<li>
-<p><strong>Commit and push the change.</strong></p>
-</li>
-<li>
-<p>In your Cloud Run services, remove the old container.</p>
-</li>
-</ul>
+                        <h2 id="pointers"><a class="header" href="#pointers">Pointers</a></h2>
+<h3 id="basic-assignment-and-referencing"><a class="header" href="#basic-assignment-and-referencing">Basic assignment and referencing</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int a = 10;
+  int *p; // declaration
+  p = &amp;a; // assign to address a
+
+  cout &lt;&lt; a &lt;&lt; endl;
+  // cout &lt;&lt; *a; : compiler won't understand, because a is an int and not a pointer
+  cout &lt;&lt; "using pointer " &lt;&lt; *p &lt;&lt; &amp;a &lt;&lt; endl;
+  // *p : dereferencing, &amp;a outputs the memory address
+
+  return 0;
+}
+</code></pre>
+<h3 id="pointer-to-an-array"><a class="header" href="#pointer-to-an-array">Pointer to an array</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int A[5] = {2, 4, 6, 8, 10};
+  int *p;
+  p = A; // you don't have to give ampersand (&amp;) when you are giving an array
+         // name to the pointer
+  int *q;
+  // q=&amp;A; compile error
+  q = &amp;A[0]; // this will output the same result as p = A
+
+  for (int i = 0; i &lt; 5; i++)
+    cout &lt;&lt; A[i] &lt;&lt; endl; // p[i] works too
+
+  return 0;
+}
+</code></pre>
+<h3 id="pointer-heap-allocation"><a class="header" href="#pointer-heap-allocation">Pointer: Heap Allocation</a></h3>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int *p;
+  // p = (int *)malloc(5 * sizeof(int)); // access the heap memory, C style
+  p = new int[5]; // C++ style
+
+  // unique_ptr&lt;int[]&gt; p = make_unique&lt;int[]&gt;(5);
+  // smart pointer alternative, which would
+  // automatically clean up once it goes out of scope
+
+  p[0] = 10;
+  p[1] = 15;
+  p[2] = 14;
+  p[3] = 21;
+  p[4] = 31;
+
+  for (int i = 0; i &lt; 5; i++)
+    cout &lt;&lt; p[i] &lt;&lt; endl;
+
+  // free(p); // used in C
+  delete[] p; // when you have finished using the heap memory
+              // you should free it
+
+  return 0;
+}
+</code></pre>
+<h3 id="in-this-example-all-data-types-are-padded-to-have-the-same-number-of-bytes"><a class="header" href="#in-this-example-all-data-types-are-padded-to-have-the-same-number-of-bytes">In this example, all data types are padded to have the same number of bytes</a></h3>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+int main() {
+  int *p1;
+  char *p2;
+  float *p3;
+  double *p4;
+  struct Rectangle *p5;
+
+  cout &lt;&lt; sizeof(p1) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p2) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p3) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p4) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p5) &lt;&lt; endl;
+  // all of them are padded at 8 bytes
+
+  return 0;
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../devops/gcloud-ci-cd.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/02-structures.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../devops/gcloud-host-files.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -254,11 +292,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../devops/gcloud-ci-cd.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/02-structures.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../devops/gcloud-host-files.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -273,13 +311,13 @@
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

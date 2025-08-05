@@ -37,6 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
@@ -93,10 +94,13 @@
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -147,7 +151,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -1468,6 +1477,14 @@ git commit -m "Start ignoring debug.log"
 <h3 id="remove-a-git-commit-which-has-not-yet-been-pushed"><a class="header" href="#remove-a-git-commit-which-has-not-yet-been-pushed">Remove a Git commit which has not yet been pushed</a></h3>
 <pre><code class="language-bash">git reset HEAD^
 </code></pre>
+<h3 id="restore-select-files-to-their-last-committed-state"><a class="header" href="#restore-select-files-to-their-last-committed-state">Restore select files to their last committed state:</a></h3>
+<pre><code class="language-sh">git restore path/to/file1 path/to/file2
+</code></pre>
+<h3 id="link-to-a-repo-that-has-been-renamed"><a class="header" href="#link-to-a-repo-that-has-been-renamed">Link to a repo that has been renamed:</a></h3>
+<pre><code class="language-sh">git remote -v
+git remote set-url origin (new repo name)
+git remote -v
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="yaml-cheatsheet"><a class="header" href="#yaml-cheatsheet">YAML Cheatsheet</a></h1>
 <h2 id="what-is-yaml"><a class="header" href="#what-is-yaml">What is YAML</a></h2>
 <ul>
@@ -2582,7 +2599,7 @@ done
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C</a></h1>
 <p>Very old, very fast and minimal, basically never goes out of style.</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="enumc"><a class="header" href="#enumc">enum.c</a></h2>
 <p>This file, <code>enum.c</code>, is a simple C program that demonstrates the use of an enumeration type. Here's a breakdown of the code:</p>
 <ol>
 <li>
@@ -5589,7 +5606,7 @@ int main() {
 <li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
 <li><a href="programming/cpp/oop/README.html">Object-Oriented Programming</a></li>
 <li><a href="programming/cpp/features/">Language Features</a></li>
-<li><a href="programming/cpp/examples/">Practical Examples</a></li>
+<li><a href="programming/cpp/algorithms/">Practical Algorithms</a></li>
 </ul>
 <h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
 <p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
@@ -5635,78 +5652,7 @@ sudo apt install g++-13   # replace 13 with the latest version available
 </code></pre>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
-<h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
-<ul>
-<li>
-<p>You already know the girl. She’s protective, loud, and dragging every invalid memory access by its wig.</p>
-</li>
-<li>
-<p>Just compile with:</p>
-</li>
-</ul>
-<pre><code class="language-bash">g++ -fsanitize=address -g -O1 your_code.cpp -o output
-</code></pre>
-<h2 id="-2-valgrind-the-classic-queen"><a class="header" href="#-2-valgrind-the-classic-queen">🔥 2. Valgrind (The Classic Queen)</a></h2>
-<ul>
-<li>
-<p>She’s slower, but ultra-detailed. Great for memory leaks, use-after-free, uninitialized memory reads.</p>
-</li>
-<li>
-<p>Use like:</p>
-</li>
-</ul>
-<pre><code class="language-bash">valgrind ./output
-</code></pre>
-<ul>
-<li>This flag tells Valgrind to trace the origin of unitialized values.</li>
-</ul>
-<pre><code class="language-bash">valgrind --track-origins=yes ./output
-</code></pre>
-<p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
-<h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
-<ul>
-<li>Not flashy, but powerful. If you need to pause execution mid-Dijkstra and stare at your pointers like a disappointed parent:</li>
-</ul>
-<pre><code class="language-bash">g++ -g your_code.cpp -o output
-gdb ./output
-</code></pre>
-<p>Then in GDB:</p>
-<pre><code class="language-bash">run
-bt        # Backtrace on crash
-info locals
-</code></pre>
-<ul>
-<li>Common Commands:
-<ul>
-<li>run – start execution</li>
-<li>break main – set breakpoint</li>
-<li>next, step – step through code</li>
-<li>print var, info locals – inspect variables</li>
-<li>bt – backtrace after crash</li>
-</ul>
-</li>
-</ul>
-<h2 id="-4-godbolt-optional-but-very-nerdy"><a class="header" href="#-4-godbolt-optional-but-very-nerdy">🌈 4. Godbolt (Optional, but Very Nerdy)</a></h2>
-<ul>
-<li>Not for runtime bugs, but if you ever want to see how your C++ compiles to assembly, or compare optimizations. It’s fun for algorithm analysis.</li>
-</ul>
-<h2 id="-5-clang-tidy"><a class="header" href="#-5-clang-tidy">🚀 5. Clang-Tidy</a></h2>
-<ul>
-<li>
-<p>For static analysis. Lints C++ code and catches suspicious patterns before they explode.</p>
-</li>
-<li>
-<p>Run like:</p>
-</li>
-</ul>
-<pre><code class="language-bash">clang-tidy your_code.cpp -- -std=c++17
-</code></pre>
-<h2 id="bonus-compilation-flags"><a class="header" href="#bonus-compilation-flags">Bonus: Compilation Flags</a></h2>
-<ul>
-<li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="c-cheat-sheet-"><a class="header" href="#c-cheat-sheet-">C++ Cheat Sheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="a-quick-tour-of-the-c-fundamentals-"><a class="header" href="#a-quick-tour-of-the-c-fundamentals-">A quick tour of the C++ fundamentals 💀</a></h1>
 <h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
 <p>C++ has multiple ways to declare variables, and some are better than others:</p>
 <pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
@@ -5992,7 +5938,298 @@ int main() {
 <li>C++ style would be to return int instead of modifying via pointer.</li>
 <li>This is still very C-like, since we’re explicitly using pointer manipulation.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="arrays"><a class="header" href="#arrays">Arrays</a></h2>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  // int A[5];
+  // A[0] = 12;
+  // A[1] = 15;
+  // A[2] = 25;
+  // initializing aray elements individually
+
+  // int A[10] = {2, 4, 8, 10, 12, 14};
+  // the rest of the elements will be filled with zeros
+  //which is guaranteed behavior in the C++ standard.
+
+  // int b[10] = {0};
+  // don't forget to assign {0} so the array is filled with 0
+  // and not garbage values.
+
+  // for (int i = 0; i &lt; 10; i++) {
+  //   cout &lt;&lt; A[i] &lt;&lt; endl;
+  // }
+  // basic loop
+
+  int n;
+  cout &lt;&lt; "enter size";
+  cin &gt;&gt; n;
+  int A[n];
+  A[0] = 2;
+  // will give garbage values after A[0]
+
+  for (int x : A) {
+    cout &lt;&lt; x &lt;&lt; endl;
+  }
+  // a more concise way to write a loop
+
+  // cout &lt;&lt; sizeof(A) &lt;&lt; endl;
+  // shows how much size the array occupies in memory
+  // cout &lt;&lt; A[1] &lt;&lt; endl;
+  // printf("%d\n", A[2]);
+  // classic C style prints works here too
+
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="structures"><a class="header" href="#structures">Structures</a></h2>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+
+struct Rectangle {
+  int length;
+  int breadth;
+  char x; // allocates 4 bytes but will only use 1 byte. It is called padding of
+          // memory
+};
+
+// struct Rectangle {
+//   int length;
+//   int breadth;
+// } r1, r2, r3;
+// can also be declared like this
+
+int main() {
+  struct Rectangle r1 = {10, 5};
+
+  r1.length = 15;
+  r1.breadth = 7;
+  // can be reassigned with the dot operator
+
+  std::cout &lt;&lt; r1.length &lt;&lt; std::endl;
+  std::cout &lt;&lt; r1.breadth &lt;&lt; std::endl;
+
+  // printf("%lu\n", sizeof(r1));
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="pointers"><a class="header" href="#pointers">Pointers</a></h2>
+<h3 id="basic-assignment-and-referencing"><a class="header" href="#basic-assignment-and-referencing">Basic assignment and referencing</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int a = 10;
+  int *p; // declaration
+  p = &amp;a; // assign to address a
+
+  cout &lt;&lt; a &lt;&lt; endl;
+  // cout &lt;&lt; *a; : compiler won't understand, because a is an int and not a pointer
+  cout &lt;&lt; "using pointer " &lt;&lt; *p &lt;&lt; &amp;a &lt;&lt; endl;
+  // *p : dereferencing, &amp;a outputs the memory address
+
+  return 0;
+}
+</code></pre>
+<h3 id="pointer-to-an-array"><a class="header" href="#pointer-to-an-array">Pointer to an array</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int A[5] = {2, 4, 6, 8, 10};
+  int *p;
+  p = A; // you don't have to give ampersand (&amp;) when you are giving an array
+         // name to the pointer
+  int *q;
+  // q=&amp;A; compile error
+  q = &amp;A[0]; // this will output the same result as p = A
+
+  for (int i = 0; i &lt; 5; i++)
+    cout &lt;&lt; A[i] &lt;&lt; endl; // p[i] works too
+
+  return 0;
+}
+</code></pre>
+<h3 id="pointer-heap-allocation"><a class="header" href="#pointer-heap-allocation">Pointer: Heap Allocation</a></h3>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int *p;
+  // p = (int *)malloc(5 * sizeof(int)); // access the heap memory, C style
+  p = new int[5]; // C++ style
+
+  // unique_ptr&lt;int[]&gt; p = make_unique&lt;int[]&gt;(5);
+  // smart pointer alternative, which would
+  // automatically clean up once it goes out of scope
+
+  p[0] = 10;
+  p[1] = 15;
+  p[2] = 14;
+  p[3] = 21;
+  p[4] = 31;
+
+  for (int i = 0; i &lt; 5; i++)
+    cout &lt;&lt; p[i] &lt;&lt; endl;
+
+  // free(p); // used in C
+  delete[] p; // when you have finished using the heap memory
+              // you should free it
+
+  return 0;
+}
+</code></pre>
+<h3 id="in-this-example-all-data-types-are-padded-to-have-the-same-number-of-bytes"><a class="header" href="#in-this-example-all-data-types-are-padded-to-have-the-same-number-of-bytes">In this example, all data types are padded to have the same number of bytes</a></h3>
+<pre><code class="language-cpp">#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+int main() {
+  int *p1;
+  char *p2;
+  float *p3;
+  double *p4;
+  struct Rectangle *p5;
+
+  cout &lt;&lt; sizeof(p1) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p2) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p3) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p4) &lt;&lt; endl;
+  cout &lt;&lt; sizeof(p5) &lt;&lt; endl;
+  // all of them are padded at 8 bytes
+
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="referencing"><a class="header" href="#referencing">Referencing</a></h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int a = 10;
+  int &amp;r = a;
+
+  r = 25; // a becomes 25 as well
+  // referencing doesn't consume memory, since it is not a pointer
+
+  int b = 30;
+  r = b; // this will also change a and r to 30
+
+  cout &lt;&lt; a &lt;&lt; endl &lt;&lt; r &lt;&lt; endl;
+
+  // r : variable
+  // *r : store the address
+  // &amp;r : reference
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdlib.h&gt;
+
+using namespace std;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+int main() {
+  Rectangle r = {10, 5};
+  // in C++ you can strip "struct". but not in C
+  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
+
+  Rectangle *p = &amp;r;
+  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
+  // pointer to a structure: dot operator cannot be used
+
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
+<h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
+<ul>
+<li>
+<p>You already know the girl. She’s protective, loud, and dragging every invalid memory access by its wig.</p>
+</li>
+<li>
+<p>Just compile with:</p>
+</li>
+</ul>
+<pre><code class="language-bash">g++ -fsanitize=address -g -O1 your_code.cpp -o output
+</code></pre>
+<h2 id="-2-valgrind-the-classic-queen"><a class="header" href="#-2-valgrind-the-classic-queen">🔥 2. Valgrind (The Classic Queen)</a></h2>
+<ul>
+<li>
+<p>She’s slower, but ultra-detailed. Great for memory leaks, use-after-free, uninitialized memory reads.</p>
+</li>
+<li>
+<p>Use like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">valgrind ./output
+</code></pre>
+<ul>
+<li>This flag tells Valgrind to trace the origin of unitialized values.</li>
+</ul>
+<pre><code class="language-bash">valgrind --track-origins=yes ./output
+</code></pre>
+<p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
+<h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
+<ul>
+<li>Not flashy, but powerful. If you need to pause execution mid-Dijkstra and stare at your pointers like a disappointed parent:</li>
+</ul>
+<pre><code class="language-bash">g++ -g your_code.cpp -o output
+gdb ./output
+</code></pre>
+<p>Then in GDB:</p>
+<pre><code class="language-bash">run
+bt        # Backtrace on crash
+info locals
+</code></pre>
+<ul>
+<li>Common Commands:
+<ul>
+<li>run – start execution</li>
+<li>break main – set breakpoint</li>
+<li>next, step – step through code</li>
+<li>print var, info locals – inspect variables</li>
+<li>bt – backtrace after crash</li>
+</ul>
+</li>
+</ul>
+<h2 id="-4-godbolt-optional-but-very-nerdy"><a class="header" href="#-4-godbolt-optional-but-very-nerdy">🌈 4. Godbolt (Optional, but Very Nerdy)</a></h2>
+<ul>
+<li>Not for runtime bugs, but if you ever want to see how your C++ compiles to assembly, or compare optimizations. It’s fun for algorithm analysis.</li>
+</ul>
+<h2 id="-5-clang-tidy"><a class="header" href="#-5-clang-tidy">🚀 5. Clang-Tidy</a></h2>
+<ul>
+<li>
+<p>For static analysis. Lints C++ code and catches suspicious patterns before they explode.</p>
+</li>
+<li>
+<p>Run like:</p>
+</li>
+</ul>
+<pre><code class="language-bash">clang-tidy your_code.cpp -- -std=c++17
+</code></pre>
+<h2 id="bonus-compilation-flags"><a class="header" href="#bonus-compilation-flags">Bonus: Compilation Flags</a></h2>
+<ul>
+<li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
 <p>C++ is not a fully object-oriented language like Java—it gives you the choice of using OOP, procedural, or even template-based metaprogramming. However, when you do use OOP, C++ expects you to take responsibility (i.e., manual memory management, virtual destructors, and explicit inheritance rules).</p>
 <h2 id="basic-oop-program"><a class="header" href="#basic-oop-program">Basic OOP Program</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
@@ -8564,6 +8801,82 @@ You just evaluated <code>3 + (5 * 2)</code> <strong>without parentheses</strong>
 <li>Or implement a Lisp-style scripting language,</li>
 </ul>
 <p>…you’ll want <strong>RPN-style evaluation</strong>. It’s efficient, deterministic, and ridiculously elegant.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="referential-garbage-collection"><a class="header" href="#referential-garbage-collection">Referential Garbage Collection</a></h2>
+<ul>
+<li>Rather than a full copy, we maintain pointers to an aggregate, and a <code>use</code> counter.</li>
+<li>When <code>use</code> (reference count) goes to zero, we actually call <code>delete</code> on an object.</li>
+<li>When we create a new instance, <code>use</code> is initialized to 1.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;ostream&gt;
+
+class Tree; // forward declare it first
+
+class Node {
+  friend class Tree;
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Tree &amp;);
+  int use; // reference count, allows deletion if 0
+
+protected:
+  Node() { use = 1; }
+  virtual void print(std::ostream &amp;) = 0;
+  virtual ~Node() { std::cout &lt;&lt; "Node destroyed\n"; }
+  virtual int eval() = 0; // pure
+};
+
+// class for one constant: inherited from the Node class
+class ConstNode : public Node {
+  int value;
+
+public:
+  ConstNode(int v) : value(v) {}
+  void print(std::ostream &amp;o) override { o &lt;&lt; value; }
+  int eval() override { return value; }
+};
+
+class Tree {
+  friend class Node;
+  // Polymorphic print
+  // Invokes at runtime the appropriate print
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, const Tree &amp;t) {
+    t.p-&gt;print(o);
+    return o;
+  }
+  Node *p; // Polymorphic pointer. This setup allows you to call the right
+           // evaluation function
+
+public:
+  Tree(int); // constant
+  Tree(const Tree &amp;t) {
+    p = t.p;
+    ++p-&gt;use;
+  } // copy constructor, increment use - referential copy
+
+  ~Tree() {
+    if (--p-&gt;use == 0)
+      delete p;
+  } // destructor decrement use and test if use is 0
+  void operator=(const Tree &amp;t) {
+    if (this != &amp;t) {
+      ++t.p-&gt;use;
+      if (--p-&gt;use == 0)
+        delete p;
+      p = t.p;
+    }
+  };
+
+  int eval() { return p-&gt;eval(); }
+};
+
+Tree::Tree(int n) { p = new ConstNode(n); }
+
+int main() {
+  Tree t(42);
+  std::cout &lt;&lt; "Tree: " &lt;&lt; t &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Evaluated: " &lt;&lt; t.eval() &lt;&lt; std::endl;
+  return 0;
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
@@ -9223,7 +9536,13 @@ end
 paramiko, fabric, psutil, pyyaml/json
 requests, dotenv, venv, black, pytest
 </code></pre>
+<p>Standard Library:</p>
+<pre><code>itertools, collections, functools, pathlib(again), concurrent.futures, datetime
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
+<ul>
+<li>Concepts seen: <code>if / elif / else</code> conditions.</li>
+</ul>
 <pre><code class="language-python">number = 7
 user_input = input("Enter 'y' if you would like to play: ").lower()
 
@@ -9244,9 +9563,8 @@ print (f"{age} years old equals to {months} months and {seconds} seconds.")
 </code></pre>
 <h3 id="average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class">Average Grade Calculation: Calculates average grades for an individual student and a class.</a></h3>
 <ul>
-<li>Creates a variable called student, with a dictionary.</li>
-<li>The dictionary must contain three keys: 'name', 'school', and 'grades'.</li>
-<li>The values for each must be 'Jose', 'Computing', and a tuple with the values 66, 77, and 88.</li>
+<li>Concepts seen: dictionaries.</li>
+<li>you can store pair data, but you can also store different data types like tuples</li>
 </ul>
 <pre><code class="language-python">student = {
     "name" : "Jose",
@@ -9332,7 +9650,9 @@ print(name, profession)
 
 head, *tail = [1,2,3,4,5]
 print(head)
+# 1
 print(tail)
+# [2, 3, 4, 5]
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
 <pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
@@ -12435,6 +12755,7 @@ Easier for teams to understand and maintain compared to lower-level languages.</
             window.setTimeout(window.print, 100);
         });
         </script>
+
 
     </div>
     </body>
