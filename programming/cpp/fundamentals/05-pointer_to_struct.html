@@ -198,6 +198,33 @@ int main() {
   return 0;
 }
 </code></pre>
+<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdlib.h&gt;
+
+using namespace std;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+int main() {
+  // how to create an object in heap
+  Rectangle *p;
+  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
+  // in C
+  p = new Rectangle; // in C++
+
+  p-&gt;length = 15;
+  p-&gt;breadth = 7;
+
+  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
+  delete p;
+
+  return 0;
+}
+</code></pre>
 
                     </main>
 
