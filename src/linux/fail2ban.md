@@ -6,6 +6,7 @@ fail2ban watches log files for repeated failed login attempts and dynamically up
 ## Installation
 
 ### Debian/Ubuntu
+
 ```bash
 sudo apt install fail2ban
 ```

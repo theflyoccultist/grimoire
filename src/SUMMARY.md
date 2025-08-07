@@ -16,10 +16,13 @@
 - [Virtualization](virtualization/README.md)
   - [Set Up PostgreSQL in a Google Cloud VM using Docker Compose](virtualization/postgres-gcloud-vm.md)
   - [Create an HMAC Server API for the VM](virtualization/postgres-gcloud-vm2.md)
+  - [Virt Manager Install on Arch Linux](virtualization/virt-manager.md)
 
 - [Linux 🐧](linux/README.md)
   - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
+  - [Arch Linux Ufw Configuration](linux/arch-ufw.md)
   - [Linux Process Management](linux/linux-proc-mgmt.md)
+  - [Build Something From Source](linux/build.md)
 
 - [Database 🐘](database/README.md)
   - [PostgreSQL Local Setup Guide](database/postgres-local.md)
