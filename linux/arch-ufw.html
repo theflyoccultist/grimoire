@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Database 🐘 - Debugging Grimoire</title>
+        <title>Arch Linux Ufw Configuration - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,17 +175,34 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="this-chapter-will-mostly-cover-postgresql"><a class="header" href="#this-chapter-will-mostly-cover-postgresql">This chapter will mostly cover PostgreSQL.</a></h3>
+                        <h2 id="how-to-set-up-the-ufw-firewall"><a class="header" href="#how-to-set-up-the-ufw-firewall">How to set up the ufw firewall</a></h2>
+<pre><code class="language-bash">
+sudo pacman -S ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow samba
+sudo ufw enable
+</code></pre>
+<p>If <code>sudo ufw allow samba</code> for example, does not work:</p>
+<p>Create the file:</p>
+<pre><code class="language-bash">sudo nano /etc/ufw/applications.d/samba
+</code></pre>
+<p>Paste the content:</p>
+<pre><code class="language-ini">[Samba]
+title=LanManager-like file and printer server for Unix
+description=The Samba software suite is a collection of programs that implements the SMB/CIF$
+ports=137,138/udp|139,445/tcp
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../linux/build.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../linux/debian-nftables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../database/postgres-local.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../linux/linux-proc-mgmt.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -195,11 +212,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../linux/build.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../linux/debian-nftables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../database/postgres-local.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../linux/linux-proc-mgmt.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

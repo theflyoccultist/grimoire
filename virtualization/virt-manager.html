@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Database 🐘 - Debugging Grimoire</title>
+        <title>Virt Manager Install on Arch Linux - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,17 +175,92 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="this-chapter-will-mostly-cover-postgresql"><a class="header" href="#this-chapter-will-mostly-cover-postgresql">This chapter will mostly cover PostgreSQL.</a></h3>
+                        <h2 id="virt-manager-install-on-arch-linux"><a class="header" href="#virt-manager-install-on-arch-linux">Virt Manager Install on Arch Linux</a></h2>
+<ol>
+<li>First, update the system:</li>
+</ol>
+<pre><code class="language-bash">sudo pacman -Syu
+</code></pre>
+<ol start="2">
+<li>Install virt-manager and its dependencies:</li>
+</ol>
+<pre><code class="language-bash">sudo pacman -S virt-manager qemu vde2 ebtables dnsmasq bridge-utils openbsd-netcat
+</code></pre>
+<ol start="3">
+<li>Enable and start the <code>libvirtd</code> service:</li>
+</ol>
+<pre><code class="language-bash">sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service
+</code></pre>
+<ol start="4">
+<li>Add your user to the <code>libvirt</code> and <code>kvm</code> groups:</li>
+</ol>
+<pre><code class="language-bash">sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
+</code></pre>
+<p>You may need to log out and log back in for the group changes to take effect.</p>
+<p>And you’ll be able to:</p>
+<ul>
+<li>Create VMs from ISO images</li>
+<li>Use bridged networking or NAT (for proper sysadmin testing)</li>
+<li>Assign cores, RAM, disk</li>
+<li>Take snapshots</li>
+</ul>
+<h3 id="creating-a-new-virtual-machine"><a class="header" href="#creating-a-new-virtual-machine">Creating a New Virtual Machine</a></h3>
+<ol>
+<li>
+<p>Open Virtual Machine Manager</p>
+</li>
+<li>
+<p>Click "Create a new virtual machine"</p>
+</li>
+<li>
+<p>Choose "Local Install Media (ISO)"</p>
+</li>
+<li>
+<p>Select your ISO</p>
+</li>
+<li>
+<p>Assign CPU and Memory</p>
+</li>
+</ol>
+<ul>
+<li>2 CPUs and 4GB Ram for Windows 7, for example.</li>
+</ul>
+<ol start="6">
+<li>Create a disk</li>
+</ol>
+<ul>
+<li>Allocate an appropriate size.</li>
+<li>Make it <strong>qcow2</strong> format</li>
+</ul>
+<ol start="7">
+<li>Check "Customize configuration before install"</li>
+</ol>
+<h4 id="customizing-before-install"><a class="header" href="#customizing-before-install">Customizing Before Install</a></h4>
+<ol>
+<li>
+<p>Check that Firmware is set to BIOS</p>
+</li>
+<li>
+<p>Add the VirtIO ISO</p>
+</li>
+</ol>
+<ul>
+<li>You need to grab the appropriate version from <a href="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/">here</a></li>
+<li>Go to “Add Hardware” → Storage → , Select or create custom storage, Add the VirtIO ISO</li>
+<li>Set it as CD-ROM, SATA</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../linux/build.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../database/postgres-local.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../linux/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -195,11 +270,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../linux/build.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../database/postgres-local.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../linux/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

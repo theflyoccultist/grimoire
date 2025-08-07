@@ -954,6 +954,82 @@ class Hmac
   end
 end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="virt-manager-install-on-arch-linux"><a class="header" href="#virt-manager-install-on-arch-linux">Virt Manager Install on Arch Linux</a></h2>
+<ol>
+<li>First, update the system:</li>
+</ol>
+<pre><code class="language-bash">sudo pacman -Syu
+</code></pre>
+<ol start="2">
+<li>Install virt-manager and its dependencies:</li>
+</ol>
+<pre><code class="language-bash">sudo pacman -S virt-manager qemu vde2 ebtables dnsmasq bridge-utils openbsd-netcat
+</code></pre>
+<ol start="3">
+<li>Enable and start the <code>libvirtd</code> service:</li>
+</ol>
+<pre><code class="language-bash">sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service
+</code></pre>
+<ol start="4">
+<li>Add your user to the <code>libvirt</code> and <code>kvm</code> groups:</li>
+</ol>
+<pre><code class="language-bash">sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
+</code></pre>
+<p>You may need to log out and log back in for the group changes to take effect.</p>
+<p>And you’ll be able to:</p>
+<ul>
+<li>Create VMs from ISO images</li>
+<li>Use bridged networking or NAT (for proper sysadmin testing)</li>
+<li>Assign cores, RAM, disk</li>
+<li>Take snapshots</li>
+</ul>
+<h3 id="creating-a-new-virtual-machine"><a class="header" href="#creating-a-new-virtual-machine">Creating a New Virtual Machine</a></h3>
+<ol>
+<li>
+<p>Open Virtual Machine Manager</p>
+</li>
+<li>
+<p>Click "Create a new virtual machine"</p>
+</li>
+<li>
+<p>Choose "Local Install Media (ISO)"</p>
+</li>
+<li>
+<p>Select your ISO</p>
+</li>
+<li>
+<p>Assign CPU and Memory</p>
+</li>
+</ol>
+<ul>
+<li>2 CPUs and 4GB Ram for Windows 7, for example.</li>
+</ul>
+<ol start="6">
+<li>Create a disk</li>
+</ol>
+<ul>
+<li>Allocate an appropriate size.</li>
+<li>Make it <strong>qcow2</strong> format</li>
+</ul>
+<ol start="7">
+<li>Check "Customize configuration before install"</li>
+</ol>
+<h4 id="customizing-before-install"><a class="header" href="#customizing-before-install">Customizing Before Install</a></h4>
+<ol>
+<li>
+<p>Check that Firmware is set to BIOS</p>
+</li>
+<li>
+<p>Add the VirtIO ISO</p>
+</li>
+</ol>
+<ul>
+<li>You need to grab the appropriate version from <a href="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/">here</a></li>
+<li>Go to “Add Hardware” → Storage → , Select or create custom storage, Add the VirtIO ISO</li>
+<li>Set it as CD-ROM, SATA</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-nftables-firewall-rules-for-debian-type-distributions"><a class="header" href="#setting-up-nftables-firewall-rules-for-debian-type-distributions">Setting up nftables Firewall Rules For Debian-type Distributions</a></h1>
 <p>Before diving into configurations, you might want to check if nftables is already installed and active on your Debian system.</p>
@@ -1070,6 +1146,24 @@ sudo nft -f firewall.config
 <pre><code class="language-bash">sudo nft add rule ip filter input tcp dport 22 accept timeout 5m
 </code></pre>
 <p>This allows SSH access for 5 minutes, giving you time to fix mistakes before the rule disappears.</p>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="how-to-set-up-the-ufw-firewall"><a class="header" href="#how-to-set-up-the-ufw-firewall">How to set up the ufw firewall</a></h2>
+<pre><code class="language-bash">
+sudo pacman -S ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow samba
+sudo ufw enable
+</code></pre>
+<p>If <code>sudo ufw allow samba</code> for example, does not work:</p>
+<p>Create the file:</p>
+<pre><code class="language-bash">sudo nano /etc/ufw/applications.d/samba
+</code></pre>
+<p>Paste the content:</p>
+<pre><code class="language-ini">[Samba]
+title=LanManager-like file and printer server for Unix
+description=The Samba software suite is a collection of programs that implements the SMB/CIF$
+ports=137,138/udp|139,445/tcp
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="-cli-tools-to-see-background-services-the-cool-girl-terminal-way"><a class="header" href="#-cli-tools-to-see-background-services-the-cool-girl-terminal-way">🔍 CLI Tools to See Background Services (the Cool Girl Terminal Way)</a></h2>
 <p>🧙‍♀️ <code>ps aux</code></p>
 <p>This is the classic spell for peeking into the underworld of processes.</p>
@@ -1112,6 +1206,13 @@ sudo xbps-install -S htop  # Void Linux
 </code></pre>
 <p>Start them:</p>
 <pre><code class="language-bash">sudo sv start &lt;service&gt;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="build-something-from-source"><a class="header" href="#build-something-from-source">Build something from source</a></h2>
+<pre><code class="language-bash">tar -xvzf fftw-&lt;version&gt;.tar.gz
+cd fftw-&lt;version&gt;
+./configure --enable-shared
+make
+sudo make install
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-postgresql"><a class="header" href="#this-chapter-will-mostly-cover-postgresql">This chapter will mostly cover PostgreSQL.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="postgresql-local-setup-guide"><a class="header" href="#postgresql-local-setup-guide">PostgreSQL Local Setup Guide</a></h1>
