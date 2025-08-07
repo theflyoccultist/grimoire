@@ -132,9 +132,9 @@
     - [Errors](programming/python/errors.md)
 
   - [Haskell](programming/haskell/README.md)
-    - [Fundamentals](programming/haskell/fundamentals.md)
-    - [Basic Types](programming/haskell/basic-types.md)
-    - [Basic Types 2](programming/haskell/basic-types-2.md)
+    - [Fundamentals](programming/haskell/01-fundamentals.md)
+    - [Basic Types](programming/haskell/02-basic-types.md)
+    - [Basic Types 2](programming/haskell/03-basic-types-2.md)
 
   - [Go 🐹](programming/go/README.md)
     - [The Birthday Paradox](programming/go/birthday.md)
