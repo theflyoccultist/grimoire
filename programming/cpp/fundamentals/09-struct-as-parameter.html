@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Pointer to Struct - Debugging Grimoire</title>
+        <title>Struct As Parameter - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,52 +175,77 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
-
-using namespace std;
+                        <h2 id="struct-as-parameter"><a class="header" href="#struct-as-parameter">Struct as Parameter</a></h2>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
 
 struct Rectangle {
   int length;
   int breadth;
 };
 
+void fun(struct Rectangle *r) {
+  r-&gt;length = 20;
+  printf("Length %d \n Breadth %d \n", r-&gt;length, r-&gt;breadth);
+}
+
 int main() {
-  Rectangle r = {10, 5};
-  // in C++ you can strip "struct". but not in C
-  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
+  struct Rectangle r = {10, 5};
+  fun(&amp;r);
 
-  Rectangle *p = &amp;r;
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  // pointer to a structure: dot operator cannot be used
-
+  printf("Length %d \n Breadth %d \n", r.length, r.breadth);
   return 0;
 }
 </code></pre>
-<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
+<h3 id="an-example-where-one-of-the-structs-in-the-parameters-is-an-array"><a class="header" href="#an-example-where-one-of-the-structs-in-the-parameters-is-an-array">An example where one of the structs in the parameters is an array</a></h3>
+<pre><code class="language-cpp">// When one of the parameters in struct is an array
 
-using namespace std;
+#include &lt;cstdio&gt;
+
+struct Rectangle {
+  int length[4];
+  int breadth;
+};
+
+void fun(struct Rectangle *r) {
+  r-&gt;length[1] = 7;
+  printf("Length %d \n Breadth %d \n", r-&gt;length[1], r-&gt;breadth);
+}
+
+int main() {
+  struct Rectangle r = {{5, 3, 2, 10}, 5};
+  fun(&amp;r);
+
+  printf("Length %d \n Breadth %d \n", r.length[1], r.breadth);
+  return 0;
+}
+</code></pre>
+<h3 id="creating-a-struct-in-heap-memory"><a class="header" href="#creating-a-struct-in-heap-memory">Creating a struct in heap memory</a></h3>
+<pre><code class="language-cpp">// creating a struct in heap
+
+#include &lt;iostream&gt;
 
 struct Rectangle {
   int length;
   int breadth;
 };
 
-int main() {
-  // how to create an object in heap
-  Rectangle *p;
-  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
-  // in C
-  p = new Rectangle; // in C++
+struct Rectangle *fun() {
+  struct Rectangle *p;
+  p = new Rectangle;
 
   p-&gt;length = 15;
   p-&gt;breadth = 7;
 
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  delete p;
+  return p;
+}
+
+int main() {
+  struct Rectangle *ptr = fun();
+
+  std::cout &lt;&lt; "length " &lt;&lt; ptr-&gt;length &lt;&lt; std::endl
+            &lt;&lt; "Breadth " &lt;&lt; ptr-&gt;breadth &lt;&lt; std::endl;
+
+  delete ptr;
 
   return 0;
 }
@@ -230,11 +255,11 @@ int main() {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/08-array-as-parameter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/debugging-tools.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,11 +269,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/08-array-as-parameter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/debugging-tools.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

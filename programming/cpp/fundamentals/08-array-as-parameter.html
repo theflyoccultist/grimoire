@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Pointer to Struct - Debugging Grimoire</title>
+        <title>Array As Parameter - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,53 +175,66 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
+                        <h2 id="array-as-parameter"><a class="header" href="#array-as-parameter">Array as Parameter</a></h2>
+<pre><code class="language-cpp">// array as parameter
+#include &lt;iostream&gt;
 
 using namespace std;
+// arrays can only be passed by address
+// brackets: pointer to an array
+// n is passed by value
+// int *A as parameter: valid too, but can point to anything
+// int A[] as parameter: can only be an array
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
+void fun(int *A, int n) {
+  // you cannot use a range for loop here because the parameter is a pointer
+  // for (int a : A)
+  //   cout &lt;&lt; a &lt;&lt; endl;
+
+  A[0] = 15; // because it is a pointer, this will work
+
+  for (int i = 0; i &lt; n; i++)
+    cout &lt;&lt; A[i] &lt;&lt; endl;
+}
 
 int main() {
-  Rectangle r = {10, 5};
-  // in C++ you can strip "struct". but not in C
-  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
+  int A[] = {2, 4, 6, 8, 10};
+  int n = 5;
 
-  Rectangle *p = &amp;r;
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  // pointer to a structure: dot operator cannot be used
+  fun(A, n);
+  for (int x : A)
+    cout &lt;&lt; x &lt;&lt; " ";
 
   return 0;
 }
 </code></pre>
-<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
+<h3 id="dynamically-sized-array"><a class="header" href="#dynamically-sized-array">Dynamically sized array</a></h3>
+<pre><code class="language-cpp">// create an array inside a function and return its address
+// demo of a dynamicaly sized array
+#include &lt;iostream&gt;
 
 using namespace std;
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
+// int [] is not supported by the latest compilers
+int *fun(int size) {
+  int *p;
+  p = new int[size];
+
+  for (int i = 0; i &lt; size; i++)
+    p[i] = i + 1;
+
+  return p;
+}
 
 int main() {
-  // how to create an object in heap
-  Rectangle *p;
-  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
-  // in C
-  p = new Rectangle; // in C++
+  int *ptr, sz = 7;
 
-  p-&gt;length = 15;
-  p-&gt;breadth = 7;
+  ptr = fun(sz);
 
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  delete p;
+  for (int i = 0; i &lt; sz; i++)
+    cout &lt;&lt; ptr[i] &lt;&lt; endl;
 
+  delete[] ptr;
   return 0;
 }
 </code></pre>
@@ -230,11 +243,11 @@ int main() {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/07-parameter-passing-methods.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/09-struct-as-parameter.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,11 +257,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/07-parameter-passing-methods.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/09-struct-as-parameter.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

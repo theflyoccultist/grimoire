@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Pointer to Struct - Debugging Grimoire</title>
+        <title>Basic Types - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../../favicon.svg">
-        <link rel="shortcut icon" href="../../../favicon.png">
-        <link rel="stylesheet" href="../../../css/variables.css">
-        <link rel="stylesheet" href="../../../css/general.css">
-        <link rel="stylesheet" href="../../../css/chrome.css">
-        <link rel="stylesheet" href="../../../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../../searchindex.js";
+            window.path_to_searchindex_js = "../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,66 +175,108 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
-
-using namespace std;
-
-struct Rectangle {
-  int length;
-  int breadth;
-};
-
-int main() {
-  Rectangle r = {10, 5};
-  // in C++ you can strip "struct". but not in C
-  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
-
-  Rectangle *p = &amp;r;
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  // pointer to a structure: dot operator cannot be used
-
-  return 0;
-}
+                        <h2 id="basic-types"><a class="header" href="#basic-types">Basic Types</a></h2>
+<p>Booleans: <code>Bool</code></p>
+<p>Integers: <code>Int</code>, <code>Integer</code></p>
+<p>Reals: <code>Float</code>, <code>Double</code></p>
+<p>Characters: <code>Char</code></p>
+<h3 id="booleans"><a class="header" href="#booleans">Booleans</a></h3>
+<p>Literals: <code>False</code> and <code>True</code></p>
+<pre><code class="language-hs">not :: Bool -&gt; Bool             -- negation
+(||) :: Bool -&gt; Bool -&gt; Bool    -- disjunction
+(&amp;&amp;) :: Bool -&gt; Bool -&gt; Bool    -- conjunction
 </code></pre>
-<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
+<p>Examples:</p>
+<pre><code class="language-hs">not True                -- False
+not False               -- True
 
-using namespace std;
+True || False           -- True
+True &amp;&amp; False           -- False
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
-
-int main() {
-  // how to create an object in heap
-  Rectangle *p;
-  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
-  // in C
-  p = new Rectangle; // in C++
-
-  p-&gt;length = 15;
-  p-&gt;breadth = 7;
-
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  delete p;
-
-  return 0;
-}
+(False || True) &amp;&amp; True -- True
+not (not True)          -- True
+not not True            -- error
+</code></pre>
+<p>We cannot pass another function as the input to the function</p>
+<h3 id="integers"><a class="header" href="#integers">Integers</a></h3>
+<p>Type:</p>
+<ul>
+<li><code>Int</code>: Integers of 64 bits</li>
+<li><code>Integer</code>: for longer numbers</li>
+</ul>
+<p>Literals: <code>15</code>, <code>(-22)</code>, <code>857563543132</code></p>
+<p>Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>div</code>, <code>mod</code>, <code>rem</code>, <code>^</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code> &lt;- Inequality (no <code>!=</code>)</p>
+<p>Examples:</p>
+<pre><code>ghci&gt; 3 + 4 * 5
+23
+ghci&gt; (3 + 4) * 5
+35
+ghci&gt; 2^10
+1024
+ghci&gt; 3 + 1 /= 4
+False
+ghci&gt; div 11 2
+5
+ghci&gt; mod 11 2
+1
+ghci&gt; rem 11 2
+1
+ghci&gt; mod (-11) 2
+1
+ghci&gt; rem (-11) 2
+-1
+</code></pre>
+<p><code>mod</code>: result always &gt;= 0
+<code>rem</code>: takes the sign of the dividend</p>
+<h3 id="reals"><a class="header" href="#reals">Reals</a></h3>
+<p>Type:</p>
+<ul>
+<li><code>Float</code>: 32-bit floating point reals</li>
+<li><code>Double</code>: 64-bit floating point reals</li>
+</ul>
+<p>Literals: <code>3.14</code>, <code>1e-9</code>, <code>-3.0</code></p>
+<p>Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>**</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code></p>
+<p>Integer to Real conversion: <code>fromIntegral</code></p>
+<p>Real to Integer conversion: <code>round</code>, <code>floor</code>, <code>ceiling</code></p>
+<p>Examples:</p>
+<pre><code>ghci&gt; round 3.6
+4
+ghci&gt; round (-3.6)
+-4
+ghci&gt; map round [3.5, 4.5, 5.5, 6.5]
+[4,4,6,6]
+</code></pre>
+<p>Round: rounds to the closest number.</p>
+<p>Same code in C++:</p>
+<pre><code class="language-cpp">std::vector&lt;double&gt; nums = {3.5, 4.5, 5.5, 6.5};
+std::vector&lt;int&gt; rounded;
+std::transform(nums.begin(), nums.end(), std::back_inserter(rounded), 
+               [](double x) { return std::round(x); });
+</code></pre>
+<pre><code>ghci&gt; map ceiling [2.1, 2.2, 2.6, 2.9]
+[3,3,3,3]
+ghci&gt; map floor [2.1, 2.2, 2.6, 2.9]
+[2,2,2,2]
+</code></pre>
+<pre><code>ghci&gt; 10.0/3.0
+3.3333333333333335
+ghci&gt; 2.0 ** 3.0
+8.0
+ghci&gt; fromIntegral 4
+4
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/haskell/fundamentals.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/haskell/basic-types-2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,11 +286,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/haskell/fundamentals.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/haskell/basic-types-2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -263,13 +305,13 @@ int main() {
         </script>
 
 
-        <script src="../../../elasticlunr.min.js"></script>
-        <script src="../../../mark.min.js"></script>
-        <script src="../../../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../../../clipboard.min.js"></script>
-        <script src="../../../highlight.js"></script>
-        <script src="../../../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

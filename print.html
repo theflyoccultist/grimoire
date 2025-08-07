@@ -6185,6 +6185,258 @@ int main() {
   return 0;
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="introduction-to-functions"><a class="header" href="#introduction-to-functions">Introduction to Functions</a></h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+int add(int a, int b) {
+  int c;
+  c = a + b;
+
+  return c;
+}
+
+int main() {
+  int num1 = 10, num2 = 15, sum;
+
+  sum = add(num1, num2);
+
+  cout &lt;&lt; "Sum is " &lt;&lt; sum;
+
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="parameter-passing-methods"><a class="header" href="#parameter-passing-methods">Parameter Passing Methods</a></h2>
+<h3 id="call-by-value"><a class="header" href="#call-by-value">Call by value</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+// This is a call by value mechanism
+// The value of num1 and num2 will be copied in A and B respectively
+
+// int add(int a, int b) {
+//   int c;
+//   c = a + b;
+//
+//   return c;
+// }
+
+// in this example a will change to 11 but num1 will remain 10
+int add(int a) {
+  a++;
+  return a;
+}
+
+int main() {
+  int num1 = 10, sum;
+
+  sum = add(num1);
+
+  cout &lt;&lt; sum &lt;&lt; endl;
+  cout &lt;&lt; num1 &lt;&lt; endl;
+
+  return 0;
+}
+</code></pre>
+<h3 id="call-by-address"><a class="header" href="#call-by-address">Call by address</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+// Example of call by address
+// The parameters should be of type pointers
+// When to use:
+// - When you want a function to directly work upon the actual parameters
+// - If you have some variable and want the same variable to be modified
+
+void swap(int *x, int *y) {
+  int temp;
+  temp = *x;
+  *x = *y;
+  *y = temp;
+}
+
+int main() {
+  int num1 = 10, num2 = 15;
+
+  swap(&amp;num1, &amp;num2);
+
+  cout &lt;&lt; "first number" &lt;&lt; num1 &lt;&lt; endl;
+  cout &lt;&lt; "second number" &lt;&lt; num2 &lt;&lt; endl;
+
+  return 0;
+}
+</code></pre>
+<h3 id="call-by-reference"><a class="header" href="#call-by-reference">Call by Reference</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+// Example of call by reference
+// Supported by C++
+// references are nicknames:
+// - the compiler may implement them as a pointer
+// - or an inline function
+
+void swap(int &amp;x, int &amp;y) {
+  int temp;
+  temp = x;
+  x = y;
+  y = temp;
+}
+
+int main() {
+  int num1 = 10, num2 = 15;
+
+  swap(num1, num2);
+
+  cout &lt;&lt; "first number" &lt;&lt; num1 &lt;&lt; endl;
+  cout &lt;&lt; "second number" &lt;&lt; num2 &lt;&lt; endl;
+
+  return 0;
+}
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="array-as-parameter"><a class="header" href="#array-as-parameter">Array as Parameter</a></h2>
+<pre><code class="language-cpp">// array as parameter
+#include &lt;iostream&gt;
+
+using namespace std;
+// arrays can only be passed by address
+// brackets: pointer to an array
+// n is passed by value
+// int *A as parameter: valid too, but can point to anything
+// int A[] as parameter: can only be an array
+
+void fun(int *A, int n) {
+  // you cannot use a range for loop here because the parameter is a pointer
+  // for (int a : A)
+  //   cout &lt;&lt; a &lt;&lt; endl;
+
+  A[0] = 15; // because it is a pointer, this will work
+
+  for (int i = 0; i &lt; n; i++)
+    cout &lt;&lt; A[i] &lt;&lt; endl;
+}
+
+int main() {
+  int A[] = {2, 4, 6, 8, 10};
+  int n = 5;
+
+  fun(A, n);
+  for (int x : A)
+    cout &lt;&lt; x &lt;&lt; " ";
+
+  return 0;
+}
+</code></pre>
+<h3 id="dynamically-sized-array"><a class="header" href="#dynamically-sized-array">Dynamically sized array</a></h3>
+<pre><code class="language-cpp">// create an array inside a function and return its address
+// demo of a dynamicaly sized array
+#include &lt;iostream&gt;
+
+using namespace std;
+
+// int [] is not supported by the latest compilers
+int *fun(int size) {
+  int *p;
+  p = new int[size];
+
+  for (int i = 0; i &lt; size; i++)
+    p[i] = i + 1;
+
+  return p;
+}
+
+int main() {
+  int *ptr, sz = 7;
+
+  ptr = fun(sz);
+
+  for (int i = 0; i &lt; sz; i++)
+    cout &lt;&lt; ptr[i] &lt;&lt; endl;
+
+  delete[] ptr;
+  return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="struct-as-parameter"><a class="header" href="#struct-as-parameter">Struct as Parameter</a></h2>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+void fun(struct Rectangle *r) {
+  r-&gt;length = 20;
+  printf("Length %d \n Breadth %d \n", r-&gt;length, r-&gt;breadth);
+}
+
+int main() {
+  struct Rectangle r = {10, 5};
+  fun(&amp;r);
+
+  printf("Length %d \n Breadth %d \n", r.length, r.breadth);
+  return 0;
+}
+</code></pre>
+<h3 id="an-example-where-one-of-the-structs-in-the-parameters-is-an-array"><a class="header" href="#an-example-where-one-of-the-structs-in-the-parameters-is-an-array">An example where one of the structs in the parameters is an array</a></h3>
+<pre><code class="language-cpp">// When one of the parameters in struct is an array
+
+#include &lt;cstdio&gt;
+
+struct Rectangle {
+  int length[4];
+  int breadth;
+};
+
+void fun(struct Rectangle *r) {
+  r-&gt;length[1] = 7;
+  printf("Length %d \n Breadth %d \n", r-&gt;length[1], r-&gt;breadth);
+}
+
+int main() {
+  struct Rectangle r = {{5, 3, 2, 10}, 5};
+  fun(&amp;r);
+
+  printf("Length %d \n Breadth %d \n", r.length[1], r.breadth);
+  return 0;
+}
+</code></pre>
+<h3 id="creating-a-struct-in-heap-memory"><a class="header" href="#creating-a-struct-in-heap-memory">Creating a struct in heap memory</a></h3>
+<pre><code class="language-cpp">// creating a struct in heap
+
+#include &lt;iostream&gt;
+
+struct Rectangle {
+  int length;
+  int breadth;
+};
+
+struct Rectangle *fun() {
+  struct Rectangle *p;
+  p = new Rectangle;
+
+  p-&gt;length = 15;
+  p-&gt;breadth = 7;
+
+  return p;
+}
+
+int main() {
+  struct Rectangle *ptr = fun();
+
+  std::cout &lt;&lt; "length " &lt;&lt; ptr-&gt;length &lt;&lt; std::endl
+            &lt;&lt; "Breadth " &lt;&lt; ptr-&gt;breadth &lt;&lt; std::endl;
+
+  delete ptr;
+
+  return 0;
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
 <h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
 <ul>
@@ -10177,6 +10429,239 @@ try:
 except TooManyPagesError as e:
     print(e)
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
+<h3 id="introduction-to-haskell"><a class="header" href="#introduction-to-haskell">Introduction to Haskell</a></h3>
+<p>Haskell is a pure functional programming language.</p>
+<p>There are no:</p>
+<ul>
+<li>Assignments,</li>
+<li>Loops,</li>
+<li>Side effects,</li>
+<li>Explicit memory management.</li>
+</ul>
+<p>There are:</p>
+<ul>
+<li>Lazy evaluations,</li>
+<li>Functions as first-order objects,</li>
+<li>Static type system,</li>
+<li>Automatic type inference.</li>
+</ul>
+<h3 id="first-interactions-with-ghci"><a class="header" href="#first-interactions-with-ghci">First interactions with GHCi</a></h3>
+<pre><code class="language-hs">3 + 2 * 2
+7
+</code></pre>
+<hr />
+<pre><code class="language-hs">(3 + 2) * 2
+10
+</code></pre>
+<hr />
+<pre><code class="language-hs">even 62
+True
+</code></pre>
+<hr />
+<p>Parentheses are not necessary (redundant):</p>
+<pre><code class="language-hs">even (62)
+True
+</code></pre>
+<hr />
+<p>Will throw a type error:</p>
+<pre><code class="language-hs">even "Albert"
+</code></pre>
+<hr />
+<pre><code class="language-hs">div 14 4
+3
+</code></pre>
+<hr />
+<pre><code class="language-hs">ghci&gt; even 2
+True
+ghci&gt; even 3
+False
+ghci&gt; :type even
+even :: Integral a =&gt; a -&gt; Bool
+
+ghci&gt; even (8 - 3)
+False
+ghci&gt; not (even 25)
+True
+</code></pre>
+<h3 id="type"><a class="header" href="#type">Type</a></h3>
+<p>Single quotes: character</p>
+<pre><code class="language-hs">ghci&gt; :type 'D'
+'D' :: Char
+</code></pre>
+<hr />
+<p>Double quotes: String</p>
+<pre><code class="language-hs">ghci&gt; :type "EMMA"
+"EMMA" :: String
+</code></pre>
+<hr />
+<pre><code class="language-hs">ghci&gt; :type not
+not :: Bool -&gt; Bool
+ghci&gt; :t not
+not :: Bool -&gt; Bool
+</code></pre>
+<hr />
+<pre><code class="language-hs">ghci&gt; :type length
+length :: Foldable t =&gt; t a -&gt; Int
+</code></pre>
+<h3 id="factorial--loading-programs-in-the-interpreter"><a class="header" href="#factorial--loading-programs-in-the-interpreter">Factorial / Loading programs in the interpreter</a></h3>
+<p>We first need to indicate the base case of the function, and then indicate the general (recursive) case.</p>
+<p><code>program.hs</code>:</p>
+<pre><code class="language-hs">factorial :: Integer -&gt; Integer     -- type header of the function
+factorial 0 = 1                     -- base case
+factorial n = n * factorial (n - 1) -- general case
+</code></pre>
+<p>In Ghci:</p>
+<pre><code>ghci&gt; :load factorial.hs
+[1 of 2] Compiling Main             ( program.hs, interpreted )
+Ok, one module loaded.
+ghci&gt; factorial 5
+120
+ghci&gt; map factorial[0..5]
+[1,1,2,6,24,120]
+ghci&gt; :t factorial
+factorial :: Integer -&gt; Integer
+</code></pre>
+<p><code>program.hs</code>:</p>
+<pre><code class="language-hs">double x = 2 * x
+</code></pre>
+<ul>
+<li>After modifying and saving the .hs program, you can use <code>:reload</code> to add the new functions</li>
+<li>For negative numbers, you should always wrap them inside parenthesis</li>
+</ul>
+<pre><code>ghci&gt; double (-8)
+-16
+ghci&gt; :t double
+double :: Num a =&gt; a -&gt; a
+</code></pre>
+<ul>
+<li>Here, the type of the <code>double</code> function is automatically inferred. It allows us to define functions without always defining its header.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="basic-types"><a class="header" href="#basic-types">Basic Types</a></h2>
+<p>Booleans: <code>Bool</code></p>
+<p>Integers: <code>Int</code>, <code>Integer</code></p>
+<p>Reals: <code>Float</code>, <code>Double</code></p>
+<p>Characters: <code>Char</code></p>
+<h3 id="booleans"><a class="header" href="#booleans">Booleans</a></h3>
+<p>Literals: <code>False</code> and <code>True</code></p>
+<pre><code class="language-hs">not :: Bool -&gt; Bool             -- negation
+(||) :: Bool -&gt; Bool -&gt; Bool    -- disjunction
+(&amp;&amp;) :: Bool -&gt; Bool -&gt; Bool    -- conjunction
+</code></pre>
+<p>Examples:</p>
+<pre><code class="language-hs">not True                -- False
+not False               -- True
+
+True || False           -- True
+True &amp;&amp; False           -- False
+
+(False || True) &amp;&amp; True -- True
+not (not True)          -- True
+not not True            -- error
+</code></pre>
+<p>We cannot pass another function as the input to the function</p>
+<h3 id="integers"><a class="header" href="#integers">Integers</a></h3>
+<p>Type:</p>
+<ul>
+<li><code>Int</code>: Integers of 64 bits</li>
+<li><code>Integer</code>: for longer numbers</li>
+</ul>
+<p>Literals: <code>15</code>, <code>(-22)</code>, <code>857563543132</code></p>
+<p>Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>div</code>, <code>mod</code>, <code>rem</code>, <code>^</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code> &lt;- Inequality (no <code>!=</code>)</p>
+<p>Examples:</p>
+<pre><code>ghci&gt; 3 + 4 * 5
+23
+ghci&gt; (3 + 4) * 5
+35
+ghci&gt; 2^10
+1024
+ghci&gt; 3 + 1 /= 4
+False
+ghci&gt; div 11 2
+5
+ghci&gt; mod 11 2
+1
+ghci&gt; rem 11 2
+1
+ghci&gt; mod (-11) 2
+1
+ghci&gt; rem (-11) 2
+-1
+</code></pre>
+<p><code>mod</code>: result always &gt;= 0
+<code>rem</code>: takes the sign of the dividend</p>
+<h3 id="reals"><a class="header" href="#reals">Reals</a></h3>
+<p>Type:</p>
+<ul>
+<li><code>Float</code>: 32-bit floating point reals</li>
+<li><code>Double</code>: 64-bit floating point reals</li>
+</ul>
+<p>Literals: <code>3.14</code>, <code>1e-9</code>, <code>-3.0</code></p>
+<p>Operations: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>**</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code></p>
+<p>Integer to Real conversion: <code>fromIntegral</code></p>
+<p>Real to Integer conversion: <code>round</code>, <code>floor</code>, <code>ceiling</code></p>
+<p>Examples:</p>
+<pre><code>ghci&gt; round 3.6
+4
+ghci&gt; round (-3.6)
+-4
+ghci&gt; map round [3.5, 4.5, 5.5, 6.5]
+[4,4,6,6]
+</code></pre>
+<p>Round: rounds to the closest number.</p>
+<p>Same code in C++:</p>
+<pre><code class="language-cpp">std::vector&lt;double&gt; nums = {3.5, 4.5, 5.5, 6.5};
+std::vector&lt;int&gt; rounded;
+std::transform(nums.begin(), nums.end(), std::back_inserter(rounded), 
+               [](double x) { return std::round(x); });
+</code></pre>
+<pre><code>ghci&gt; map ceiling [2.1, 2.2, 2.6, 2.9]
+[3,3,3,3]
+ghci&gt; map floor [2.1, 2.2, 2.6, 2.9]
+[2,2,2,2]
+</code></pre>
+<pre><code>ghci&gt; 10.0/3.0
+3.3333333333333335
+ghci&gt; 2.0 ** 3.0
+8.0
+ghci&gt; fromIntegral 4
+4
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="basic-types-pt2"><a class="header" href="#basic-types-pt2">Basic Types pt.2</a></h2>
+<h3 id="characters"><a class="header" href="#characters">Characters</a></h3>
+<p>Type: <code>Char</code></p>
+<p>Literals: <code>'a'</code>, <code>'A'</code>, <code>'\n'</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code></p>
+<p>Conversion functions: (it is necessary to <code>import Data.Char</code>)</p>
+<ul>
+<li><code>ord :: Char -&gt; Int</code></li>
+<li><code>chr :: Int -&gt; Char</code></li>
+</ul>
+<h3 id="operator-precedence"><a class="header" href="#operator-precedence">Operator Precedence</a></h3>
+<p><img src="programming/haskell/operator-precedence.png" alt="operator-precedence" /></p>
+<h3 id="predefined-functions"><a class="header" href="#predefined-functions">Predefined Functions</a></h3>
+<p>Is even / odd</p>
+<pre><code class="language-hs">even :: Integral a =&gt; a -&gt; Bool
+odd :: Integral a =&gt; a -&gt; Bool
+</code></pre>
+<p>Minimum and Maximum of two values</p>
+<pre><code class="language-hs">min :: Ord a =&gt; a -&gt; a -&gt; a
+max :: Ord a =&gt; a -&gt; a -&gt; a
+</code></pre>
+<p>Greatest common Divisor, Least common multiple:</p>
+<pre><code class="language-hs">gcd :: Integral a =&gt; a -&gt; a -&gt; a
+lcm :: Integral a =&gt; a -&gt; a -&gt; a
+</code></pre>
+<p>Mathematicals:</p>
+<pre><code class="language-hs">abs  :: Num a      =&gt; a -&gt; a
+sqrt :: Floating a =&gt; a -&gt; a
+log  :: Floating a =&gt; a -&gt; a
+exp  :: Floating a =&gt; a -&gt; a
+cos  :: Floating a =&gt; a -&gt; a
+</code></pre>
+<p>There is many more!</p>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="birthday-paradox-in-go"><a class="header" href="#birthday-paradox-in-go"><strong>Birthday Paradox in Go</strong></a></h2>
 <pre><code class="language-go">package main
 

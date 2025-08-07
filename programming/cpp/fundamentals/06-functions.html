@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Pointer to Struct - Debugging Grimoire</title>
+        <title>Functions - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,52 +175,24 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
+                        <h2 id="introduction-to-functions"><a class="header" href="#introduction-to-functions">Introduction to Functions</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
 
 using namespace std;
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
+int add(int a, int b) {
+  int c;
+  c = a + b;
 
-int main() {
-  Rectangle r = {10, 5};
-  // in C++ you can strip "struct". but not in C
-  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
-
-  Rectangle *p = &amp;r;
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  // pointer to a structure: dot operator cannot be used
-
-  return 0;
+  return c;
 }
-</code></pre>
-<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
-
-using namespace std;
-
-struct Rectangle {
-  int length;
-  int breadth;
-};
 
 int main() {
-  // how to create an object in heap
-  Rectangle *p;
-  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
-  // in C
-  p = new Rectangle; // in C++
+  int num1 = 10, num2 = 15, sum;
 
-  p-&gt;length = 15;
-  p-&gt;breadth = 7;
+  sum = add(num1, num2);
 
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  delete p;
+  cout &lt;&lt; "Sum is " &lt;&lt; sum;
 
   return 0;
 }
@@ -230,11 +202,11 @@ int main() {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/05-pointer_to_struct.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/07-parameter-passing-methods.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,11 +216,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/05-pointer_to_struct.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/07-parameter-passing-methods.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

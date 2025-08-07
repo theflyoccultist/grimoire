@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Pointer to Struct - Debugging Grimoire</title>
+        <title>Parameter Passing Methods - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,66 +175,108 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="pointer-to-structure"><a class="header" href="#pointer-to-structure">Pointer to Structure</a></h2>
+                        <h2 id="parameter-passing-methods"><a class="header" href="#parameter-passing-methods">Parameter Passing Methods</a></h2>
+<h3 id="call-by-value"><a class="header" href="#call-by-value">Call by value</a></h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
 
 using namespace std;
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
+// This is a call by value mechanism
+// The value of num1 and num2 will be copied in A and B respectively
+
+// int add(int a, int b) {
+//   int c;
+//   c = a + b;
+//
+//   return c;
+// }
+
+// in this example a will change to 11 but num1 will remain 10
+int add(int a) {
+  a++;
+  return a;
+}
 
 int main() {
-  Rectangle r = {10, 5};
-  // in C++ you can strip "struct". but not in C
-  cout &lt;&lt; r.length &lt;&lt; endl &lt;&lt; r.breadth &lt;&lt; endl;
+  int num1 = 10, sum;
 
-  Rectangle *p = &amp;r;
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  // pointer to a structure: dot operator cannot be used
+  sum = add(num1);
+
+  cout &lt;&lt; sum &lt;&lt; endl;
+  cout &lt;&lt; num1 &lt;&lt; endl;
 
   return 0;
 }
 </code></pre>
-<h3 id="creating-a-struct-in-heap"><a class="header" href="#creating-a-struct-in-heap">Creating a struct in heap</a></h3>
+<h3 id="call-by-address"><a class="header" href="#call-by-address">Call by address</a></h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;stdlib.h&gt;
 
 using namespace std;
 
-struct Rectangle {
-  int length;
-  int breadth;
-};
+// Example of call by address
+// The parameters should be of type pointers
+// When to use:
+// - When you want a function to directly work upon the actual parameters
+// - If you have some variable and want the same variable to be modified
+
+void swap(int *x, int *y) {
+  int temp;
+  temp = *x;
+  *x = *y;
+  *y = temp;
+}
 
 int main() {
-  // how to create an object in heap
-  Rectangle *p;
-  // p = (struct Rectangle *)malloc(sizeof(struct Rectangle));
-  // in C
-  p = new Rectangle; // in C++
+  int num1 = 10, num2 = 15;
 
-  p-&gt;length = 15;
-  p-&gt;breadth = 7;
+  swap(&amp;num1, &amp;num2);
 
-  cout &lt;&lt; p-&gt;length &lt;&lt; endl &lt;&lt; p-&gt;breadth &lt;&lt; endl;
-  delete p;
+  cout &lt;&lt; "first number" &lt;&lt; num1 &lt;&lt; endl;
+  cout &lt;&lt; "second number" &lt;&lt; num2 &lt;&lt; endl;
 
   return 0;
 }
+</code></pre>
+<h3 id="call-by-reference"><a class="header" href="#call-by-reference">Call by Reference</a></h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+using namespace std;
+
+// Example of call by reference
+// Supported by C++
+// references are nicknames:
+// - the compiler may implement them as a pointer
+// - or an inline function
+
+void swap(int &amp;x, int &amp;y) {
+  int temp;
+  temp = x;
+  x = y;
+  y = temp;
+}
+
+int main() {
+  int num1 = 10, num2 = 15;
+
+  swap(num1, num2);
+
+  cout &lt;&lt; "first number" &lt;&lt; num1 &lt;&lt; endl;
+  cout &lt;&lt; "second number" &lt;&lt; num2 &lt;&lt; endl;
+
+  return 0;
+}
+
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/08-array-as-parameter.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,11 +286,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/04-referencing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/06-functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/08-array-as-parameter.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
