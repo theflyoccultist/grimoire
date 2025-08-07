@@ -81,6 +81,10 @@
       - [Pointers](programming/cpp/fundamentals/03-pointers.md)
       - [Referencing](programming/cpp/fundamentals/04-referencing.md) 
       - [Pointer to Struct](programming/cpp/fundamentals/05-pointer_to_struct.md)
+      - [Functions](programming/cpp/fundamentals/06-functions.md)
+      - [Parameter Passing Methods](programming/cpp/fundamentals/07-parameter-passing-methods.md)
+      - [Array As Parameter](programming/cpp/fundamentals/08-array-as-parameter.md)
+      - [Struct As Parameter](programming/cpp/fundamentals/09-struct-as-parameter.md)
       - [Debugging Tools](programming/cpp/fundamentals/debugging-tools.md) 
       - [Makefiles: for Multiple File Projects](programming/cpp/fundamentals/makefiles.md)
     - [OOP](programming/cpp/oop/README.md)
@@ -126,7 +130,12 @@
     - [OOP](programming/python/oop.md)
     - [Advanced](programming/python/advanced.md)
     - [Errors](programming/python/errors.md)
-  
+
+  - [Haskell](programming/haskell/README.md)
+    - [Fundamentals](programming/haskell/fundamentals.md)
+    - [Basic Types](programming/haskell/basic-types.md)
+    - [Basic Types 2](programming/haskell/basic-types-2.md)
+
   - [Go 🐹](programming/go/README.md)
     - [The Birthday Paradox](programming/go/birthday.md)
     - [Rock Paper Scissors](programming/go/rps.md)
