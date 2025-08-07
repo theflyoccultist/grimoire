@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Fundamentals - Debugging Grimoire</title>
+        <title>Basic Types 2 - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,124 +175,49 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
-<h3 id="introduction-to-haskell"><a class="header" href="#introduction-to-haskell">Introduction to Haskell</a></h3>
-<p>Haskell is a pure functional programming language.</p>
-<p>There are no:</p>
+                        <h2 id="basic-types-pt2"><a class="header" href="#basic-types-pt2">Basic Types pt.2</a></h2>
+<h3 id="characters"><a class="header" href="#characters">Characters</a></h3>
+<p>Type: <code>Char</code></p>
+<p>Literals: <code>'a'</code>, <code>'A'</code>, <code>'\n'</code></p>
+<p>Relational operators: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>/=</code></p>
+<p>Conversion functions: (it is necessary to <code>import Data.Char</code>)</p>
 <ul>
-<li>Assignments,</li>
-<li>Loops,</li>
-<li>Side effects,</li>
-<li>Explicit memory management.</li>
+<li><code>ord :: Char -&gt; Int</code></li>
+<li><code>chr :: Int -&gt; Char</code></li>
 </ul>
-<p>There are:</p>
-<ul>
-<li>Lazy evaluations,</li>
-<li>Functions as first-order objects,</li>
-<li>Static type system,</li>
-<li>Automatic type inference.</li>
-</ul>
-<h3 id="first-interactions-with-ghci"><a class="header" href="#first-interactions-with-ghci">First interactions with GHCi</a></h3>
-<pre><code class="language-hs">3 + 2 * 2
-7
+<h3 id="operator-precedence"><a class="header" href="#operator-precedence">Operator Precedence</a></h3>
+<p><img src="operator-precedence.png" alt="operator-precedence" /></p>
+<h3 id="predefined-functions"><a class="header" href="#predefined-functions">Predefined Functions</a></h3>
+<p>Is even / odd</p>
+<pre><code class="language-hs">even :: Integral a =&gt; a -&gt; Bool
+odd :: Integral a =&gt; a -&gt; Bool
 </code></pre>
-<hr />
-<pre><code class="language-hs">(3 + 2) * 2
-10
+<p>Minimum and Maximum of two values</p>
+<pre><code class="language-hs">min :: Ord a =&gt; a -&gt; a -&gt; a
+max :: Ord a =&gt; a -&gt; a -&gt; a
 </code></pre>
-<hr />
-<pre><code class="language-hs">even 62
-True
+<p>Greatest common Divisor, Least common multiple:</p>
+<pre><code class="language-hs">gcd :: Integral a =&gt; a -&gt; a -&gt; a
+lcm :: Integral a =&gt; a -&gt; a -&gt; a
 </code></pre>
-<hr />
-<p>Parentheses are not necessary (redundant):</p>
-<pre><code class="language-hs">even (62)
-True
+<p>Mathematicals:</p>
+<pre><code class="language-hs">abs  :: Num a      =&gt; a -&gt; a
+sqrt :: Floating a =&gt; a -&gt; a
+log  :: Floating a =&gt; a -&gt; a
+exp  :: Floating a =&gt; a -&gt; a
+cos  :: Floating a =&gt; a -&gt; a
 </code></pre>
-<hr />
-<p>Will throw a type error:</p>
-<pre><code class="language-hs">even "Albert"
-</code></pre>
-<hr />
-<pre><code class="language-hs">div 14 4
-3
-</code></pre>
-<hr />
-<pre><code class="language-hs">ghci&gt; even 2
-True
-ghci&gt; even 3
-False
-ghci&gt; :type even
-even :: Integral a =&gt; a -&gt; Bool
-
-ghci&gt; even (8 - 3)
-False
-ghci&gt; not (even 25)
-True
-</code></pre>
-<h3 id="type"><a class="header" href="#type">Type</a></h3>
-<p>Single quotes: character</p>
-<pre><code class="language-hs">ghci&gt; :type 'D'
-'D' :: Char
-</code></pre>
-<hr />
-<p>Double quotes: String</p>
-<pre><code class="language-hs">ghci&gt; :type "EMMA"
-"EMMA" :: String
-</code></pre>
-<hr />
-<pre><code class="language-hs">ghci&gt; :type not
-not :: Bool -&gt; Bool
-ghci&gt; :t not
-not :: Bool -&gt; Bool
-</code></pre>
-<hr />
-<pre><code class="language-hs">ghci&gt; :type length
-length :: Foldable t =&gt; t a -&gt; Int
-</code></pre>
-<h3 id="factorial--loading-programs-in-the-interpreter"><a class="header" href="#factorial--loading-programs-in-the-interpreter">Factorial / Loading programs in the interpreter</a></h3>
-<p>We first need to indicate the base case of the function, and then indicate the general (recursive) case.</p>
-<p><code>program.hs</code>:</p>
-<pre><code class="language-hs">factorial :: Integer -&gt; Integer     -- type header of the function
-factorial 0 = 1                     -- base case
-factorial n = n * factorial (n - 1) -- general case
-</code></pre>
-<p>In Ghci:</p>
-<pre><code>ghci&gt; :load factorial.hs
-[1 of 2] Compiling Main             ( program.hs, interpreted )
-Ok, one module loaded.
-ghci&gt; factorial 5
-120
-ghci&gt; map factorial[0..5]
-[1,1,2,6,24,120]
-ghci&gt; :t factorial
-factorial :: Integer -&gt; Integer
-</code></pre>
-<p><code>program.hs</code>:</p>
-<pre><code class="language-hs">double x = 2 * x
-</code></pre>
-<ul>
-<li>After modifying and saving the .hs program, you can use <code>:reload</code> to add the new functions</li>
-<li>For negative numbers, you should always wrap them inside parenthesis</li>
-</ul>
-<pre><code>ghci&gt; double (-8)
--16
-ghci&gt; :t double
-double :: Num a =&gt; a -&gt; a
-</code></pre>
-<ul>
-<li>Here, the type of the <code>double</code> function is automatically inferred. It allows us to define functions without always defining its header.</li>
-</ul>
+<p>There is many more!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/haskell/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/haskell/02-basic-types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/haskell/basic-types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -302,11 +227,11 @@ double :: Num a =&gt; a -&gt; a
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/haskell/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/haskell/02-basic-types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/haskell/basic-types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
