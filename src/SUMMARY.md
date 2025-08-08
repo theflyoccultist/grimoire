@@ -17,6 +17,7 @@
   - [Set Up PostgreSQL in a Google Cloud VM using Docker Compose](virtualization/postgres-gcloud-vm.md)
   - [Create an HMAC Server API for the VM](virtualization/postgres-gcloud-vm2.md)
   - [Virt Manager Install on Arch Linux](virtualization/virt-manager.md)
+  - [Using Virt Manager and Samba to retrieve old songs](virtualization/old-songs.md)
 
 - [Linux 🐧](linux/README.md)
   - [Debian Firewall Configuration With nftables](linux/debian-nftables.md)
