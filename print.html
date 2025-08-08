@@ -1030,6 +1030,151 @@ sudo usermod -aG kvm $USER
 <li>Go to “Add Hardware” → Storage → , Select or create custom storage, Add the VirtIO ISO</li>
 <li>Set it as CD-ROM, SATA</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="using-virt-manager-and-samba-to-retrieve-my-old-songs"><a class="header" href="#using-virt-manager-and-samba-to-retrieve-my-old-songs">Using Virt Manager and Samba to retrieve my old songs</a></h2>
+<ul>
+<li>
+<p>FL Studio does not work on Linux</p>
+</li>
+<li>
+<p>I have found a backup of my songs, they are neither .wav or .flac files but FL Studio project files.</p>
+</li>
+<li>
+<p>The solution is to open an instance of FL Studio in a Windows 7 Virtual Machine, and export those project files in .wav from there. In this guide I will use Samba to transfer files between the host and the VM.</p>
+</li>
+<li>
+<p>For the VirtIO ISO: grab <code>virtio-win-0.1.173.iso</code> for example, Windows 7 support has ended in newer versions.</p>
+</li>
+</ul>
+<p>After having configured the Windows 7 Virtual Machine, access the virtio-win ISO that has been attached as a CD-ROM via Virt Manager. Use the installer located inside the guest-agent folder.</p>
+<ul>
+<li>If the installation has been successful, you can turn off the virtual machine for now.</li>
+</ul>
+<h3 id="samba-file-sharing-setup-for-transferring-files-inout-of-win7"><a class="header" href="#samba-file-sharing-setup-for-transferring-files-inout-of-win7">Samba File Sharing Setup (for transferring files in/out of Win7)</a></h3>
+<h4 id="step-1-virtual-network-interface"><a class="header" href="#step-1-virtual-network-interface">Step 1: Virtual Network Interface</a></h4>
+<p>Here is how you can display your available Network Interfaces:</p>
+<pre><code class="language-bash">ip link show
+</code></pre>
+<p>You could also use nmcli:</p>
+<pre><code class="language-bash">nmcli device status
+</code></pre>
+<p>OR:</p>
+<pre><code class="language-bash">nmcli connection show
+</code></pre>
+<p>If virbr0 isn't showing up here, try this:</p>
+<pre><code class="language-bash">sudo virsh net-start default
+</code></pre>
+<p>With this command, <code>virbr0</code> should appear when using the <code>nmcli device status</code> command.</p>
+<ul>
+<li>Inside Virt-Manager, change the network settings of the VM to:
+<ul>
+<li>Network source: Bridged device...</li>
+<li>Device name: virbr0</li>
+<li>Device model: e1000e</li>
+<li>MAC address: yes</li>
+</ul>
+</li>
+</ul>
+<h4 id="step-2-install-samba-on-the-host"><a class="header" href="#step-2-install-samba-on-the-host">Step 2: Install Samba on the host</a></h4>
+<ul>
+<li>On the host machine:</li>
+</ul>
+<pre><code class="language-bash">sudo pacman -S samba
+</code></pre>
+<h4 id="step-3-backup-the-default-smbconf-file-then-edit-it"><a class="header" href="#step-3-backup-the-default-smbconf-file-then-edit-it">Step 3: Backup the default smb.conf file, then edit it</a></h4>
+<pre><code class="language-bash">sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
+</code></pre>
+<pre><code class="language-bash">sudo nano /etc/samba/smb.conf
+</code></pre>
+<p>Here is a configuration example (smb.conf):</p>
+<pre><code class="language-ini">[global]
+server string = Arch Server
+workgroup = RINCORP  
+security = user
+map to guest = Bad User
+name resolve order = bcast host
+include = /etc/samba/shares.conf
+</code></pre>
+<p>Then, create the <code>shares.conf</code> file:</p>
+<pre><code class="language-bash">sudo nano /etc/samba/shares.conf
+</code></pre>
+<p>This is an example for Public files:</p>
+<pre><code class="language-ini">[vmshare]
+path = /share/vmshare
+force user = smbuser
+force group = smbgroup
+create mask = 0664
+force create mode = 0664
+directory mask = 0775
+force directory mode = 0775
+public = yes
+writable = yes
+</code></pre>
+<p>This is an example for Protected files:</p>
+<pre><code class="language-ini">[Protected Files]
+path = /share/private_share
+force user = smbuser
+force group = smbgroup
+create mask = 0664
+force create mode = 0664
+directory mask = 0775
+force directory mode = 0775
+public = yes
+writable = no
+</code></pre>
+<ul>
+<li>Run this command to check for syntax errors in the config file:</li>
+</ul>
+<pre><code class="language-bash">testparm -s
+</code></pre>
+<h4 id="step-4-create-those-folders"><a class="header" href="#step-4-create-those-folders">Step 4: Create those folders</a></h4>
+<pre><code class="language-bash">sudo mkdir -p /share/vmshare
+sudo mkdir /share/private_share
+</code></pre>
+<p>Confirm their existence:</p>
+<pre><code class="language-bash">ls -l share/
+</code></pre>
+<h4 id="step-5-create-users-and-groups"><a class="header" href="#step-5-create-users-and-groups">Step 5: Create users and groups</a></h4>
+<pre><code class="language-bash">sudo groupadd --system smbgroup
+cat /etc/group
+
+sudo useradd --system --no-create-home --group smbgroup -s /bin/false smbuser
+cat /etc/passwd
+
+sudo chown -R smbuser:smbgroup /share
+sudo chmod -R g+w /share
+</code></pre>
+<h4 id="step-6-restart-samba"><a class="header" href="#step-6-restart-samba">Step 6: Restart Samba</a></h4>
+<pre><code class="language-bash">sudo systemctl restart smb
+sudo systemctl status smb
+</code></pre>
+<p>Here is where you can see the Samba logs:</p>
+<pre><code class="language-bash">cat /var/log/samba/log.smbd
+</code></pre>
+<h4 id="step-7-windows-bs"><a class="header" href="#step-7-windows-bs">Step 7: Windows BS</a></h4>
+<p>On the client Windows 7 machine:</p>
+<ul>
+<li>Open the Run command and type "secpol.msc"</li>
+<li>Click on "Local Policies": "Security Options"</li>
+<li>Change Network security: LAN Manager Authentication Level to “Send NTLMv2 response only”</li>
+<li>Change Network security: Minimum Session Security for NTLM SSP to disable “Require 128-bit encryption” into “No Minimum Security”.</li>
+</ul>
+<p>Press Win + R, type:</p>
+<pre><code class="language-cmd">\\&lt;your-host-IP&gt;\vmshare
+</code></pre>
+<p>If this works, you can map it as a network drive:</p>
+<ul>
+<li>Right click Computer: Map network drive</li>
+<li>Pick a drive letter</li>
+<li>Put the path <code>\\&lt;your-host-IP&gt;\vmshare</code></li>
+<li>Check "Reconnect at logon"</li>
+</ul>
+<h4 id="step-8-snapshot-and-profit"><a class="header" href="#step-8-snapshot-and-profit">Step 8: Snapshot and Profit</a></h4>
+<p>It is a good idea to create a snapshot at this point.</p>
+<ul>
+<li>Go to the virtual machine viewer, and click "Manage VM snapshots"</li>
+<li>Click on the "plus" button located in the bottom left corner, provide a name and description for the snapshot, and click on the "Finish" button. In my case, I have gone for an external snapshot.</li>
+</ul>
+<p>I will now load the suspicious FL studio installer into this <code>vmshare</code> folder, and export my old songs.</p>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="this-chapter-will-mostly-cover-debian-type-distributions"><a class="header" href="#this-chapter-will-mostly-cover-debian-type-distributions">This chapter will mostly cover Debian-type distributions.</a></h3>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-nftables-firewall-rules-for-debian-type-distributions"><a class="header" href="#setting-up-nftables-firewall-rules-for-debian-type-distributions">Setting up nftables Firewall Rules For Debian-type Distributions</a></h1>
 <p>Before diving into configurations, you might want to check if nftables is already installed and active on your Debian system.</p>
