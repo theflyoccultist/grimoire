@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Inheritance and derived classes - Debugging Grimoire</title>
+        <title>More About Templates - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,117 +175,129 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="c-inheritance-and-derived-classes"><a class="header" href="#c-inheritance-and-derived-classes">C++ Inheritance and Derived Classes</a></h2>
-<h3 id="the-inheritance-mechanism"><a class="header" href="#the-inheritance-mechanism">The Inheritance Mechanism</a></h3>
+                        <h1 id="more-about-templates--function--class-templates"><a class="header" href="#more-about-templates--function--class-templates">More About Templates : Function &amp; Class Templates</a></h1>
+<p>In these examples, we’ll look at two ways templates are used:</p>
 <ul>
-<li>Allows deriving new classes from existing base classes.</li>
-<li>Reuses existing code, avoiding tedious and error-prone duplication.</li>
-<li>Derived classes extend or alter base class functionality.</li>
-<li>Creates a hierarchy of related types sharing code and interface.</li>
+<li>Function Templates – Making a single function that works with multiple types.</li>
+<li>Class Templates – Making a class that can handle multiple data types dynamically.</li>
 </ul>
-<hr />
-<h3 id="base-class-student"><a class="header" href="#base-class-student">Base Class: <code>student</code></a></h3>
-<pre><code class="language-cpp">#include &lt;cstring&gt;
+<h2 id="function-templates-subtract"><a class="header" href="#function-templates-subtract">Function templates: subtract()</a></h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+const int N = 40;
+
+template &lt;typename T&gt;
+T substract(const T data[], int n, T s = 0) {
+    for (int i = 0; i &lt; n; ++i) {
+        s = s - data[i];
+    }
+    return s;
+}
+
+int main() {
+    std::cout &lt;&lt; "template for substract()" &lt;&lt; std::endl;
+
+    int a[] = {1,2,3};
+    double b[] = {2.1, 2.2, 2.3};
+
+    std::cout &lt;&lt; substract(a, 3) &lt;&lt; std::endl;
+    std::cout &lt;&lt; substract(b, 3) &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>template <typename T> – This is the template declaration.</strong></li>
+</ol>
+<ul>
+<li>T is a placeholder for any data type (int, double, float, etc.).</li>
+<li>When calling substract(), the compiler automatically replaces T with the correct type.</li>
+</ul>
+<ol start="2">
+<li><strong>Function works for multiple data types</strong></li>
+</ol>
+<ul>
+<li><code>substract(a, 3)</code> works for int.</li>
+<li><code>substract(b, 3)</code> works for double.</li>
+</ul>
+<ol start="3">
+<li><strong>Why templates instead of function overloading?</strong></li>
+</ol>
+<ul>
+<li>Without templates, you’d have to write separate functions for int, double, float, etc.</li>
+<li>Templates let you write the function once and use it for any compatible type.</li>
+</ul>
+<ol start="4">
+<li><strong>Is this just like inline?</strong></li>
+</ol>
+<ul>
+<li>No, but function templates can be inlined by the compiler if they are small.</li>
+<li>The compiler generates a separate function for each unique type used.</li>
+<li>This means <code>substract&lt;int&gt;</code> and <code>substract&lt;double&gt;</code> are compiled separately.</li>
+</ul>
+<h2 id="class-templates"><a class="header" href="#class-templates">Class Templates</a></h2>
+<pre><code class="language-cpp">// Class Templates: Summable&lt;T&gt;
 #include &lt;iostream&gt;
 
-class student {
+template &lt;class T&gt;
+class Summable {
 public:
-  enum year { fresh, soph, junior, senior, grad };
-  student(char *nm, int id, double g, year x);
-  void print() const;
-
-protected:
-  int student_id;
-  double gpa;
-  year y;
-  char name[30];
+    T sum(const T data[], int size, T s = 0) {
+        for (int i = 0; i &lt; size; ++i) {
+            s += data[i];
+        }
+        return s;
+    }
 };
-</code></pre>
-<h3 id="derived-class-grad_student"><a class="header" href="#derived-class-grad_student">Derived Class: <code>grad_student</code></a></h3>
-<pre><code class="language-cpp">class grad_student : public student {
-public:
-  enum support { ta, ra, fellowship, other };
-  grad_student(char *nm, int id, double g, year x, support t, char *d, char *th);
-  void print() const;
 
-protected:
-  support s;
-  char dept[10];
-  char thesis[80];
-};
-</code></pre>
-<hr />
-<h3 id="constructors"><a class="header" href="#constructors">Constructors</a></h3>
-<pre><code class="language-cpp">student::student(char *nm, int id, double g, year x)
-    : student_id(id), gpa(g), y(x) {
-  strcpy(name, nm);
-}
+int main() {
+    Summable&lt;int&gt; intSummable;
+    int intData[] = {1, 2, 3, 4, 5};
+    int intSum = intSummable.sum(intData, 5);
+    std::cout &lt;&lt; "Sum of int array: " &lt;&lt; intSum &lt;&lt; std::endl;
 
-grad_student::grad_student(char *nm, int id, double g, year x, support t,
-                           char *d, char *th)
-    : student(nm, id, g, x), s(t) {
-  strcpy(dept, d);
-  strcpy(thesis, th);
-}
-</code></pre>
-<ul>
-<li><code>grad_student</code> constructor invokes the base <code>student</code> constructor.</li>
-<li>Base class constructed first.</li>
-<li><code>student_id</code> and <code>gpa</code> are <code>protected</code>, so accessible to derived class.</li>
-</ul>
-<hr />
-<h3 id="print-functions"><a class="header" href="#print-functions">Print Functions</a></h3>
-<pre><code class="language-cpp">void student::print() const {
-  std::cout &lt;&lt; name &lt;&lt; " , " &lt;&lt; student_id &lt;&lt; " , " &lt;&lt; y &lt;&lt; " , " &lt;&lt; gpa &lt;&lt; std::endl;
-}
+    Summable&lt;double&gt; doubleSummable;
+    double doubleData[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+    double doubleSum = doubleSummable.sum(doubleData, 5);
+    std::cout &lt;&lt; "Sum of double array: " &lt;&lt; doubleSum &lt;&lt; std::endl;
 
-void grad_student::print() const {
-  student::print();
-  std::cout &lt;&lt; dept &lt;&lt; " , " &lt;&lt; s &lt;&lt; std::endl &lt;&lt; thesis &lt;&lt; std::endl;
+    return 0;
 }
 </code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong><code>template &lt;class T&gt;</code> makes <code>Summable&lt;T&gt;</code> a generic class</strong></li>
+</ol>
 <ul>
-<li><code>grad_student::print</code> reuses <code>student::print</code> and adds extra info.</li>
+<li>This class works with any type that supports the += operator.</li>
+<li>We create <code>Summable&lt;int&gt;</code> and <code>Summable&lt;double&gt;</code> instances separately.</li>
 </ul>
-<hr />
-<h3 id="main-function"><a class="header" href="#main-function"><code>main()</code> Function</a></h3>
-<pre><code class="language-cpp">int main() {
-  student s("Mae Pohl", 100, 3.425, student::fresh), *ps = &amp;s;
-  grad_student gs("Morris Pohl", 200, 3.2564, student::grad, grad_student::ta,
-                  "Pharmacy", "Retail Pharmacies"), *pgs;
-  
-  ps-&gt;print();  // student::print
-  ps = pgs = &amp;gs;
-  ps-&gt;print();  // still student::print due to pointer type
-  pgs-&gt;print(); // grad_student::print
-}
-</code></pre>
+<ol start="2">
+<li><strong>Why use a class template instead of a function template?</strong></li>
+</ol>
 <ul>
-<li>Demonstrates polymorphism via pointer to base class.</li>
-<li><code>ps</code> points to both <code>student</code> and <code>grad_student</code> objects.</li>
-<li>Without <code>virtual</code>, the base class's <code>print()</code> is called.</li>
-<li><code>pgs</code> calls the derived version because it's typed as <code>grad_student*</code>.</li>
+<li>If we only needed a single sum() function, a function template is fine.</li>
+<li>But if we wanted to add more operations (like multiplication, average, etc.), then a class template organizes everything better.</li>
 </ul>
-<hr />
-<h3 id="benefits-recap"><a class="header" href="#benefits-recap">Benefits Recap</a></h3>
+<ol start="3">
+<li><strong>How does the compiler handle this?</strong></li>
+</ol>
 <ul>
-<li>Reuse of tested code.</li>
-<li>Reflects domain relationships.</li>
-<li>Allows treating derived types as base types.</li>
-<li>Simpler, more maintainable code.</li>
+<li>When you write <code>Summable&lt;int&gt;</code>, the compiler generates an int-specific version of the class.</li>
+<li>When you write <code>Summable&lt;double&gt;</code>, the compiler generates a separate double version.</li>
 </ul>
-<hr />
-<p><strong>Reminder</strong>: Mark that <code>print()</code> function as <code>virtual</code> if you want actual polymorphism, otherwise it’s just pretending like your last situationship.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/oop/templates2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/templates.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_derived.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -295,11 +307,11 @@ void grad_student::print() const {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/oop/templates2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/templates.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_derived.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

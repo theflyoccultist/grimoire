@@ -176,16 +176,13 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="c-"><a class="header" href="#c-">C++ 🤖</a></h1>
-<p>Welcome to my C++ notes. Categorized for your sanity and mine.</p>
+<p>Welcome to my C++ notes.</p>
 <ul>
 <li><a href="fundamentals/">Fundamentals</a></li>
 <li><a href="oop/README.html">Object-Oriented Programming</a></li>
 <li><a href="features/">Language Features</a></li>
 <li><a href="algorithms/">Practical Algorithms</a></li>
 </ul>
-<h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
-<p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
-<p>It is definitely a language to use with precaution, a language you could lose yourself into, for better or for worse.</p>
 <hr />
 <h2 id="setting-up-c-on-linux"><a class="header" href="#setting-up-c-on-linux">Setting Up C++ on Linux</a></h2>
 <p>To get started with C++ development, you can install the essential tools via your package manager. On Ubuntu/Debian-based systems, run:</p>
@@ -196,7 +193,7 @@ sudo apt install build-essential
 <p>For debugging and memory checking, install:</p>
 <pre><code class="language-sh">sudo apt install gdb valgrind
 </code></pre>
-<h3 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h3>
+<h2 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h2>
 <p>If you use Neovim with Mason.nvim, you can install the clangd language server for better code intelligence:</p>
 <ol>
 <li>Open Neovim.</li>
@@ -204,29 +201,39 @@ sudo apt install build-essential
 <li>Install <code>clangd</code> from Mason's UI.</li>
 </ol>
 <hr />
-<h2 id="updating-g-for-new-c-standards-eg-c26"><a class="header" href="#updating-g-for-new-c-standards-eg-c26">Updating g++ for New C++ Standards (e.g., C++26)</a></h2>
-<p>When a new C++ standard (like C++26) is released and you want to try it:</p>
+<h2 id="setting-up-cmake-to-try-out-new-c-features-eg-c26"><a class="header" href="#setting-up-cmake-to-try-out-new-c-features-eg-c26">Setting up CMake to try out new C++ features (e.g., C++26)</a></h2>
 <ul>
-<li>
-<p>First, check if your distribution’s repositories have the updated g++ version:</p>
-<pre><code class="language-sh">sudo apt update
-sudo apt install g++-13   # replace 13 with the latest version available
-</code></pre>
-</li>
-<li>
-<p>If the latest version is not available, you might need to use a PPA (on Ubuntu), download from the official GNU Toolchain, or build from source.</p>
-</li>
-<li>
-<p>You can check your g++ version with:</p>
-<pre><code class="language-sh">g++ --version
-</code></pre>
-</li>
 <li>
 <p>When compiling with a new standard, use the appropriate flag (e.g., <code>-std=c++2b</code> or <code>-std=c++26</code> when it’s officially supported):</p>
 <pre><code class="language-sh">g++ -std=c++2b main.cpp -o main
 </code></pre>
 </li>
+<li>
+<p>However, with this alone, your LSP won't understand the new syntax.</p>
+</li>
+<li>
+<p>To solve this, we can use CMake to have everything in sync.</p>
+</li>
+<li>
+<p>Create a <code>CMakeLists.txt</code> file in your project folder:</p>
+</li>
 </ul>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.25)
+project(test_program LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_executable(compiled_test_program main.cpp)
+</code></pre>
+<ul>
+<li>Then:</li>
+</ul>
+<pre><code class="language-bash">mkdir build &amp;&amp; cd build
+cmake ..
+make
+</code></pre>
+<p>CMake also has the advantage of making your project work with any compiler and make cross platform builds, so it's generally a great idea to use it in a project.</p>
 
                     </main>
 

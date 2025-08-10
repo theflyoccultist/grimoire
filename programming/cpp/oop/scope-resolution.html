@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Inheritance and derived classes - Debugging Grimoire</title>
+        <title>OOP with Scope Resolution Operators - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,117 +175,61 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="c-inheritance-and-derived-classes"><a class="header" href="#c-inheritance-and-derived-classes">C++ Inheritance and Derived Classes</a></h2>
-<h3 id="the-inheritance-mechanism"><a class="header" href="#the-inheritance-mechanism">The Inheritance Mechanism</a></h3>
-<ul>
-<li>Allows deriving new classes from existing base classes.</li>
-<li>Reuses existing code, avoiding tedious and error-prone duplication.</li>
-<li>Derived classes extend or alter base class functionality.</li>
-<li>Creates a hierarchy of related types sharing code and interface.</li>
-</ul>
-<hr />
-<h3 id="base-class-student"><a class="header" href="#base-class-student">Base Class: <code>student</code></a></h3>
-<pre><code class="language-cpp">#include &lt;cstring&gt;
+                        <h1 id="oop-with-scope-resolution-operators"><a class="header" href="#oop-with-scope-resolution-operators">OOP with Scope Resolution Operators</a></h1>
+<p>Scope resolutions allows the programmers to define functions outside of the class, while still inheriting its properties.</p>
+<pre><code class="language-cpp">
 #include &lt;iostream&gt;
 
-class student {
+class Rectangle {
+private:
+  int length;
+  int breadth;
+
 public:
-  enum year { fresh, soph, junior, senior, grad };
-  student(char *nm, int id, double g, year x);
-  void print() const;
+  Rectangle() {
+    length = 0;
+    breadth = 0;
+  }
+  Rectangle(int l, int b);
+  int area();
+  int perimeter();
 
-protected:
-  int student_id;
-  double gpa;
-  year y;
-  char name[30];
+  void setLength(int l) { length = l; }
+  void setBreadth(int b) { breadth = b; }
+  int getLength() { return length; }
+  int getBreadth() { return breadth; }
+
+  ~Rectangle() { std::cout &lt;&lt; "Destructor\n"; }
 };
-</code></pre>
-<h3 id="derived-class-grad_student"><a class="header" href="#derived-class-grad_student">Derived Class: <code>grad_student</code></a></h3>
-<pre><code class="language-cpp">class grad_student : public student {
-public:
-  enum support { ta, ra, fellowship, other };
-  grad_student(char *nm, int id, double g, year x, support t, char *d, char *th);
-  void print() const;
 
-protected:
-  support s;
-  char dept[10];
-  char thesis[80];
-};
-</code></pre>
-<hr />
-<h3 id="constructors"><a class="header" href="#constructors">Constructors</a></h3>
-<pre><code class="language-cpp">student::student(char *nm, int id, double g, year x)
-    : student_id(id), gpa(g), y(x) {
-  strcpy(name, nm);
+Rectangle::Rectangle(int l, int b) {
+  length = l;
+  breadth = b;
 }
 
-grad_student::grad_student(char *nm, int id, double g, year x, support t,
-                           char *d, char *th)
-    : student(nm, id, g, x), s(t) {
-  strcpy(dept, d);
-  strcpy(thesis, th);
-}
-</code></pre>
-<ul>
-<li><code>grad_student</code> constructor invokes the base <code>student</code> constructor.</li>
-<li>Base class constructed first.</li>
-<li><code>student_id</code> and <code>gpa</code> are <code>protected</code>, so accessible to derived class.</li>
-</ul>
-<hr />
-<h3 id="print-functions"><a class="header" href="#print-functions">Print Functions</a></h3>
-<pre><code class="language-cpp">void student::print() const {
-  std::cout &lt;&lt; name &lt;&lt; " , " &lt;&lt; student_id &lt;&lt; " , " &lt;&lt; y &lt;&lt; " , " &lt;&lt; gpa &lt;&lt; std::endl;
+int Rectangle::area() { return length * breadth; }
+int Rectangle::perimeter() { return 2 * (length + breadth); }
+
+int main() {
+  Rectangle r(10, 5);
+  std::cout &lt;&lt; r.area() &lt;&lt; "\n";
+  std::cout &lt;&lt; r.perimeter() &lt;&lt; "\n";
+  r.setLength(20);
+  std::cout &lt;&lt; r.getLength() &lt;&lt; "\n";
+  return 0;
 }
 
-void grad_student::print() const {
-  student::print();
-  std::cout &lt;&lt; dept &lt;&lt; " , " &lt;&lt; s &lt;&lt; std::endl &lt;&lt; thesis &lt;&lt; std::endl;
-}
 </code></pre>
-<ul>
-<li><code>grad_student::print</code> reuses <code>student::print</code> and adds extra info.</li>
-</ul>
-<hr />
-<h3 id="main-function"><a class="header" href="#main-function"><code>main()</code> Function</a></h3>
-<pre><code class="language-cpp">int main() {
-  student s("Mae Pohl", 100, 3.425, student::fresh), *ps = &amp;s;
-  grad_student gs("Morris Pohl", 200, 3.2564, student::grad, grad_student::ta,
-                  "Pharmacy", "Retail Pharmacies"), *pgs;
-  
-  ps-&gt;print();  // student::print
-  ps = pgs = &amp;gs;
-  ps-&gt;print();  // still student::print due to pointer type
-  pgs-&gt;print(); // grad_student::print
-}
-</code></pre>
-<ul>
-<li>Demonstrates polymorphism via pointer to base class.</li>
-<li><code>ps</code> points to both <code>student</code> and <code>grad_student</code> objects.</li>
-<li>Without <code>virtual</code>, the base class's <code>print()</code> is called.</li>
-<li><code>pgs</code> calls the derived version because it's typed as <code>grad_student*</code>.</li>
-</ul>
-<hr />
-<h3 id="benefits-recap"><a class="header" href="#benefits-recap">Benefits Recap</a></h3>
-<ul>
-<li>Reuse of tested code.</li>
-<li>Reflects domain relationships.</li>
-<li>Allows treating derived types as base types.</li>
-<li>Simpler, more maintainable code.</li>
-</ul>
-<hr />
-<p><strong>Reminder</strong>: Mark that <code>print()</code> function as <code>virtual</code> if you want actual polymorphism, otherwise it’s just pretending like your last situationship.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/oop/templates2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/monolithic-to-modular.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/templates.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -295,11 +239,11 @@ void grad_student::print() const {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/oop/templates2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/monolithic-to-modular.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/oop/inheritance_polymorphism.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/templates.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

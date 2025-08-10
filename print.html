@@ -5847,16 +5847,13 @@ int main() {
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c-"><a class="header" href="#c-">C++ 🤖</a></h1>
-<p>Welcome to my C++ notes. Categorized for your sanity and mine.</p>
+<p>Welcome to my C++ notes.</p>
 <ul>
 <li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
 <li><a href="programming/cpp/oop/README.html">Object-Oriented Programming</a></li>
 <li><a href="programming/cpp/features/">Language Features</a></li>
 <li><a href="programming/cpp/algorithms/">Practical Algorithms</a></li>
 </ul>
-<h2 id="personal-story"><a class="header" href="#personal-story">Personal Story</a></h2>
-<p>Maybe it's the challenging aspects of this language that pulls me into it. Maybe it is its rich history; either way I have decided to become overly committed to its complex syntax, and the endless possibilities it offers. It is not my fault that every single crazy project I dream of (plugins for music production, compilers, game engines) all uses C++ for its performance and complete out-of-the-box tooling.</p>
-<p>It is definitely a language to use with precaution, a language you could lose yourself into, for better or for worse.</p>
 <hr />
 <h2 id="setting-up-c-on-linux"><a class="header" href="#setting-up-c-on-linux">Setting Up C++ on Linux</a></h2>
 <p>To get started with C++ development, you can install the essential tools via your package manager. On Ubuntu/Debian-based systems, run:</p>
@@ -5867,7 +5864,7 @@ sudo apt install build-essential
 <p>For debugging and memory checking, install:</p>
 <pre><code class="language-sh">sudo apt install gdb valgrind
 </code></pre>
-<h3 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h3>
+<h2 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h2>
 <p>If you use Neovim with Mason.nvim, you can install the clangd language server for better code intelligence:</p>
 <ol>
 <li>Open Neovim.</li>
@@ -5875,29 +5872,39 @@ sudo apt install build-essential
 <li>Install <code>clangd</code> from Mason's UI.</li>
 </ol>
 <hr />
-<h2 id="updating-g-for-new-c-standards-eg-c26"><a class="header" href="#updating-g-for-new-c-standards-eg-c26">Updating g++ for New C++ Standards (e.g., C++26)</a></h2>
-<p>When a new C++ standard (like C++26) is released and you want to try it:</p>
+<h2 id="setting-up-cmake-to-try-out-new-c-features-eg-c26"><a class="header" href="#setting-up-cmake-to-try-out-new-c-features-eg-c26">Setting up CMake to try out new C++ features (e.g., C++26)</a></h2>
 <ul>
-<li>
-<p>First, check if your distribution’s repositories have the updated g++ version:</p>
-<pre><code class="language-sh">sudo apt update
-sudo apt install g++-13   # replace 13 with the latest version available
-</code></pre>
-</li>
-<li>
-<p>If the latest version is not available, you might need to use a PPA (on Ubuntu), download from the official GNU Toolchain, or build from source.</p>
-</li>
-<li>
-<p>You can check your g++ version with:</p>
-<pre><code class="language-sh">g++ --version
-</code></pre>
-</li>
 <li>
 <p>When compiling with a new standard, use the appropriate flag (e.g., <code>-std=c++2b</code> or <code>-std=c++26</code> when it’s officially supported):</p>
 <pre><code class="language-sh">g++ -std=c++2b main.cpp -o main
 </code></pre>
 </li>
+<li>
+<p>However, with this alone, your LSP won't understand the new syntax.</p>
+</li>
+<li>
+<p>To solve this, we can use CMake to have everything in sync.</p>
+</li>
+<li>
+<p>Create a <code>CMakeLists.txt</code> file in your project folder:</p>
+</li>
 </ul>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.25)
+project(test_program LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_executable(compiled_test_program main.cpp)
+</code></pre>
+<ul>
+<li>Then:</li>
+</ul>
+<pre><code class="language-bash">mkdir build &amp;&amp; cd build
+cmake ..
+make
+</code></pre>
+<p>CMake also has the advantage of making your project work with any compiler and make cross platform builds, so it's generally a great idea to use it in a project.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="a-quick-tour-of-the-c-fundamentals-"><a class="header" href="#a-quick-tour-of-the-c-fundamentals-">A quick tour of the C++ fundamentals 💀</a></h1>
 <h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
 <p>C++ has multiple ways to declare variables, and some are better than others:</p>
@@ -6754,7 +6761,7 @@ info locals
 <ul>
 <li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-cheatsheet-"><a class="header" href="#c-oop-cheatsheet-">C++ OOP Cheatsheet 💀</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-overview-"><a class="header" href="#c-oop-overview-">C++ OOP Overview 💀</a></h1>
 <p>C++ is not a fully object-oriented language like Java—it gives you the choice of using OOP, procedural, or even template-based metaprogramming. However, when you do use OOP, C++ expects you to take responsibility (i.e., manual memory management, virtual destructors, and explicit inheritance rules).</p>
 <h2 id="basic-oop-program"><a class="header" href="#basic-oop-program">Basic OOP Program</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
@@ -6839,27 +6846,27 @@ int main() {
 </ol>
 <ul>
 <li>brand and speed are private, meaning they cannot be accessed outside of the class.</li>
-<li>Access is provided through getter functions (getBrand(), getSpeed()).</li>
+<li>Access is provided through getter functions (<code>getBrand()</code>, <code>getSpeed()</code>).</li>
 </ul>
 <ol start="2">
 <li><strong>Constructors &amp; Initialization Lists</strong></li>
 </ol>
 <ul>
-<li>Car(std::string b, int s) : brand(b), speed(s) {} → This is a constructor with an initializer list.</li>
+<li><code>Car(std::string b, int s) : brand(b), speed(s) {}</code> → This is a constructor with an initializer list.</li>
 <li>Instead of assigning values inside {} manually, we use direct initialization, which is faster and cleaner.</li>
 </ul>
 <ol start="3">
-<li><strong>Virtual Destructor (~Car())</strong></li>
+<li><strong>Virtual Destructor <code>(~Car())</code></strong></li>
 </ol>
 <ul>
-<li>Why virtual? So that if you delete a SportsCar through a Car*, it calls the correct destructor.</li>
-<li>Without virtual, only Car's destructor would run, and SportsCar's destructor wouldn’t execute.</li>
+<li>Why virtual? So that if you delete a <code>SportsCar</code> through a <code>Car*</code>, it calls the correct destructor.</li>
+<li>Without virtual, only <code>Car</code>'s destructor would run, and <code>SportsCar</code>'s destructor wouldn’t execute.</li>
 </ul>
 <ol start="4">
 <li><strong>Operator Overloading (&lt;&lt;)</strong></li>
 </ol>
 <ul>
-<li>We define friend std::ostream&amp; operator&lt;&lt;(...) to allow std::cout &lt;&lt; myCar.</li>
+<li>We define <code>friend std::ostream&amp; operator&lt;&lt;(...)</code> to allow <code>std::cout &lt;&lt; myCar</code>.</li>
 <li>Friend functions allow non-member functions to access private class members.</li>
 </ul>
 <h3 id="inheritance-sportscar-extends-car"><a class="header" href="#inheritance-sportscar-extends-car">Inheritance: SportsCar Extends Car</a></h3>
@@ -7358,6 +7365,326 @@ list b
 <li>Memory leaks</li>
 <li>Double deletion errors</li>
 <li>Undefined behavior</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="converting-a-c-program-to-a-c-class"><a class="header" href="#converting-a-c-program-to-a-c-class">Converting a C program to a C++ class</a></h1>
+<p>Those two programs do the same thing. It is useful to know how to convert programs between each other.</p>
+<h3 id="c-program"><a class="header" href="#c-program">C program</a></h3>
+<pre><code class="language-c">struct Rectangle {
+  int length;
+  int breadth;
+};
+
+void initialize(struct Rectangle *r, int l, int b) {
+  r-&gt;length = l;
+  r-&gt;breadth = b;
+}
+
+int area(struct Rectangle r) { return r.length * r.breadth; }
+
+void changeLength(struct Rectangle *r, int l) { r-&gt;length = l; }
+
+int main() {
+  struct Rectangle r;
+
+  initialize(&amp;r, 10, 5);
+  area(r);
+  changeLength(&amp;r, 20);
+}
+</code></pre>
+<h3 id="c-oop"><a class="header" href="#c-oop">C++ OOP</a></h3>
+<pre><code class="language-cpp">class Rectangle {
+private:
+  int length;
+  int breadth;
+
+public:
+  Rectangle(int l, int b) {
+    length = l;
+    breadth = b;
+  }
+
+  int area() { return length * breadth; }
+
+  void changeLength(int l) { length = l; }
+};
+
+int main() {
+  Rectangle r(10, 5);
+
+  r.area();
+  r.changeLength(20);
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="monolithic-program-to-modular-c-class"><a class="header" href="#monolithic-program-to-modular-c-class">Monolithic Program to Modular C++ Class</a></h1>
+<h3 id="monolithic"><a class="header" href="#monolithic">Monolithic:</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+  int length = 0, breadth = 0;
+  cout &lt;&lt; "Enter Length and Breadth: ";
+  cin &gt;&gt; length &gt;&gt; breadth;
+
+  int area = length * breadth;
+  int peri = 2 * (length + breadth);
+
+  cout &lt;&lt; "Area = " &lt;&lt; area &lt;&lt; "\n" &lt;&lt; "Perimeter = " &lt;&lt; peri &lt;&lt; "\n";
+
+  return 0;
+}
+
+</code></pre>
+<h3 id="modular"><a class="header" href="#modular">Modular</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+
+using namespace std;
+
+class Rectangle {
+private:
+  int length;
+  int breadth;
+
+public:
+  Rectangle(int l, int b) {
+    length = l;
+    breadth = b;
+  }
+
+  int area() { return length * breadth; }
+
+  int perimeter() {
+    int p = 0;
+    p = 2 * (length + breadth);
+    return p;
+  }
+};
+
+int main() {
+  int l = 0, b = 0;
+  cout &lt;&lt; "Enter Length and Breadth: ";
+  cin &gt;&gt; l &gt;&gt; b;
+
+  Rectangle r = {l, b};
+
+  int a = r.area();
+  int peri = r.perimeter();
+
+  cout &lt;&lt; "Area = " &lt;&lt; a &lt;&lt; "\n" &lt;&lt; "Perimeter = " &lt;&lt; peri &lt;&lt; "\n";
+
+  return 0;
+}
+
+</code></pre>
+<p>There is nothing wrong using the monolithic method for small test programs. But if you ware planning to have a much larger code in the future, then start cutting up your program into smaller functions.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="oop-with-scope-resolution-operators"><a class="header" href="#oop-with-scope-resolution-operators">OOP with Scope Resolution Operators</a></h1>
+<p>Scope resolutions allows the programmers to define functions outside of the class, while still inheriting its properties.</p>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+
+class Rectangle {
+private:
+  int length;
+  int breadth;
+
+public:
+  Rectangle() {
+    length = 0;
+    breadth = 0;
+  }
+  Rectangle(int l, int b);
+  int area();
+  int perimeter();
+
+  void setLength(int l) { length = l; }
+  void setBreadth(int b) { breadth = b; }
+  int getLength() { return length; }
+  int getBreadth() { return breadth; }
+
+  ~Rectangle() { std::cout &lt;&lt; "Destructor\n"; }
+};
+
+Rectangle::Rectangle(int l, int b) {
+  length = l;
+  breadth = b;
+}
+
+int Rectangle::area() { return length * breadth; }
+int Rectangle::perimeter() { return 2 * (length + breadth); }
+
+int main() {
+  Rectangle r(10, 5);
+  std::cout &lt;&lt; r.area() &lt;&lt; "\n";
+  std::cout &lt;&lt; r.perimeter() &lt;&lt; "\n";
+  r.setLength(20);
+  std::cout &lt;&lt; r.getLength() &lt;&lt; "\n";
+  return 0;
+}
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="templates"><a class="header" href="#templates">Templates</a></h1>
+<p>Templates in C++ are a nice feature that will prevent you from writing the exact same function for different data types. You define a generic <code>T</code> type and you can reuse the same function for <code>int</code>, <code>double</code> and <code>float</code>, even <code>char</code> without copy pasting!</p>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+
+using namespace std;
+
+template &lt;class T&gt; class Arithmetic {
+private:
+  T a;
+  T b;
+
+public:
+  Arithmetic(T a, T b);
+  T add();
+  T sub();
+};
+
+template &lt;class T&gt; Arithmetic&lt;T&gt;::Arithmetic(T a, T b) {
+  this-&gt;a = a;
+  this-&gt;b = b;
+}
+
+template &lt;class T&gt; T Arithmetic&lt;T&gt;::add() {
+  T c;
+  c = a + b;
+  return c;
+}
+
+template &lt;class T&gt; T Arithmetic&lt;T&gt;::sub() {
+  T c;
+  c = a - b;
+  return c;
+}
+
+int main() {
+  Arithmetic&lt;int&gt; ar(10, 5);
+  Arithmetic&lt;float&gt; ar2(15.2, 7.5);
+
+  cout &lt;&lt; "add " &lt;&lt; ar.add() &lt;&lt; endl;
+  cout &lt;&lt; "sub " &lt;&lt; ar.sub() &lt;&lt; endl;
+
+  cout &lt;&lt; "add " &lt;&lt; ar2.add() &lt;&lt; endl;
+  cout &lt;&lt; "sub " &lt;&lt; ar2.sub() &lt;&lt; endl;
+
+  return 0;
+}
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="more-about-templates--function--class-templates"><a class="header" href="#more-about-templates--function--class-templates">More About Templates : Function &amp; Class Templates</a></h1>
+<p>In these examples, we’ll look at two ways templates are used:</p>
+<ul>
+<li>Function Templates – Making a single function that works with multiple types.</li>
+<li>Class Templates – Making a class that can handle multiple data types dynamically.</li>
+</ul>
+<h2 id="function-templates-subtract"><a class="header" href="#function-templates-subtract">Function templates: subtract()</a></h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+const int N = 40;
+
+template &lt;typename T&gt;
+T substract(const T data[], int n, T s = 0) {
+    for (int i = 0; i &lt; n; ++i) {
+        s = s - data[i];
+    }
+    return s;
+}
+
+int main() {
+    std::cout &lt;&lt; "template for substract()" &lt;&lt; std::endl;
+
+    int a[] = {1,2,3};
+    double b[] = {2.1, 2.2, 2.3};
+
+    std::cout &lt;&lt; substract(a, 3) &lt;&lt; std::endl;
+    std::cout &lt;&lt; substract(b, 3) &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong>template <typename T> – This is the template declaration.</strong></li>
+</ol>
+<ul>
+<li>T is a placeholder for any data type (int, double, float, etc.).</li>
+<li>When calling substract(), the compiler automatically replaces T with the correct type.</li>
+</ul>
+<ol start="2">
+<li><strong>Function works for multiple data types</strong></li>
+</ol>
+<ul>
+<li><code>substract(a, 3)</code> works for int.</li>
+<li><code>substract(b, 3)</code> works for double.</li>
+</ul>
+<ol start="3">
+<li><strong>Why templates instead of function overloading?</strong></li>
+</ol>
+<ul>
+<li>Without templates, you’d have to write separate functions for int, double, float, etc.</li>
+<li>Templates let you write the function once and use it for any compatible type.</li>
+</ul>
+<ol start="4">
+<li><strong>Is this just like inline?</strong></li>
+</ol>
+<ul>
+<li>No, but function templates can be inlined by the compiler if they are small.</li>
+<li>The compiler generates a separate function for each unique type used.</li>
+<li>This means <code>substract&lt;int&gt;</code> and <code>substract&lt;double&gt;</code> are compiled separately.</li>
+</ul>
+<h2 id="class-templates"><a class="header" href="#class-templates">Class Templates</a></h2>
+<pre><code class="language-cpp">// Class Templates: Summable&lt;T&gt;
+#include &lt;iostream&gt;
+
+template &lt;class T&gt;
+class Summable {
+public:
+    T sum(const T data[], int size, T s = 0) {
+        for (int i = 0; i &lt; size; ++i) {
+            s += data[i];
+        }
+        return s;
+    }
+};
+
+int main() {
+    Summable&lt;int&gt; intSummable;
+    int intData[] = {1, 2, 3, 4, 5};
+    int intSum = intSummable.sum(intData, 5);
+    std::cout &lt;&lt; "Sum of int array: " &lt;&lt; intSum &lt;&lt; std::endl;
+
+    Summable&lt;double&gt; doubleSummable;
+    double doubleData[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+    double doubleSum = doubleSummable.sum(doubleData, 5);
+    std::cout &lt;&lt; "Sum of double array: " &lt;&lt; doubleSum &lt;&lt; std::endl;
+
+    return 0;
+}
+</code></pre>
+<p>Key Takeaways</p>
+<ol>
+<li><strong><code>template &lt;class T&gt;</code> makes <code>Summable&lt;T&gt;</code> a generic class</strong></li>
+</ol>
+<ul>
+<li>This class works with any type that supports the += operator.</li>
+<li>We create <code>Summable&lt;int&gt;</code> and <code>Summable&lt;double&gt;</code> instances separately.</li>
+</ul>
+<ol start="2">
+<li><strong>Why use a class template instead of a function template?</strong></li>
+</ol>
+<ul>
+<li>If we only needed a single sum() function, a function template is fine.</li>
+<li>But if we wanted to add more operations (like multiplication, average, etc.), then a class template organizes everything better.</li>
+</ul>
+<ol start="3">
+<li><strong>How does the compiler handle this?</strong></li>
+</ol>
+<ul>
+<li>When you write <code>Summable&lt;int&gt;</code>, the compiler generates an int-specific version of the class.</li>
+<li>When you write <code>Summable&lt;double&gt;</code>, the compiler generates a separate double version.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="c-inheritance-and-derived-classes"><a class="header" href="#c-inheritance-and-derived-classes">C++ Inheritance and Derived Classes</a></h2>
 <h3 id="the-inheritance-mechanism"><a class="header" href="#the-inheritance-mechanism">The Inheritance Mechanism</a></h3>
@@ -7922,121 +8249,7 @@ private:
 </div>
 <hr />
 <p>You want me to walk you through adapting your current class with <code>unique_ptr</code> line by line next? Or maybe go further into move-only types and real STL container internals? Just say the magic word, sorceress 🧙‍♀️✨</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-templates-in-c-"><a class="header" href="#introduction-to-templates-in-c-">Introduction to Templates in C++ 💀</a></h1>
-<p>Templates are one of C++’s most powerful and frightening features. They let you write generic code that can work with multiple data types without duplication. But they also have the potential to turn your code into an unreadable mess of cryptic compiler errors if misused.</p>
-<p>In these examples, we’ll look at two ways templates are used:</p>
-<ul>
-<li>Function Templates – Making a single function that works with multiple types.</li>
-<li>Class Templates – Making a class that can handle multiple data types dynamically.</li>
-</ul>
-<p>// Function templates: subtract()</p>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-
-const int N = 40;
-
-template &lt;typename T&gt;
-T substract(const T data[], int n, T s = 0) {
-    for (int i = 0; i &lt; n; ++i) {
-        s = s - data[i];
-    }
-    return s;
-}
-
-int main() {
-    std::cout &lt;&lt; "template for substract()" &lt;&lt; std::endl;
-
-    int a[] = {1,2,3};
-    double b[] = {2.1, 2.2, 2.3};
-
-    std::cout &lt;&lt; substract(a, 3) &lt;&lt; std::endl;
-    std::cout &lt;&lt; substract(b, 3) &lt;&lt; std::endl;
-    
-    return 0;
-}
-</code></pre>
-<p>Key Takeaways</p>
-<ol>
-<li><strong>template <typename T> – This is the template declaration.</strong></li>
-</ol>
-<ul>
-<li>T is a placeholder for any data type (int, double, float, etc.).</li>
-<li>When calling substract(), the compiler automatically replaces T with the correct type.</li>
-</ul>
-<ol start="2">
-<li><strong>Function works for multiple data types</strong></li>
-</ol>
-<ul>
-<li>substract(a, 3) works for int.</li>
-<li>substract(b, 3) works for double.</li>
-</ul>
-<ol start="3">
-<li><strong>Why templates instead of function overloading?</strong></li>
-</ol>
-<ul>
-<li>Without templates, you’d have to write separate functions for int, double, float, etc.</li>
-<li>Templates let you write the function once and use it for any compatible type.</li>
-</ul>
-<ol start="4">
-<li><strong>Is this just like inline?</strong></li>
-</ol>
-<ul>
-<li>No, but function templates can be inlined by the compiler if they are small.</li>
-<li>The compiler generates a separate function for each unique type used.</li>
-<li>This means substract<int> and substract<double> are compiled separately.</li>
-</ul>
-<h3 id="templates-part-two"><a class="header" href="#templates-part-two">Templates Part Two</a></h3>
-<pre><code class="language-cpp">// Class Templates: Summable&lt;T&gt;
-#include &lt;iostream&gt;
-
-template &lt;class T&gt;
-class Summable {
-public:
-    T sum(const T data[], int size, T s = 0) {
-        for (int i = 0; i &lt; size; ++i) {
-            s += data[i];
-        }
-        return s;
-    }
-};
-
-int main() {
-    Summable&lt;int&gt; intSummable;
-    int intData[] = {1, 2, 3, 4, 5};
-    int intSum = intSummable.sum(intData, 5);
-    std::cout &lt;&lt; "Sum of int array: " &lt;&lt; intSum &lt;&lt; std::endl;
-
-    Summable&lt;double&gt; doubleSummable;
-    double doubleData[] = {1.1, 2.2, 3.3, 4.4, 5.5};
-    double doubleSum = doubleSummable.sum(doubleData, 5);
-    std::cout &lt;&lt; "Sum of double array: " &lt;&lt; doubleSum &lt;&lt; std::endl;
-
-    return 0;
-}
-</code></pre>
-<p>Key Takeaways</p>
-<ol>
-<li><strong>template <class T> makes Summable<T> a generic class</strong></li>
-</ol>
-<ul>
-<li>This class works with any type that supports the += operator.</li>
-<li>We create Summable<int> and Summable<double> instances separately.</li>
-</ul>
-<ol start="2">
-<li><strong>Why use a class template instead of a function template?</strong></li>
-</ol>
-<ul>
-<li>If we only needed a single sum() function, a function template is fine.</li>
-<li>But if we wanted to add more operations (like multiplication, average, etc.), then a class template organizes everything better.</li>
-</ul>
-<ol start="3">
-<li><strong>How does the compiler handle this?</strong></li>
-</ol>
-<ul>
-<li>When you write Summable<int>, the compiler generates an int-specific version of the class.</li>
-<li>When you write Summable<double>, the compiler generates a separate double version.</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
 <ul>
 <li>It's useful to have function objects to further leverage the STL library</li>
 <li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
