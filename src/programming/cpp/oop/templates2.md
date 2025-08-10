@@ -1,13 +1,11 @@
-# Introduction to Templates in C++ 💀
-
-Templates are one of C++’s most powerful and frightening features. They let you write generic code that can work with multiple data types without duplication. But they also have the potential to turn your code into an unreadable mess of cryptic compiler errors if misused.
+# More About Templates : Function & Class Templates
 
 In these examples, we’ll look at two ways templates are used:
 - Function Templates – Making a single function that works with multiple types.
 - Class Templates – Making a class that can handle multiple data types dynamically.
 
 
-// Function templates: subtract()
+## Function templates: subtract()
 ```cpp
 #include <iostream>
 #include <vector>
@@ -42,8 +40,8 @@ Key Takeaways
 - When calling substract(), the compiler automatically replaces T with the correct type.
 
 2. **Function works for multiple data types**
-- substract(a, 3) works for int.
-- substract(b, 3) works for double.
+- `substract(a, 3)` works for int.
+- `substract(b, 3)` works for double.
 
 3. **Why templates instead of function overloading?**
 - Without templates, you’d have to write separate functions for int, double, float, etc.
@@ -52,9 +50,9 @@ Key Takeaways
 4. **Is this just like inline?**
 - No, but function templates can be inlined by the compiler if they are small.
 - The compiler generates a separate function for each unique type used.
-- This means substract<int> and substract<double> are compiled separately.
+- This means `substract<int>` and `substract<double>` are compiled separately.
 
-### Templates Part Two
+## Class Templates
 
 ```cpp
 // Class Templates: Summable<T>
@@ -88,14 +86,14 @@ int main() {
 
 Key Takeaways
 
-1. **template <class T> makes Summable<T> a generic class**
+1. **`template <class T>` makes `Summable<T>` a generic class**
 - This class works with any type that supports the += operator.
-- We create Summable<int> and Summable<double> instances separately.
+- We create `Summable<int>` and `Summable<double>` instances separately.
 
 2. **Why use a class template instead of a function template?**
 - If we only needed a single sum() function, a function template is fine.
 - But if we wanted to add more operations (like multiplication, average, etc.), then a class template organizes everything better.
 
 3. **How does the compiler handle this?**
-- When you write Summable<int>, the compiler generates an int-specific version of the class.
-- When you write Summable<double>, the compiler generates a separate double version.
+- When you write `Summable<int>`, the compiler generates an int-specific version of the class.
+- When you write `Summable<double>`, the compiler generates a separate double version.
