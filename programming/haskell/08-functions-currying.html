@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Set Up PostgreSQL for Testing Environments - Debugging Grimoire</title>
+        <title>Function Currying - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,99 +175,59 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="setup-postgresql-for-testing-environments"><a class="header" href="#setup-postgresql-for-testing-environments">Setup PostgreSQL for Testing Environments</a></h1>
-<h2 id="1-setting-up-postgresql-for-github-actions"><a class="header" href="#1-setting-up-postgresql-for-github-actions">1. Setting Up PostgreSQL for GitHub Actions</a></h2>
-<ul>
-<li>Go to your GitHub repo → Settings → Secrets and variables → Actions</li>
-<li>Add your Postgres credentials as secrets </li>
-<li>In your CI/CD workflow (.github/workflows/deploy.yml), use them like this:</li>
-</ul>
-<pre><code class="language-yaml">env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                        <h3 id="function-currying"><a class="header" href="#function-currying">Function Currying</a></h3>
+<p>All functions have a single parameter.</p>
+<p>Functions of more than one parameter actually returns a new function.</p>
+<p>No need to pass all parameters (partial application).</p>
+<p>Example:</p>
+<p><code>prod 3 5</code> is, in reality, (prod 3) 5</p>
+<p>First we apply 3, and the result is a function that expects another integer.</p>
+<pre><code class="language-hs">prod :: Int -&gt; Int -&gt; Int
 </code></pre>
 <ul>
-<li>Now your database credentials are safe, instead of hardcoded into a .env file waiting to get leaked.</li>
+<li>Looks like a function taking two <code>Int</code>s and returning an <code>Int</code>.</li>
+<li>But under the hood it's actually:</li>
 </ul>
-<h2 id="2-running-postgresql-as-a-service-in-github-actions"><a class="header" href="#2-running-postgresql-as-a-service-in-github-actions">2. Running PostgreSQL as a Service in GitHub Actions:</a></h2>
-<p>Save the following YAML file inside .github/workflows/ as test-postgres.yml.</p>
-<pre><code class="language-yaml">name: Run Tests with PostgreSQL
-
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: &gt;-
-          --health-cmd "pg_isready -U user"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up PostgreSQL
-        run: |
-          psql -h localhost -U user -d testdb -c "SELECT 'PostgreSQL is running';"
-        env:
-          PGPASSWORD: password
-
-      - name: Run Tests
-        run: ./run_tests.sh
-        env:
-          DATABASE_URL: "postgres://user:password@localhost:5432/testdb"
+<pre><code class="language-hs">prod :: Int -&gt; (Int -&gt; Int)
 </code></pre>
 <ul>
-<li>Spins up a fresh new Postgres instance for every GitHub Actions run, keeping tests isolated and repeatable.</li>
-<li>Prevents side effects from shared databases.</li>
-</ul>
-<h2 id="3-local-testing-with-docker-compose-optional"><a class="header" href="#3-local-testing-with-docker-compose-optional">3. Local Testing with Docker-Compose (optional)</a></h2>
+<li>Meaning:
 <ul>
-<li><strong>To test in a local environment.</strong></li>
-<li>Use docker-compose for quick local Postgres testing:</li>
+<li><code>prod</code> takes one <code>Int</code></li>
+<li>and returns a new function that takes another <code>Int</code> and finally    returns an <code>Int</code>.</li>
 </ul>
-<pre><code class="language-yaml">version: '3.8'
-services:
-  db:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
+</li>
+</ul>
+<pre><code class="language-hs">(prod 3) :: (Int -&gt; Int)
 </code></pre>
 <ul>
-<li>This lets you test locally in the same way GitHub Actions does.</li>
-<li>Resets everything with each restart, ensuring clean test environments.</li>
+<li>Calling <code>prod</code> with 3. Since <code>prod</code> takes only one argument at a time, it returns a new function waiting for the second <code>Int</code>.</li>
+<li>So <code>(prod 3)</code> is a function: "Hey, give me an <code>Int</code>, and I’ll multiply it by 3."</li>
+</ul>
+<p>And when you finally call:</p>
+<pre><code class="language-hs">(prod 3) 5 :: Int -- 15
+</code></pre>
+<ul>
+<li>
+<p>You’re calling that new function with <code>5</code>, so it returns <code>3 * 5 = 15</code>.</p>
+</li>
+<li>
+<p>It turns out every multi-argument function in Haskell is just a chain of single-argument functions returning functions until all args are consumed.</p>
+</li>
+<li>
+<p>This allows you to partially apply functions easily. Like a “function factory.”</p>
+</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../devops/gcloud-host-files.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/haskell/07-functions-local.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -277,11 +237,11 @@ services:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../devops/gcloud-host-files.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/haskell/07-functions-local.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -296,13 +256,13 @@ services:
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

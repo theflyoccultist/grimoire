@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Debugging Tools - Debugging Grimoire</title>
+        <title>Introduction to Functions - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../../favicon.svg">
-        <link rel="shortcut icon" href="../../../favicon.png">
-        <link rel="stylesheet" href="../../../css/variables.css">
-        <link rel="stylesheet" href="../../../css/general.css">
-        <link rel="stylesheet" href="../../../css/chrome.css">
-        <link rel="stylesheet" href="../../../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../../searchindex.js";
+            window.path_to_searchindex_js = "../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,87 +175,53 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="-debugging-tools-for-c-you-should-100-use"><a class="header" href="#-debugging-tools-for-c-you-should-100-use">🛡️ Debugging Tools for C++ You Should 100% Use</a></h1>
-<h2 id="-1-addresssanitizer-asan"><a class="header" href="#-1-addresssanitizer-asan">🧼 1. AddressSanitizer (ASan)</a></h2>
+                        <h2 id="introduction-to-functions"><a class="header" href="#introduction-to-functions">Introduction to Functions</a></h2>
 <ul>
 <li>
-<p>You already know the girl. She’s protective, loud, and dragging every invalid memory access by its wig.</p>
+<p>Functions in Haskell are pure: they only return results calculated relative to their parameters.</p>
 </li>
 <li>
-<p>Just compile with:</p>
-</li>
-</ul>
-<pre><code class="language-bash">g++ -fsanitize=address -g -O1 your_code.cpp -o output
-</code></pre>
-<h2 id="-2-valgrind-the-classic-queen"><a class="header" href="#-2-valgrind-the-classic-queen">🔥 2. Valgrind (The Classic Queen)</a></h2>
+<p>Functions do not have side effects.</p>
 <ul>
-<li>
-<p>She’s slower, but ultra-detailed. Great for memory leaks, use-after-free, uninitialized memory reads.</p>
+<li>They do not modify the parameters</li>
+<li>They do not modify the memory</li>
+<li>They do not modify the input / output</li>
+</ul>
 </li>
 <li>
-<p>Use like:</p>
+<p>A function always returns the same result applied to the same parameters.</p>
 </li>
 </ul>
-<pre><code class="language-bash">valgrind ./output
+<h3 id="definition-of-functions"><a class="header" href="#definition-of-functions">Definition of Functions</a></h3>
+<p>Function identifiers start with a lowercase.</p>
+<p>To introduce a function:</p>
+<ol>
+<li>First, its type declaration (header) is given. (Optional, but recommended)</li>
+<li>Then its definition is given, using formal parameters.</li>
+</ol>
+<p>Examples:</p>
+<pre><code class="language-hs">double :: Int -&gt; Int
+double x = 2 * x
+
+perimeter :: Int -&gt; Int -&gt; Int
+perimeter width height = double (width + height)
+
+xOr :: Bool -&gt; Bool -&gt; Bool
+xOr a b = (a || b) &amp;&amp; not (a &amp;&amp; b)
+
+factorial :: Integer -&gt; Integer
+factorial n = if n == 0 then 1 else n * factorial (n - 1)
 </code></pre>
-<ul>
-<li>This flag tells Valgrind to trace the origin of unitialized values.</li>
-</ul>
-<pre><code class="language-bash">valgrind --track-origins=yes ./output
-</code></pre>
-<p>Bonus: combine with <code>--leak-check=full</code> to get all the juicy info.</p>
-<h2 id="-3-gdb-the-stoic-therapist"><a class="header" href="#-3-gdb-the-stoic-therapist">🧠 3. GDB (The Stoic Therapist)</a></h2>
-<ul>
-<li>Not flashy, but powerful. If you need to pause execution mid-Dijkstra and stare at your pointers like a disappointed parent:</li>
-</ul>
-<pre><code class="language-bash">g++ -g your_code.cpp -o output
-gdb ./output
-</code></pre>
-<p>Then in GDB:</p>
-<pre><code class="language-bash">run
-bt        # Backtrace on crash
-info locals
-</code></pre>
-<ul>
-<li>Common Commands:
-<ul>
-<li>run – start execution</li>
-<li>break main – set breakpoint</li>
-<li>next, step – step through code</li>
-<li>print var, info locals – inspect variables</li>
-<li>bt – backtrace after crash</li>
-</ul>
-</li>
-</ul>
-<h2 id="-4-godbolt-optional-but-very-nerdy"><a class="header" href="#-4-godbolt-optional-but-very-nerdy">🌈 4. Godbolt (Optional, but Very Nerdy)</a></h2>
-<ul>
-<li>Not for runtime bugs, but if you ever want to see how your C++ compiles to assembly, or compare optimizations. It’s fun for algorithm analysis.</li>
-</ul>
-<h2 id="-5-clang-tidy"><a class="header" href="#-5-clang-tidy">🚀 5. Clang-Tidy</a></h2>
-<ul>
-<li>
-<p>For static analysis. Lints C++ code and catches suspicious patterns before they explode.</p>
-</li>
-<li>
-<p>Run like:</p>
-</li>
-</ul>
-<pre><code class="language-bash">clang-tidy your_code.cpp -- -std=c++17
-</code></pre>
-<h2 id="bonus-compilation-flags"><a class="header" href="#bonus-compilation-flags">Bonus: Compilation Flags</a></h2>
-<ul>
-<li>Always use <code>-Wall -Wextra -pedantic</code> for extra compiler warnings.</li>
-</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/09-struct-as-parameter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/haskell/03-basic-types-2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/fundamentals/makefiles.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/haskell/05-functions-patterns.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -265,11 +231,11 @@ info locals
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/09-struct-as-parameter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/haskell/03-basic-types-2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/fundamentals/makefiles.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/haskell/05-functions-patterns.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -284,13 +250,13 @@ info locals
         </script>
 
 
-        <script src="../../../elasticlunr.min.js"></script>
-        <script src="../../../mark.min.js"></script>
-        <script src="../../../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../../../clipboard.min.js"></script>
-        <script src="../../../highlight.js"></script>
-        <script src="../../../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

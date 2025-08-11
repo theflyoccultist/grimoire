@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>How to Host Images (or other files) on Google Cloud Storage - Debugging Grimoire</title>
+        <title>Usage of Valgrind - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,50 +175,47 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="how-to-configure-google-cloud-storage-bucket-to-store-any-files"><a class="header" href="#how-to-configure-google-cloud-storage-bucket-to-store-any-files">How to configure Google Cloud Storage Bucket to store any files</a></h1>
+                        <h1 id="usage-of-valgrind"><a class="header" href="#usage-of-valgrind">Usage of Valgrind</a></h1>
 <ul>
-<li>Create a Google Cloud Storage Bucket. Make sure to pick a unique bucket name!</li>
-<li>Example locations: us-central1, europe-west2, asia-east1.</li>
+<li>Memory bugs are hard to find, until strings some variables changes values randomly.</li>
+<li>Valgrind is a suite of profiling tools that allows you to check your code in a number of ways.</li>
+<li>Default one: the memcheck tool, it's also perhaps the most powerful one. It runs your code inside of a virtual machine. It then instruments all of the memory accesses that you are performing, and it double checks to make sure your pointer accesses are valid.</li>
 </ul>
-<pre><code class="language-bash">gcloud storage buckets create gs://UNIQUE_BUCKET_NAME
---location=SERVER_LOCATION
---uniform-bucket-level-access
-
-# Navigate to your folder path
-cd ~/Downloads
-
-# Upload the entire "public" folder
-gsutil cp -r /public gs://UNIQUE_BUCKET_NAME
-
-# Upload a single file, or an entire folder (later updates)
-gsutil cp myfile.png gs://UNIQUE_BUCKET_NAME
-gsutil cp -r myfolder gs://UNIQUE_BUCKET_NAME
-
-# Automate Upload with Wildcards (this uploads all .jpg files in the current directory)
-gsutil cp *.jpg gs://UNIQUE_BUCKET_NAME
-
-# (Optional) Make files Public. This will make the files publicly accessed via URL.
-gsutil iam ch allUsers:objectViewer gs://UNIQUE_BUCKET_NAME
-
-# Access to an image in the folder with your web browser, once uploaded.
-https://storage.googleapis.com/UNIQUE_BUCKET_NAME/your-file.jpg
-
-# List Files in the Bucket
-gsutil ls gs://UNIQUE_BUCKET_NAME
-
-# Delete Files (if needed)
-gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
+<p>Installation example:</p>
+<pre><code class="language-bash">sudo apt-get install valgrind
 </code></pre>
+<ul>
+<li>Make sure to add the <code>-g</code> flag to the compiler, which sets up debugging information.</li>
+<li>Also turn on <code>-Wall -Werror</code> so your compiler can tell you what is wrong as much as possible.</li>
+</ul>
+<p>First step is <code>valgrind ./program</code> to start off.
+The numbers between == at the beginning of each line is the Process ID Valgrind is currently working on.</p>
+<h2 id="some-flags-to-use"><a class="header" href="#some-flags-to-use">Some flags to use:</a></h2>
+<p><strong><code>--leak-check=full</code></strong>: Prints detailed info for each detected memory leak, where the memory was allocated, how big it is, and whether it's reachable or not.</p>
+<p><code>--leak-check=summary</code>: Only prints the final summary. Useful for quick checks.</p>
+<p><strong><code>--track-origins=yes</code></strong>: Traces the origin of uninitialized memory so you can see where in your code you forgot to initialize it.</p>
+<p><strong><code>--show-leak-kinds=all</code></strong>: By default, Valgrind only shows certain leak categories. With <code>all</code>, you'll see:</p>
+<ul>
+<li>Definitely lost: memory you 100% forgot to free.</li>
+<li>Indirectly lost: memory was only reachable through a block that's definitely lost.</li>
+<li>Possibly lost: Valgrind can't be sure, but the pointer situation looks sketchy (e.g., pointer arithmetic changed the address).</li>
+<li>Still reachable: memory is still pointed to at exit, so it isn't technically leaked. Often from static/global allocations or intentional caches.</li>
+</ul>
+<p><code>--num-callers=&lt;n&gt;</code>: Shows <code>&lt;n&gt;</code> stack frames for each error. Default: 12. More stack depth for messy call chains.</p>
+<p><code>--error-limit=no</code>: Disables the default limit on errors shown.</p>
+<p><code>--quiet</code>: Minimal output, useful in scripts or CI logs.</p>
+<p><code>--gen-suppressions=yes</code>: Generates suppression entries for false positives. For library code you can't change.</p>
+<p><code>--log-file=&lt;file&gt;</code>: Saves all output into a file.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../devops/gcloud-domain.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/good-to-know/gdb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/good-to-know/fsanitize.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -228,11 +225,11 @@ gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../devops/gcloud-domain.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/good-to-know/gdb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/good-to-know/fsanitize.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -247,13 +244,13 @@ gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

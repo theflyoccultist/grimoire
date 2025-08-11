@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Makefiles: for Multiple File Projects - Debugging Grimoire</title>
+        <title>Usage of GDB - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,16 +175,135 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="usage-of-gnu-debugger-gdb"><a class="header" href="#usage-of-gnu-debugger-gdb">Usage of GNU Debugger (GDB)</a></h1>
+<p>A debugger is a program that simulates/runs another program and allows you to:</p>
+<ul>
+<li>Pause and continue its execution</li>
+<li>Set "break points" or conditions where the execution pauses so you can look at its state</li>
+<li>View and "watch" variable values</li>
+<li>Step through the program line-by-line (or instruction by instruction)</li>
+</ul>
+<h2 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h2>
+<p>Compile for debugging:</p>
+<pre><code class="language-bash">gcc -Wall -g -O0 program.c -o a.out
+</code></pre>
+<ul>
+<li>Preserves identifiers and symbols</li>
+<li>Start GDB:</li>
+</ul>
+<pre><code class="language-bash">gdb a.out
+</code></pre>
+<ul>
+<li>Optionally start with command line arguments:</li>
+</ul>
+<pre><code class="language-bash">gdb --args a.out arg1 arg2
+</code></pre>
+<ul>
+<li>Can also be set in GDB</li>
+</ul>
+<h2 id="useful-gdb-commands"><a class="header" href="#useful-gdb-commands">Useful GDB Commands</a></h2>
+<ul>
+<li>Refresh the display: <code>refresh</code></li>
+<li>Run your program: <code>run</code></li>
+<li>See your code: <code>layout next</code></li>
+<li>Set a break point: <code>break POINT</code>, can be a line number, function name, etc.</li>
+<li>Step: <code>next</code> (<code>n</code> for short)</li>
+<li>Continue (to next break point): <code>continue</code></li>
+<li>Print a variable's value: <code>print VARIABLE</code></li>
+<li>Print an array: <code>print *arr@len</code></li>
+<li>Watch a variable for changes: <code>watch VARIABLE</code></li>
+<li>Set an argument to a function: <code>set args number</code></li>
+<li>Use during a Segfault: <code>backtrace full</code></li>
+</ul>
+<h2 id="usage-on-a-buggy-program-try-it"><a class="header" href="#usage-on-a-buggy-program-try-it">Usage on a buggy program (try it!)</a></h2>
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+int sum(int *arr, int n);
+
+int* getPrimes(int n);
+
+int isPrime(int x);
+
+int main(int argc, char **argv) {
+
+  int n = 10; //default to the first 10 primes
+  if(argc = 2) {
+    atoi(argv[2]);
+  }
+  int *primes = getPrimes(n);
+
+  int s = sum(primes, n);
+  printf("The sum of the first %d primes is %d\n", n, s);
+
+  return 0;
+}
+
+int sum(int *arr, int n) {
+  int i;
+  int total;
+  for(i=0; i&lt;n; i++) {
+    total =+ arr[i];
+  }
+  return total;
+}
+
+int* getPrimes(int n) {
+  int result[n];
+  int i = 0;
+  int x = 2;
+  while(i &lt; n) {
+    if(isPrime(x)) {
+      result[i] = x;
+      i++;
+      x += 2;
+    }
+  }
+  return result;
+}
+
+int isPrime(int x) {
+  if(x % 2 == 0) {
+    return 0;
+  }
+  for(int i=3; i&lt;=sqrt(x); i+=2) {
+    if(x % i == 0) {
+      return 0;
+    }
+  }
+  return 1;
+}
+</code></pre>
+<h2 id="usage-on-an-infinite-loop"><a class="header" href="#usage-on-an-infinite-loop">Usage on an infinite loop</a></h2>
+<p>If you run this program, it will get stuck in an infinite loop. Let's find out what is causing it.</p>
+<pre><code class="language-bash">gcc -g -lm -O0 -std=c99 -w primes.c
+gdb a.out
+layout next
+run
+</code></pre>
+<p>And if you do <code>Ctrl + C</code>, you will see on which infinite loop it is getting stuck at.</p>
+<p>Do <code>next</code> / <code>n</code> to navigate through the code. Display the variables by doing <code>print x</code>.</p>
+<p>If you see that it is getting stuck at a function, type <code>step</code> to access it. There, you can continue inspecting with <code>next</code>.</p>
+<p>Finally, do <code>quit</code> when you have figured out what needs to be reworked in your code. Then you can repeat the process.</p>
+<h2 id="usage-on-incorrect-values"><a class="header" href="#usage-on-incorrect-values">Usage on incorrect values</a></h2>
+<p>Use <code>*primes@10</code> for example to print the dereferenced values in an array. If you forget the <code>*</code> at the beginning, it will print memory addresses.</p>
+<p>Use <code>clear main</code> and <code>break sum</code> to change between breakpoints.</p>
+<p>Use <code>watch total</code> so you don't have to do <code>print total</code> at each loop iteration, it will do it automatically.</p>
+<p>In GDB, you can use <code>set args 20</code> to intentionally set it to a value that you know will yield wrong results.</p>
+<h2 id="usage-on-a-segfault"><a class="header" href="#usage-on-a-segfault">Usage on a Segfault</a></h2>
+<p><code>backtrace full</code> will tell you exactly what functions has been called, and prints out everything in one command.</p>
+<p>Don't forget to test the tests that you knew passed before, after making changes. Make sure the changes don't break the passing test cases.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/fundamentals/debugging-tools.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/c/good-to-know/makefiles.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/oop/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/c/good-to-know/valgrind.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -194,11 +313,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/fundamentals/debugging-tools.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/c/good-to-know/makefiles.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/oop/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/c/good-to-know/valgrind.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

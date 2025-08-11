@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>How to Host Images (or other files) on Google Cloud Storage - Debugging Grimoire</title>
+        <title>Function Definition with Guards - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,50 +175,37 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="how-to-configure-google-cloud-storage-bucket-to-store-any-files"><a class="header" href="#how-to-configure-google-cloud-storage-bucket-to-store-any-files">How to configure Google Cloud Storage Bucket to store any files</a></h1>
-<ul>
-<li>Create a Google Cloud Storage Bucket. Make sure to pick a unique bucket name!</li>
-<li>Example locations: us-central1, europe-west2, asia-east1.</li>
-</ul>
-<pre><code class="language-bash">gcloud storage buckets create gs://UNIQUE_BUCKET_NAME
---location=SERVER_LOCATION
---uniform-bucket-level-access
+                        <h3 id="definition-with-guards"><a class="header" href="#definition-with-guards">Definition with Guards</a></h3>
+<p>Functions can be defined with guards:</p>
+<pre><code class="language-hs">valAbs :: Int -&gt; Int
+-- returns the absolute value of an integer
 
-# Navigate to your folder path
-cd ~/Downloads
-
-# Upload the entire "public" folder
-gsutil cp -r /public gs://UNIQUE_BUCKET_NAME
-
-# Upload a single file, or an entire folder (later updates)
-gsutil cp myfile.png gs://UNIQUE_BUCKET_NAME
-gsutil cp -r myfolder gs://UNIQUE_BUCKET_NAME
-
-# Automate Upload with Wildcards (this uploads all .jpg files in the current directory)
-gsutil cp *.jpg gs://UNIQUE_BUCKET_NAME
-
-# (Optional) Make files Public. This will make the files publicly accessed via URL.
-gsutil iam ch allUsers:objectViewer gs://UNIQUE_BUCKET_NAME
-
-# Access to an image in the folder with your web browser, once uploaded.
-https://storage.googleapis.com/UNIQUE_BUCKET_NAME/your-file.jpg
-
-# List Files in the Bucket
-gsutil ls gs://UNIQUE_BUCKET_NAME
-
-# Delete Files (if needed)
-gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
+valAbs n
+  | n &gt;= 0 = n
+  | otherwise = -n
 </code></pre>
+<ul>
+<li>
+<p>Guard evaluation is top-down and returns the result of the first true branch.</p>
+</li>
+<li>
+<p>Pattern definitions can also have guards.</p>
+</li>
+<li>
+<p>The <code>otherwise</code> is the same as <code>True</code>, but more readable</p>
+</li>
+</ul>
+<p>Equality goes after every guard!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../devops/gcloud-domain.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/haskell/05-functions-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/haskell/07-functions-local.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -228,11 +215,11 @@ gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../devops/gcloud-domain.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/haskell/05-functions-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/haskell/07-functions-local.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -247,13 +234,13 @@ gsutil rm gs://UNIQUE_BUCKET_NAME/filename.png
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
