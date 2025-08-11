@@ -1,4 +1,4 @@
-## 🧪 Bash Week — Hamming Distance Spell (Char-by-Char Comparison, Final Form)
+## Bash Week — Hamming Distance Spell (Char-by-Char Comparison, Final Form)
 
 It calculates the Hamming distance (number of differing characters) between two equal-length strings.
 

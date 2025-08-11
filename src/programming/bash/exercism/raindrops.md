@@ -1,4 +1,4 @@
-## 🐚 Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)
+## Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)
 
 This is an advanced FizzBuzz-style exercise, adapted for Bash with **O(1)** performance.
 No loops. No Python crutches. Just raw shell logic.
