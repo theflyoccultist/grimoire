@@ -27,3 +27,5 @@ distance p1 p2 = sqrt(sqr dx + sqr dy)
         dy = y1 - y2
         sqr x = x * x
 ```
+
+
