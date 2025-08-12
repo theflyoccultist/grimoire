@@ -8067,6 +8067,70 @@ int main() {
 <li>You should still learn the manual ++/-- method—understanding the low-level behavior makes STL functions less magical and more powerful.</li>
 <li>But once you get it, use std::equal. It’s cleaner, easier to read, and less error-prone. Let the STL do the pointer math.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tuples"><a class="header" href="#tuples">Tuples</a></h1>
+<h2 id="creation-of-tuples"><a class="header" href="#creation-of-tuples">Creation of Tuples</a></h2>
+<pre><code class="language-cpp">
+// Create a tuple
+
+#include &lt;tuple&gt;
+
+int main() {
+  // direct initialization
+  std::tuple&lt;int, int, int&gt; time(1, 42, 30);
+
+  // using make_tuple (type deduced)
+  auto anotherTime = std::make_tuple(1, 22, 60);
+
+  // works with mixed types
+  auto person = std::make_tuple("Pwatpwat", 22, 8.2); // name, age, height
+}
+
+</code></pre>
+<h2 id="accessing-tuples"><a class="header" href="#accessing-tuples">Accessing Tuples</a></h2>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;tuple&gt;
+
+int main() {
+  auto time = std::make_tuple(1, 42, 30);
+
+  // Modifying elements
+  std::get&lt;1&gt;(time) = 59;
+
+  // std::get&lt;index&gt; (compile-time index)
+  std::cout &lt;&lt; "Hours: " &lt;&lt; std::get&lt;0&gt;(time) &lt;&lt; "\n";
+  std::cout &lt;&lt; "Minutes: " &lt;&lt; std::get&lt;1&gt;(time) &lt;&lt; "\n";
+  std::cout &lt;&lt; "Seconds: " &lt;&lt; std::get&lt;2&gt;(time) &lt;&lt; "\n";
+
+  // unpacking tuples (c++17 feature)
+  auto [h, m, s] = time;
+  std::cout &lt;&lt; h &lt;&lt; "h " &lt;&lt; m &lt;&lt; "m " &lt;&lt; s &lt;&lt; "s\n";
+}
+
+</code></pre>
+<h2 id="returning-tuples"><a class="header" href="#returning-tuples">Returning Tuples</a></h2>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;tuple&gt;
+
+std::tuple&lt;int, int, int&gt; timeDecomposition(int seconds) {
+  int h = seconds / 3600;
+  int m = (seconds % 3600) / 60;
+  int s = seconds % 60;
+  return std::make_tuple(h, m, s);
+}
+
+int main() {
+  int seconds = 8850;
+  std::tuple time = timeDecomposition(seconds);
+
+  auto [h, m, s] = time;
+
+  std::cout &lt;&lt; seconds &lt;&lt; " seconds equals to:" &lt;&lt; std::endl;
+  std::cout &lt;&lt; h &lt;&lt; "h " &lt;&lt; m &lt;&lt; "m " &lt;&lt; s &lt;&lt; "s" &lt;&lt; std::endl;
+}
+
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
 <p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
 <hr />
@@ -12121,6 +12185,28 @@ distance p1 p2 = sqrt((fst p1 - fst p2)^2 + (snd p1 - snd p2)^2)
         dx = x1 - x2
         dy = y1 - y2
         sqr x = x * x
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="empty-tuples"><a class="header" href="#empty-tuples">Empty Tuples</a></h1>
+<p>There exists the tuple type without data, which has only one possible value: the empty data.</p>
+<p>Concept similar to <code>void</code> in C.</p>
+<ul>
+<li>Type: <code>()</code></li>
+<li>Value: <code>()</code></li>
+</ul>
+<pre><code class="language-hs">ghci&gt; (,) 2 3
+(2,3)
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lists"><a class="header" href="#lists">Lists</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-lists"><a class="header" href="#introduction-to-lists">Introduction to Lists</a></h1>
+<p>A list is a structured type that contains a sequence of elements, all of the same type.</p>
+<p><code>[t]</code> denotes the type of lists of type <code>t</code>.</p>
+<pre><code class="language-hs">[]            -- empty list
+[3, 9, 27]  :: [Int]
+[(1, "One"), (2, "Two"), (3, "three")] :: [(Int, String)]
+[[8], [3, 9, 27], [1, 5], []]             :: [[Int]]
+[1 .. 10]     -- same as [1,2,3,4,5,6,7,8,9,10]
+[1, 3 .. 10]  -- same as [1,3,5,7,9]
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
 <p>To explore for Python Street Cred:</p>

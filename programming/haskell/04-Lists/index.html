@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Decomposition of Tuples into Patterns - Debugging Grimoire</title>
+        <title>Lists - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,36 +175,17 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="decomposition-of-tuples-into-patterns"><a class="header" href="#decomposition-of-tuples-into-patterns">Decomposition of Tuples into Patterns</a></h1>
-<p>Ugly:</p>
-<pre><code class="language-hs">
-distance :: (Float, Float) -&gt; (Float, Float) -&gt; (Float)
-distance p1 p2 = sqrt((fst p1 - fst p2)^2 + (snd p1 - snd p2)^2)
-
-</code></pre>
-<p>Better: Decompose by patterns to the parameters themselves:</p>
-<pre><code class="language-hs">distance (x1, y1) (x2, y2) = sqrt ((x1 - x2)^2 + (y1 - y2)^2)
-
-</code></pre>
-<p>Also: Decompose by patterns using local names:</p>
-<pre><code class="language-hs">distance p1 p2 = sqrt(sqr dx + sqr dy)
-    where
-        (x1, y1) = p1
-        (x2, y2) = p2
-        dx = x1 - x2
-        dy = y1 - y2
-        sqr x = x * x
-</code></pre>
+                        <h1 id="lists"><a class="header" href="#lists">Lists</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/haskell/03-Tuples/tuples-access.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/haskell/03-Tuples/tuples-empty.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/haskell/03-Tuples/tuples-empty.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -214,11 +195,11 @@ distance p1 p2 = sqrt((fst p1 - fst p2)^2 + (snd p1 - snd p2)^2)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/haskell/03-Tuples/tuples-access.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/haskell/03-Tuples/tuples-empty.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/haskell/03-Tuples/tuples-empty.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
