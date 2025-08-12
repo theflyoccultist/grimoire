@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Function Definition with Guards - Debugging Grimoire</title>
+        <title>Local Definitions - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,37 +175,66 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="definition-with-guards"><a class="header" href="#definition-with-guards">Definition with Guards</a></h3>
-<p>Functions can be defined with guards:</p>
-<pre><code class="language-hs">valAbs :: Int -&gt; Int
--- returns the absolute value of an integer
+                        <h3 id="local-definitions"><a class="header" href="#local-definitions">Local Definitions</a></h3>
+<p>To define local names in an expression <code>let-in</code> is used:</p>
+<pre><code class="language-hs">fastExp :: Integer -&gt; Integer -&gt; Integer
+-- fast exponentiation
+fastExp _ 0 = 1
+fastExp x n =
+  let y = fastExp x n_halved
+      n_halved = div n 2
+   in if even n
+        then y * y
+        else y * y * x
+</code></pre>
+<p>The indentation of <code>where</code> defines its scope.</p>
+<p>All definitions in a <code>where</code> / <code>let</code> block can refer to each other without order restrictions. It’s like they live in the same little bubble of “defined together.”</p>
+<pre><code class="language-hs">fasterExp :: Integer -&gt; Integer -&gt; Integer
+fasterExp _ 0 = 1
+fasterExp x n
+  | even n = y * y
+  | otherwise = y * y * x
+  where
+    y = fasterExp x n_halved
+    n_halved = div n 2
+</code></pre>
+<p>Yes, in Haskell <code>y</code> and <code>n_halved</code> are simultaneously defined, so the order doesn't matter. This is what lazy evaluation lets you do, nothing actually runs until it's needed, so Haskell doesn't care about the textual order, only about dependency.</p>
+<ul>
+<li>When evaluating <code>y</code>, it looks up <code>n_halved</code> (which is already known, because it’s in the same <code>where</code> block).</li>
+<li>This is possible because <code>n_halved</code> is a pure expression (<code>div n 2</code>), no side effects, no mutations.</li>
+</ul>
+<p>Here, I started to feel confused, so I tried to write the same function in C to understand better:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
 
-valAbs n
-  | n &gt;= 0 = n
-  | otherwise = -n
+long long int fasterExp(int x, int n) {
+  if (n == 0)
+    return 1;
+
+  int n_halved = n / 2;
+  long long int y = fasterExp(x, n_halved);
+
+  return (n % 2 == 0) ? y * y : y * y * x;
+}
+
+int main() {
+  printf("%lld", fasterExp(3, 5));
+  return 0;
+}
 </code></pre>
 <ul>
-<li>
-<p>Guard evaluation is top-down and returns the result of the first true branch.</p>
-</li>
-<li>
-<p>Pattern definitions can also have guards.</p>
-</li>
-<li>
-<p>The <code>otherwise</code> is the same as <code>True</code>, but more readable</p>
-</li>
+<li>Compared to that, C expects sequential evaluation and declarations before use. It scans top-to-bottom, so you can't use <code>n_halved</code> before declaring it.</li>
+<li>Also, C variables are mutable, so compiler and runtime need to respect order for correctness.</li>
 </ul>
-<p>Equality goes after every guard!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/haskell/05-functions-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/haskell/02-Functions/06-functions-guards.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/haskell/07-functions-local.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/haskell/02-Functions/08-functions-currying.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -215,11 +244,11 @@ valAbs n
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/haskell/05-functions-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/haskell/02-Functions/06-functions-guards.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/haskell/07-functions-local.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/haskell/02-Functions/08-functions-currying.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -234,13 +263,13 @@ valAbs n
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

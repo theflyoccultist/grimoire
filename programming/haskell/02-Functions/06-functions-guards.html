@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Function Currying - Debugging Grimoire</title>
+        <title>Function Definition with Guards - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,59 +175,37 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="function-currying"><a class="header" href="#function-currying">Function Currying</a></h3>
-<p>All functions have a single parameter.</p>
-<p>Functions of more than one parameter actually returns a new function.</p>
-<p>No need to pass all parameters (partial application).</p>
-<p>Example:</p>
-<p><code>prod 3 5</code> is, in reality, (prod 3) 5</p>
-<p>First we apply 3, and the result is a function that expects another integer.</p>
-<pre><code class="language-hs">prod :: Int -&gt; Int -&gt; Int
-</code></pre>
-<ul>
-<li>Looks like a function taking two <code>Int</code>s and returning an <code>Int</code>.</li>
-<li>But under the hood it's actually:</li>
-</ul>
-<pre><code class="language-hs">prod :: Int -&gt; (Int -&gt; Int)
-</code></pre>
-<ul>
-<li>Meaning:
-<ul>
-<li><code>prod</code> takes one <code>Int</code></li>
-<li>and returns a new function that takes another <code>Int</code> and finally    returns an <code>Int</code>.</li>
-</ul>
-</li>
-</ul>
-<pre><code class="language-hs">(prod 3) :: (Int -&gt; Int)
-</code></pre>
-<ul>
-<li>Calling <code>prod</code> with 3. Since <code>prod</code> takes only one argument at a time, it returns a new function waiting for the second <code>Int</code>.</li>
-<li>So <code>(prod 3)</code> is a function: "Hey, give me an <code>Int</code>, and I’ll multiply it by 3."</li>
-</ul>
-<p>And when you finally call:</p>
-<pre><code class="language-hs">(prod 3) 5 :: Int -- 15
+                        <h3 id="definition-with-guards"><a class="header" href="#definition-with-guards">Definition with Guards</a></h3>
+<p>Functions can be defined with guards:</p>
+<pre><code class="language-hs">valAbs :: Int -&gt; Int
+-- returns the absolute value of an integer
+
+valAbs n
+  | n &gt;= 0 = n
+  | otherwise = -n
 </code></pre>
 <ul>
 <li>
-<p>You’re calling that new function with <code>5</code>, so it returns <code>3 * 5 = 15</code>.</p>
+<p>Guard evaluation is top-down and returns the result of the first true branch.</p>
 </li>
 <li>
-<p>It turns out every multi-argument function in Haskell is just a chain of single-argument functions returning functions until all args are consumed.</p>
+<p>Pattern definitions can also have guards.</p>
 </li>
 <li>
-<p>This allows you to partially apply functions easily. Like a “function factory.”</p>
+<p>The <code>otherwise</code> is the same as <code>True</code>, but more readable</p>
 </li>
 </ul>
+<p>Equality goes after every guard!</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/haskell/07-functions-local.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/haskell/02-Functions/05-functions-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/haskell/02-Functions/07-functions-local.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -237,11 +215,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/haskell/07-functions-local.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/haskell/02-Functions/05-functions-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/haskell/02-Functions/07-functions-local.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -256,13 +234,13 @@
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
