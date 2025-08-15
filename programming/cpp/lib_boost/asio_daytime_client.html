@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Referential Garbage Collection - Debugging Grimoire</title>
+        <title>Boost.Asio: TCP Daytime Client - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,92 +175,122 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="referential-garbage-collection"><a class="header" href="#referential-garbage-collection">Referential Garbage Collection</a></h2>
+                        <h1 id="boostasio-daytime-tcp-client"><a class="header" href="#boostasio-daytime-tcp-client">Boost.Asio: Daytime TCP Client</a></h1>
+<h2 id="a-synchronous-tcp-daytime-client"><a class="header" href="#a-synchronous-tcp-daytime-client">A synchronous TCP daytime client</a></h2>
+<p>As a starter, we will use asio to implement a client application with TCP. The purpose of this application is to access a daytime service, so we need the user to specify the server.</p>
+<p>This will work on a server that runs the daytime protocol on TCP port 13, which is rare now. Still, it is a good introduction to the complex world of network programming.</p>
+<p>So, what is TCP? (Transmission Control Protocol)</p>
 <ul>
-<li>Rather than a full copy, we maintain pointers to an aggregate, and a <code>use</code> counter.</li>
-<li>When <code>use</code> (reference count) goes to zero, we actually call <code>delete</code> on an object.</li>
-<li>When we create a new instance, <code>use</code> is initialized to 1.</li>
+<li>Connection oriented: You handshake first, then start sending data.</li>
+<li>Reliable: Every byte sent gets an acknowledgement, lost packets are resent.</li>
+<li>Ordered: Data arrives in the same order it was sent.</li>
+<li>Slower: All that reliability adds overhead.</li>
+<li>Use cases: Web traffic (HTTP/HTTPS), email (SMTP), file transfer (FTP), SSH.</li>
 </ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;ostream&gt;
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;cstddef&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
 
-class Tree; // forward declare it first
+using boost::asio::ip::tcp;
 
-class Node {
-  friend class Tree;
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Tree &amp;);
-  int use; // reference count, allows deletion if 0
+int main(int argc, char *argv[]) {
 
-protected:
-  Node() { use = 1; }
-  virtual void print(std::ostream &amp;) = 0;
-  virtual ~Node() { std::cout &lt;&lt; "Node destroyed\n"; }
-  virtual int eval() = 0; // pure
-};
-
-// class for one constant: inherited from the Node class
-class ConstNode : public Node {
-  int value;
-
-public:
-  ConstNode(int v) : value(v) {}
-  void print(std::ostream &amp;o) override { o &lt;&lt; value; }
-  int eval() override { return value; }
-};
-
-class Tree {
-  friend class Node;
-  // Polymorphic print
-  // Invokes at runtime the appropriate print
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, const Tree &amp;t) {
-    t.p-&gt;print(o);
-    return o;
-  }
-  Node *p; // Polymorphic pointer. This setup allows you to call the right
-           // evaluation function
-
-public:
-  Tree(int); // constant
-  Tree(const Tree &amp;t) {
-    p = t.p;
-    ++p-&gt;use;
-  } // copy constructor, increment use - referential copy
-
-  ~Tree() {
-    if (--p-&gt;use == 0)
-      delete p;
-  } // destructor decrement use and test if use is 0
-  void operator=(const Tree &amp;t) {
-    if (this != &amp;t) {
-      ++t.p-&gt;use;
-      if (--p-&gt;use == 0)
-        delete p;
-      p = t.p;
+  try {
+    if (argc != 2) {
+      std::cerr &lt;&lt; "Usage: client &lt;host&gt;" &lt;&lt; std::endl;
+      return 1;
     }
-  };
 
-  int eval() { return p-&gt;eval(); }
-};
+    // resolver
+    boost::asio::io_context io_context;
+    tcp::resolver resolver(io_context);
+    tcp::resolver::results_type endpoints =
+        resolver.resolve(argv[1], "daytime");
 
-Tree::Tree(int n) { p = new ConstNode(n); }
+    // create socket and connect
+    tcp::socket socket(io_context);
+    boost::asio::connect(socket, endpoints);
 
-int main() {
-  Tree t(42);
-  std::cout &lt;&lt; "Tree: " &lt;&lt; t &lt;&lt; std::endl;
-  std::cout &lt;&lt; "Evaluated: " &lt;&lt; t.eval() &lt;&lt; std::endl;
+    for (;;) {
+      std::array&lt;char, 128&gt; buf;
+      boost::system::error_code error;
+
+      // read response loop
+      size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+      if (error == boost::asio::error::eof)
+        break;
+      else if (error)
+        throw boost::system::system_error(error);
+
+      // print response
+      std::cout.write(buf.data(), len);
+    }
+
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
   return 0;
 }
 </code></pre>
+<p>Flow of the program: resolve -&gt; connect -&gt; read loop -&gt; print</p>
+<ul>
+<li>
+<p>The line <code>boost::asio::io_context io_context;</code> is always needed in any program that uses asio. It serves as an I/O execution context.
+We need to turn the server name that was specified as a parameter to the application, into a TCP endpoint. To do this we use an <code>ip::tcp::resolver</code> object, with <code>io_context</code> as the argument.</p>
+</li>
+<li>
+<p>A resolver turns the server name that was specified as a parameter to the application. It takes a host name and service name and turns them into a list of endpoints. We perform a resolve call using the name of the server, specified in <code>argv[1]</code>, and the name of the service, in this case "daytime".</p>
+</li>
+<li>
+<p>The list of endpoints is returned using an object of type <code>ip::tcp::resolver::results_type</code>. This object is a range, with <code>begin()</code> and <code>end()</code> member functions that may be used for iterating over the results.</p>
+</li>
+<li>
+<p>Socket creation and connection. The list obtained by the <code>endpoints</code> variable may contain both IPv4 and IPv6 endpoints, so we need to try each of them until we find one that works.  This keeps the client program independent of a specific IP version. The <code>boost::asio::connect()</code> function does this for us automatically.</p>
+</li>
+<li>
+<p>Reading the response from the daytime service: We use a <code>std::array</code> to hold the received data. The <code>boost::asio::buffer()</code> function automatically determines the size of the array to help prevent buffer overruns. Instead of a <code>std::array</code>, we could have used a <code>char []</code> or <code>std::vector</code>.</p>
+</li>
+</ul>
+<pre><code class="language-cpp">
+size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+</code></pre>
+<ul>
+<li>
+<p>This line of code does most of the heavy lifting:</p>
+<ul>
+<li>Return value: <code>len</code> tells you how many bytes you got, which might be less than the buffer size.</li>
+<li>This is blocking, the program sits there waiting until something happens.</li>
+<li>It doesn't try to fill the entire buffer, it returns as soon as there's some data.</li>
+<li>When the server closes the connection, <code>ip::tcp::socket::read_some()</code> will gracefully exit the loop with the <code>boost::asio::error::eof</code> error.</li>
+<li>If something else went wrong, <code>error</code> gets another code, and you can throw.</li>
+</ul>
+</li>
+<li>
+<p>Finally, print the results with <code>std::cout.write(buf.data(), len);</code></p>
+</li>
+</ul>
+<p>The "resolver -&gt; socket -&gt; loop" structure is common in many protocols (such as HTTP, SMTP, FTP, Telnet, etc.) with the only big differences being:</p>
+<ul>
+<li>Which port/protocol you connect to</li>
+<li>What you send before reading (if anything)</li>
+<li>How you parse the response</li>
+<li>Whether you wrap it in SSL/TLS.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/lib_boost/filesystem.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_daytime_server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -270,11 +300,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/lib_boost/filesystem.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_daytime_server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

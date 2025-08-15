@@ -9115,6 +9115,454 @@ int main() {
   return 0;
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-boost-library"><a class="header" href="#the-boost-library">The Boost Library</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="boostfilesystem-to-print-stats-about-files-and-directories"><a class="header" href="#boostfilesystem-to-print-stats-about-files-and-directories">Boost.filesystem to print stats about files and directories</a></h1>
+<p>In this tutorial we will see a command line tool to scan a directory and print stats about files, using <code>boost::filesystem</code></p>
+<p>Essentially, we are seeing a more high level version of the <code>ls</code> command you'd find in POSIX.</p>
+<p><a href="https://www.boost.org/doc/libs/1_88_0/libs/filesystem/doc/reference.html#is_empty">Reference for filesystem</a></p>
+<p>To compile those programs, you would have to use this command:</p>
+<pre><code class="language-bash">g++ -o example example.cpp -lboost_filesystem
+</code></pre>
+<h2 id="reporting-the-size-of-one-file"><a class="header" href="#reporting-the-size-of-one-file">Reporting the size of one file</a></h2>
+<p>This simple program will print the size of a file in bytes.
+It has some limitations though: it will crash if a directory, or a file that doesn't exist is called. That is because <code>file_size()</code> only works with regular files.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Usage: tut1 path\n";
+    return 1;
+  }
+  std::cout &lt;&lt; argv[1] &lt;&lt; " " &lt;&lt; file_size(argv[1]) &lt;&lt; "\n";
+  return 0;
+}
+
+</code></pre>
+<h2 id="using-status-queries-to-determine-file-existence-and-type"><a class="header" href="#using-status-queries-to-determine-file-existence-and-type">Using status queries to determine file existence and type</a></h2>
+<p><code>boost::filesystem</code> includes status query functions such as <code>exists</code>, <code>is_directory</code> and <code>is_regular_file</code>. These returns boolean values.
+Even though this new version works fine, we'd typically like to see the contents of a directory, not just that it exists.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Usage: ./test path\n";
+    return 1;
+  }
+  path p(argv[1]);
+  if (exists(p)) {
+    if (is_regular_file(p))
+      std::cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+
+    else if (is_directory(p))
+      std::cout &lt;&lt; p &lt;&lt; " is a directory\n";
+
+    else
+      std::cout &lt;&lt; " exists, but is not a regular file or directory\n";
+  } else {
+    std::cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<h2 id="directory-iteration-and-catching-exceptions"><a class="header" href="#directory-iteration-and-catching-exceptions">Directory iteration and catching exceptions</a></h2>
+<p><code>boost::filesystem</code> has a <code>directory_iterator</code> class that is just what we need here. It follows the general pattern of the standard library's <code>istream_iterator</code>. Constructed from a path, it iterates over the contents of the directory. A default constructed <code>directory_iterator</code> acts as the end iterator.</p>
+<p>The value type of <code>directory_iterator</code> is <code>directory_entry</code>. A  <code>directory_entry</code> object contains <code>path</code> and file_status information. A <code>directory_entry</code> object can be used directly, but can also be passed to path arguments in function calls.</p>
+<p>To increase robustness, we could have an error handling at each <code>boost::filesystem</code> function, but for simplicity a try/catch block is used here.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+
+using std::cout;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    cout &lt;&lt; "Usage: tut3 path\n";
+    return 1;
+  }
+
+  path p(argv[1]);
+
+  try {
+    if (exists(p)) {
+      if (is_regular_file(p))
+        cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+      else if (is_directory(p)) {
+        cout &lt;&lt; p &lt;&lt; " is a directory containing:\n";
+        for (directory_entry &amp;x : directory_iterator(p))
+          cout &lt;&lt; "     " &lt;&lt; x.path() &lt;&lt; "\n";
+      } else
+        cout &lt;&lt; p &lt;&lt; " exists, but is not a regular file or directory\n";
+    } else
+      cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  } catch (const filesystem_error &amp;ex) {
+    cout &lt;&lt; ex.what() &lt;&lt; "\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<p>Some further improvements to consider:</p>
+<ul>
+<li>Display only the filename, not the full path.</li>
+<li>On Linux the listing isn't sorted. That's because we need to specify the ordering of directory iteration.</li>
+</ul>
+<h2 id="path-decomposition-and-sorting-results"><a class="header" href="#path-decomposition-and-sorting-results">Path decomposition, and sorting results</a></h2>
+<p>For directories, we can build a <code>std::vector</code> of all the entries and then sort them before writing them to <code>cout</code>.</p>
+<pre><code class="language-cpp">
+#include &lt;algorithm&gt;
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using std::cout;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    cout &lt;&lt; "Usage: test path\n";
+    return 1;
+  }
+
+  path p(argv[1]);
+
+  try {
+    if (exists(p)) {
+      if (is_regular_file(p))
+        cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+      else if (is_directory(p)) {
+        cout &lt;&lt; p &lt;&lt; " is a directory containing:\n";
+
+        std::vector&lt;path&gt; v;
+
+        for (auto &amp;&amp;x : directory_iterator(p))
+          v.push_back(x.path());
+
+        std::sort(v.begin(), v.end());
+
+        for (auto &amp;&amp;x : v)
+          cout &lt;&lt; "    " &lt;&lt; x.filename() &lt;&lt; "\n";
+      } else
+        cout &lt;&lt; p &lt;&lt; " exists, but is not a regular file or a directory\n";
+    } else
+      cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  } catch (const filesystem_error &amp;ex) {
+    cout &lt;&lt; ex.what() &lt;&lt; "\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<p><code>filename()</code> is one of several class path decomposition functions. It extracts the filename portion from a path (i.e. "index.html" from "/home/beman/boost/trunk/index.html").</p>
+<p>You could replace this line:</p>
+<pre><code class="language-cpp">v.push_back(x.path());
+</code></pre>
+<p>With:</p>
+<pre><code class="language-cpp">v.push_back(x.path().filename());
+</code></pre>
+<p>Since we only care about the file name.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="boostasio-daytime-tcp-client"><a class="header" href="#boostasio-daytime-tcp-client">Boost.Asio: Daytime TCP Client</a></h1>
+<h2 id="a-synchronous-tcp-daytime-client"><a class="header" href="#a-synchronous-tcp-daytime-client">A synchronous TCP daytime client</a></h2>
+<p>As a starter, we will use asio to implement a client application with TCP. The purpose of this application is to access a daytime service, so we need the user to specify the server.</p>
+<p>This will work on a server that runs the daytime protocol on TCP port 13, which is rare now. Still, it is a good introduction to the complex world of network programming.</p>
+<p>So, what is TCP? (Transmission Control Protocol)</p>
+<ul>
+<li>Connection oriented: You handshake first, then start sending data.</li>
+<li>Reliable: Every byte sent gets an acknowledgement, lost packets are resent.</li>
+<li>Ordered: Data arrives in the same order it was sent.</li>
+<li>Slower: All that reliability adds overhead.</li>
+<li>Use cases: Web traffic (HTTP/HTTPS), email (SMTP), file transfer (FTP), SSH.</li>
+</ul>
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;cstddef&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+
+using boost::asio::ip::tcp;
+
+int main(int argc, char *argv[]) {
+
+  try {
+    if (argc != 2) {
+      std::cerr &lt;&lt; "Usage: client &lt;host&gt;" &lt;&lt; std::endl;
+      return 1;
+    }
+
+    // resolver
+    boost::asio::io_context io_context;
+    tcp::resolver resolver(io_context);
+    tcp::resolver::results_type endpoints =
+        resolver.resolve(argv[1], "daytime");
+
+    // create socket and connect
+    tcp::socket socket(io_context);
+    boost::asio::connect(socket, endpoints);
+
+    for (;;) {
+      std::array&lt;char, 128&gt; buf;
+      boost::system::error_code error;
+
+      // read response loop
+      size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+      if (error == boost::asio::error::eof)
+        break;
+      else if (error)
+        throw boost::system::system_error(error);
+
+      // print response
+      std::cout.write(buf.data(), len);
+    }
+
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+  return 0;
+}
+</code></pre>
+<p>Flow of the program: resolve -&gt; connect -&gt; read loop -&gt; print</p>
+<ul>
+<li>
+<p>The line <code>boost::asio::io_context io_context;</code> is always needed in any program that uses asio. It serves as an I/O execution context.
+We need to turn the server name that was specified as a parameter to the application, into a TCP endpoint. To do this we use an <code>ip::tcp::resolver</code> object, with <code>io_context</code> as the argument.</p>
+</li>
+<li>
+<p>A resolver turns the server name that was specified as a parameter to the application. It takes a host name and service name and turns them into a list of endpoints. We perform a resolve call using the name of the server, specified in <code>argv[1]</code>, and the name of the service, in this case "daytime".</p>
+</li>
+<li>
+<p>The list of endpoints is returned using an object of type <code>ip::tcp::resolver::results_type</code>. This object is a range, with <code>begin()</code> and <code>end()</code> member functions that may be used for iterating over the results.</p>
+</li>
+<li>
+<p>Socket creation and connection. The list obtained by the <code>endpoints</code> variable may contain both IPv4 and IPv6 endpoints, so we need to try each of them until we find one that works.  This keeps the client program independent of a specific IP version. The <code>boost::asio::connect()</code> function does this for us automatically.</p>
+</li>
+<li>
+<p>Reading the response from the daytime service: We use a <code>std::array</code> to hold the received data. The <code>boost::asio::buffer()</code> function automatically determines the size of the array to help prevent buffer overruns. Instead of a <code>std::array</code>, we could have used a <code>char []</code> or <code>std::vector</code>.</p>
+</li>
+</ul>
+<pre><code class="language-cpp">
+size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+</code></pre>
+<ul>
+<li>
+<p>This line of code does most of the heavy lifting:</p>
+<ul>
+<li>Return value: <code>len</code> tells you how many bytes you got, which might be less than the buffer size.</li>
+<li>This is blocking, the program sits there waiting until something happens.</li>
+<li>It doesn't try to fill the entire buffer, it returns as soon as there's some data.</li>
+<li>When the server closes the connection, <code>ip::tcp::socket::read_some()</code> will gracefully exit the loop with the <code>boost::asio::error::eof</code> error.</li>
+<li>If something else went wrong, <code>error</code> gets another code, and you can throw.</li>
+</ul>
+</li>
+<li>
+<p>Finally, print the results with <code>std::cout.write(buf.data(), len);</code></p>
+</li>
+</ul>
+<p>The "resolver -&gt; socket -&gt; loop" structure is common in many protocols (such as HTTP, SMTP, FTP, Telnet, etc.) with the only big differences being:</p>
+<ul>
+<li>Which port/protocol you connect to</li>
+<li>What you send before reading (if anything)</li>
+<li>How you parse the response</li>
+<li>Whether you wrap it in SSL/TLS.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="boostasio-tcp-daytime-server"><a class="header" href="#boostasio-tcp-daytime-server">Boost.Asio: TCP Daytime Server</a></h1>
+<pre><code class="language-cpp">
+#include &lt;boost/asio.hpp&gt;
+#include &lt;ctime&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using boost::asio::ip::tcp;
+
+// create the string to be sent back to the client
+std::string make_daytime_string() {
+  using namespace std;
+  time_t now = time(0);
+  return ctime(&amp;now);
+}
+
+int main() {
+  try {
+    boost::asio::io_context io_context;
+
+    // listen for new connections
+    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13));
+
+    for (;;) {
+      // creates socket, waits for a connection
+      tcp::socket socket(io_context);
+      acceptor.accept(socket);
+
+      // Determine current time
+      std::string message = make_daytime_string();
+
+      // transfer this information to the client
+      boost::system::error_code ignored_error;
+      boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+    }
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+
+  return 0;
+}
+
+</code></pre>
+<ul>
+<li>
+<p>The function <code>make_daytime_string()</code> is defined so create the time and date that will be sent back to the client. You can just reuse this function for all daytime server applications.</p>
+</li>
+<li>
+<p><code>io_context</code> is Boost.Asio's event loop manager, in charge of all I/O operations: network sockets, timers, serial ports, and it keeps track of which ones are ready to work. In blocking mode like here, it is still needed because the socket objects rely on it under the hood.</p>
+</li>
+<li>
+<p>A <code>ip::tcp::acceptor</code> object is created to listen for new connections. Here, it listens on TCP port 13, for IP version 4.</p>
+</li>
+<li>
+<p>This is an iterative server, and can only handle one connection at a time. It creates a single socket (<code>tcp::socket socket(io_context);</code>) and waits for a connection (<code>acceptor.accept(socket);</code>).</p>
+</li>
+<li>
+<p>When a client accesses the server, this program will determine the current time and transfer this information to the client.</p>
+</li>
+</ul>
+<h2 id="testing-1"><a class="header" href="#testing-1">Testing:</a></h2>
+<ul>
+<li>Execute both the server program.</li>
+<li>When executing the client program, add 127.0.0.1 as the command line argument.</li>
+<li>You should see the current time as the response message.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="boostasio-udp-daytime-client"><a class="header" href="#boostasio-udp-daytime-client">Boost.Asio: UDP Daytime Client</a></h1>
+<p>What's the difference between TCP and UDP (User Datagram Protocol) ?</p>
+<ul>
+<li>Connectionless: You just send packets at the recipient's IP/port without saying hello.</li>
+<li>Unreliable: No guarantees your packet arrives.</li>
+<li>No ordering: Packets might arrive in any order, or not at all.</li>
+<li>Faster: Less overhead, great for real-time data.</li>
+<li>Use cases: Streaming video/audio, VoIP, online gaming, DNS.</li>
+</ul>
+<p><a href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/tutorial/tutdaytime4.html">Source</a></p>
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;cstddef&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+
+using boost::asio::ip::udp;
+
+int main(int argc, char *argv[]) {
+  try {
+    if (argc != 2) {
+      std::cerr &lt;&lt; "Usage: client &lt;host&gt;" &lt;&lt; std::endl;
+      return 1;
+    }
+
+    boost::asio::io_context io_context;
+
+    // udp resolver
+    udp::resolver resolver(io_context);
+    udp::endpoint receiver_endpoint =
+        *resolver.resolve(udp::v4(), argv[1], "daytime").begin();
+
+    // initiate contact with the remote endpoint
+    udp::socket socket(io_context);
+    socket.open(udp::v4());
+
+    std::array&lt;char, 1&gt; send_buf = {{0}};
+    socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
+
+    // endpoint, receiving the server's response
+    std::array&lt;char, 128&gt; recv_buf;
+    udp::endpoint sender_endpoint;
+    size_t len =
+        socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+
+    std::cout.write(recv_buf.data(), len);
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+
+  return 0;
+}
+
+</code></pre>
+<ul>
+<li>
+<p>The start of the application is essentially the same as for the TCP daytime client.</p>
+</li>
+<li>
+<p>We use an <code>ip::udp::resolver</code> object to find the correct remote endpoint to use based on the host and service names. The query is restricted to return only IPv4 endpoints by the <code>ip::udp::v4()</code> argument.</p>
+</li>
+<li>
+<p>The <code>ip::udp::resolver::resolve()</code> function is guaranteed to return at least one endpoint in the list if it does not fail. This means it is safe to dereference the return value directly.</p>
+</li>
+<li>
+<p>Since UDP is <a href="https://en.wikipedia.org/wiki/Datagram">datagram-oriented</a>, we will not be using a stream socket. Create an <code>ip::udp::socket</code> and initiate contact with the remote endpoint.</p>
+</li>
+<li>
+<p>Now we need to be ready to accept whatever the server sends back to us. The endpoint on our side that receives the server's response will be initialised by <code>ip::udp::socket::receive_from()</code>.</p>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="boostasio-udp-daytime-server"><a class="header" href="#boostasio-udp-daytime-server">Boost.Asio: UDP Daytime Server</a></h1>
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/system/error_code.hpp&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using boost::asio::ip::udp;
+
+std::string make_daytime_string() {
+  using namespace std;
+  time_t now = time(0);
+  return ctime(&amp;now);
+}
+
+int main() {
+  try {
+    // creation of socket
+    boost::asio::io_context io_context;
+    udp::socket socket(io_context, udp::endpoint(udp::v4(), 13));
+
+    // wait for a client to initiate contact
+    for (;;) {
+      std::array&lt;char, 1&gt; recv_buf;
+      udp::endpoint remote_endpoint;
+      socket.receive_from(boost::asio::buffer(recv_buf), remote_endpoint);
+
+      // what will be sent back to the client
+      std::string message = make_daytime_string();
+
+      // send the response to the remote_endpoint
+      boost::system::error_code ignored_error;
+      socket.send_to(boost::asio::buffer(message), remote_endpoint, 0,
+                     ignored_error);
+    }
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+}
+</code></pre>
+<ul>
+<li>Create an <code>ip::udp::socket</code> object to receive requests on UDP port 13.</li>
+<li>Wait for a client to initiate contact with us (with the for loop). The <code>remote_endpoint</code> object will be populated by <code>ip::udp::socket::receive_from()</code>.</li>
+<li>Determine what we are going to send back to the client (with the <code>make_daytime_string</code>).</li>
+<li>Send the response to the remote_endpoint (with <code>socket.send_to</code>).</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="birthday-paradox-in-go"><a class="header" href="#birthday-paradox-in-go"><strong>Birthday Paradox in Go</strong></a></h2>
 <pre><code class="language-go">package main
 

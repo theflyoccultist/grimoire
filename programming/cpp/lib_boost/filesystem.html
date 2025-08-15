@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Referential Garbage Collection - Debugging Grimoire</title>
+        <title>Boost.filesystem: Printing Stats About Files and Directories - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,92 +175,170 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="referential-garbage-collection"><a class="header" href="#referential-garbage-collection">Referential Garbage Collection</a></h2>
-<ul>
-<li>Rather than a full copy, we maintain pointers to an aggregate, and a <code>use</code> counter.</li>
-<li>When <code>use</code> (reference count) goes to zero, we actually call <code>delete</code> on an object.</li>
-<li>When we create a new instance, <code>use</code> is initialized to 1.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;ostream&gt;
+                        <h1 id="boostfilesystem-to-print-stats-about-files-and-directories"><a class="header" href="#boostfilesystem-to-print-stats-about-files-and-directories">Boost.filesystem to print stats about files and directories</a></h1>
+<p>In this tutorial we will see a command line tool to scan a directory and print stats about files, using <code>boost::filesystem</code></p>
+<p>Essentially, we are seeing a more high level version of the <code>ls</code> command you'd find in POSIX.</p>
+<p><a href="https://www.boost.org/doc/libs/1_88_0/libs/filesystem/doc/reference.html#is_empty">Reference for filesystem</a></p>
+<p>To compile those programs, you would have to use this command:</p>
+<pre><code class="language-bash">g++ -o example example.cpp -lboost_filesystem
+</code></pre>
+<h2 id="reporting-the-size-of-one-file"><a class="header" href="#reporting-the-size-of-one-file">Reporting the size of one file</a></h2>
+<p>This simple program will print the size of a file in bytes.
+It has some limitations though: it will crash if a directory, or a file that doesn't exist is called. That is because <code>file_size()</code> only works with regular files.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+using namespace boost::filesystem;
 
-class Tree; // forward declare it first
-
-class Node {
-  friend class Tree;
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Tree &amp;);
-  int use; // reference count, allows deletion if 0
-
-protected:
-  Node() { use = 1; }
-  virtual void print(std::ostream &amp;) = 0;
-  virtual ~Node() { std::cout &lt;&lt; "Node destroyed\n"; }
-  virtual int eval() = 0; // pure
-};
-
-// class for one constant: inherited from the Node class
-class ConstNode : public Node {
-  int value;
-
-public:
-  ConstNode(int v) : value(v) {}
-  void print(std::ostream &amp;o) override { o &lt;&lt; value; }
-  int eval() override { return value; }
-};
-
-class Tree {
-  friend class Node;
-  // Polymorphic print
-  // Invokes at runtime the appropriate print
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, const Tree &amp;t) {
-    t.p-&gt;print(o);
-    return o;
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Usage: tut1 path\n";
+    return 1;
   }
-  Node *p; // Polymorphic pointer. This setup allows you to call the right
-           // evaluation function
-
-public:
-  Tree(int); // constant
-  Tree(const Tree &amp;t) {
-    p = t.p;
-    ++p-&gt;use;
-  } // copy constructor, increment use - referential copy
-
-  ~Tree() {
-    if (--p-&gt;use == 0)
-      delete p;
-  } // destructor decrement use and test if use is 0
-  void operator=(const Tree &amp;t) {
-    if (this != &amp;t) {
-      ++t.p-&gt;use;
-      if (--p-&gt;use == 0)
-        delete p;
-      p = t.p;
-    }
-  };
-
-  int eval() { return p-&gt;eval(); }
-};
-
-Tree::Tree(int n) { p = new ConstNode(n); }
-
-int main() {
-  Tree t(42);
-  std::cout &lt;&lt; "Tree: " &lt;&lt; t &lt;&lt; std::endl;
-  std::cout &lt;&lt; "Evaluated: " &lt;&lt; t.eval() &lt;&lt; std::endl;
+  std::cout &lt;&lt; argv[1] &lt;&lt; " " &lt;&lt; file_size(argv[1]) &lt;&lt; "\n";
   return 0;
 }
+
 </code></pre>
+<h2 id="using-status-queries-to-determine-file-existence-and-type"><a class="header" href="#using-status-queries-to-determine-file-existence-and-type">Using status queries to determine file existence and type</a></h2>
+<p><code>boost::filesystem</code> includes status query functions such as <code>exists</code>, <code>is_directory</code> and <code>is_regular_file</code>. These returns boolean values.
+Even though this new version works fine, we'd typically like to see the contents of a directory, not just that it exists.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Usage: ./test path\n";
+    return 1;
+  }
+  path p(argv[1]);
+  if (exists(p)) {
+    if (is_regular_file(p))
+      std::cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+
+    else if (is_directory(p))
+      std::cout &lt;&lt; p &lt;&lt; " is a directory\n";
+
+    else
+      std::cout &lt;&lt; " exists, but is not a regular file or directory\n";
+  } else {
+    std::cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<h2 id="directory-iteration-and-catching-exceptions"><a class="header" href="#directory-iteration-and-catching-exceptions">Directory iteration and catching exceptions</a></h2>
+<p><code>boost::filesystem</code> has a <code>directory_iterator</code> class that is just what we need here. It follows the general pattern of the standard library's <code>istream_iterator</code>. Constructed from a path, it iterates over the contents of the directory. A default constructed <code>directory_iterator</code> acts as the end iterator.</p>
+<p>The value type of <code>directory_iterator</code> is <code>directory_entry</code>. A  <code>directory_entry</code> object contains <code>path</code> and file_status information. A <code>directory_entry</code> object can be used directly, but can also be passed to path arguments in function calls.</p>
+<p>To increase robustness, we could have an error handling at each <code>boost::filesystem</code> function, but for simplicity a try/catch block is used here.</p>
+<pre><code class="language-cpp">
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+
+using std::cout;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    cout &lt;&lt; "Usage: tut3 path\n";
+    return 1;
+  }
+
+  path p(argv[1]);
+
+  try {
+    if (exists(p)) {
+      if (is_regular_file(p))
+        cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+      else if (is_directory(p)) {
+        cout &lt;&lt; p &lt;&lt; " is a directory containing:\n";
+        for (directory_entry &amp;x : directory_iterator(p))
+          cout &lt;&lt; "     " &lt;&lt; x.path() &lt;&lt; "\n";
+      } else
+        cout &lt;&lt; p &lt;&lt; " exists, but is not a regular file or directory\n";
+    } else
+      cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  } catch (const filesystem_error &amp;ex) {
+    cout &lt;&lt; ex.what() &lt;&lt; "\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<p>Some further improvements to consider:</p>
+<ul>
+<li>Display only the filename, not the full path.</li>
+<li>On Linux the listing isn't sorted. That's because we need to specify the ordering of directory iteration.</li>
+</ul>
+<h2 id="path-decomposition-and-sorting-results"><a class="header" href="#path-decomposition-and-sorting-results">Path decomposition, and sorting results</a></h2>
+<p>For directories, we can build a <code>std::vector</code> of all the entries and then sort them before writing them to <code>cout</code>.</p>
+<pre><code class="language-cpp">
+#include &lt;algorithm&gt;
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using std::cout;
+using namespace boost::filesystem;
+
+int main(int argc, char *argv[]) {
+  if (argc &lt; 2) {
+    cout &lt;&lt; "Usage: test path\n";
+    return 1;
+  }
+
+  path p(argv[1]);
+
+  try {
+    if (exists(p)) {
+      if (is_regular_file(p))
+        cout &lt;&lt; p &lt;&lt; " size is " &lt;&lt; file_size(p) &lt;&lt; "\n";
+      else if (is_directory(p)) {
+        cout &lt;&lt; p &lt;&lt; " is a directory containing:\n";
+
+        std::vector&lt;path&gt; v;
+
+        for (auto &amp;&amp;x : directory_iterator(p))
+          v.push_back(x.path());
+
+        std::sort(v.begin(), v.end());
+
+        for (auto &amp;&amp;x : v)
+          cout &lt;&lt; "    " &lt;&lt; x.filename() &lt;&lt; "\n";
+      } else
+        cout &lt;&lt; p &lt;&lt; " exists, but is not a regular file or a directory\n";
+    } else
+      cout &lt;&lt; p &lt;&lt; " does not exist\n";
+  } catch (const filesystem_error &amp;ex) {
+    cout &lt;&lt; ex.what() &lt;&lt; "\n";
+  }
+
+  return 0;
+}
+
+</code></pre>
+<p><code>filename()</code> is one of several class path decomposition functions. It extracts the filename portion from a path (i.e. "index.html" from "/home/beman/boost/trunk/index.html").</p>
+<p>You could replace this line:</p>
+<pre><code class="language-cpp">v.push_back(x.path());
+</code></pre>
+<p>With:</p>
+<pre><code class="language-cpp">v.push_back(x.path().filename());
+</code></pre>
+<p>Since we only care about the file name.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/lib_boost/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_daytime_client.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -270,11 +348,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/lib_boost/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_daytime_client.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

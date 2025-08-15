@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Referential Garbage Collection - Debugging Grimoire</title>
+        <title>Boost.Asio: UDP Daytime Server - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,92 +175,64 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="referential-garbage-collection"><a class="header" href="#referential-garbage-collection">Referential Garbage Collection</a></h2>
-<ul>
-<li>Rather than a full copy, we maintain pointers to an aggregate, and a <code>use</code> counter.</li>
-<li>When <code>use</code> (reference count) goes to zero, we actually call <code>delete</code> on an object.</li>
-<li>When we create a new instance, <code>use</code> is initialized to 1.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;ostream&gt;
+                        <h1 id="boostasio-udp-daytime-server"><a class="header" href="#boostasio-udp-daytime-server">Boost.Asio: UDP Daytime Server</a></h1>
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/system/error_code.hpp&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
 
-class Tree; // forward declare it first
+using boost::asio::ip::udp;
 
-class Node {
-  friend class Tree;
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Tree &amp;);
-  int use; // reference count, allows deletion if 0
-
-protected:
-  Node() { use = 1; }
-  virtual void print(std::ostream &amp;) = 0;
-  virtual ~Node() { std::cout &lt;&lt; "Node destroyed\n"; }
-  virtual int eval() = 0; // pure
-};
-
-// class for one constant: inherited from the Node class
-class ConstNode : public Node {
-  int value;
-
-public:
-  ConstNode(int v) : value(v) {}
-  void print(std::ostream &amp;o) override { o &lt;&lt; value; }
-  int eval() override { return value; }
-};
-
-class Tree {
-  friend class Node;
-  // Polymorphic print
-  // Invokes at runtime the appropriate print
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, const Tree &amp;t) {
-    t.p-&gt;print(o);
-    return o;
-  }
-  Node *p; // Polymorphic pointer. This setup allows you to call the right
-           // evaluation function
-
-public:
-  Tree(int); // constant
-  Tree(const Tree &amp;t) {
-    p = t.p;
-    ++p-&gt;use;
-  } // copy constructor, increment use - referential copy
-
-  ~Tree() {
-    if (--p-&gt;use == 0)
-      delete p;
-  } // destructor decrement use and test if use is 0
-  void operator=(const Tree &amp;t) {
-    if (this != &amp;t) {
-      ++t.p-&gt;use;
-      if (--p-&gt;use == 0)
-        delete p;
-      p = t.p;
-    }
-  };
-
-  int eval() { return p-&gt;eval(); }
-};
-
-Tree::Tree(int n) { p = new ConstNode(n); }
+std::string make_daytime_string() {
+  using namespace std;
+  time_t now = time(0);
+  return ctime(&amp;now);
+}
 
 int main() {
-  Tree t(42);
-  std::cout &lt;&lt; "Tree: " &lt;&lt; t &lt;&lt; std::endl;
-  std::cout &lt;&lt; "Evaluated: " &lt;&lt; t.eval() &lt;&lt; std::endl;
-  return 0;
+  try {
+    // creation of socket
+    boost::asio::io_context io_context;
+    udp::socket socket(io_context, udp::endpoint(udp::v4(), 13));
+
+    // wait for a client to initiate contact
+    for (;;) {
+      std::array&lt;char, 1&gt; recv_buf;
+      udp::endpoint remote_endpoint;
+      socket.receive_from(boost::asio::buffer(recv_buf), remote_endpoint);
+
+      // what will be sent back to the client
+      std::string message = make_daytime_string();
+
+      // send the response to the remote_endpoint
+      boost::system::error_code ignored_error;
+      socket.send_to(boost::asio::buffer(message), remote_endpoint, 0,
+                     ignored_error);
+    }
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
 }
 </code></pre>
+<ul>
+<li>Create an <code>ip::udp::socket</code> object to receive requests on UDP port 13.</li>
+<li>Wait for a client to initiate contact with us (with the for loop). The <code>remote_endpoint</code> object will be populated by <code>ip::udp::socket::receive_from()</code>.</li>
+<li>Determine what we are going to send back to the client (with the <code>make_daytime_string</code>).</li>
+<li>Send the response to the remote_endpoint (with <code>socket.send_to</code>).</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/lib_boost/asio_udp_daytime_client.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/go/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -270,11 +242,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/lib_boost/asio_udp_daytime_client.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/go/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

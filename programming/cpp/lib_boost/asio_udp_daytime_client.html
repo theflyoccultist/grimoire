@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Referential Garbage Collection - Debugging Grimoire</title>
+        <title>Boost.Asio: UDP Daytime Client - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,92 +175,88 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="referential-garbage-collection"><a class="header" href="#referential-garbage-collection">Referential Garbage Collection</a></h2>
+                        <h1 id="boostasio-udp-daytime-client"><a class="header" href="#boostasio-udp-daytime-client">Boost.Asio: UDP Daytime Client</a></h1>
+<p>What's the difference between TCP and UDP (User Datagram Protocol) ?</p>
 <ul>
-<li>Rather than a full copy, we maintain pointers to an aggregate, and a <code>use</code> counter.</li>
-<li>When <code>use</code> (reference count) goes to zero, we actually call <code>delete</code> on an object.</li>
-<li>When we create a new instance, <code>use</code> is initialized to 1.</li>
+<li>Connectionless: You just send packets at the recipient's IP/port without saying hello.</li>
+<li>Unreliable: No guarantees your packet arrives.</li>
+<li>No ordering: Packets might arrive in any order, or not at all.</li>
+<li>Faster: Less overhead, great for real-time data.</li>
+<li>Use cases: Streaming video/audio, VoIP, online gaming, DNS.</li>
 </ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;ostream&gt;
+<p><a href="https://www.boost.org/doc/libs/latest/doc/html/boost_asio/tutorial/tutdaytime4.html">Source</a></p>
+<pre><code class="language-cpp">
+#include &lt;array&gt;
+#include &lt;boost/asio.hpp&gt;
+#include &lt;cstddef&gt;
+#include &lt;exception&gt;
+#include &lt;iostream&gt;
 
-class Tree; // forward declare it first
+using boost::asio::ip::udp;
 
-class Node {
-  friend class Tree;
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Tree &amp;);
-  int use; // reference count, allows deletion if 0
-
-protected:
-  Node() { use = 1; }
-  virtual void print(std::ostream &amp;) = 0;
-  virtual ~Node() { std::cout &lt;&lt; "Node destroyed\n"; }
-  virtual int eval() = 0; // pure
-};
-
-// class for one constant: inherited from the Node class
-class ConstNode : public Node {
-  int value;
-
-public:
-  ConstNode(int v) : value(v) {}
-  void print(std::ostream &amp;o) override { o &lt;&lt; value; }
-  int eval() override { return value; }
-};
-
-class Tree {
-  friend class Node;
-  // Polymorphic print
-  // Invokes at runtime the appropriate print
-  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;o, const Tree &amp;t) {
-    t.p-&gt;print(o);
-    return o;
-  }
-  Node *p; // Polymorphic pointer. This setup allows you to call the right
-           // evaluation function
-
-public:
-  Tree(int); // constant
-  Tree(const Tree &amp;t) {
-    p = t.p;
-    ++p-&gt;use;
-  } // copy constructor, increment use - referential copy
-
-  ~Tree() {
-    if (--p-&gt;use == 0)
-      delete p;
-  } // destructor decrement use and test if use is 0
-  void operator=(const Tree &amp;t) {
-    if (this != &amp;t) {
-      ++t.p-&gt;use;
-      if (--p-&gt;use == 0)
-        delete p;
-      p = t.p;
+int main(int argc, char *argv[]) {
+  try {
+    if (argc != 2) {
+      std::cerr &lt;&lt; "Usage: client &lt;host&gt;" &lt;&lt; std::endl;
+      return 1;
     }
-  };
 
-  int eval() { return p-&gt;eval(); }
-};
+    boost::asio::io_context io_context;
 
-Tree::Tree(int n) { p = new ConstNode(n); }
+    // udp resolver
+    udp::resolver resolver(io_context);
+    udp::endpoint receiver_endpoint =
+        *resolver.resolve(udp::v4(), argv[1], "daytime").begin();
 
-int main() {
-  Tree t(42);
-  std::cout &lt;&lt; "Tree: " &lt;&lt; t &lt;&lt; std::endl;
-  std::cout &lt;&lt; "Evaluated: " &lt;&lt; t.eval() &lt;&lt; std::endl;
+    // initiate contact with the remote endpoint
+    udp::socket socket(io_context);
+    socket.open(udp::v4());
+
+    std::array&lt;char, 1&gt; send_buf = {{0}};
+    socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
+
+    // endpoint, receiving the server's response
+    std::array&lt;char, 128&gt; recv_buf;
+    udp::endpoint sender_endpoint;
+    size_t len =
+        socket.receive_from(boost::asio::buffer(recv_buf), sender_endpoint);
+
+    std::cout.write(recv_buf.data(), len);
+  } catch (std::exception &amp;e) {
+    std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
+  }
+
   return 0;
 }
+
 </code></pre>
+<ul>
+<li>
+<p>The start of the application is essentially the same as for the TCP daytime client.</p>
+</li>
+<li>
+<p>We use an <code>ip::udp::resolver</code> object to find the correct remote endpoint to use based on the host and service names. The query is restricted to return only IPv4 endpoints by the <code>ip::udp::v4()</code> argument.</p>
+</li>
+<li>
+<p>The <code>ip::udp::resolver::resolve()</code> function is guaranteed to return at least one endpoint in the list if it does not fail. This means it is safe to dereference the return value directly.</p>
+</li>
+<li>
+<p>Since UDP is <a href="https://en.wikipedia.org/wiki/Datagram">datagram-oriented</a>, we will not be using a stream socket. Create an <code>ip::udp::socket</code> and initiate contact with the remote endpoint.</p>
+</li>
+<li>
+<p>Now we need to be ready to accept whatever the server sends back to us. The endpoint on our side that receives the server's response will be initialised by <code>ip::udp::socket::receive_from()</code>.</p>
+</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/lib_boost/asio_daytime_server.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_udp_daytime_server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -270,11 +266,11 @@ int main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/cpp/algorithms/polish_notation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/lib_boost/asio_daytime_server.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/lib_boost/asio_udp_daytime_server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
