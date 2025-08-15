@@ -14,11 +14,15 @@ dependencies=("build-essential" "git" "libssl-dev" "ruby-dev" "elixir" "erlang-d
 echo 'installing dependencies...'
 for dep in "${dependencies[@]}"; do sudo apt install -y "$dep"; done
 
-echo 'cloning the repository...'
+```
+
+And then:
+
+```bash
+
 git clone https://github.com/sonic-pi-net/sonic-pi.git ~/Development/sonic-pi
 cd ~/Development/sonic-pi/app
 
-echo 'starting build script...'
 ./linux-build-all.sh
 
 ```
