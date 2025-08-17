@@ -1,4 +1,4 @@
-# Error Handling
+# Error Handling in Python
 
 ### Errors: Demonstrates exception handling with try-except-finally.
 
@@ -30,6 +30,32 @@ grades = [15, 100, 84, 54, 10, 90]
 # Welcome to the average grade program.
 # The average grade is 58.833333333336.
 # Thank you!
+```
+
+### Error Handling: if the element was not found in a list of dictionaries.
+
+```python
+def search(sequence, expected, finder):
+    for elem in sequence:
+        if finder(elem) == expected:
+            return elem
+    raise RuntimeError(f"Could not find an element with {expected}.")
+
+friends = [
+    {"name": "Rolf Lilia", "age": 28},
+    {"name": "Odin the Great", "age": 877},
+    {"name": "Nyarlathotep", "age": 8888811},
+]
+
+def get_friend_name(friend):
+    return friend["name"]
+
+print(search(friends, "Nyarlathotep", get_friend_name))
+# {'name': 'Nyarlathotep', 'age': 8888811}
+
+
+print(search(friends, "PwatPwat", get_friend_name))
+# RuntimeError: Could not find an element with PwatPwat.
 ```
 
 ### Custom Errors: Creates a custom exception class for book page validation.

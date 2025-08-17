@@ -1,6 +1,6 @@
 # Python OOP
 
-## 1. Classes & Objects
+## Classes & Objects
 
 Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.
 
@@ -17,7 +17,7 @@ obj = MyClass("PwatPwat")
 print(obj.greet())  # Output: Hello, PwatPwat!
 ```
 
-## 2. Encapsulation
+## Encapsulation
 
 Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).
 
@@ -37,7 +37,7 @@ print(obj.reveal())       # Use methods to access private attributes
 
 Note: __truly_private gets name-mangled into _Secret__truly_private, but if you access it directly, Python will just sigh at you.
 
-## 3. Inheritance (Because Writing Code Twice is for Losers)
+## Inheritance (Because Writing Code Twice is for Losers)
 
 Python lets you inherit from multiple parents, unlike some other languages that make you jump through hoops.
 
@@ -75,7 +75,7 @@ print(baby.trait())  # Output: Inherited from Mom.
 
 Python follows the MRO (Method Resolution Order), which basically means it checks from left to right.
 
-## 4. Composition (a.k.a "Instead of Inheriting, Just Contain It")
+## Composition (a.k.a "Instead of Inheriting, Just Contain It")
 
 Instead of making everything an inheritance mess, composition lets you have objects inside other objects.
 
@@ -107,7 +107,7 @@ print(shelf)
 - When inheritance doesn’t make sense (e.g., A Bookshelf is not a Book).
 - When you need modularity and reusability without making a family tree out of your classes.
 
-## 5. Class Methods (`@classmethod`)
+## Class Methods (`@classmethod`)
 
 A class method receives the class itself (cls) as the first argument instead of an instance. This lets you create alternative constructors.
 
@@ -143,7 +143,7 @@ print(book, light)
 - You need alternative constructors (hardcover() and paperback() in this case).
 - You want to modify class-level attributes rather than instance attributes.
 
-### Class Statis Method 2: Demonstrates class methods and static methods in store management.
+## Class Statis Method 2: Demonstrates class methods and static methods in store management.
 
 ```python
 class Store:
@@ -175,8 +175,6 @@ class Store:
         # It should be in the format 'NAME, total stock price: TOTAL'
 
 
-########################################################################################
-
 store = Store("Test")
 store2 = Store("Amazon")
 store2.add_item("Keyboard", 160)
@@ -188,7 +186,7 @@ Store.store_details(store)  # returns "Test, total stock price: 0"
 Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 ```
 
-## 6. Using super() (Because You Actually Want Your Parent Class to Do Something)
+## Using super() (Because You Actually Want Your Parent Class to Do Something)
 
 `super()` lets you call methods from a parent class without hardcoding the class name. This is useful when dealing with multiple levels of inheritance.
 
@@ -213,7 +211,7 @@ print(dog.name)  # Output: Rex
 print(dog.speak())  # Output: Woof!
 ```
 
-## 7. The `__repr__` Method (For When You Actually Care About Debugging)
+## The `__repr__` Method (For When You Actually Care About Debugging)
 
 `__repr__` is like `__str__`, but it's for developers, not users. It’s meant to return a string that recreates the object.
 
@@ -237,7 +235,7 @@ print(katheryn)
 - You want repr(obj) to return something meaningful (instead of <Person object at 0x1234>).
 - You’re passing objects around and need better logging.
 
-## 8. Metaclasses & Decorators
+## Metaclasses & Decorators
 
 Python allows modifying classes at runtime and using decorators to dynamically alter functions.
 

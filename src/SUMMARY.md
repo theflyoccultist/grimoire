@@ -181,9 +181,10 @@
       - [Functions](programming/python/fundamentals/functions.md)
       - [OOP](programming/python/fundamentals/oop.md)
       - [Unpacking](programming/python/fundamentals/unpacking.md)
-      - [Advanced](programming/python/fundamentals/advanced.md)
       - [Error Handling](programming/python/fundamentals/errors.md)
       - [Generators](programming/python/fundamentals/generators.md)
+      - [Type Hints](programming/python/fundamentals/type-hints.md)
+      - [Imports](programming/python/fundamentals/imports.md)
     - [Python Repository Setup](programming/python/python-repo.md)
   
   - [Ruby 💎](programming/ruby/README.md)

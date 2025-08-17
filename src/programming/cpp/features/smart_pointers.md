@@ -168,7 +168,7 @@ Dangling pointers occur when a pointer references an object that has been delete
 
 3. **Lock the `std::weak_ptr`**: To access the shared object safely, use the `lock()` function, which returns a `std::shared_ptr` pointing to the same object if it is still valid. If the object has been deleted, `lock()` returns an empty `std::shared_ptr`.
 
-Here's a code example demonstrating the use of `std::weak_ptr` to avoid dangling pointers:
+Here's another code example demonstrating the use of `std::weak_ptr` to avoid dangling pointers:
 
 ```cpp
 auto node1 = std::make_shared<Node>();

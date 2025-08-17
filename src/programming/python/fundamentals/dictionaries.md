@@ -42,7 +42,7 @@ else:
 
 ### Dictionary 3: Calculates average grades for an individual student and a class.
 
-- you can store pair data, but you can also store different data types like tuples
+- Inside of a dictionary, you can store pair data, but you can also store different data types like tuples.
 
 ```python
 data = {

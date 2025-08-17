@@ -1,5 +1,17 @@
 # User Input
 
+### Age Calculation: This program converts an input age into months and seconds.
+
+```python
+age = int(input("Enter your age:"))
+months = age * 12
+seconds = age * 365.25 * 24 * 60
+print (f"{age} years old equals to {months} months and {seconds} seconds.")
+
+# Enter your age: 5
+# 5 years old equals to 60 months and 2629800.0 seconds.
+```
+
 ### User Input: This program asks the user to guess a number and gives feedback.
 
 - Concepts seen: `if / elif / else` conditions.
@@ -30,14 +42,3 @@ if user_input == "y":
 # you guessed correctly!
 ```
 
-### Age Calculation: This program converts an input age into months and seconds.
-
-```python
-age = int(input("Enter your age:"))
-months = age * 12
-seconds = age * 365.25 * 24 * 60
-print (f"{age} years old equals to {months} months and {seconds} seconds.")
-
-# Enter your age: 5
-# 5 years old equals to 60 months and 2629800.0 seconds.
-```
