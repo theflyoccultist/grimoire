@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction to Lists - Debugging Grimoire</title>
+        <title>Dictionaries - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,26 +175,94 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction-to-lists"><a class="header" href="#introduction-to-lists">Introduction to Lists</a></h1>
-<p>A list is a structured type that contains a sequence of elements, all of the same type.</p>
-<p><code>[t]</code> denotes the type of lists of type <code>t</code>.</p>
-<pre><code class="language-hs">[]            -- empty list
-[3, 9, 27]  :: [Int]
-[(1, "One"), (2, "Two"), (3, "three")] :: [(Int, String)]
-[[8], [3, 9, 27], [1, 5], []]          :: [[Int]]
-[1 .. 10]     -- same as [1,2,3,4,5,6,7,8,9,10]
-[1, 3 .. 10]  -- same as [1,3,5,7,9]
+                        <h1 id="dictionaries"><a class="header" href="#dictionaries">Dictionaries</a></h1>
+<h3 id="dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Dictionary: Iterates through a dictionary of student attendance and prints results.</a></h3>
+<pre><code class="language-python">student_attendance = {"Rolf": 96, "Bob": 80, "Anna": 100}
+
+for student, attendance in student_attendance.items():
+    print(f"{student}: {attendance}")
+
+# Rolf: 96
+# Bob: 80
+# Anna: 100
+</code></pre>
+<h3 id="dictionary-2-implements-a-simple-username-password-authentication-system"><a class="header" href="#dictionary-2-implements-a-simple-username-password-authentication-system">Dictionary 2: Implements a simple username-password authentication system.</a></h3>
+<pre><code class="language-python">users = [
+    (0, "Bob", "password"),
+    (1, "Rolf", "bob123"),
+    (2, "Jose", "longpassword"),
+    (3, "username", "1234")
+]
+
+username_mapping = {user[1]: user for user in users}
+
+username_input = input("Enter your username: ")
+password_input = input("Enter your password: ")
+
+_, username, password = username_mapping[username_input]
+
+if password_input == password:
+    print("Your details are correct!")
+else:
+    print("Your details are incorrect.")
+
+# Enter your username: Bob
+# Enter your password: password
+# Your details are correct!
+</code></pre>
+<h3 id="dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class">Dictionary 3: Calculates average grades for an individual student and a class.</a></h3>
+<ul>
+<li>you can store pair data, but you can also store different data types like tuples</li>
+</ul>
+<pre><code class="language-python">data = {
+    "name" : "Jose",
+    "school" : "Computing",
+    "grades" : (66, 77, 88)
+}
+
+def average_grade(data):
+    grades = data["grades"]
+    return sum(grades) / len(grades)
+
+print(average_grade(data))
+# 77.0
+
+
+student_list = [
+    {
+      "name" : "Jose",
+      "school" : "Computing",
+      "grades" : (66, 77, 88)
+    },
+    {
+      "name" : "PwatPwat",
+      "school" : "Art",
+      "grades" : (88, 100, 94)
+    }
+]
+
+def average_grade_all_students(student_list):
+    total = 0
+    count = 0
+    for student in student_list:
+        grades = student["grades"]
+        total += sum(grades)
+        count += len(grades)
+    return total / count
+
+print(average_grade_all_students(student_list))
+# 85.5
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/haskell/04-Lists/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/lists.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists-construction.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -204,11 +272,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/haskell/04-Lists/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/lists.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists-construction.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

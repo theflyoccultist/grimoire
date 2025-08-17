@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Errors - Debugging Grimoire</title>
+        <title>Generators - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,64 +175,122 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
-<pre><code class="language-python">def divide(dividend, divisor):
-    if divisor == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend / divisor
-
-grades = []
-
-print("Welcome to the average grade program.")
-try:
-    average = divide(sum(grades), len(grades))
-except ZeroDivisionError:
-    print("There are no grades yet in your lizt.")
-else:
-    print(f"THe average grade is {average}.")
-finally:
-    print("Thank you!")
+                        <h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
+<p>A <code>generator</code> is a function or expression that returns a special type of iterator called generator iterator. <code>generator-iterators</code> are lazy: they do not store their values in memory, but generate their values when needed.</p>
+<p>A generator function looks like any other function, but contains one or more yield expressions. Each <code>yield</code> will suspend code execution, saving the current execution rate (including all local variables and try statements). When the generator resumes, it picks up state from the suspension - unlike regular functions which reset with every call.</p>
+<h2 id="constructing-a-generator"><a class="header" href="#constructing-a-generator">Constructing a generator</a></h2>
+<p>Generators are constructed much like other looping or recursive functions, but require a <code>yield</code> expression, which we will explore in depth a bit later.</p>
+<p>An example is a function that returns the squares from a given list of numbers.
+As currently written, all input must be processed before any values can be returned:</p>
+<pre><code class="language-python">def squares(list_of_numbers):
+    squares = []
+    for number in list_of_numbers:
+        squares.append(number ** 2)
+    return squares
 </code></pre>
-<h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
-<pre><code class="language-python">class TooManyPagesError(ValueError):
-    pass
-
-class Book:
-    def __init__(self, name: str, page_count: int):
-        self.name = name
-        self.page_count = page_count
-        self.pages_read = 0
-
-    def __repr__(self):
-        return (
-            f"&lt;Book {self.name}, read {self.pages_read} out of {self.page_count}&gt;"
-        )
-    
-    def read(self, pages: int):
-        if self.pages_read + pages &gt; self.page_count:
-            raise TooManyPagesError(
-                f"You tried to read {self.pages_read + pages} pages, but this book only has {self.page_count} pages."
-            )
-        self.pages_read += pages
-        print(f"you have now read {self.pages_read} pages out of {self.page_count}.")
-
-try:
-    pout = Book("pout guide", 70)
-    pout.read(80)
-except TooManyPagesError as e:
-    print(e)
+<p>You can convert that function into a generator like this:</p>
+<pre><code class="language-python">def squares_generator(list_of_numbers):
+    for number in list_of_numbers:
+        yield number ** 2
 </code></pre>
+<p>The rationale behind this is that you use a generator when you do not need all the values at once.</p>
+<p>This saves memory and processing power, since only the value you are currently working on is calculated.</p>
+<h2 id="using-a-generator"><a class="header" href="#using-a-generator">Using a generator</a></h2>
+<p>Generators may be used in place of most <code>iterables</code> in Python. This includes functions or objects that require an <code>iterable</code>/<code>iterator</code> as an argument.</p>
+<p>To use the <code>squares_generator()</code> generator:</p>
+<pre><code class="language-python">squared_numbers = squares_generator([1, 2, 3, 4])
+
+for square in squared_numbers:
+    print(square)
+
+1
+4
+9
+16
+</code></pre>
+<p>Values within a generator can also be produced/accessed via the <code>next()</code> function. <code>next()</code> calls the <code>__next__()</code> method of a generator object, "advancing" or evaluating the generator code up to its <code>yield</code> expression, which then "yields" or returns the value.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; squared_numbers = squares_generator([1, 2])
+
+&gt;&gt;&gt; next(squared_numbers)
+1
+&gt;&gt;&gt; next(squared_numbers)
+4
+</code></pre>
+<p>When a <code>generator</code> is fully consumed and has no more values to return, it throws a <code>StopIteration</code> error.</p>
+<pre><code class="language-python">&gt;&gt;&gt; next(squared_numbers)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+StopIteration
+</code></pre>
+<h2 id="difference-between-iterables-and-generators"><a class="header" href="#difference-between-iterables-and-generators">Difference between iterables and generators</a></h2>
+<p>Generators are a special sub-set of iterators. <code>Iterators</code> are the mechanism/protocol that enables looping over iterables. Generators and the iterators returned by common Python <code>iterables</code> act very similarly, but there are some important differences to note:</p>
+<ul>
+<li>
+<p>Generators are one-way; there is no "backing up" to a previous value.</p>
+</li>
+<li>
+<p>Iterating over generators consume the returned values; no resetting.</p>
+</li>
+<li>
+<p>Generators (being lazily evaluated) are not sortable and can not be reversed.</p>
+</li>
+<li>
+<p>Generators do not have indexes, so you can't reference a previous or future value using addition or subtraction.</p>
+</li>
+<li>
+<p>Generators cannot be used with the len() function.</p>
+</li>
+<li>
+<p>Generators can be finite or infinite, be careful when collecting all values from an infinite generator.</p>
+</li>
+</ul>
+<h2 id="the-yield-expression"><a class="header" href="#the-yield-expression">The yield expression</a></h2>
+<p>The yield expression is very similar to the <code>return</code> expression.</p>
+<p>Unlike the <code>return</code> expression, <code>yield</code> gives up values to the caller at a specific point, suspending evaluation/return of any additional values until they are requested.</p>
+<p>When <code>yield</code> is evaluated, it pauses the execution of the enclosing function and returns any values of the function at that point in time.</p>
+<p>The function then stays in scope, and when <code>__next__()</code> is called, execution resumes until yield is encountered again.</p>
+<p>Note</p>
+<blockquote>
+<blockquote>
+<p>Using yield expressions is prohibited outside of functions.</p>
+</blockquote>
+</blockquote>
+<pre><code class="language-python">&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+
+&gt;&gt;&gt; lets_try = infinite_sequence()
+&gt;&gt;&gt; lets_try.__next__()
+0
+&gt;&gt;&gt; lets_try.__next__()
+1
+</code></pre>
+<h2 id="why-generators"><a class="header" href="#why-generators">Why generators?</a></h2>
+<p>Generators are useful in a lot of applications.</p>
+<p>When working with a large collection, you might not want to put all of its values into memory. A generator can be used to work on larger data piece-by-piece, saving memory and improving performance.</p>
+<p>Generators are also very helpful when a process or calculation is complex, expensive, or infinite:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+</code></pre>
+<p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
+<pre><code></code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/python/advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/errors.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -242,11 +300,11 @@ except TooManyPagesError as e:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/python/advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/errors.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -261,13 +319,13 @@ except TooManyPagesError as e:
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

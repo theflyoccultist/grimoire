@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction to Lists - Debugging Grimoire</title>
+        <title>User Input - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,26 +175,54 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction-to-lists"><a class="header" href="#introduction-to-lists">Introduction to Lists</a></h1>
-<p>A list is a structured type that contains a sequence of elements, all of the same type.</p>
-<p><code>[t]</code> denotes the type of lists of type <code>t</code>.</p>
-<pre><code class="language-hs">[]            -- empty list
-[3, 9, 27]  :: [Int]
-[(1, "One"), (2, "Two"), (3, "three")] :: [(Int, String)]
-[[8], [3, 9, 27], [1, 5], []]          :: [[Int]]
-[1 .. 10]     -- same as [1,2,3,4,5,6,7,8,9,10]
-[1, 3 .. 10]  -- same as [1,3,5,7,9]
+                        <h1 id="user-input"><a class="header" href="#user-input">User Input</a></h1>
+<h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
+<ul>
+<li>Concepts seen: <code>if / elif / else</code> conditions.</li>
+</ul>
+<pre><code class="language-python">number = 7
+user_input = input("Enter 'y' if you would like to play: ").lower()
+
+if user_input == "y":
+    user_number = int(input("Guess our number: "))
+    if user_number == number:
+        print("you guessed correctly!")
+    elif abs(number - user_number) == 1:
+        print("You were off by one.")
+    else:
+        print("sorry, it's wrong!")
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 5
+# sorry, it's wrong!
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 6
+# you were off by one.
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 7
+# you guessed correctly!
+</code></pre>
+<h3 id="age-calculation-this-program-converts-an-input-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-an-input-age-into-months-and-seconds">Age Calculation: This program converts an input age into months and seconds.</a></h3>
+<pre><code class="language-python">age = int(input("Enter your age:"))
+months = age * 12
+seconds = age * 365.25 * 24 * 60
+print (f"{age} years old equals to {months} months and {seconds} seconds.")
+
+# Enter your age: 5
+# 5 years old equals to 60 months and 2629800.0 seconds.
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/haskell/04-Lists/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists-construction.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/loops.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -204,11 +232,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/haskell/04-Lists/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/haskell/04-Lists/lists-construction.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/loops.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

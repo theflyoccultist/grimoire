@@ -7685,7 +7685,7 @@ private:
 </div>
 <hr />
 <p>You want me to walk you through adapting your current class with <code>unique_ptr</code> line by line next? Or maybe go further into move-only types and real STL container internals? Just say the magic word, sorceress 🧙‍♀️✨</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
 <ul>
 <li>It's useful to have function objects to further leverage the STL library</li>
 <li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
@@ -8131,6 +8131,165 @@ int main() {
 }
 
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="smart-pointers"><a class="header" href="#smart-pointers">Smart Pointers</a></h1>
+<p>Smart pointers are a modern C++ feature designed to provide automatic memory management, helping to prevent leaks and dangling pointers commonly associated with raw pointers. They act as wrappers around raw pointers, adding additional functionality such as automatic memory deallocation when the pointer is no longer needed.</p>
+<p>Smart pointers are typically implemented as class templates in the C++ standard library. The two most commonly used smart pointers are <code>std::unique_ptr</code> and <code>std::shared_ptr</code>.</p>
+<h2 id="unique-pointers"><a class="header" href="#unique-pointers">Unique pointers</a></h2>
+<p><code>std::unique_ptr</code> is a smart pointer that owns the object exclusively. It ensures that at any given time, only one <code>std::unique_ptr</code> object owns the resource. When the owning <code>std::unique_ptr</code> is destroyed or reset, it automatically destructs the objects and releases its memory.</p>
+<pre><code class="language-cpp">#include &lt;memory&gt;
+// Declaring and defining a unique pointer
+auto rightful_king_of_england = std::make_unique&lt;std::string&gt;("Excalibur");
+
+// Unique pointers cannot be copied or assigned
+auto mordred = rightful_king_of_england; // Error: Cannot copy a unique_ptr
+
+</code></pre>
+<h3 id="advantages-of-stdmake_unique"><a class="header" href="#advantages-of-stdmake_unique">Advantages of <code>std::make_unique()</code></a></h3>
+<p>When creating a <code>std::unique_ptr</code>, it's preferable to use <code>std::make_unique()</code> instead of directly using <code>new</code> to allocate memory. <code>std::make_unique()</code> provides several advantages:</p>
+<ol>
+<li><strong>Exception safety</strong>: <code>std::make_unique()</code> guarantees exception safety. If an exception is thrown during the construction of the object, memory will be automatically deallocated, preventing memory leaks.</li>
+<li><strong>Clarity</strong>: Using <code>std::make_unique()</code> makes code clearer and more concise. It eliminates the need to explicitly specify the type being allocated, as the template arguments are deduced automatically.</li>
+<li><strong>Optimization Opportunities</strong>: Compilers have the opportunity to optimize <code>std::make_unique()</code> more effectively than manually allocating memory with new, potentially resulting in improved performance.</li>
+<li><strong>Avoiding Misuse</strong>: Deleting the underlying resource is possible, when the <code>std::unique_ptr</code> is constructed manually. That would lead to undefined behavior, when the <code>std::unique_ptr</code> tries to delete it at its end of scope.</li>
+</ol>
+<h2 id="shared-pointers"><a class="header" href="#shared-pointers">Shared pointers</a></h2>
+<p><code>std::shared_ptr</code> is a smart pointer that allows multiple <code>std::shared_ptr</code> objects to share ownership of the same resource. It keeps track of how many shared pointers are referencing the resource, and deallocates the memory only when the last shared pointer owning the resource goes out of scope or is reset.</p>
+<pre><code class="language-cpp">// Declaring and defining a shared pointer to a dynamically allocated string
+auto martian_congressional_republic = std::make_shared&lt;std::string&gt;("protomolecule");
+
+// Creating more shared pointer that shares ownership
+auto outer_planets_alliance = martian_congressional_republic;
+auto united_nations = martian_congressional_republic;
+</code></pre>
+<blockquote>
+<p>In C++17 and below, using <code>std::shared_ptr</code> with arrays via <code>std::make_shared&lt;T[]&gt;</code> is not directly supported. While it's possible to allocate arrays with <code>std::make_shared&lt;T[]&gt;</code>, creating shared pointers directly from them may lead to undefined behavior due to differences in memory management between single objects and arrays. Instead, consider using <code>std::vector</code> or custom deletion functions to manage arrays with shared pointers effectively. Always ensure compatibility with your compiler and standard library implementation when dealing with array allocations and shared pointers in C++17.</p>
+</blockquote>
+<h3 id="advantages-of-stdmake_shared"><a class="header" href="#advantages-of-stdmake_shared">Advantages of <code>std::make_shared()</code></a></h3>
+<p>Similar to <code>std::make_unique()</code>, <code>std::make_shared()</code> offers benefits such as improved memory efficiency, exception safety, and readability. It combines memory allocation for the control block and the managed object into a single operation, enhancing efficiency and reducing the risk of memory leaks. Additionally, automatic deduction of template arguments simplifies code and enhances readability. Using <code>std::make_shared()</code> promotes cleaner, safer, and more efficient code when working with <code>std::shared_ptr</code> objects in C++.</p>
+<h2 id="weak-pointers"><a class="header" href="#weak-pointers">Weak pointers</a></h2>
+<p><code>std::weak_ptr</code> is a companion class to <code>std::shared_ptr</code> that provides a non-owning "weak" reference to an object managed by a shared pointer. It allows access to the resource without affecting its lifetime. Weak pointers are useful in scenarios where cyclic references need to be broken to prevent memory leaks.</p>
+<h3 id="stdweak_ptr-and-cyclic-ownership"><a class="header" href="#stdweak_ptr-and-cyclic-ownership"><code>std::weak_ptr</code> and Cyclic Ownership</a></h3>
+<p><code>std::weak_ptr</code> was designed to address the issue of cyclic ownership, also known as circular references, that can occur when using <code>std::shared_ptr</code>.</p>
+<p>In a cyclic ownership scenario, two or more <code>std::shared_ptr</code> objects are referencing each other, creating a cycle where none of the objects can be deleted because they have strong references to each other, leading to memory leaks.</p>
+<p><code>std::weak_ptr</code> provides a solution to this problem by allowing weak references to shared objects without contributing to their reference count. This means that it can observe and access the shared object but doesn't prevent it from being deleted. If all strong references to the shared object are released, the object is destroyed, and weak pointers observing it are automatically reset to <code>nullptr</code>.</p>
+<h3 id="example-of-a-circular-reference"><a class="header" href="#example-of-a-circular-reference">Example of a circular reference:</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Human {
+    std::string name;
+    std::shared_ptr&lt;Human&gt; friend_for_life; // uh-oh
+
+    Human(std::string n) : name(std::move(n)) {
+        std::cout &lt;&lt; name &lt;&lt; " created\n";
+    }
+
+    ~Human() {
+        std::cout &lt;&lt; name &lt;&lt; " destroyed\n";
+    }
+};
+
+int main() {
+    {
+        auto alice = std::make_shared&lt;Human&gt;("Alice");
+        auto bob   = std::make_shared&lt;Human&gt;("Bob");
+
+        // circular reference
+        alice-&gt;friend_for_life = bob;
+        bob-&gt;friend_for_life   = alice;
+    }
+    // you'd *expect* both destructors to run here... but nope!
+
+    std::cout &lt;&lt; "End of main\n";
+}
+
+</code></pre>
+<p>What happens:</p>
+<ul>
+<li>Alice and Bob both own each other with <code>shared_ptr</code>.</li>
+<li>Reference counts never reach zero.</li>
+<li>Destructor never called: leak.</li>
+</ul>
+<p>The output looks like this:</p>
+<pre><code>Alice created
+Bob created
+End of main
+</code></pre>
+<h3 id="the-fixed-version-break-one-side-with-a-weak-pointer"><a class="header" href="#the-fixed-version-break-one-side-with-a-weak-pointer">The fixed version (break one side with a weak pointer):</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Human {
+    std::string name;
+    std::weak_ptr&lt;Human&gt; friend_for_life; // weak = no ownership
+
+    Human(std::string n) : name(std::move(n)) {
+        std::cout &lt;&lt; name &lt;&lt; " created\n";
+    }
+
+    ~Human() {
+        std::cout &lt;&lt; name &lt;&lt; " destroyed\n";
+    }
+};
+
+int main() {
+    {
+        auto alice = std::make_shared&lt;Human&gt;("Alice");
+        auto bob   = std::make_shared&lt;Human&gt;("Bob");
+
+        // now Alice and Bob point weakly to each other
+        alice-&gt;friend_for_life = bob;
+        bob-&gt;friend_for_life   = alice;
+    }
+    // destructors run as expected, no leak!
+
+    std::cout &lt;&lt; "End of main\n";
+}
+
+</code></pre>
+<p>Output:</p>
+<pre><code>Alice created
+Bob created
+Alice destroyed
+Bob destroyed
+End of main
+</code></pre>
+<h3 id="dangling-pointers-and-stdweak_ptr"><a class="header" href="#dangling-pointers-and-stdweak_ptr">Dangling pointers and <code>std::weak_ptr</code></a></h3>
+<p>Dangling pointers occur when a pointer references an object that has been deleted, leading to undefined behavior when the pointer is dereferenced. <code>std::weak_ptr</code> helps avoid dangling pointers by providing a non-owning, weak reference to an object managed by <code>std::shared_ptr</code>. Here's how to avoid dangling pointers with <code>std::weak_ptr</code>:</p>
+<ol>
+<li>
+<p><strong>Create a <code>std::weak_ptr</code></strong>: Instead of directly holding a <code>std::shared_ptr</code>, create a <code>std::weak_ptr</code> to the shared object.</p>
+</li>
+<li>
+<p><strong>Check for Validity</strong>: Before using the <code>std::weak_ptr</code>, check its validity using the <code>expired()</code> function. This function returns true if the associated shared object has been deleted.</p>
+</li>
+<li>
+<p><strong>Lock the <code>std::weak_ptr</code></strong>: To access the shared object safely, use the <code>lock()</code> function, which returns a <code>std::shared_ptr</code> pointing to the same object if it is still valid. If the object has been deleted, <code>lock()</code> returns an empty <code>std::shared_ptr</code>.</p>
+</li>
+</ol>
+<p>Here's a code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
+<pre><code class="language-cpp">auto node1 = std::make_shared&lt;Node&gt;();
+auto node2 = std::make_shared&lt;Node&gt;();
+
+// Create weak pointers
+node1-&gt;next = node2;
+node2-&gt;next = node1;
+
+// Check validity and lock
+if (auto lockedNode2 = node1-&gt;next.lock()) {
+    // Use lockedNode2 safely
+} else {
+    // Handle case where node2 has been deleted
+}
+
+</code></pre>
+<p>In this example, <code>node1-&gt;next</code> and <code>node2-&gt;next</code> are <code>std::weak_ptr</code> objects. Before accessing the shared object, validity is checked using the <code>expired()</code> function. Then, <code>lock()</code> is used to safely access the shared object. This approach ensures that dangling pointers are avoided when working with <code>std::weak_ptr</code>.</p>
+<h2 id="usage-advice"><a class="header" href="#usage-advice">Usage advice</a></h2>
+<p>Use smart pointers by default: <code>std::unique_ptr</code> for exclusive ownership and <code>std::shared_ptr</code> for shared ownership. Reserve raw pointers for non-owning references or when interfacing with legacy code. In most cases, <code>std::unique_ptr</code> is sufficient for exclusive ownership, as it offers lightweight memory management without the overhead of reference counting. <code>std::shared_ptr</code> should be used sparingly, as it introduces overhead and complexity unless true shared ownership is needed. <code>std::weak_ptr</code> is specialized for breaking cyclic dependencies or observing shared objects, but it's not commonly used.</p>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
 <p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
 <hr />
@@ -12652,9 +12811,471 @@ distance p1 p2 = sqrt((fst p1 - fst p2)^2 + (snd p1 - snd p2)^2)
 <pre><code class="language-hs">[]            -- empty list
 [3, 9, 27]  :: [Int]
 [(1, "One"), (2, "Two"), (3, "three")] :: [(Int, String)]
-[[8], [3, 9, 27], [1, 5], []]             :: [[Int]]
+[[8], [3, 9, 27], [1, 5], []]          :: [[Int]]
 [1 .. 10]     -- same as [1,2,3,4,5,6,7,8,9,10]
 [1, 3 .. 10]  -- same as [1,3,5,7,9]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="construction-and-implementation"><a class="header" href="#construction-and-implementation">Construction and Implementation</a></h1>
+<h2 id="list-constructors"><a class="header" href="#list-constructors">List Constructors</a></h2>
+<p>List have two constructors: <code>[]</code> and <code>:</code></p>
+<ul>
+<li>Empty list:</li>
+</ul>
+<pre><code class="language-hs">[] :: [a]
+</code></pre>
+<ul>
+<li>Add ahead:</li>
+</ul>
+<pre><code class="language-hs">(:) :: a -&gt; [a] -&gt; [a]
+</code></pre>
+<p>The notation</p>
+<pre><code class="language-hs">[15, 12, 21]
+</code></pre>
+<p>Is a shortcut for</p>
+<pre><code class="language-hs">15 : 12 : 21 : []
+</code></pre>
+<p>Which means</p>
+<pre><code class="language-hs">15 : (12 : (21 : []))
+</code></pre>
+<h2 id="implementation-and-efficiency"><a class="header" href="#implementation-and-efficiency">Implementation and Efficiency</a></h2>
+<p>Lists in Haskell are simply linked lists.
+Constructors <code>[]</code> and <code>:</code> work in constant time (DS sharing)</p>
+<pre><code class="language-hs">l1 = 3 : 2 : 1 : []
+l2 = 4 : l1
+</code></pre>
+<p>Operator <code>++</code> returns the concatenation of two lists (time proportional to the length of the first list).</p>
+<pre><code class="language-hs">
+let xs = ["apple", "banana"]
+let ys = "cherry" : xs     -- prepend
+let zs = xs ++ ["cherry"]  -- append
+
+</code></pre>
+<p>Because lists are also immutable in Haskell, you have to create a new list if you want to prepend / append elements to an existing one.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lists-and-patterns"><a class="header" href="#lists-and-patterns">Lists and Patterns</a></h1>
+<p>Pattern discrimination allows to decompose lists:</p>
+<pre><code class="language-hs">let l = [6, 5, 3, 2]
+
+mySum [] = 0
+mySum (x:xs) = x + sum xs
+
+mySum l
+-- 16
+</code></pre>
+<p>We are recursively calling sum.
+<code>x</code> = first element
+<code>xs</code> = tail list (rest of the list)</p>
+<p>Having fun? Other ways to do it:</p>
+<ul>
+<li>With a fold:</li>
+</ul>
+<pre><code class="language-hs">mySum = foldr (+) 0
+</code></pre>
+<ul>
+<li>With a List Comprehension:</li>
+</ul>
+<pre><code class="language-hs">mySum xs = sum [x | x &lt;- xs]
+</code></pre>
+<p>We say that <code>e1</code> matches <code>e2</code> if there exists a substitution for the variables of <code>e1</code> that make it the same as <code>e2</code>.</p>
+<p>Examples:</p>
+<ul>
+<li><code>x:xs</code> matches <code>[2, 5, 8]</code> because <code>[2, 5, 8]</code> is <code>2 : (5 : 8 : [])</code> substituting <code>x</code> with <code>2</code> and <code>xs</code> with <code>(5 : 8 : [])</code> which is <code>[5, 8]</code>.</li>
+<li><code>x:xs</code> does not match <code>[]</code> because <code>[]</code> and <code>:</code> are different constructors.
+<blockquote>
+<p>That's because <code>x</code> cannot be a list, it has to be an element inside the list.</p>
+</blockquote>
+</li>
+<li><code>x1:x2:xs</code> matches <code>[2, 5, 8]</code> substituting <code>x1</code> with <code>2</code>, <code>x2</code> with <code>5</code> and <code>xs</code> with <code>[8]</code>.</li>
+<li><code>x1:x2:xs</code> matches <code>[2, 5]</code> substituting <code>x1</code> with <code>2</code>, <code>x2</code> with <code>5</code> and <code>xs</code> with <code>[]</code>.</li>
+</ul>
+<p>Note: The mechanism of matching is not the same as the unification (Prolog).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="syntax-in-patterns"><a class="header" href="#syntax-in-patterns">Syntax in Patterns</a></h1>
+<p>Pattern decomposition can also be used in the <code>case</code>, <code>where</code> and <code>let</code>.</p>
+<pre><code class="language-hs">mySum list =
+  case list of
+    [] -&gt; 0
+    x : xs -&gt; x + mySum xs
+</code></pre>
+<pre><code class="language-hs">divImod n m
+  | n &lt; m = (0, n)
+  | otherwise = (q + 1, r)
+  where
+    (q, r) = divImod (n - m) m
+</code></pre>
+<pre><code class="language-hs">firstAndsecond list =
+  let first : second : rest = list
+   in (first, second)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="texts"><a class="header" href="#texts">Texts</a></h1>
+<p>Tests (strings) in Haskell are lists of characters.</p>
+<p>The type <code>String</code> is a synonym of <code>[Char]</code>.
+Double quotes are syntactic sugar for defining texts.</p>
+<pre><code class="language-hs">name1 :: [Char]
+name1 = 'j' : 'i' : 'm' : []
+
+name2 :: String
+name2 = jimael -- will throw an error
+
+name2 = "jimael" -- correct
+
+ghci&gt; name == name2
+False
+ghci&gt; name1 &lt; name2
+True
+</code></pre>
+<p>Haskell follows an alphabetical order to compare strings.</p>
+<pre><code class="language-hs">ghci&gt; "a" &lt; "b"
+True
+ghci&gt; "aa" &lt; "az"
+True
+
+ghci&gt; "aa" &lt; "aza"
+True
+ghci&gt; "az" &lt; "aaz"
+False
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="common-functions"><a class="header" href="#common-functions">Common Functions</a></h1>
+<h2 id="head-last"><a class="header" href="#head-last">head, last</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">head :: [a] -&gt; a
+last :: [a] -&gt; a
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+<ul>
+<li><code>head xs</code> is the first element of the list <code>xs</code>.</li>
+<li><code>last xs</code> is the last element of the list <code>xs</code>.
+Error if <code>xs</code> is empty.</li>
+</ul>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; head [1..6]
+1
+ghci&gt; last [1..6]
+6
+</code></pre>
+<h2 id="tail-init"><a class="header" href="#tail-init">tail, init</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">tail :: [a] -&gt; [a]
+init :: [a] -&gt; [a]
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+<ul>
+<li><code>tail xs</code> is the list <code>xs</code> without its first element.</li>
+<li><code>init xs</code> is the list without its last element.
+Error if <code>xs</code> is empty.</li>
+</ul>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; tail [1..4]
+[2,3,4]
+ghci&gt; init [1..4]
+[1,2,3]
+</code></pre>
+<h2 id="reverse"><a class="header" href="#reverse">reverse</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">reverse :: [a] -&gt; [a]
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>reverse xs</code> is the list <code>xs</code> backwards.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; reverse [1..4]
+[4, 3, 2, 1]
+ghci&gt; reverse [True, False, False]
+[False, False, True]
+</code></pre>
+<h2 id="length"><a class="header" href="#length">length</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">length :: [a] -&gt; Int
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>length xs</code> is the number of elements in the list <code>xs</code>.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; length []
+0
+ghci&gt; length [1..5]
+5
+ghci&gt; length "Angela"
+6
+</code></pre>
+<h2 id="null"><a class="header" href="#null">null</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">null :: [a] -&gt; Bool
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>null xs</code> indicates if the list <code>xs</code> is empty.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; null []
+True
+ghci&gt; null [1..8]
+False
+</code></pre>
+<h2 id="elem"><a class="header" href="#elem">elem</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">elem :: Eq a =&gt; a -&gt; [a] -&gt; Bool
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>elem x xs</code> indicates if <code>x</code> is in the list <code>xs</code>.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; elem 6 [1..10]
+True
+ghci&gt; 6 `elem` [1..10]
+True
+ghci&gt; 'k' `elem` "Ethan"
+False
+</code></pre>
+<h2 id="indexing-"><a class="header" href="#indexing-">Indexing (!!)</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">(!!) :: [a] -&gt; Int -&gt; a
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>xs !! i</code> is the <code>i</code>th element of the list <code>xs</code> (starting from zero).</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; [1..10] !! 3
+4
+ghci&gt; [1..10] !! 11
+Exception: index too large
+</code></pre>
+<h2 id="concatenation-of-two-lists"><a class="header" href="#concatenation-of-two-lists">Concatenation of two lists</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">(++) :: [a] -&gt; [a] -&gt; [a]
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>xs ++ ys</code> is the resulting list of putting <code>ys</code> after <code>xs</code>.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; "JIM" ++ "MY"
+"JIMMY"
+ghci&gt; [1..5] ++ [1..3]
+[1,2,3,4,5,1,2,3]
+</code></pre>
+<h2 id="maximum-minimum"><a class="header" href="#maximum-minimum">maximum, minimum</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">maximum :: Ord a =&gt; [a] -&gt; a
+minimum :: Ord a =&gt; [a] -&gt; a
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+</li>
+<li>
+<p><code>maximum xs</code> is the biggest element of the list (non empty!) <code>xs</code>.</p>
+</li>
+<li>
+<p><code>minimum xs</code> is the smallest element of the list (non empty!) <code>xs</code>.</p>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; maximum [1..10]
+10
+ghci&gt; minimum [1..10]
+1
+ghci&gt; minimum []
+Exception: empty list
+</code></pre>
+<h2 id="sum-product"><a class="header" href="#sum-product">sum, product</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">sum     :: Num a =&gt; [a] -&gt; a
+product :: Num a =&gt; [a] -&gt; a
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+</li>
+<li>
+<p><code>sum xs</code> is the sum of the list <code>xs</code>.</p>
+</li>
+<li>
+<p><code>prod xs</code> is the product of the list <code>xs</code>.</p>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; sum [1..5]
+15
+
+factorial n = product [1..n]
+ghci&gt; factorial 5
+120
+</code></pre>
+<h2 id="take-drop"><a class="header" href="#take-drop">take, drop</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">take :: Int -&gt; [a] -&gt; [a]
+drop :: Int -&gt; [a] -&gt; [a]
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+</li>
+<li>
+<p><code>take n xs</code> is the prefix of length <code>n</code> of the list <code>xs</code>.</p>
+</li>
+<li>
+<p><code>drop n xs</code> is the suffix of the list <code>xs</code> when the first <code>n</code> elements are removed.</p>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; take 3 [1..7]
+[1, 2, 3]
+ghci&gt; drop 3 [1..7]
+[4, 5, 6, 7]
+</code></pre>
+<h2 id="zip"><a class="header" href="#zip">zip</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">zip :: [a] -&gt; [b] -&gt; [(a, b)]
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+</li>
+<li>
+<p><code>zip xs ys</code> is the list that combines, in order, each pair of elements of <code>xs</code> and <code>ys</code>. If they are missing, they are lost.</p>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; zip [1, 2, 3] ['a', 'b', 'c']
+[(1, 'a'), (2, 'b'), (3, 'c')]
+ghci&gt; zip [1..10] [1..3]
+[(1, 1), (2, 2), (3, 3)]
+</code></pre>
+<h2 id="repeat"><a class="header" href="#repeat">repeat</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">repeat :: a -&gt; [a]
+</code></pre>
+<ul>
+<li>
+<p>Description:</p>
+</li>
+<li>
+<p><code>repeat x</code> is the infinite list where all elements are <code>x</code>.</p>
+</li>
+<li>
+<p>Examples:</p>
+</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; repeat 3
+[3, 3, 3, 3, 3, 3, 3, 3, ...]
+ghci&gt; take 4 (repeat 3)
+[3, 3, 3, 3]
+</code></pre>
+<h2 id="concat"><a class="header" href="#concat">concat</a></h2>
+<ul>
+<li>Signature:</li>
+</ul>
+<pre><code class="language-hs">concat :: [[a]] -&gt; [a]
+</code></pre>
+<ul>
+<li>Description:</li>
+</ul>
+<p><code>concat xs</code> is the list that concatenates all the lists of <code>xs</code>.</p>
+<ul>
+<li>Examples:</li>
+</ul>
+<pre><code class="language-hs">ghci&gt; concat [[1, 2, 3], [], [3], [1, 2]]
+[1, 2, 3, 3, 1, 2]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solved-list-functions"><a class="header" href="#solved-list-functions">Solved List Functions</a></h1>
+<pre><code class="language-hs">
+-- last element in a list
+myLast :: [a] -&gt; a
+myLast [] = error "Empty List"
+myLast [x] = x -- one element
+myLast (_ : xs) = myLast xs
+
+myLast2 :: [a] -&gt; a
+-- myLast2 x = head (reverse x)
+myLast2 = head . reverse -- composition of functions
+
+-- penultimate element of the list
+myButLast :: [a] -&gt; a
+myButLast [x, _] = x
+myButLast (_ : xs) = myButLast xs
+
+myButLast2 :: [a] -&gt; a
+myButLast2 = head . tail . reverse -- reverse is applied first, then tail and head
+
+-- duplicate elements of a list
+dupli :: [a] -&gt; [a]
+dupli [] = []
+dupli (x : xs) = x : x : dupli xs
+
+-- function to return average
+average :: [Int] -&gt; Float
+average x = sumElem / len
+  where
+    sumElem = fromIntegral (sum x) :: Float -- converts Int to Float
+    len = fromIntegral (length x) :: Float
+
+-- Insertion in position
+-- insertIn 8 [1,5,2,7] 3 = [1,5,8,2,7]
+insertIn :: a -&gt; [a] -&gt; Int -&gt; [a]
+insertIn x ys 1 = x : ys
+insertIn x (y : ys) n = y : insertIn x ys (n - 1)
+
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
 <p>To explore for Python Street Cred:</p>
@@ -12665,7 +13286,16 @@ requests, dotenv, venv, black, pytest
 <p>Standard Library:</p>
 <pre><code>itertools, collections, functools, pathlib(again), concurrent.futures, datetime
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><ul>
+<li>Python Fundamentals</li>
+<li>Control Flow</li>
+<li>Functions</li>
+<li>Python OOP</li>
+<li>Advanced</li>
+<li>Error Handling</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="user-input"><a class="header" href="#user-input">User Input</a></h1>
+<h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
 <ul>
 <li>Concepts seen: <code>if / elif / else</code> conditions.</li>
 </ul>
@@ -12680,56 +13310,79 @@ if user_input == "y":
         print("You were off by one.")
     else:
         print("sorry, it's wrong!")
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 5
+# sorry, it's wrong!
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 6
+# you were off by one.
+
+# Enter 'y' if you would like to play: y
+# Guess our number: 7
+# you guessed correctly!
 </code></pre>
-<h3 id="age-calculation-this-program-converts-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-age-into-months-and-seconds">Age Calculation: This program converts age into months and seconds.</a></h3>
+<h3 id="age-calculation-this-program-converts-an-input-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-an-input-age-into-months-and-seconds">Age Calculation: This program converts an input age into months and seconds.</a></h3>
 <pre><code class="language-python">age = int(input("Enter your age:"))
 months = age * 12
 seconds = age * 365.25 * 24 * 60
 print (f"{age} years old equals to {months} months and {seconds} seconds.")
-</code></pre>
-<h3 id="average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#average-grade-calculation-calculates-average-grades-for-an-individual-student-and-a-class">Average Grade Calculation: Calculates average grades for an individual student and a class.</a></h3>
-<ul>
-<li>Concepts seen: dictionaries.</li>
-<li>you can store pair data, but you can also store different data types like tuples</li>
-</ul>
-<pre><code class="language-python">student = {
-    "name" : "Jose",
-    "school" : "Computing",
-    "grades" : (66, 77, 88)
-}
 
-# Assume the argument, data, is a dictionary.
-# Modify the grades variable so it accesses the 'grades' key of the data dictionary.
-def average_grade(data):
-    grades = data["grades"]
-    return sum(grades) / len(grades)
-
-# Given a list of students (a list of dictionaries), calculate the average grade received on an exam, for the entire class
-# You must add all the grades of all the students together
-# You must also count how many grades there are in total in the entire list
-def average_grade_all_students(student_list):
-    total = 0
-    count = 0
-    for student in student_list:
-        grades = student["grades"]
-        total += sum(grades)
-        count += len(grades)
-    return total / count
+# Enter your age: 5
+# 5 years old equals to 60 months and 2629800.0 seconds.
 </code></pre>
-<h3 id="lists-demonstrates-list-comprehension-for-filtering-and-modifying-lists"><a class="header" href="#lists-demonstrates-list-comprehension-for-filtering-and-modifying-lists">Lists: Demonstrates list comprehension for filtering and modifying lists.</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="loops"><a class="header" href="#loops">Loops</a></h1>
+<h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
+<pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
+
+for friend in friends:
+    print(f"{friend} is my friend.")
+
+# Anna is my friend.
+# Bellatrix is my friend.
+# Ianou is my friend.
+# Alexis is my friend.
+</code></pre>
+<h3 id="while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game"><a class="header" href="#while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game">While Loop: Repeats until the user decides to stop playing the guessing game.</a></h3>
+<pre><code class="language-python">number = 7
+
+while True:
+    user_input = input("Would you like to play? (Y/n)")
+    if user_input == "n":
+        break
+
+    user_number = int(input("Guess our number: "))
+    if user_number == number:
+        print("you guessed correctly!")
+    elif abs(number - user_number) == 1:
+        print("You were off by one.")
+    else:
+        print("sorry, it's wrong!")
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lists-1"><a class="header" href="#lists-1">Lists</a></h1>
+<h3 id="lists-example-for-list-comprehension"><a class="header" href="#lists-example-for-list-comprehension">Lists: Example for list comprehension</a></h3>
 <pre><code class="language-python">numbers = [1, 3, 5]
 doubled = [x * 2 for x in numbers]
+print(doubled)
+# [2, 6, 10]
 
 friends = ["samantha", "sylvie", "adam", "rain", "anna", "sultan"]
 starts_s = [friend for friend in friends if friend.startswith('s')]
 
 print(starts_s)
+# ['samantha', 'sylvie', 'sultan']
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dictionaries"><a class="header" href="#dictionaries">Dictionaries</a></h1>
 <h3 id="dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Dictionary: Iterates through a dictionary of student attendance and prints results.</a></h3>
 <pre><code class="language-python">student_attendance = {"Rolf": 96, "Bob": 80, "Anna": 100}
 
 for student, attendance in student_attendance.items():
     print(f"{student}: {attendance}")
+
+# Rolf: 96
+# Bob: 80
+# Anna: 100
 </code></pre>
 <h3 id="dictionary-2-implements-a-simple-username-password-authentication-system"><a class="header" href="#dictionary-2-implements-a-simple-username-password-authentication-system">Dictionary 2: Implements a simple username-password authentication system.</a></h3>
 <pre><code class="language-python">users = [
@@ -12750,70 +13403,56 @@ if password_input == password:
     print("Your details are correct!")
 else:
     print("Your details are incorrect.")
+
+# Enter your username: Bob
+# Enter your password: password
+# Your details are correct!
 </code></pre>
-<h3 id="destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Shows variable unpacking with tuples and lists.</a></h3>
+<h3 id="dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class">Dictionary 3: Calculates average grades for an individual student and a class.</a></h3>
 <ul>
-<li>
-<p>Unpacking with <code>_</code> to ignore middle value.</p>
-</li>
-<li>
-<p>head gets the first item.</p>
-</li>
-<li>
-<p>*tail captures the rest into a list.</p>
-</li>
-<li>
-<p>head gets the first item.</p>
-</li>
-<li>
-<p>*tail (with a * splat operator) captures the rest into a list.</p>
-</li>
+<li>you can store pair data, but you can also store different data types like tuples</li>
 </ul>
-<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
-name, _, profession = person
+<pre><code class="language-python">data = {
+    "name" : "Jose",
+    "school" : "Computing",
+    "grades" : (66, 77, 88)
+}
 
-print(name, profession)
+def average_grade(data):
+    grades = data["grades"]
+    return sum(grades) / len(grades)
 
-head, *tail = [1,2,3,4,5]
-print(head)
-# 1
-print(tail)
-# [2, 3, 4, 5]
+print(average_grade(data))
+# 77.0
+
+
+student_list = [
+    {
+      "name" : "Jose",
+      "school" : "Computing",
+      "grades" : (66, 77, 88)
+    },
+    {
+      "name" : "PwatPwat",
+      "school" : "Art",
+      "grades" : (88, 100, 94)
+    }
+]
+
+def average_grade_all_students(student_list):
+    total = 0
+    count = 0
+    for student in student_list:
+        grades = student["grades"]
+        total += sum(grades)
+        count += len(grades)
+    return total / count
+
+print(average_grade_all_students(student_list))
+# 85.5
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
-<pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
-
-for friend in friends:
-    print(f"{friend} is my friend.")
-</code></pre>
-<h3 id="while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game"><a class="header" href="#while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game">While Loop: Repeats until the user decides to stop playing the guessing game.</a></h3>
-<pre><code class="language-python">number = 7
-
-while True:
-    user_input = input("Would you like to play? (Y/n)")
-    if user_input == "n":
-        break
-
-    user_number = int(input("Guess our number: "))
-    if user_number == number:
-        print("you guessed correctly!")
-    elif abs(number - user_number) == 1:
-        print("You were off by one.")
-    else:
-        print("sorry, it's wrong!")
-</code></pre>
-<h3 id="unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs">Unpacking: Demonstrates unpacking keyword arguments with **kwargs.</a></h3>
-<pre><code class="language-python">def named(**kwargs):
-    print(kwargs)
-
-def print_nicely(**kwargs):
-    named(**kwargs)
-    for arg, value in kwargs.items():
-        print(f"{arg}: {value}")
-
-print_nicely(name= "bob", age= "25")
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="functions-with-arguments-simple-function-demonstrating-division-with-error-handling"><a class="header" href="#functions-with-arguments-simple-function-demonstrating-division-with-error-handling">Functions with Arguments: Simple function demonstrating division with error handling.</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functions-1"><a class="header" href="#functions-1">Functions</a></h1>
+<h3 id="functions-with-arguments-simple-function-demonstrating-division-with-error-handling"><a class="header" href="#functions-with-arguments-simple-function-demonstrating-division-with-error-handling">Functions with Arguments: Simple function demonstrating division with error handling.</a></h3>
 <pre><code class="language-python">def divide (dividend, divisor):
     if divisor != 0:
         return dividend/divisor
@@ -12821,6 +13460,10 @@ print_nicely(name= "bob", age= "25")
         return "you fool!"
 
 divide (6, 0)
+# 'you fool!'
+
+divide (6, 2)
+# 3.0
 </code></pre>
 <h3 id="functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs"><a class="header" href="#functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs">Functions with Arguments 2: Shows function parameter unpacking with *args and **kwargs.</a></h3>
 <pre><code class="language-python">def add(x, y):
@@ -12828,16 +13471,30 @@ divide (6, 0)
 
 num = [3, 5]
 add(*num)
+# 8
 
-numz = {"x": 15, "y": 26}
-print(add(**numz))
+num = [3, 8, 4, 2, 8]
+add(*num)
+# Error!
 
-def multiply(*argz):
+nums = {"x": 15, "y": 26}
+add(**nums)
+# 41
+
+def multiply(*args):
     total = 1
-    for arg in argz:
+    for arg in args:
         total = total * arg
 
     return total
+
+num = [8, 8]
+multiply(*num)
+# 64
+
+num = [8, 4, 5, 1, 2, 3, 2]
+multiply(*num)
+# 1920
 
 def apply(*argz, operator):
     if operator == "*":
@@ -12847,12 +13504,13 @@ def apply(*argz, operator):
     else:
         return "no valid operator detected."
     
-print(apply(1, 3, 5, 7, operator="+"))
+apply(1, 3, 5, 7, operator="+")
+# 16
 </code></pre>
-<h3 id="mutable-parameters-demonstrates-how-default-mutable-arguments-can-cause-issues"><a class="header" href="#mutable-parameters-demonstrates-how-default-mutable-arguments-can-cause-issues">Mutable Parameters: Demonstrates how default mutable arguments can cause issues.</a></h3>
+<h3 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h3>
 <pre><code class="language-python">from typing import List, Optional
 
-class Ztudent:
+class Student:
     def __init__(self, name: str, grades: Optional[List[int]] = None):
         self.name = name
         self.grades = grades or []
@@ -12860,15 +13518,19 @@ class Ztudent:
     def take_exam(self, result: int):
         self.grades.append(result)
 
-bob = Ztudent("Bob")
-rolf = Ztudent("Rolf")
+bob = Student("Bob")
+rolf = Student("Rolf")
 bob.take_exam(90)
 print(bob.grades)
 print(rolf.grades)
+# [90]
+# []
 </code></pre>
-<h3 id="lambda-demonstrates-lambda-functions-and-map"><a class="header" href="#lambda-demonstrates-lambda-functions-and-map">Lambda: Demonstrates lambda functions and map.</a></h3>
+<p>Yes, you can also feature type hints from the typing library.</p>
+<h3 id="lambda-we-are-getting-functional"><a class="header" href="#lambda-we-are-getting-functional">Lambda: We are getting functional!</a></h3>
 <pre><code class="language-python">add = lambda x , y : x + y
 print(add(8,5))
+# 13
 
 def double(x):
     return x*2
@@ -12877,7 +13539,10 @@ sequence = [1, 3, 5, 9]
 doubled = [double(x) for x in sequence]
 doubled2 = list(map(double, sequence))
 
-print (doubled2)
+print(doubled)
+# [2, 6, 10, 18]
+print(doubled2)
+# [2, 6, 10, 18]
 </code></pre>
 <h3 id="decorators-demonstrates-a-basic-function-decorator-for-access-control"><a class="header" href="#decorators-demonstrates-a-basic-function-decorator-for-access-control">Decorators: Demonstrates a basic function decorator for access control.</a></h3>
 <pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
@@ -12890,11 +13555,34 @@ def make_secure(func):
         if user["access_level"] == "admin":
             return func()
         else:
-            return f"no admin permissons for {user['username']}"
+            return f"no admin permissions for {user['username']}"
         
     return secure_function
 
 get_admin_password = make_secure(get_admin_password)
+
+print(get_admin_password())
+# 1234
+
+user = {"username": "maniac", "access_level": "hacker"}
+# no admin permissions for maniac
+</code></pre>
+<h3 id="decorators--uses-the-decorator-syntax-to-apply-a-decorator"><a class="header" href="#decorators--uses-the-decorator-syntax-to-apply-a-decorator">Decorators @: Uses the @decorator syntax to apply a decorator.</a></h3>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def make_secure(func):
+    def secure_function():
+        if user["access_level"] == "admin":
+            return func()
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+@make_secure
+def get_admin_password():
+    return "1234"
+
 
 print(get_admin_password())
 </code></pre>
@@ -12919,27 +13607,12 @@ def get_password(panel):
 
 
 print(get_password("billing"))
+# super_secure_password
+
+print(get_password("admin"))
+# 1234
 </code></pre>
-<h3 id="decorators--uses-the-decorator-syntax-to-apply-a-decorator"><a class="header" href="#decorators--uses-the-decorator-syntax-to-apply-a-decorator">Decorators @: Uses the @decorator syntax to apply a decorator.</a></h3>
-<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
-
-def make_secure(func):
-    def secure_function():
-        if user["access_level"] == "admin":
-            return func()
-        else:
-            return f"no admin permissons for {user['username']}"
-        
-    return secure_function
-
-@make_secure
-def get_admin_password():
-    return "1234"
-
-
-print(get_admin_password())
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop-cheat-sheet-"><a class="header" href="#python-oop-cheat-sheet-">Python OOP Cheat Sheet 🐍</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
 <h2 id="1-classes--objects"><a class="header" href="#1-classes--objects">1. Classes &amp; Objects</a></h2>
 <p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
 <pre><code class="language-python">class MyClass:
@@ -12950,9 +13623,10 @@ print(get_admin_password())
         return f"Hello, {self.name}!"
 
 obj = MyClass("PwatPwat")
+
 print(obj.greet())  # Output: Hello, PwatPwat!
 </code></pre>
-<h2 id="2-encapsulation-aka-hiding-your-shame"><a class="header" href="#2-encapsulation-aka-hiding-your-shame">2. Encapsulation (a.k.a Hiding Your Shame)</a></h2>
+<h2 id="2-encapsulation"><a class="header" href="#2-encapsulation">2. Encapsulation</a></h2>
 <p>Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).</p>
 <pre><code class="language-python">class Secret:
     def __init__(self):
@@ -13018,6 +13692,7 @@ book2 = Book("Charli")
 shelf = Bookshelf(book, book2)
 
 print(shelf)
+# Bookshelf with 2 Books.
 </code></pre>
 <h4 id="when-to-use-composition"><a class="header" href="#when-to-use-composition">When to Use Composition?</a></h4>
 <ul>
@@ -13051,6 +13726,7 @@ book = Book.hardcover("Laurel Hell", 1600)
 light = Book.paperback("the bottle", 400)
 
 print(book, light)
+# &lt;Book Laurel Hell, hardcover, weiging 1700g&gt; &lt;Book the bottle, paperback, weiging 400g&gt;
 </code></pre>
 <h4 id="use-classmethod-when"><a class="header" href="#use-classmethod-when">Use <code>@classmethod</code> when:</a></h4>
 <ul>
@@ -13126,9 +13802,6 @@ print(dog.speak())  # Output: Woof!
     def __init__(self, name, age):
         self.name = name
         self.age = age
-
-    # def __str__(self):
-    #     return f"Person {self.name}; {self.age} years old."
     
     def __repr__(self):
         return f"&lt;Person({self.name}, {self.age})&gt;"
@@ -13136,6 +13809,7 @@ print(dog.speak())  # Output: Woof!
 
 katheryn = Person("Katheryn", 44)
 print(katheryn)
+# &lt;Person (Katheryn, 44)&gt;
 </code></pre>
 <h4 id="use-__repr__-when"><a class="header" href="#use-__repr__-when">Use <code>__repr__</code> when:</a></h4>
 <ul>
@@ -13160,8 +13834,56 @@ print(p.greet())  # Output: Hello from Person!
 <li>This injects a method into a class at runtime.</li>
 <li>Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
-<pre><code class="language-python">from imports_mymodule import divide #or import imports_mymodule
+<div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
+<h3 id="destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Shows variable unpacking with tuples and lists.</a></h3>
+<ul>
+<li>
+<p>Unpacking with <code>_</code> to ignore middle value.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail captures the rest into a list.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail (with a * splat operator) captures the rest into a list.</p>
+</li>
+</ul>
+<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
+name, _, profession = person
+
+print(name, profession)
+# Bob Mechanician
+
+head, *tail = [1,2,3,4,5]
+print(head)
+# 1
+print(tail)
+# [2, 3, 4, 5]
+</code></pre>
+<h3 id="unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs">Unpacking: Demonstrates unpacking keyword arguments with <code>**kwargs</code>.</a></h3>
+<pre><code class="language-python">def named(**kwargs):
+    print(kwargs)
+
+def print_nicely(**kwargs):
+    named(**kwargs)
+    for arg, value in kwargs.items():
+        print(f"{arg}: {value}")
+
+print_nicely(name= "bob", age= "25")
+
+# {'name': 'bob', 'age': '25'}
+# name: bob
+# age: 25
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced"><a class="header" href="#advanced">Advanced</a></h1>
+<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
+<pre><code class="language-python">from imports_mymodule import divide 
+#or import imports_mymodule
 
 print(divide(10,2))
 </code></pre>
@@ -13170,10 +13892,11 @@ print(divide(10,2))
     return divident/divisor
 
 print("imports_mymodule.py: ", __name__)
+# imports_mymodule.py: __main__
 </code></pre>
 <h3 id="type-hinting-uses-type-hints-for-better-function-and-class-documentation"><a class="header" href="#type-hinting-uses-type-hints-for-better-function-and-class-documentation">Type Hinting: Uses type hints for better function and class documentation.</a></h3>
 <pre><code class="language-python">class Book:
-    TYPEZ = ("hardcover", "paperback")
+    TYPES = ("hardcover", "paperback")
 
     def __init__(self, name: str, book_type: str, weight: int):
         self.name = name
@@ -13185,11 +13908,11 @@ print("imports_mymodule.py: ", __name__)
     
     @classmethod
     def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPEZ[0], page_weight + 100)
+        return cls(name, cls.TYPES[0], page_weight + 100)
     
     @classmethod
     def paperback(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPEZ[1], page_weight)
+        return cls(name, cls.TYPES[1], page_weight)
      
 
 book = Book.hardcover("Laurel Hell", 1600)
@@ -13200,7 +13923,7 @@ print(book, light)
 <h3 id="first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions"><a class="header" href="#first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions">First Class Function: Demonstrates passing functions as arguments to other functions.</a></h3>
 <pre><code class="language-python">def divide(dividend, diviser):
     if diviser == 0:
-        raise ZeroDivisionError("DIvisor cannot be 0.")
+        raise ZeroDivisionError("Divisor cannot be 0.")
     
     return dividend/diviser
 
@@ -13209,6 +13932,7 @@ def calculate(*values, operator):
 
 result = calculate(20, 4, operator=divide)
 print(result)
+# &lt;Book Laurel Hell, hardcover, weiging 1700g&gt; &lt;Book the bottle, paperback, weiging 400g&gt;
 </code></pre>
 <h3 id="first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries"><a class="header" href="#first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries">First Class Function 2: Uses function arguments to search in a list of dictionaries.</a></h3>
 <pre><code class="language-python">def search(sequence, expected, finder):
@@ -13227,8 +13951,10 @@ def get_friend_name(friend):
     return friend["name"]
 
 print(search(friends, "Nyarlathotep", get_friend_name))
+# {'name': 'Nyarlathotep', 'age': 8888811}
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
+<h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
 <pre><code class="language-python">def divide(dividend, divisor):
     if divisor == 0:
         raise ZeroDivisionError("Divisor cannot be 0.")
@@ -13241,11 +13967,21 @@ print("Welcome to the average grade program.")
 try:
     average = divide(sum(grades), len(grades))
 except ZeroDivisionError:
-    print("There are no grades yet in your lizt.")
+    print("There are no grades yet in your list.")
 else:
-    print(f"THe average grade is {average}.")
+    print(f"The average grade is {average}.")
 finally:
     print("Thank you!")
+
+# Welcome to the average grade program.
+# There are no grades yet in your list.
+# Thank you!
+
+grades = [15, 100, 84, 54, 10, 90]
+
+# Welcome to the average grade program.
+# The average grade is 58.833333333336.
+# Thank you!
 </code></pre>
 <h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
 <pre><code class="language-python">class TooManyPagesError(ValueError):
@@ -13268,14 +14004,157 @@ class Book:
                 f"You tried to read {self.pages_read + pages} pages, but this book only has {self.page_count} pages."
             )
         self.pages_read += pages
-        print(f"you have now read {self.pages_read} pages out of {self.page_count}.")
+        print(f"You have now read {self.pages_read} pages out of {self.page_count}.")
 
 try:
     pout = Book("pout guide", 70)
     pout.read(80)
 except TooManyPagesError as e:
     print(e)
+
+# You tried to read 80 pages, but this book only has 70 pages.
+
+try:
+    pout = Book("pout guide", 70)
+    pout.read(50)
+except TooManyPagesError as e:
+    print(e)
+
+# You have now read 50 pages out of 70.
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
+<p>A <code>generator</code> is a function or expression that returns a special type of iterator called generator iterator. <code>generator-iterators</code> are lazy: they do not store their values in memory, but generate their values when needed.</p>
+<p>A generator function looks like any other function, but contains one or more yield expressions. Each <code>yield</code> will suspend code execution, saving the current execution rate (including all local variables and try statements). When the generator resumes, it picks up state from the suspension - unlike regular functions which reset with every call.</p>
+<h2 id="constructing-a-generator"><a class="header" href="#constructing-a-generator">Constructing a generator</a></h2>
+<p>Generators are constructed much like other looping or recursive functions, but require a <code>yield</code> expression, which we will explore in depth a bit later.</p>
+<p>An example is a function that returns the squares from a given list of numbers.
+As currently written, all input must be processed before any values can be returned:</p>
+<pre><code class="language-python">def squares(list_of_numbers):
+    squares = []
+    for number in list_of_numbers:
+        squares.append(number ** 2)
+    return squares
+</code></pre>
+<p>You can convert that function into a generator like this:</p>
+<pre><code class="language-python">def squares_generator(list_of_numbers):
+    for number in list_of_numbers:
+        yield number ** 2
+</code></pre>
+<p>The rationale behind this is that you use a generator when you do not need all the values at once.</p>
+<p>This saves memory and processing power, since only the value you are currently working on is calculated.</p>
+<h2 id="using-a-generator"><a class="header" href="#using-a-generator">Using a generator</a></h2>
+<p>Generators may be used in place of most <code>iterables</code> in Python. This includes functions or objects that require an <code>iterable</code>/<code>iterator</code> as an argument.</p>
+<p>To use the <code>squares_generator()</code> generator:</p>
+<pre><code class="language-python">squared_numbers = squares_generator([1, 2, 3, 4])
+
+for square in squared_numbers:
+    print(square)
+
+1
+4
+9
+16
+</code></pre>
+<p>Values within a generator can also be produced/accessed via the <code>next()</code> function. <code>next()</code> calls the <code>__next__()</code> method of a generator object, "advancing" or evaluating the generator code up to its <code>yield</code> expression, which then "yields" or returns the value.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; squared_numbers = squares_generator([1, 2])
+
+&gt;&gt;&gt; next(squared_numbers)
+1
+&gt;&gt;&gt; next(squared_numbers)
+4
+</code></pre>
+<p>When a <code>generator</code> is fully consumed and has no more values to return, it throws a <code>StopIteration</code> error.</p>
+<pre><code class="language-python">&gt;&gt;&gt; next(squared_numbers)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+StopIteration
+</code></pre>
+<h2 id="difference-between-iterables-and-generators"><a class="header" href="#difference-between-iterables-and-generators">Difference between iterables and generators</a></h2>
+<p>Generators are a special sub-set of iterators. <code>Iterators</code> are the mechanism/protocol that enables looping over iterables. Generators and the iterators returned by common Python <code>iterables</code> act very similarly, but there are some important differences to note:</p>
+<ul>
+<li>
+<p>Generators are one-way; there is no "backing up" to a previous value.</p>
+</li>
+<li>
+<p>Iterating over generators consume the returned values; no resetting.</p>
+</li>
+<li>
+<p>Generators (being lazily evaluated) are not sortable and can not be reversed.</p>
+</li>
+<li>
+<p>Generators do not have indexes, so you can't reference a previous or future value using addition or subtraction.</p>
+</li>
+<li>
+<p>Generators cannot be used with the len() function.</p>
+</li>
+<li>
+<p>Generators can be finite or infinite, be careful when collecting all values from an infinite generator.</p>
+</li>
+</ul>
+<h2 id="the-yield-expression"><a class="header" href="#the-yield-expression">The yield expression</a></h2>
+<p>The yield expression is very similar to the <code>return</code> expression.</p>
+<p>Unlike the <code>return</code> expression, <code>yield</code> gives up values to the caller at a specific point, suspending evaluation/return of any additional values until they are requested.</p>
+<p>When <code>yield</code> is evaluated, it pauses the execution of the enclosing function and returns any values of the function at that point in time.</p>
+<p>The function then stays in scope, and when <code>__next__()</code> is called, execution resumes until yield is encountered again.</p>
+<p>Note</p>
+<blockquote>
+<blockquote>
+<p>Using yield expressions is prohibited outside of functions.</p>
+</blockquote>
+</blockquote>
+<pre><code class="language-python">&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+
+&gt;&gt;&gt; lets_try = infinite_sequence()
+&gt;&gt;&gt; lets_try.__next__()
+0
+&gt;&gt;&gt; lets_try.__next__()
+1
+</code></pre>
+<h2 id="why-generators"><a class="header" href="#why-generators">Why generators?</a></h2>
+<p>Generators are useful in a lot of applications.</p>
+<p>When working with a large collection, you might not want to put all of its values into memory. A generator can be used to work on larger data piece-by-piece, saving memory and improving performance.</p>
+<p>Generators are also very helpful when a process or calculation is complex, expensive, or infinite:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+</code></pre>
+<p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
+<pre><code></code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
+<p>A clean professional setup for Python projects in Public Repositories:</p>
+<ul>
+<li>
+<p>Typing: add type hints everywhere (inputs/outputs especially).</p>
+</li>
+<li>
+<p>Formatter: Black (auto-format, no arguments, saves you brain cells).</p>
+</li>
+<li>
+<p>Imports: isort (keeps imports clean, alphabetized).</p>
+</li>
+<li>
+<p>Linting: flake8 or ruff (to catch stray sins).
+(On a local machine, python-lsp-server already includes flake8.)</p>
+</li>
+<li>
+<p>Type checking: mypy.</p>
+</li>
+<li>
+<p>Testing: pytest.</p>
+</li>
+<li>
+<p>CI/CD: GitHub Actions with those steps baked in.</p>
+</li>
+</ul>
+<p>You can set up all of these elements in a <code>pyproject.toml</code> file.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Control Flow - Debugging Grimoire</title>
+        <title>Python Repository Setup - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,49 +175,43 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
-<pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
-
-for friend in friends:
-    print(f"{friend} is my friend.")
-</code></pre>
-<h3 id="while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game"><a class="header" href="#while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game">While Loop: Repeats until the user decides to stop playing the guessing game.</a></h3>
-<pre><code class="language-python">number = 7
-
-while True:
-    user_input = input("Would you like to play? (Y/n)")
-    if user_input == "n":
-        break
-
-    user_number = int(input("Guess our number: "))
-    if user_number == number:
-        print("you guessed correctly!")
-    elif abs(number - user_number) == 1:
-        print("You were off by one.")
-    else:
-        print("sorry, it's wrong!")
-</code></pre>
-<h3 id="unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs">Unpacking: Demonstrates unpacking keyword arguments with **kwargs.</a></h3>
-<pre><code class="language-python">def named(**kwargs):
-    print(kwargs)
-
-def print_nicely(**kwargs):
-    named(**kwargs)
-    for arg, value in kwargs.items():
-        print(f"{arg}: {value}")
-
-print_nicely(name= "bob", age= "25")
-</code></pre>
+                        <h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
+<p>A clean professional setup for Python projects in Public Repositories:</p>
+<ul>
+<li>
+<p>Typing: add type hints everywhere (inputs/outputs especially).</p>
+</li>
+<li>
+<p>Formatter: Black (auto-format, no arguments, saves you brain cells).</p>
+</li>
+<li>
+<p>Imports: isort (keeps imports clean, alphabetized).</p>
+</li>
+<li>
+<p>Linting: flake8 or ruff (to catch stray sins).
+(On a local machine, python-lsp-server already includes flake8.)</p>
+</li>
+<li>
+<p>Type checking: mypy.</p>
+</li>
+<li>
+<p>Testing: pytest.</p>
+</li>
+<li>
+<p>CI/CD: GitHub Actions with those steps baked in.</p>
+</li>
+</ul>
+<p>You can set up all of these elements in a <code>pyproject.toml</code> file.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/python/basics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../programming/python/fundamentals/generators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/python/functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../programming/ruby/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -227,11 +221,11 @@ print_nicely(name= "bob", age= "25")
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/python/basics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../programming/python/fundamentals/generators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/python/functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../programming/ruby/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

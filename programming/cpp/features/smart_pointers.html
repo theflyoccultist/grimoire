@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Smart Pointers - Debugging Grimoire</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Debugging Grimoire</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="smart-pointers"><a class="header" href="#smart-pointers">Smart Pointers</a></h1>
+<p>Smart pointers are a modern C++ feature designed to provide automatic memory management, helping to prevent leaks and dangling pointers commonly associated with raw pointers. They act as wrappers around raw pointers, adding additional functionality such as automatic memory deallocation when the pointer is no longer needed.</p>
+<p>Smart pointers are typically implemented as class templates in the C++ standard library. The two most commonly used smart pointers are <code>std::unique_ptr</code> and <code>std::shared_ptr</code>.</p>
+<h2 id="unique-pointers"><a class="header" href="#unique-pointers">Unique pointers</a></h2>
+<p><code>std::unique_ptr</code> is a smart pointer that owns the object exclusively. It ensures that at any given time, only one <code>std::unique_ptr</code> object owns the resource. When the owning <code>std::unique_ptr</code> is destroyed or reset, it automatically destructs the objects and releases its memory.</p>
+<pre><code class="language-cpp">#include &lt;memory&gt;
+// Declaring and defining a unique pointer
+auto rightful_king_of_england = std::make_unique&lt;std::string&gt;("Excalibur");
+
+// Unique pointers cannot be copied or assigned
+auto mordred = rightful_king_of_england; // Error: Cannot copy a unique_ptr
+
+</code></pre>
+<h3 id="advantages-of-stdmake_unique"><a class="header" href="#advantages-of-stdmake_unique">Advantages of <code>std::make_unique()</code></a></h3>
+<p>When creating a <code>std::unique_ptr</code>, it's preferable to use <code>std::make_unique()</code> instead of directly using <code>new</code> to allocate memory. <code>std::make_unique()</code> provides several advantages:</p>
+<ol>
+<li><strong>Exception safety</strong>: <code>std::make_unique()</code> guarantees exception safety. If an exception is thrown during the construction of the object, memory will be automatically deallocated, preventing memory leaks.</li>
+<li><strong>Clarity</strong>: Using <code>std::make_unique()</code> makes code clearer and more concise. It eliminates the need to explicitly specify the type being allocated, as the template arguments are deduced automatically.</li>
+<li><strong>Optimization Opportunities</strong>: Compilers have the opportunity to optimize <code>std::make_unique()</code> more effectively than manually allocating memory with new, potentially resulting in improved performance.</li>
+<li><strong>Avoiding Misuse</strong>: Deleting the underlying resource is possible, when the <code>std::unique_ptr</code> is constructed manually. That would lead to undefined behavior, when the <code>std::unique_ptr</code> tries to delete it at its end of scope.</li>
+</ol>
+<h2 id="shared-pointers"><a class="header" href="#shared-pointers">Shared pointers</a></h2>
+<p><code>std::shared_ptr</code> is a smart pointer that allows multiple <code>std::shared_ptr</code> objects to share ownership of the same resource. It keeps track of how many shared pointers are referencing the resource, and deallocates the memory only when the last shared pointer owning the resource goes out of scope or is reset.</p>
+<pre><code class="language-cpp">// Declaring and defining a shared pointer to a dynamically allocated string
+auto martian_congressional_republic = std::make_shared&lt;std::string&gt;("protomolecule");
+
+// Creating more shared pointer that shares ownership
+auto outer_planets_alliance = martian_congressional_republic;
+auto united_nations = martian_congressional_republic;
+</code></pre>
+<blockquote>
+<p>In C++17 and below, using <code>std::shared_ptr</code> with arrays via <code>std::make_shared&lt;T[]&gt;</code> is not directly supported. While it's possible to allocate arrays with <code>std::make_shared&lt;T[]&gt;</code>, creating shared pointers directly from them may lead to undefined behavior due to differences in memory management between single objects and arrays. Instead, consider using <code>std::vector</code> or custom deletion functions to manage arrays with shared pointers effectively. Always ensure compatibility with your compiler and standard library implementation when dealing with array allocations and shared pointers in C++17.</p>
+</blockquote>
+<h3 id="advantages-of-stdmake_shared"><a class="header" href="#advantages-of-stdmake_shared">Advantages of <code>std::make_shared()</code></a></h3>
+<p>Similar to <code>std::make_unique()</code>, <code>std::make_shared()</code> offers benefits such as improved memory efficiency, exception safety, and readability. It combines memory allocation for the control block and the managed object into a single operation, enhancing efficiency and reducing the risk of memory leaks. Additionally, automatic deduction of template arguments simplifies code and enhances readability. Using <code>std::make_shared()</code> promotes cleaner, safer, and more efficient code when working with <code>std::shared_ptr</code> objects in C++.</p>
+<h2 id="weak-pointers"><a class="header" href="#weak-pointers">Weak pointers</a></h2>
+<p><code>std::weak_ptr</code> is a companion class to <code>std::shared_ptr</code> that provides a non-owning "weak" reference to an object managed by a shared pointer. It allows access to the resource without affecting its lifetime. Weak pointers are useful in scenarios where cyclic references need to be broken to prevent memory leaks.</p>
+<h3 id="stdweak_ptr-and-cyclic-ownership"><a class="header" href="#stdweak_ptr-and-cyclic-ownership"><code>std::weak_ptr</code> and Cyclic Ownership</a></h3>
+<p><code>std::weak_ptr</code> was designed to address the issue of cyclic ownership, also known as circular references, that can occur when using <code>std::shared_ptr</code>.</p>
+<p>In a cyclic ownership scenario, two or more <code>std::shared_ptr</code> objects are referencing each other, creating a cycle where none of the objects can be deleted because they have strong references to each other, leading to memory leaks.</p>
+<p><code>std::weak_ptr</code> provides a solution to this problem by allowing weak references to shared objects without contributing to their reference count. This means that it can observe and access the shared object but doesn't prevent it from being deleted. If all strong references to the shared object are released, the object is destroyed, and weak pointers observing it are automatically reset to <code>nullptr</code>.</p>
+<h3 id="example-of-a-circular-reference"><a class="header" href="#example-of-a-circular-reference">Example of a circular reference:</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Human {
+    std::string name;
+    std::shared_ptr&lt;Human&gt; friend_for_life; // uh-oh
+
+    Human(std::string n) : name(std::move(n)) {
+        std::cout &lt;&lt; name &lt;&lt; " created\n";
+    }
+
+    ~Human() {
+        std::cout &lt;&lt; name &lt;&lt; " destroyed\n";
+    }
+};
+
+int main() {
+    {
+        auto alice = std::make_shared&lt;Human&gt;("Alice");
+        auto bob   = std::make_shared&lt;Human&gt;("Bob");
+
+        // circular reference
+        alice-&gt;friend_for_life = bob;
+        bob-&gt;friend_for_life   = alice;
+    }
+    // you'd *expect* both destructors to run here... but nope!
+
+    std::cout &lt;&lt; "End of main\n";
+}
+
+</code></pre>
+<p>What happens:</p>
+<ul>
+<li>Alice and Bob both own each other with <code>shared_ptr</code>.</li>
+<li>Reference counts never reach zero.</li>
+<li>Destructor never called: leak.</li>
+</ul>
+<p>The output looks like this:</p>
+<pre><code>Alice created
+Bob created
+End of main
+</code></pre>
+<h3 id="the-fixed-version-break-one-side-with-a-weak-pointer"><a class="header" href="#the-fixed-version-break-one-side-with-a-weak-pointer">The fixed version (break one side with a weak pointer):</a></h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Human {
+    std::string name;
+    std::weak_ptr&lt;Human&gt; friend_for_life; // weak = no ownership
+
+    Human(std::string n) : name(std::move(n)) {
+        std::cout &lt;&lt; name &lt;&lt; " created\n";
+    }
+
+    ~Human() {
+        std::cout &lt;&lt; name &lt;&lt; " destroyed\n";
+    }
+};
+
+int main() {
+    {
+        auto alice = std::make_shared&lt;Human&gt;("Alice");
+        auto bob   = std::make_shared&lt;Human&gt;("Bob");
+
+        // now Alice and Bob point weakly to each other
+        alice-&gt;friend_for_life = bob;
+        bob-&gt;friend_for_life   = alice;
+    }
+    // destructors run as expected, no leak!
+
+    std::cout &lt;&lt; "End of main\n";
+}
+
+</code></pre>
+<p>Output:</p>
+<pre><code>Alice created
+Bob created
+Alice destroyed
+Bob destroyed
+End of main
+</code></pre>
+<h3 id="dangling-pointers-and-stdweak_ptr"><a class="header" href="#dangling-pointers-and-stdweak_ptr">Dangling pointers and <code>std::weak_ptr</code></a></h3>
+<p>Dangling pointers occur when a pointer references an object that has been deleted, leading to undefined behavior when the pointer is dereferenced. <code>std::weak_ptr</code> helps avoid dangling pointers by providing a non-owning, weak reference to an object managed by <code>std::shared_ptr</code>. Here's how to avoid dangling pointers with <code>std::weak_ptr</code>:</p>
+<ol>
+<li>
+<p><strong>Create a <code>std::weak_ptr</code></strong>: Instead of directly holding a <code>std::shared_ptr</code>, create a <code>std::weak_ptr</code> to the shared object.</p>
+</li>
+<li>
+<p><strong>Check for Validity</strong>: Before using the <code>std::weak_ptr</code>, check its validity using the <code>expired()</code> function. This function returns true if the associated shared object has been deleted.</p>
+</li>
+<li>
+<p><strong>Lock the <code>std::weak_ptr</code></strong>: To access the shared object safely, use the <code>lock()</code> function, which returns a <code>std::shared_ptr</code> pointing to the same object if it is still valid. If the object has been deleted, <code>lock()</code> returns an empty <code>std::shared_ptr</code>.</p>
+</li>
+</ol>
+<p>Here's a code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
+<pre><code class="language-cpp">auto node1 = std::make_shared&lt;Node&gt;();
+auto node2 = std::make_shared&lt;Node&gt;();
+
+// Create weak pointers
+node1-&gt;next = node2;
+node2-&gt;next = node1;
+
+// Check validity and lock
+if (auto lockedNode2 = node1-&gt;next.lock()) {
+    // Use lockedNode2 safely
+} else {
+    // Handle case where node2 has been deleted
+}
+
+</code></pre>
+<p>In this example, <code>node1-&gt;next</code> and <code>node2-&gt;next</code> are <code>std::weak_ptr</code> objects. Before accessing the shared object, validity is checked using the <code>expired()</code> function. Then, <code>lock()</code> is used to safely access the shared object. This approach ensures that dangling pointers are avoided when working with <code>std::weak_ptr</code>.</p>
+<h2 id="usage-advice"><a class="header" href="#usage-advice">Usage advice</a></h2>
+<p>Use smart pointers by default: <code>std::unique_ptr</code> for exclusive ownership and <code>std::shared_ptr</code> for shared ownership. Reserve raw pointers for non-owning references or when interfacing with legacy code. In most cases, <code>std::unique_ptr</code> is sufficient for exclusive ownership, as it offers lightweight memory management without the overhead of reference counting. <code>std::shared_ptr</code> should be used sparingly, as it introduces overhead and complexity unless true shared ownership is needed. <code>std::weak_ptr</code> is specialized for breaking cyclic dependencies or observing shared objects, but it's not commonly used.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../programming/cpp/features/tuples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../programming/cpp/algorithms/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../programming/cpp/features/tuples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../programming/cpp/algorithms/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
