@@ -176,7 +176,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
-<h2 id="1-classes--objects"><a class="header" href="#1-classes--objects">1. Classes &amp; Objects</a></h2>
+<h2 id="classes--objects"><a class="header" href="#classes--objects">Classes &amp; Objects</a></h2>
 <p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
 <pre><code class="language-python">class MyClass:
     def __init__(self, name):
@@ -189,7 +189,7 @@ obj = MyClass("PwatPwat")
 
 print(obj.greet())  # Output: Hello, PwatPwat!
 </code></pre>
-<h2 id="2-encapsulation"><a class="header" href="#2-encapsulation">2. Encapsulation</a></h2>
+<h2 id="encapsulation"><a class="header" href="#encapsulation">Encapsulation</a></h2>
 <p>Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).</p>
 <pre><code class="language-python">class Secret:
     def __init__(self):
@@ -204,7 +204,7 @@ print(obj._semi_private)  # Can still access
 print(obj.reveal())       # Use methods to access private attributes
 </code></pre>
 <p>Note: __truly_private gets name-mangled into _Secret__truly_private, but if you access it directly, Python will just sigh at you.</p>
-<h2 id="3-inheritance-because-writing-code-twice-is-for-losers"><a class="header" href="#3-inheritance-because-writing-code-twice-is-for-losers">3. Inheritance (Because Writing Code Twice is for Losers)</a></h2>
+<h2 id="inheritance-because-writing-code-twice-is-for-losers"><a class="header" href="#inheritance-because-writing-code-twice-is-for-losers">Inheritance (Because Writing Code Twice is for Losers)</a></h2>
 <p>Python lets you inherit from multiple parents, unlike some other languages that make you jump through hoops.</p>
 <pre><code class="language-python">class Parent:
     def speak(self):
@@ -234,7 +234,7 @@ baby = Kid()
 print(baby.trait())  # Output: Inherited from Mom.
 </code></pre>
 <p>Python follows the MRO (Method Resolution Order), which basically means it checks from left to right.</p>
-<h2 id="4-composition-aka-instead-of-inheriting-just-contain-it"><a class="header" href="#4-composition-aka-instead-of-inheriting-just-contain-it">4. Composition (a.k.a "Instead of Inheriting, Just Contain It")</a></h2>
+<h2 id="composition-aka-instead-of-inheriting-just-contain-it"><a class="header" href="#composition-aka-instead-of-inheriting-just-contain-it">Composition (a.k.a "Instead of Inheriting, Just Contain It")</a></h2>
 <p>Instead of making everything an inheritance mess, composition lets you have objects inside other objects.</p>
 <pre><code class="language-python">class Bookshelf:
     def __init__(self, *books):
@@ -263,7 +263,7 @@ print(shelf)
 <li>When inheritance doesn’t make sense (e.g., A Bookshelf is not a Book).</li>
 <li>When you need modularity and reusability without making a family tree out of your classes.</li>
 </ul>
-<h2 id="5-class-methods-classmethod"><a class="header" href="#5-class-methods-classmethod">5. Class Methods (<code>@classmethod</code>)</a></h2>
+<h2 id="class-methods-classmethod"><a class="header" href="#class-methods-classmethod">Class Methods (<code>@classmethod</code>)</a></h2>
 <p>A class method receives the class itself (cls) as the first argument instead of an instance. This lets you create alternative constructors.</p>
 <pre><code class="language-python">class Book:
     TYPEZ = ("hardcover", "paperback")
@@ -296,7 +296,7 @@ print(book, light)
 <li>You need alternative constructors (hardcover() and paperback() in this case).</li>
 <li>You want to modify class-level attributes rather than instance attributes.</li>
 </ul>
-<h3 id="class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management"><a class="header" href="#class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management">Class Statis Method 2: Demonstrates class methods and static methods in store management.</a></h3>
+<h2 id="class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management"><a class="header" href="#class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management">Class Statis Method 2: Demonstrates class methods and static methods in store management.</a></h2>
 <pre><code class="language-python">class Store:
     def __init__(self, name):
         self.name = name
@@ -326,8 +326,6 @@ print(book, light)
         # It should be in the format 'NAME, total stock price: TOTAL'
 
 
-########################################################################################
-
 store = Store("Test")
 store2 = Store("Amazon")
 store2.add_item("Keyboard", 160)
@@ -338,7 +336,7 @@ Store.franchise(store2)  # returns a Store with name "Amazon - franchise"
 Store.store_details(store)  # returns "Test, total stock price: 0"
 Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 </code></pre>
-<h2 id="6-using-super-because-you-actually-want-your-parent-class-to-do-something"><a class="header" href="#6-using-super-because-you-actually-want-your-parent-class-to-do-something">6. Using super() (Because You Actually Want Your Parent Class to Do Something)</a></h2>
+<h2 id="using-super-because-you-actually-want-your-parent-class-to-do-something"><a class="header" href="#using-super-because-you-actually-want-your-parent-class-to-do-something">Using super() (Because You Actually Want Your Parent Class to Do Something)</a></h2>
 <p><code>super()</code> lets you call methods from a parent class without hardcoding the class name. This is useful when dealing with multiple levels of inheritance.</p>
 <pre><code class="language-python">class Animal:
     def __init__(self, name):
@@ -359,7 +357,7 @@ dog = Dog("Rex", "Golden Retriever")
 print(dog.name)  # Output: Rex
 print(dog.speak())  # Output: Woof!
 </code></pre>
-<h2 id="7-the-__repr__-method-for-when-you-actually-care-about-debugging"><a class="header" href="#7-the-__repr__-method-for-when-you-actually-care-about-debugging">7. The <code>__repr__</code> Method (For When You Actually Care About Debugging)</a></h2>
+<h2 id="the-__repr__-method-for-when-you-actually-care-about-debugging"><a class="header" href="#the-__repr__-method-for-when-you-actually-care-about-debugging">The <code>__repr__</code> Method (For When You Actually Care About Debugging)</a></h2>
 <p><code>__repr__</code> is like <code>__str__</code>, but it's for developers, not users. It’s meant to return a string that recreates the object.</p>
 <pre><code class="language-python">class Person :
     def __init__(self, name, age):
@@ -380,7 +378,7 @@ print(katheryn)
 <li>You want repr(obj) to return something meaningful (instead of &lt;Person object at 0x1234&gt;).</li>
 <li>You’re passing objects around and need better logging.</li>
 </ul>
-<h2 id="8-metaclasses--decorators"><a class="header" href="#8-metaclasses--decorators">8. Metaclasses &amp; Decorators</a></h2>
+<h2 id="metaclasses--decorators"><a class="header" href="#metaclasses--decorators">Metaclasses &amp; Decorators</a></h2>
 <p>Python allows modifying classes at runtime and using decorators to dynamically alter functions.</p>
 <pre><code class="language-python">def add_greeting(cls):
     cls.greet = lambda self: f"Hello from {self.__class__.__name__}!"

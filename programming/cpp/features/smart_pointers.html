@@ -315,7 +315,7 @@ End of main
 <p><strong>Lock the <code>std::weak_ptr</code></strong>: To access the shared object safely, use the <code>lock()</code> function, which returns a <code>std::shared_ptr</code> pointing to the same object if it is still valid. If the object has been deleted, <code>lock()</code> returns an empty <code>std::shared_ptr</code>.</p>
 </li>
 </ol>
-<p>Here's a code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
+<p>Here's another code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
 <pre><code class="language-cpp">auto node1 = std::make_shared&lt;Node&gt;();
 auto node2 = std::make_shared&lt;Node&gt;();
 

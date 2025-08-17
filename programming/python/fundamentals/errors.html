@@ -175,7 +175,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
+                        <h1 id="error-handling-in-python"><a class="header" href="#error-handling-in-python">Error Handling in Python</a></h1>
 <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
 <pre><code class="language-python">def divide(dividend, divisor):
     if divisor == 0:
@@ -204,6 +204,29 @@ grades = [15, 100, 84, 54, 10, 90]
 # Welcome to the average grade program.
 # The average grade is 58.833333333336.
 # Thank you!
+</code></pre>
+<h3 id="error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries"><a class="header" href="#error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries">Error Handling: if the element was not found in a list of dictionaries.</a></h3>
+<pre><code class="language-python">def search(sequence, expected, finder):
+    for elem in sequence:
+        if finder(elem) == expected:
+            return elem
+    raise RuntimeError(f"Could not find an element with {expected}.")
+
+friends = [
+    {"name": "Rolf Lilia", "age": 28},
+    {"name": "Odin the Great", "age": 877},
+    {"name": "Nyarlathotep", "age": 8888811},
+]
+
+def get_friend_name(friend):
+    return friend["name"]
+
+print(search(friends, "Nyarlathotep", get_friend_name))
+# {'name': 'Nyarlathotep', 'age': 8888811}
+
+
+print(search(friends, "PwatPwat", get_friend_name))
+# RuntimeError: Could not find an element with PwatPwat.
 </code></pre>
 <h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
 <pre><code class="language-python">class TooManyPagesError(ValueError):
@@ -249,7 +272,7 @@ except TooManyPagesError as e:
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/advanced.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -263,7 +286,7 @@ except TooManyPagesError as e:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/advanced.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

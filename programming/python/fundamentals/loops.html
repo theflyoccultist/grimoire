@@ -176,19 +176,29 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="loops"><a class="header" href="#loops">Loops</a></h1>
-<h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
-<pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
+<p>Python has two looping constructs. <code>while</code> loops for indefinite (uncounted) iteration and <code>for</code> loops for definite, (counted) iteration. The keywords <code>break</code>, <code>continue</code>, and <code>else</code> help customize loop behavior. <code>range()</code> and <code>enumerate()</code> help with loop counting and indexing.</p>
+<h2 id="while-loops"><a class="header" href="#while-loops">While Loops</a></h2>
+<p><code>while</code> loops will continue to execute as long as the <code>loop expression</code> or "test" evaluates to <code>True</code> in a <code>boolean context</code>, terminating when it evaluates to <code>False</code>:</p>
+<pre><code class="language-python">
+# Lists are considered "truthy" in a boolean context if they
+# contain one or more values, and "falsy" if they are empty.
 
-for friend in friends:
-    print(f"{friend} is my friend.")
+&gt;&gt;&gt; placeholders = ["spam", "ham", "eggs", "green_spam", "green_ham", "green_eggs"]
 
-# Anna is my friend.
-# Bellatrix is my friend.
-# Ianou is my friend.
-# Alexis is my friend.
+&gt;&gt;&gt; while placeholders:
+...     print(placeholders.pop(0))
+...
+'spam'
+'ham'
+'eggs'
+'green_spam'
+'green_ham'
+'green_eggs'
+
 </code></pre>
-<h3 id="while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game"><a class="header" href="#while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game">While Loop: Repeats until the user decides to stop playing the guessing game.</a></h3>
-<pre><code class="language-python">number = 7
+<p>Thanks to <code>while</code> loops, we can improve on the guessing number program that we've seen previously. This program will stop only once the user has guessed the number correctly.</p>
+<pre><code class="language-python">
+number = 7
 
 while True:
     user_input = input("Would you like to play? (Y/n)")
@@ -202,6 +212,203 @@ while True:
         print("You were off by one.")
     else:
         print("sorry, it's wrong!")
+
+</code></pre>
+<h2 id="for-loop"><a class="header" href="#for-loop">For Loop:</a></h2>
+<p>The basic <code>for</code> loop in Python is better described as a <code>for each</code> which cycles through the values of any iterable object, terminating when there are no values returned from calling <code>next()</code> (raising a <code>StopIteration</code>).</p>
+<p>This simple program demonstrates looping through a list with a for loop.</p>
+<pre><code class="language-python">
+friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
+
+for friend in friends:
+    print(f"{friend} is my friend.")
+
+# Anna is my friend.
+# Bellatrix is my friend.
+# Ianou is my friend.
+# Alexis is my friend.
+
+</code></pre>
+<p>Another example:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo"]
+
+&gt;&gt;&gt; for word in word_list:
+...    if word.startswith("b"):
+...        print(f"{word.title()} starts with a B.")
+...    else:
+...        print(f"{word.title()} doesn't start with a B.")
+...
+'Bird starts with a B.'
+'Chicken doesn\'t start with a B.'
+'Barrel starts with a B.'
+'Bongo starts with a B.'
+
+</code></pre>
+<h2 id="sequence-object-range"><a class="header" href="#sequence-object-range">Sequence Object <code>range()</code></a></h2>
+<p>When there isn't a specific <code>iterable</code> given, the special <code>range()</code> sequence is used as a loop counter. <code>range()</code> requires an <code>int</code> before which to <code>stop</code> the sequence, and can optionally take <code>start</code> and <code>step</code> parameters. If no start number is provided, the sequence will begin with 0. <code>range()</code> objects are lazy (values are generated on request), support all common sequence operations, and take up a fixed amount of memory, no matter how long the sequence specified. Interestingly, <code>range()</code> is not an iterator, and can be used in many non-looping contexts where a sequence of numbers is needed.</p>
+<pre><code class="language-python">
+# Here we use range to produce some numbers, rather than creating a list of them in memory.
+# The values will start with 1 and stop *before* 7.
+
+&gt;&gt;&gt; for number in range(1, 7):
+...    if number % 2 == 0:
+...       print(f"{number} is even.")
+...    else:
+...       print(f"{number} is odd.")
+'1 is odd.'
+'2 is even.'
+'3 is odd.'
+'4 is even.'
+'5 is odd.'
+'6 is even.'
+
+# range() can also take a *step* parameter.
+# Here we use range to produce only the "odd" numbers, starting with 3 and stopping *before* 15.
+
+&gt;&gt;&gt; for number in range(3, 15, 2):
+...    if number % 2 == 0:
+...       print(f"{number} is even.")
+...    else:
+...       print(f"{number} is odd.")
+...
+'3 is odd.'
+'5 is odd.'
+'7 is odd.'
+'9 is odd.'
+'11 is odd.'
+'13 is odd.'
+
+</code></pre>
+<h2 id="values-and-indexes-with-enumerate"><a class="header" href="#values-and-indexes-with-enumerate">Values and Indexes with enumerate()</a></h2>
+<p>If both values and indexes are needed, the built-in <code>enumerate(&lt;iterable&gt;)</code> will return an <code>iterator</code> over (<code>index</code>, <code>value</code>) pairs:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "apple"]
+
+# *index* and *word* are the loop variables.
+# Loop variables can be any valid python name.
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at index {index}) starts with a B.")
+...    else:
+...        print(f"{word.title()} (at index {index}) doesn't start with a B.")
+...
+'Bird (at index 0) starts with a B.'
+'Chicken (at index 1) doesn\'t start with a B.'
+'Barrel (at index 2) starts with a B.'
+'Apple (at index 3) doesn\'t start with a B.'
+
+
+# The same method can be used as a "lookup" for pairing items between two lists.
+# Of course, if the lengths or indexes don't line up, this doesn't work.
+
+&gt;&gt;&gt; word_list = ["cat", "chicken", "barrel", "apple", "spinach"]
+&gt;&gt;&gt; category_list = ["mammal", "bird", "thing", "fruit", "vegetable"]
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    print(f"{word.title()} is in category: {category_list[index]}.")
+...
+'Cat is in category: mammal.'
+'Chicken is in category: bird.'
+'Barrel is in category: thing.'
+'Apple is in category: fruit.'
+'Spinach is in category: vegetable.'
+
+</code></pre>
+<p>The <code>enumerate(&lt;iterable&gt;)</code> function can also be set to <code>start</code> the index count at a different number:</p>
+<pre><code class="language-python">
+# Here, the index count will start at 1.
+&gt;&gt;&gt; for position, word in enumerate(word_list, start=1):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at position {position}) starts with a B.")
+...    else:
+...        print(f"{word.title()} (at position {position}) doesn't start with a B.")
+...
+'Bird (at position 1) starts with a B.'
+'Chicken (at position 2) doesn\'t start with a B.'
+'Barrel (at position 3) starts with a B.'
+'Apple (at position 4) doesn\'t start with a B.'
+
+</code></pre>
+<h2 id="altering-loop-behavior"><a class="header" href="#altering-loop-behavior">Altering Loop Behavior</a></h2>
+<p>The <code>continue</code> keyword can be used to skip forward to the next iteration cycle:</p>
+<pre><code class="language-python">
+word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple", "bear"]
+
+# This will skip *bird*, at index 0
+for index, word in enumerate(word_list):
+    if index == 0:
+        continue
+    if word.startswith("b"):
+        print(f"{word.title()} (at index {index}) starts with a b.")
+
+'Barrel (at index 2) starts with a b.'
+'Bongo (at index 3) starts with a b.'
+'Bear (at index 6) starts with a b.'
+
+</code></pre>
+<p>The <code>break</code> (like in many C-related languages) keyword can be used to stop the iteration and "break out" of the innermost enclosing <code>loop</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt;  word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at index {index}) starts with a B.")
+...    elif word == "sliver":
+...       break
+...    else:
+...       print(f"{word.title()} doesn't start with a B.")
+... print("loop broken.")
+...
+'Bird (at index 0) starts with a B.'
+'Chicken doesn\'t start with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'loop broken.'
+
+</code></pre>
+<p>The loop <code>else</code> clause is unique to Python and can be used for "wrap up" or "concluding" actions when iteration has been exhausted. Statements following the <code>else</code> keyword will not execute if iteration terminates via <code>break</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
+
+# Using enumerate to get both an index and a value.
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    word = word.title()
+...    if word.startswith("B"):
+...        print(f"{word} (at index {index}) starts with a B.")
+
+...# This executes once *StopIteration* is raised and 
+...# there are no more items to iterate through.
+...# Note the indentation, which lines up with the for keyword.
+...else:
+...    print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
+...
+'Bird (at index 0) starts with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'Found the above b-words, out of 6 words in the word list.'
+
+
+# Terminating a loop via *break* will bypass the loop *else* clause
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    word = word.title()
+...    if word.startswith("B"):
+...       print(f"{word} (at index {index}) starts with a B.")
+...    if word.startswith("S"):
+...        print("Found an S, stopping iteration.")
+...        break
+
+... # This statement does not run, because a *break* was triggered.
+... else:
+...   print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
+...
+'Bird (at index 0) starts with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'Found an S, stopping iteration.'
 </code></pre>
 
                     </main>

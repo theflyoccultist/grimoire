@@ -189,68 +189,6 @@ divide (6, 0)
 divide (6, 2)
 # 3.0
 </code></pre>
-<h3 id="functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs"><a class="header" href="#functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs">Functions with Arguments 2: Shows function parameter unpacking with *args and **kwargs.</a></h3>
-<pre><code class="language-python">def add(x, y):
-    return x + y
-
-num = [3, 5]
-add(*num)
-# 8
-
-num = [3, 8, 4, 2, 8]
-add(*num)
-# Error!
-
-nums = {"x": 15, "y": 26}
-add(**nums)
-# 41
-
-def multiply(*args):
-    total = 1
-    for arg in args:
-        total = total * arg
-
-    return total
-
-num = [8, 8]
-multiply(*num)
-# 64
-
-num = [8, 4, 5, 1, 2, 3, 2]
-multiply(*num)
-# 1920
-
-def apply(*argz, operator):
-    if operator == "*":
-        return multiply(*argz)
-    elif operator == "+":
-        return sum(argz)
-    else:
-        return "no valid operator detected."
-    
-apply(1, 3, 5, 7, operator="+")
-# 16
-</code></pre>
-<h3 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h3>
-<pre><code class="language-python">from typing import List, Optional
-
-class Student:
-    def __init__(self, name: str, grades: Optional[List[int]] = None):
-        self.name = name
-        self.grades = grades or []
-
-    def take_exam(self, result: int):
-        self.grades.append(result)
-
-bob = Student("Bob")
-rolf = Student("Rolf")
-bob.take_exam(90)
-print(bob.grades)
-print(rolf.grades)
-# [90]
-# []
-</code></pre>
-<p>Yes, you can also feature type hints from the typing library.</p>
 <h3 id="lambda-we-are-getting-functional"><a class="header" href="#lambda-we-are-getting-functional">Lambda: We are getting functional!</a></h3>
 <pre><code class="language-python">add = lambda x , y : x + y
 print(add(8,5))

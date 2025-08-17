@@ -176,22 +176,18 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="-debugging-grimoire-the-tome-of-cursed-knowledge"><a class="header" href="#-debugging-grimoire-the-tome-of-cursed-knowledge">🕯️ Debugging Grimoire: The Tome of Cursed Knowledge</a></h2>
-<p>This is my personal collection of <strong>hard-earned debugging wisdom</strong>, gathered from countless nights battling <strong>rogue services, broken deployments, and cursed error messages.</strong> The goal is simple: <strong>never struggle with the same problem twice.</strong></p>
-<p>Rather than leaving my notes scattered across <strong>random bookmarks, Discord servers, and Google Docs</strong>, this grimoire serves as a <strong>single source of truth</strong> for all things <strong>database, Linux, and DevOps.</strong> More sections might be added over time—especially for <strong>programming languages and specific frameworks.</strong></p>
+                        <h2 id="the-grimoire-tome-of-cursed-knowledge"><a class="header" href="#the-grimoire-tome-of-cursed-knowledge">The Grimoire: Tome of Cursed Knowledge</a></h2>
+<p>This is the place where I collect all the knowledge earned during my self taught computer science journey, a grimoire that freely, available to be consulted at any time.</p>
+<p>Rather than leaving my notes scattered across random bookmarks, Discord servers, notebooks and Google Docs, this grimoire serves as a <strong>single source of truth</strong> for all the things that I'm learning during in this tedious, painful path.</p>
 <p>If you're reading this, you're either <strong>past-me, future-me, or an unfortunate soul who has stumbled upon my secret knowledge.</strong> Either way, remember:</p>
 <ul>
 <li>
 <p>🛠️ Debugging is an art, not a science.</p>
 </li>
 <li>
-<p>💀 Nothing works until it does.</p>
-</li>
-<li>
-<p>✅ The green checkmark is the ultimate goal.</p>
+<p>💀 Despite accumulating knowledge, there will still always be a moment where you'll be thrown into the unknown, left to figure it out. That's just how things are.</p>
 </li>
 </ul>
-<p>Welcome to the <strong>Grimoire of Debugging Madness.</strong> May it save me (and possibly others) from unnecessary suffering.</p>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-ssh-for-github"><a class="header" href="#setting-up-ssh-for-github">Setting Up SSH for GitHub</a></h1>
 <p>This will make GitHub stop asking you for your username and access token every time.</p>
 <h2 id="step-1-check-if-you-already-have-a-key"><a class="header" href="#step-1-check-if-you-already-have-a-key">Step 1: Check if you already have a key</a></h2>
@@ -8271,7 +8267,7 @@ End of main
 <p><strong>Lock the <code>std::weak_ptr</code></strong>: To access the shared object safely, use the <code>lock()</code> function, which returns a <code>std::shared_ptr</code> pointing to the same object if it is still valid. If the object has been deleted, <code>lock()</code> returns an empty <code>std::shared_ptr</code>.</p>
 </li>
 </ol>
-<p>Here's a code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
+<p>Here's another code example demonstrating the use of <code>std::weak_ptr</code> to avoid dangling pointers:</p>
 <pre><code class="language-cpp">auto node1 = std::make_shared&lt;Node&gt;();
 auto node2 = std::make_shared&lt;Node&gt;();
 
@@ -13295,6 +13291,15 @@ requests, dotenv, venv, black, pytest
 <li>Error Handling</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="user-input"><a class="header" href="#user-input">User Input</a></h1>
+<h3 id="age-calculation-this-program-converts-an-input-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-an-input-age-into-months-and-seconds">Age Calculation: This program converts an input age into months and seconds.</a></h3>
+<pre><code class="language-python">age = int(input("Enter your age:"))
+months = age * 12
+seconds = age * 365.25 * 24 * 60
+print (f"{age} years old equals to {months} months and {seconds} seconds.")
+
+# Enter your age: 5
+# 5 years old equals to 60 months and 2629800.0 seconds.
+</code></pre>
 <h3 id="user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback"><a class="header" href="#user-input-this-program-asks-the-user-to-guess-a-number-and-gives-feedback">User Input: This program asks the user to guess a number and gives feedback.</a></h3>
 <ul>
 <li>Concepts seen: <code>if / elif / else</code> conditions.</li>
@@ -13323,29 +13328,30 @@ if user_input == "y":
 # Guess our number: 7
 # you guessed correctly!
 </code></pre>
-<h3 id="age-calculation-this-program-converts-an-input-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-an-input-age-into-months-and-seconds">Age Calculation: This program converts an input age into months and seconds.</a></h3>
-<pre><code class="language-python">age = int(input("Enter your age:"))
-months = age * 12
-seconds = age * 365.25 * 24 * 60
-print (f"{age} years old equals to {months} months and {seconds} seconds.")
-
-# Enter your age: 5
-# 5 years old equals to 60 months and 2629800.0 seconds.
-</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="loops"><a class="header" href="#loops">Loops</a></h1>
-<h3 id="for-loop-demonstrates-looping-through-a-list-with-a-for-loop"><a class="header" href="#for-loop-demonstrates-looping-through-a-list-with-a-for-loop">For Loop: Demonstrates looping through a list with a for loop.</a></h3>
-<pre><code class="language-python">friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
+<p>Python has two looping constructs. <code>while</code> loops for indefinite (uncounted) iteration and <code>for</code> loops for definite, (counted) iteration. The keywords <code>break</code>, <code>continue</code>, and <code>else</code> help customize loop behavior. <code>range()</code> and <code>enumerate()</code> help with loop counting and indexing.</p>
+<h2 id="while-loops"><a class="header" href="#while-loops">While Loops</a></h2>
+<p><code>while</code> loops will continue to execute as long as the <code>loop expression</code> or "test" evaluates to <code>True</code> in a <code>boolean context</code>, terminating when it evaluates to <code>False</code>:</p>
+<pre><code class="language-python">
+# Lists are considered "truthy" in a boolean context if they
+# contain one or more values, and "falsy" if they are empty.
 
-for friend in friends:
-    print(f"{friend} is my friend.")
+&gt;&gt;&gt; placeholders = ["spam", "ham", "eggs", "green_spam", "green_ham", "green_eggs"]
 
-# Anna is my friend.
-# Bellatrix is my friend.
-# Ianou is my friend.
-# Alexis is my friend.
+&gt;&gt;&gt; while placeholders:
+...     print(placeholders.pop(0))
+...
+'spam'
+'ham'
+'eggs'
+'green_spam'
+'green_ham'
+'green_eggs'
+
 </code></pre>
-<h3 id="while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game"><a class="header" href="#while-loop-repeats-until-the-user-decides-to-stop-playing-the-guessing-game">While Loop: Repeats until the user decides to stop playing the guessing game.</a></h3>
-<pre><code class="language-python">number = 7
+<p>Thanks to <code>while</code> loops, we can improve on the guessing number program that we've seen previously. This program will stop only once the user has guessed the number correctly.</p>
+<pre><code class="language-python">
+number = 7
 
 while True:
     user_input = input("Would you like to play? (Y/n)")
@@ -13359,9 +13365,211 @@ while True:
         print("You were off by one.")
     else:
         print("sorry, it's wrong!")
+
+</code></pre>
+<h2 id="for-loop"><a class="header" href="#for-loop">For Loop:</a></h2>
+<p>The basic <code>for</code> loop in Python is better described as a <code>for each</code> which cycles through the values of any iterable object, terminating when there are no values returned from calling <code>next()</code> (raising a <code>StopIteration</code>).</p>
+<p>This simple program demonstrates looping through a list with a for loop.</p>
+<pre><code class="language-python">
+friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
+
+for friend in friends:
+    print(f"{friend} is my friend.")
+
+# Anna is my friend.
+# Bellatrix is my friend.
+# Ianou is my friend.
+# Alexis is my friend.
+
+</code></pre>
+<p>Another example:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo"]
+
+&gt;&gt;&gt; for word in word_list:
+...    if word.startswith("b"):
+...        print(f"{word.title()} starts with a B.")
+...    else:
+...        print(f"{word.title()} doesn't start with a B.")
+...
+'Bird starts with a B.'
+'Chicken doesn\'t start with a B.'
+'Barrel starts with a B.'
+'Bongo starts with a B.'
+
+</code></pre>
+<h2 id="sequence-object-range"><a class="header" href="#sequence-object-range">Sequence Object <code>range()</code></a></h2>
+<p>When there isn't a specific <code>iterable</code> given, the special <code>range()</code> sequence is used as a loop counter. <code>range()</code> requires an <code>int</code> before which to <code>stop</code> the sequence, and can optionally take <code>start</code> and <code>step</code> parameters. If no start number is provided, the sequence will begin with 0. <code>range()</code> objects are lazy (values are generated on request), support all common sequence operations, and take up a fixed amount of memory, no matter how long the sequence specified. Interestingly, <code>range()</code> is not an iterator, and can be used in many non-looping contexts where a sequence of numbers is needed.</p>
+<pre><code class="language-python">
+# Here we use range to produce some numbers, rather than creating a list of them in memory.
+# The values will start with 1 and stop *before* 7.
+
+&gt;&gt;&gt; for number in range(1, 7):
+...    if number % 2 == 0:
+...       print(f"{number} is even.")
+...    else:
+...       print(f"{number} is odd.")
+'1 is odd.'
+'2 is even.'
+'3 is odd.'
+'4 is even.'
+'5 is odd.'
+'6 is even.'
+
+# range() can also take a *step* parameter.
+# Here we use range to produce only the "odd" numbers, starting with 3 and stopping *before* 15.
+
+&gt;&gt;&gt; for number in range(3, 15, 2):
+...    if number % 2 == 0:
+...       print(f"{number} is even.")
+...    else:
+...       print(f"{number} is odd.")
+...
+'3 is odd.'
+'5 is odd.'
+'7 is odd.'
+'9 is odd.'
+'11 is odd.'
+'13 is odd.'
+
+</code></pre>
+<h2 id="values-and-indexes-with-enumerate"><a class="header" href="#values-and-indexes-with-enumerate">Values and Indexes with enumerate()</a></h2>
+<p>If both values and indexes are needed, the built-in <code>enumerate(&lt;iterable&gt;)</code> will return an <code>iterator</code> over (<code>index</code>, <code>value</code>) pairs:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "apple"]
+
+# *index* and *word* are the loop variables.
+# Loop variables can be any valid python name.
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at index {index}) starts with a B.")
+...    else:
+...        print(f"{word.title()} (at index {index}) doesn't start with a B.")
+...
+'Bird (at index 0) starts with a B.'
+'Chicken (at index 1) doesn\'t start with a B.'
+'Barrel (at index 2) starts with a B.'
+'Apple (at index 3) doesn\'t start with a B.'
+
+
+# The same method can be used as a "lookup" for pairing items between two lists.
+# Of course, if the lengths or indexes don't line up, this doesn't work.
+
+&gt;&gt;&gt; word_list = ["cat", "chicken", "barrel", "apple", "spinach"]
+&gt;&gt;&gt; category_list = ["mammal", "bird", "thing", "fruit", "vegetable"]
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    print(f"{word.title()} is in category: {category_list[index]}.")
+...
+'Cat is in category: mammal.'
+'Chicken is in category: bird.'
+'Barrel is in category: thing.'
+'Apple is in category: fruit.'
+'Spinach is in category: vegetable.'
+
+</code></pre>
+<p>The <code>enumerate(&lt;iterable&gt;)</code> function can also be set to <code>start</code> the index count at a different number:</p>
+<pre><code class="language-python">
+# Here, the index count will start at 1.
+&gt;&gt;&gt; for position, word in enumerate(word_list, start=1):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at position {position}) starts with a B.")
+...    else:
+...        print(f"{word.title()} (at position {position}) doesn't start with a B.")
+...
+'Bird (at position 1) starts with a B.'
+'Chicken (at position 2) doesn\'t start with a B.'
+'Barrel (at position 3) starts with a B.'
+'Apple (at position 4) doesn\'t start with a B.'
+
+</code></pre>
+<h2 id="altering-loop-behavior"><a class="header" href="#altering-loop-behavior">Altering Loop Behavior</a></h2>
+<p>The <code>continue</code> keyword can be used to skip forward to the next iteration cycle:</p>
+<pre><code class="language-python">
+word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple", "bear"]
+
+# This will skip *bird*, at index 0
+for index, word in enumerate(word_list):
+    if index == 0:
+        continue
+    if word.startswith("b"):
+        print(f"{word.title()} (at index {index}) starts with a b.")
+
+'Barrel (at index 2) starts with a b.'
+'Bongo (at index 3) starts with a b.'
+'Bear (at index 6) starts with a b.'
+
+</code></pre>
+<p>The <code>break</code> (like in many C-related languages) keyword can be used to stop the iteration and "break out" of the innermost enclosing <code>loop</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt;  word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    if word.startswith("b"):
+...        print(f"{word.title()} (at index {index}) starts with a B.")
+...    elif word == "sliver":
+...       break
+...    else:
+...       print(f"{word.title()} doesn't start with a B.")
+... print("loop broken.")
+...
+'Bird (at index 0) starts with a B.'
+'Chicken doesn\'t start with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'loop broken.'
+
+</code></pre>
+<p>The loop <code>else</code> clause is unique to Python and can be used for "wrap up" or "concluding" actions when iteration has been exhausted. Statements following the <code>else</code> keyword will not execute if iteration terminates via <code>break</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
+
+# Using enumerate to get both an index and a value.
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    word = word.title()
+...    if word.startswith("B"):
+...        print(f"{word} (at index {index}) starts with a B.")
+
+...# This executes once *StopIteration* is raised and 
+...# there are no more items to iterate through.
+...# Note the indentation, which lines up with the for keyword.
+...else:
+...    print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
+...
+'Bird (at index 0) starts with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'Found the above b-words, out of 6 words in the word list.'
+
+
+# Terminating a loop via *break* will bypass the loop *else* clause
+
+&gt;&gt;&gt; for index, word in enumerate(word_list):
+...    word = word.title()
+...    if word.startswith("B"):
+...       print(f"{word} (at index {index}) starts with a B.")
+...    if word.startswith("S"):
+...        print("Found an S, stopping iteration.")
+...        break
+
+... # This statement does not run, because a *break* was triggered.
+... else:
+...   print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
+...
+'Bird (at index 0) starts with a B.'
+'Barrel (at index 2) starts with a B.'
+'Bongo (at index 3) starts with a B.'
+'Found an S, stopping iteration.'
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lists-1"><a class="header" href="#lists-1">Lists</a></h1>
-<h3 id="lists-example-for-list-comprehension"><a class="header" href="#lists-example-for-list-comprehension">Lists: Example for list comprehension</a></h3>
+<p>A <code>list</code> is a mutable collection of items in sequence. Like most collections (see the built-ins tuple, dict and set), lists can hold reference to any (or multiple) data type(s) - including other lists. Like any sequence, items can be accessed via 0-based index number from the left and -1-based index from the right. Lists can be copied in whole or in part via slice notation or <code>&lt;list&gt;.copy()</code>.</p>
+<p>Lists support both common and mutable sequence operations such as <code>min()</code>/<code>max()</code>, <code>&lt;list&gt;.index()</code>, <code>.append()</code> and <code>.reverse()</code>. List elements can be iterated over using the <code>for item in &lt;list&gt;</code> construct. <code>for index, item in enumerate(&lt;list&gt;)</code> can be used when both the element index and the element value are needed.</p>
+<p>Lists are implemented as dynamic arrays -- similar to Java's <code>Arraylist</code> type, and are most often used to store groups of similar data (strings, numbers, sets etc.) of unknown length (the number of entries may arbitrarily expand or shrink).</p>
+<p>Accessing elements, checking for membership via <code>in</code>, or appending items to the "right-hand" side of a list are all very efficient. Prepending (appending to the "left-hand" side) or inserting into the middle of a list are much less efficient because those operations require shifting elements to keep them in sequence. For a similar data structure that supports memory efficient <code>appends</code>/<code>pops</code> from both sides, see <code>collections.deque</code>, which has approximately the same O(1) performance in either direction.</p>
+<p>Because lists are mutable and can contain references to arbitrary Python objects, they also take up more space in memory than an array.array or a tuple (which is immutable) of the same apparent length. Despite this, lists are an extremely flexible and useful data structure and many built-in methods and operations in Python produce lists as their output.</p>
+<h3 id="example-for-list-comprehension"><a class="header" href="#example-for-list-comprehension">Example for list comprehension</a></h3>
 <pre><code class="language-python">numbers = [1, 3, 5]
 doubled = [x * 2 for x in numbers]
 print(doubled)
@@ -13410,7 +13618,7 @@ else:
 </code></pre>
 <h3 id="dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class">Dictionary 3: Calculates average grades for an individual student and a class.</a></h3>
 <ul>
-<li>you can store pair data, but you can also store different data types like tuples</li>
+<li>Inside of a dictionary, you can store pair data, but you can also store different data types like tuples.</li>
 </ul>
 <pre><code class="language-python">data = {
     "name" : "Jose",
@@ -13465,68 +13673,6 @@ divide (6, 0)
 divide (6, 2)
 # 3.0
 </code></pre>
-<h3 id="functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs"><a class="header" href="#functions-with-arguments-2-shows-function-parameter-unpacking-with-args-and-kwargs">Functions with Arguments 2: Shows function parameter unpacking with *args and **kwargs.</a></h3>
-<pre><code class="language-python">def add(x, y):
-    return x + y
-
-num = [3, 5]
-add(*num)
-# 8
-
-num = [3, 8, 4, 2, 8]
-add(*num)
-# Error!
-
-nums = {"x": 15, "y": 26}
-add(**nums)
-# 41
-
-def multiply(*args):
-    total = 1
-    for arg in args:
-        total = total * arg
-
-    return total
-
-num = [8, 8]
-multiply(*num)
-# 64
-
-num = [8, 4, 5, 1, 2, 3, 2]
-multiply(*num)
-# 1920
-
-def apply(*argz, operator):
-    if operator == "*":
-        return multiply(*argz)
-    elif operator == "+":
-        return sum(argz)
-    else:
-        return "no valid operator detected."
-    
-apply(1, 3, 5, 7, operator="+")
-# 16
-</code></pre>
-<h3 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h3>
-<pre><code class="language-python">from typing import List, Optional
-
-class Student:
-    def __init__(self, name: str, grades: Optional[List[int]] = None):
-        self.name = name
-        self.grades = grades or []
-
-    def take_exam(self, result: int):
-        self.grades.append(result)
-
-bob = Student("Bob")
-rolf = Student("Rolf")
-bob.take_exam(90)
-print(bob.grades)
-print(rolf.grades)
-# [90]
-# []
-</code></pre>
-<p>Yes, you can also feature type hints from the typing library.</p>
 <h3 id="lambda-we-are-getting-functional"><a class="header" href="#lambda-we-are-getting-functional">Lambda: We are getting functional!</a></h3>
 <pre><code class="language-python">add = lambda x , y : x + y
 print(add(8,5))
@@ -13613,7 +13759,7 @@ print(get_password("admin"))
 # 1234
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
-<h2 id="1-classes--objects"><a class="header" href="#1-classes--objects">1. Classes &amp; Objects</a></h2>
+<h2 id="classes--objects"><a class="header" href="#classes--objects">Classes &amp; Objects</a></h2>
 <p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
 <pre><code class="language-python">class MyClass:
     def __init__(self, name):
@@ -13626,7 +13772,7 @@ obj = MyClass("PwatPwat")
 
 print(obj.greet())  # Output: Hello, PwatPwat!
 </code></pre>
-<h2 id="2-encapsulation"><a class="header" href="#2-encapsulation">2. Encapsulation</a></h2>
+<h2 id="encapsulation"><a class="header" href="#encapsulation">Encapsulation</a></h2>
 <p>Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).</p>
 <pre><code class="language-python">class Secret:
     def __init__(self):
@@ -13641,7 +13787,7 @@ print(obj._semi_private)  # Can still access
 print(obj.reveal())       # Use methods to access private attributes
 </code></pre>
 <p>Note: __truly_private gets name-mangled into _Secret__truly_private, but if you access it directly, Python will just sigh at you.</p>
-<h2 id="3-inheritance-because-writing-code-twice-is-for-losers"><a class="header" href="#3-inheritance-because-writing-code-twice-is-for-losers">3. Inheritance (Because Writing Code Twice is for Losers)</a></h2>
+<h2 id="inheritance-because-writing-code-twice-is-for-losers"><a class="header" href="#inheritance-because-writing-code-twice-is-for-losers">Inheritance (Because Writing Code Twice is for Losers)</a></h2>
 <p>Python lets you inherit from multiple parents, unlike some other languages that make you jump through hoops.</p>
 <pre><code class="language-python">class Parent:
     def speak(self):
@@ -13671,7 +13817,7 @@ baby = Kid()
 print(baby.trait())  # Output: Inherited from Mom.
 </code></pre>
 <p>Python follows the MRO (Method Resolution Order), which basically means it checks from left to right.</p>
-<h2 id="4-composition-aka-instead-of-inheriting-just-contain-it"><a class="header" href="#4-composition-aka-instead-of-inheriting-just-contain-it">4. Composition (a.k.a "Instead of Inheriting, Just Contain It")</a></h2>
+<h2 id="composition-aka-instead-of-inheriting-just-contain-it"><a class="header" href="#composition-aka-instead-of-inheriting-just-contain-it">Composition (a.k.a "Instead of Inheriting, Just Contain It")</a></h2>
 <p>Instead of making everything an inheritance mess, composition lets you have objects inside other objects.</p>
 <pre><code class="language-python">class Bookshelf:
     def __init__(self, *books):
@@ -13700,7 +13846,7 @@ print(shelf)
 <li>When inheritance doesn’t make sense (e.g., A Bookshelf is not a Book).</li>
 <li>When you need modularity and reusability without making a family tree out of your classes.</li>
 </ul>
-<h2 id="5-class-methods-classmethod"><a class="header" href="#5-class-methods-classmethod">5. Class Methods (<code>@classmethod</code>)</a></h2>
+<h2 id="class-methods-classmethod"><a class="header" href="#class-methods-classmethod">Class Methods (<code>@classmethod</code>)</a></h2>
 <p>A class method receives the class itself (cls) as the first argument instead of an instance. This lets you create alternative constructors.</p>
 <pre><code class="language-python">class Book:
     TYPEZ = ("hardcover", "paperback")
@@ -13733,7 +13879,7 @@ print(book, light)
 <li>You need alternative constructors (hardcover() and paperback() in this case).</li>
 <li>You want to modify class-level attributes rather than instance attributes.</li>
 </ul>
-<h3 id="class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management"><a class="header" href="#class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management">Class Statis Method 2: Demonstrates class methods and static methods in store management.</a></h3>
+<h2 id="class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management"><a class="header" href="#class-statis-method-2-demonstrates-class-methods-and-static-methods-in-store-management">Class Statis Method 2: Demonstrates class methods and static methods in store management.</a></h2>
 <pre><code class="language-python">class Store:
     def __init__(self, name):
         self.name = name
@@ -13763,8 +13909,6 @@ print(book, light)
         # It should be in the format 'NAME, total stock price: TOTAL'
 
 
-########################################################################################
-
 store = Store("Test")
 store2 = Store("Amazon")
 store2.add_item("Keyboard", 160)
@@ -13775,7 +13919,7 @@ Store.franchise(store2)  # returns a Store with name "Amazon - franchise"
 Store.store_details(store)  # returns "Test, total stock price: 0"
 Store.store_details(store2)  # returns "Amazon, total stock price: 160"
 </code></pre>
-<h2 id="6-using-super-because-you-actually-want-your-parent-class-to-do-something"><a class="header" href="#6-using-super-because-you-actually-want-your-parent-class-to-do-something">6. Using super() (Because You Actually Want Your Parent Class to Do Something)</a></h2>
+<h2 id="using-super-because-you-actually-want-your-parent-class-to-do-something"><a class="header" href="#using-super-because-you-actually-want-your-parent-class-to-do-something">Using super() (Because You Actually Want Your Parent Class to Do Something)</a></h2>
 <p><code>super()</code> lets you call methods from a parent class without hardcoding the class name. This is useful when dealing with multiple levels of inheritance.</p>
 <pre><code class="language-python">class Animal:
     def __init__(self, name):
@@ -13796,7 +13940,7 @@ dog = Dog("Rex", "Golden Retriever")
 print(dog.name)  # Output: Rex
 print(dog.speak())  # Output: Woof!
 </code></pre>
-<h2 id="7-the-__repr__-method-for-when-you-actually-care-about-debugging"><a class="header" href="#7-the-__repr__-method-for-when-you-actually-care-about-debugging">7. The <code>__repr__</code> Method (For When You Actually Care About Debugging)</a></h2>
+<h2 id="the-__repr__-method-for-when-you-actually-care-about-debugging"><a class="header" href="#the-__repr__-method-for-when-you-actually-care-about-debugging">The <code>__repr__</code> Method (For When You Actually Care About Debugging)</a></h2>
 <p><code>__repr__</code> is like <code>__str__</code>, but it's for developers, not users. It’s meant to return a string that recreates the object.</p>
 <pre><code class="language-python">class Person :
     def __init__(self, name, age):
@@ -13817,7 +13961,7 @@ print(katheryn)
 <li>You want repr(obj) to return something meaningful (instead of &lt;Person object at 0x1234&gt;).</li>
 <li>You’re passing objects around and need better logging.</li>
 </ul>
-<h2 id="8-metaclasses--decorators"><a class="header" href="#8-metaclasses--decorators">8. Metaclasses &amp; Decorators</a></h2>
+<h2 id="metaclasses--decorators"><a class="header" href="#metaclasses--decorators">Metaclasses &amp; Decorators</a></h2>
 <p>Python allows modifying classes at runtime and using decorators to dynamically alter functions.</p>
 <pre><code class="language-python">def add_greeting(cls):
     cls.greet = lambda self: f"Hello from {self.__class__.__name__}!"
@@ -13835,16 +13979,10 @@ print(p.greet())  # Output: Hello from Person!
 <li>Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
-<h3 id="destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-shows-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Shows variable unpacking with tuples and lists.</a></h3>
+<h3 id="destructure-a-variable-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Variable unpacking with tuples and lists.</a></h3>
 <ul>
 <li>
 <p>Unpacking with <code>_</code> to ignore middle value.</p>
-</li>
-<li>
-<p>head gets the first item.</p>
-</li>
-<li>
-<p>*tail captures the rest into a list.</p>
 </li>
 <li>
 <p>head gets the first item.</p>
@@ -13865,7 +14003,7 @@ print(head)
 print(tail)
 # [2, 3, 4, 5]
 </code></pre>
-<h3 id="unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-demonstrates-unpacking-keyword-arguments-with-kwargs">Unpacking: Demonstrates unpacking keyword arguments with <code>**kwargs</code>.</a></h3>
+<h3 id="unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-keyword-arguments-with-kwargs">Unpacking keyword arguments with <code>**kwargs</code>.</a></h3>
 <pre><code class="language-python">def named(**kwargs):
     print(kwargs)
 
@@ -13880,80 +14018,62 @@ print_nicely(name= "bob", age= "25")
 # name: bob
 # age: 25
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="advanced"><a class="header" href="#advanced">Advanced</a></h1>
-<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
-<pre><code class="language-python">from imports_mymodule import divide 
-#or import imports_mymodule
+<h2 id="a-python-calculator-accepting-operations-with-more-than-two-numbers"><a class="header" href="#a-python-calculator-accepting-operations-with-more-than-two-numbers">A Python calculator accepting operations with more than two numbers.</a></h2>
+<pre><code class="language-python">
+def multiply(*args):
+    total = 1
+    for arg in args:
+        total = total * arg
 
-print(divide(10,2))
+    return total
+
+
+def substract(*args):
+    diff = args[0]
+    for i in range(1, len(args)):
+        diff = diff - args[i]
+    return diff
+
+
+def divide(*args):
+    diff = args[0]
+    for i in range(1, len(args)):
+        if args[i] == 0:
+            raise ZeroDivisionError("Divisor cannot be 0.")
+        diff = diff / args[i]
+    return diff
+
+
+def apply(*args, operator):
+    if operator == "*":
+        return multiply(*args)
+    elif operator == "/":
+        return divide(*args)
+    elif operator == "+":
+        return sum(args)
+    elif operator == "-":
+        return substract(*args)
+    else:
+        return "no valid operator detected."
+
+
+print(apply(1, 3, 5, 7, operator="*"))
+# 105
+
+print(apply(1, 3, 5, 7, operator="+"))
+# 16
+
+print(apply(10, 2, 3, 2, operator="-"))
+# 3
+
+# print(apply(10, 2, 0, 2, operator="/"))
+# ZeroDivisionError
+
+print(apply(12, 2, 2, 3, operator="/"))
+# 1.0
+
 </code></pre>
-<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
-<pre><code class="language-python">def divide(divident, divisor):
-    return divident/divisor
-
-print("imports_mymodule.py: ", __name__)
-# imports_mymodule.py: __main__
-</code></pre>
-<h3 id="type-hinting-uses-type-hints-for-better-function-and-class-documentation"><a class="header" href="#type-hinting-uses-type-hints-for-better-function-and-class-documentation">Type Hinting: Uses type hints for better function and class documentation.</a></h3>
-<pre><code class="language-python">class Book:
-    TYPES = ("hardcover", "paperback")
-
-    def __init__(self, name: str, book_type: str, weight: int):
-        self.name = name
-        self.book_type = book_type
-        self.weight = weight
-
-    def __repr__(self) -&gt; str:
-        return f"&lt;Book {self.name}, {self.book_type}, weiging {self.weight}g&gt;"
-    
-    @classmethod
-    def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPES[0], page_weight + 100)
-    
-    @classmethod
-    def paperback(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPES[1], page_weight)
-     
-
-book = Book.hardcover("Laurel Hell", 1600)
-light = Book.paperback("the bottle", 400)
-
-print(book, light)
-</code></pre>
-<h3 id="first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions"><a class="header" href="#first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions">First Class Function: Demonstrates passing functions as arguments to other functions.</a></h3>
-<pre><code class="language-python">def divide(dividend, diviser):
-    if diviser == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend/diviser
-
-def calculate(*values, operator):
-    return operator(*values)
-
-result = calculate(20, 4, operator=divide)
-print(result)
-# &lt;Book Laurel Hell, hardcover, weiging 1700g&gt; &lt;Book the bottle, paperback, weiging 400g&gt;
-</code></pre>
-<h3 id="first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries"><a class="header" href="#first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries">First Class Function 2: Uses function arguments to search in a list of dictionaries.</a></h3>
-<pre><code class="language-python">def search(sequence, expected, finder):
-    for elem in sequence:
-        if finder(elem) == expected:
-            return elem
-    raise RuntimeError(f"Could not find an element with {expected}.")
-
-friends = [
-    {"name": "Rolf Lilia", "age": 28},
-    {"name": "Odin the Great", "age": 877},
-    {"name": "Nyarlathotep", "age": 8888811},
-]
-
-def get_friend_name(friend):
-    return friend["name"]
-
-print(search(friends, "Nyarlathotep", get_friend_name))
-# {'name': 'Nyarlathotep', 'age': 8888811}
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling-in-python"><a class="header" href="#error-handling-in-python">Error Handling in Python</a></h1>
 <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
 <pre><code class="language-python">def divide(dividend, divisor):
     if divisor == 0:
@@ -13982,6 +14102,29 @@ grades = [15, 100, 84, 54, 10, 90]
 # Welcome to the average grade program.
 # The average grade is 58.833333333336.
 # Thank you!
+</code></pre>
+<h3 id="error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries"><a class="header" href="#error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries">Error Handling: if the element was not found in a list of dictionaries.</a></h3>
+<pre><code class="language-python">def search(sequence, expected, finder):
+    for elem in sequence:
+        if finder(elem) == expected:
+            return elem
+    raise RuntimeError(f"Could not find an element with {expected}.")
+
+friends = [
+    {"name": "Rolf Lilia", "age": 28},
+    {"name": "Odin the Great", "age": 877},
+    {"name": "Nyarlathotep", "age": 8888811},
+]
+
+def get_friend_name(friend):
+    return friend["name"]
+
+print(search(friends, "Nyarlathotep", get_friend_name))
+# {'name': 'Nyarlathotep', 'age': 8888811}
+
+
+print(search(friends, "PwatPwat", get_friend_name))
+# RuntimeError: Could not find an element with PwatPwat.
 </code></pre>
 <h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
 <pre><code class="language-python">class TooManyPagesError(ValueError):
@@ -14128,6 +14271,68 @@ StopIteration
 </code></pre>
 <p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
 <pre><code></code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h1>
+<h2 id="use-type-hints-for-better-function-and-class-documentation"><a class="header" href="#use-type-hints-for-better-function-and-class-documentation">Use type hints for better function and class documentation.</a></h2>
+<pre><code class="language-python">class Book:
+    TYPES = ("hardcover", "paperback")
+
+    def __init__(self, name: str, book_type: str, weight: int):
+        self.name = name
+        self.book_type = book_type
+        self.weight = weight
+
+   def __repr__(self) -&gt; str:
+        return f"&lt;Book {self.name}, {self.book_type}, weighing {self.weight}g&gt;"
+    
+    @classmethod
+    def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
+        return cls(name, cls.TYPES[0], page_weight + 100)
+    
+    @classmethod
+    def paperback(cls, name: str, page_weight: int) -&gt; "Book":
+        return cls(name, cls.TYPES[1], page_weight)
+     
+
+book = Book.hardcover("Laurel Hell", 1600)
+light = Book.paperback("the bottle", 400)
+
+print(book, light)
+# &lt;Book Laurel Hell, hardcover, weighing 1700g&gt; &lt;Book the bottle, paperback, weighing 400g&gt;
+</code></pre>
+<h2 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h2>
+<pre><code class="language-python">from typing import List, Optional
+
+class Student:
+    def __init__(self, name: str, grades: Optional[List[int]] = None):
+        self.name = name
+        self.grades = grades or []
+
+    def take_exam(self, result: int):
+        self.grades.append(result)
+
+bob = Student("Bob")
+rolf = Student("Rolf")
+bob.take_exam(90)
+print(bob.grades)
+print(rolf.grades)
+# [90]
+# []
+</code></pre>
+<pre><code></code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="imports"><a class="header" href="#imports">Imports</a></h1>
+<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
+<pre><code class="language-python">from imports_mymodule import divide 
+#or import imports_mymodule
+
+print(divide(10,2))
+</code></pre>
+<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
+<pre><code class="language-python">def divide(divident, divisor):
+    return divident/divisor
+
+print("imports_mymodule.py: ", __name__)
+# imports_mymodule.py: __main__
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
 <p>A clean professional setup for Python projects in Public Repositories:</p>
 <ul>

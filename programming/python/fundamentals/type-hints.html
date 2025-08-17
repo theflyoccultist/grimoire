@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Advanced - Debugging Grimoire</title>
+        <title>Type Hints - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,21 +175,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="advanced"><a class="header" href="#advanced">Advanced</a></h1>
-<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
-<pre><code class="language-python">from imports_mymodule import divide 
-#or import imports_mymodule
-
-print(divide(10,2))
-</code></pre>
-<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
-<pre><code class="language-python">def divide(divident, divisor):
-    return divident/divisor
-
-print("imports_mymodule.py: ", __name__)
-# imports_mymodule.py: __main__
-</code></pre>
-<h3 id="type-hinting-uses-type-hints-for-better-function-and-class-documentation"><a class="header" href="#type-hinting-uses-type-hints-for-better-function-and-class-documentation">Type Hinting: Uses type hints for better function and class documentation.</a></h3>
+                        <h1 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h1>
+<h2 id="use-type-hints-for-better-function-and-class-documentation"><a class="header" href="#use-type-hints-for-better-function-and-class-documentation">Use type hints for better function and class documentation.</a></h2>
 <pre><code class="language-python">class Book:
     TYPES = ("hardcover", "paperback")
 
@@ -198,8 +185,8 @@ print("imports_mymodule.py: ", __name__)
         self.book_type = book_type
         self.weight = weight
 
-    def __repr__(self) -&gt; str:
-        return f"&lt;Book {self.name}, {self.book_type}, weiging {self.weight}g&gt;"
+   def __repr__(self) -&gt; str:
+        return f"&lt;Book {self.name}, {self.book_type}, weighing {self.weight}g&gt;"
     
     @classmethod
     def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
@@ -214,50 +201,38 @@ book = Book.hardcover("Laurel Hell", 1600)
 light = Book.paperback("the bottle", 400)
 
 print(book, light)
+# &lt;Book Laurel Hell, hardcover, weighing 1700g&gt; &lt;Book the bottle, paperback, weighing 400g&gt;
 </code></pre>
-<h3 id="first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions"><a class="header" href="#first-class-function-demonstrates-passing-functions-as-arguments-to-other-functions">First Class Function: Demonstrates passing functions as arguments to other functions.</a></h3>
-<pre><code class="language-python">def divide(dividend, diviser):
-    if diviser == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend/diviser
+<h2 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h2>
+<pre><code class="language-python">from typing import List, Optional
 
-def calculate(*values, operator):
-    return operator(*values)
+class Student:
+    def __init__(self, name: str, grades: Optional[List[int]] = None):
+        self.name = name
+        self.grades = grades or []
 
-result = calculate(20, 4, operator=divide)
-print(result)
-# &lt;Book Laurel Hell, hardcover, weiging 1700g&gt; &lt;Book the bottle, paperback, weiging 400g&gt;
+    def take_exam(self, result: int):
+        self.grades.append(result)
+
+bob = Student("Bob")
+rolf = Student("Rolf")
+bob.take_exam(90)
+print(bob.grades)
+print(rolf.grades)
+# [90]
+# []
 </code></pre>
-<h3 id="first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries"><a class="header" href="#first-class-function-2-uses-function-arguments-to-search-in-a-list-of-dictionaries">First Class Function 2: Uses function arguments to search in a list of dictionaries.</a></h3>
-<pre><code class="language-python">def search(sequence, expected, finder):
-    for elem in sequence:
-        if finder(elem) == expected:
-            return elem
-    raise RuntimeError(f"Could not find an element with {expected}.")
-
-friends = [
-    {"name": "Rolf Lilia", "age": 28},
-    {"name": "Odin the Great", "age": 877},
-    {"name": "Nyarlathotep", "age": 8888811},
-]
-
-def get_friend_name(friend):
-    return friend["name"]
-
-print(search(friends, "Nyarlathotep", get_friend_name))
-# {'name': 'Nyarlathotep', 'age': 8888811}
-</code></pre>
+<pre><code></code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/generators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/errors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/imports.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -267,11 +242,11 @@ print(search(friends, "Nyarlathotep", get_friend_name))
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/generators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/errors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/imports.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
