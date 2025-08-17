@@ -35,7 +35,6 @@
   - [YAML Cheat Sheet](cheatsheet/yaml-cheatsheet.md)
 
 - [Programming Languages 🖥️](programming/README.md)
-
   - [Bash 🐚](programming/bash/README.md)
     - [Bash Completion Tool](programming/bash/bash-completion.md)
     - [Grep Guide](programming/bash/grep.md)
@@ -53,6 +52,7 @@
       - [Usage of GDB](programming/c/good-to-know/gdb.md)
       - [Usage of Valgrind](programming/c/good-to-know/valgrind.md)
       - [Usage of GCC/Clang Sanitizer Flags](programming/c/good-to-know/fsanitize.md)
+
     - [Fundamentals](programming/c/fundamentals/README.md)
       - [Usage of enums](programming/c/fundamentals/enum.md)
       - [Usage of cases (switch-case)](programming/c/fundamentals/weekday.md)
@@ -62,11 +62,13 @@
       - [Bubble Sort](programming/c/fundamentals/bubble_sort.md)
       - [C as a CLI Tool](programming/c/fundamentals/double_space_file.md)
       - [File I/O and Rational Numbers](programming/c/fundamentals/fileio_rational.md)
+
     - [Data Structures](programming/c/data_structures/README.md)
       - [Simple Linked List](programming/c/data_structures/full_list_example.md)
       - [Working With Linked Lists](programming/c/data_structures/working_with_lists.md)
       - [Doubly Linked List and Merge Sort](programming/c/data_structures/doubly_linked_list.md)
       - [Binary Tree](programming/c/data_structures/binary_tree.md)
+
     - [ncurses](programming/c/ncurses/README.md)
       - [Getting Started](programming/c/ncurses/chpt1_5.md)
       - [User Input in Menu and Arrow Keys](programming/c/ncurses/chpt6_7.md)
@@ -87,6 +89,7 @@
       - [Parameter Passing Methods](programming/cpp/fundamentals/07-parameter-passing-methods.md)
       - [Array As Parameter](programming/cpp/fundamentals/08-array-as-parameter.md)
       - [Struct As Parameter](programming/cpp/fundamentals/09-struct-as-parameter.md)
+
     - [OOP](programming/cpp/oop/README.md)
       - [Converting a C program to C++ OOP](programming/cpp/oop/c-to-cpp.md)
       - [Monolithic Program to Modular C++ Class](programming/cpp/oop/monolithic-to-modular.md)
@@ -99,6 +102,9 @@
       - [Shapes with OOP](programming/cpp/oop/shapes.md)
       - [Move Semantics](programming/cpp/oop/move.md)
       - [Move Semantics pt.2](programming/cpp/oop/move2.md)
+
+    - [Recursion](programming/cpp/recursion/README.md)
+
     - [Modern C++ Features](programming/cpp/features/README.md)
       - [Functional Objects](programming/cpp/features/functor.md)
       - [Ordered Map vs Unordered Map](programming/cpp/features/map.md)
@@ -106,6 +112,8 @@
       - [Lambda expressions: for_each](programming/cpp/features/for_each.md)
       - [Bidirectional iterator: is_palindrome](programming/cpp/features/is_palindrome.md)
       - [Tuples](programming/cpp/features/tuples.md)
+      - [Smart Pointers](programming/cpp/features/smart_pointers.md)
+
     - [Example Algorithms](programming/cpp/algorithms/README.md)
       - [Dijkstra's algorithm](programming/cpp/algorithms/dijkstra.md)
       - [Output a Random Graph](programming/cpp/algorithms/generate-graph.md)
@@ -115,6 +123,7 @@
       - [Alpha Beta Pruning](programming/cpp/algorithms/alpha_beta.md)
       - [Reverse Polish Notation](programming/cpp/algorithms/polish_notation.md)
       - [Referential Garbage Collection](programming/cpp/algorithms/referential_gc.md)
+
     - [The Boost Library](programming/cpp/lib_boost/README.md)
       - [Boost.filesystem: Printing Stats About Files and Directories](programming/cpp/lib_boost/filesystem.md)
       - [Boost.Asio: TCP Daytime Client](programming/cpp/lib_boost/asio_daytime_client.md)
@@ -122,7 +131,7 @@
       - [Boost.Asio: UDP Daytime Client](programming/cpp/lib_boost/asio_udp_daytime_client.md)
       - [Boost.Asio: UDP Daytime Server](programming/cpp/lib_boost/asio_udp_daytime_server.md)
 
-- [Go 🐹](programming/go/README.md)
+  - [Go 🐹](programming/go/README.md)
     - [The Birthday Paradox](programming/go/birthday.md)
     - [Rock Paper Scissors](programming/go/rps.md)
     - [Employee Salary Parser](programming/go/employee.md)
@@ -139,6 +148,7 @@
       - [Fundamentals](programming/haskell/01-Fundamentals/01-fundamentals.md)
       - [Basic Types](programming/haskell/01-Fundamentals/02-basic-types.md)
       - [Basic Types 2](programming/haskell/01-Fundamentals/03-basic-types-2.md)
+
     - [Functions](programming/haskell/02-Functions/README.md)
       - [Introduction to Functions](programming/haskell/02-Functions/04-functions.md)
       - [Function Definition with Patterns](programming/haskell/02-Functions/05-functions-patterns.md)
@@ -146,21 +156,35 @@
       - [Local Definitions](programming/haskell/02-Functions/07-functions-local.md)
       - [Function Currying](programming/haskell/02-Functions/08-functions-currying.md)
       - [Solved Functions](programming/haskell/02-Functions/09-solved-functions.md)
+
     - [Tuples](programming/haskell/03-Tuples/README.md)
       - [Introduction to Tuples](programming/haskell/03-Tuples/tuples.md)
       - [Access to Tuples](programming/haskell/03-Tuples/tuples-access.md)
       - [Decomposition of Tuples into Patterns](programming/haskell/03-Tuples/tuples-decomposition.md)
       - [Empty Tuples](programming/haskell/03-Tuples/tuples-empty.md)
+
     - [Lists](programming/haskell/04-Lists/README.md)
       - [Introduction to Lists](programming/haskell/04-Lists/lists.md)
+      - [Construction and Implementation](programming/haskell/04-Lists/lists-construction.md)
+      - [Lists and Patterns](programming/haskell/04-Lists/lists-patterns.md)
+      - [Syntax in Patterns](programming/haskell/04-Lists/syntax-patterns.md)
+      - [Texts](programming/haskell/04-Lists/texts.md)
+      - [Common List Functions](programming/haskell/04-Lists/common-functions.md)
+      - [Solved List Functions](programming/haskell/04-Lists/solved-list-functions.md)
 
   - [Python 🐍](programming/python/README.md)
-    - [Python Fundamentals](programming/python/basics.md)
-    - [Control Flow](programming/python/control_flow.md)
-    - [Functions](programming/python/functions.md)
-    - [OOP](programming/python/oop.md)
-    - [Advanced](programming/python/advanced.md)
-    - [Errors](programming/python/errors.md)
+    - [Fundamentals](programming/python/fundamentals/README.md)
+      - [User Input](programming/python/fundamentals/user-input.md)
+      - [Loops](programming/python/fundamentals/loops.md)
+      - [Lists](programming/python/fundamentals/lists.md)
+      - [Dictionaries](programming/python/fundamentals/dictionaries.md)
+      - [Functions](programming/python/fundamentals/functions.md)
+      - [OOP](programming/python/fundamentals/oop.md)
+      - [Unpacking](programming/python/fundamentals/unpacking.md)
+      - [Advanced](programming/python/fundamentals/advanced.md)
+      - [Error Handling](programming/python/fundamentals/errors.md)
+      - [Generators](programming/python/fundamentals/generators.md)
+    - [Python Repository Setup](programming/python/python-repo.md)
   
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)

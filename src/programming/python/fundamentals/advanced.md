@@ -1,7 +1,10 @@
+# Advanced
+
 ### Import Code: Demonstrates module imports and function usage.
 
 ```python
-from imports_mymodule import divide #or import imports_mymodule
+from imports_mymodule import divide 
+#or import imports_mymodule
 
 print(divide(10,2))
 ```
@@ -13,13 +16,14 @@ def divide(divident, divisor):
     return divident/divisor
 
 print("imports_mymodule.py: ", __name__)
+# imports_mymodule.py: __main__
 ```
 
 ### Type Hinting: Uses type hints for better function and class documentation.
 
 ```python
 class Book:
-    TYPEZ = ("hardcover", "paperback")
+    TYPES = ("hardcover", "paperback")
 
     def __init__(self, name: str, book_type: str, weight: int):
         self.name = name
@@ -31,11 +35,11 @@ class Book:
     
     @classmethod
     def hardcover(cls, name: str, page_weight: int) -> "Book":
-        return cls(name, cls.TYPEZ[0], page_weight + 100)
+        return cls(name, cls.TYPES[0], page_weight + 100)
     
     @classmethod
     def paperback(cls, name: str, page_weight: int) -> "Book":
-        return cls(name, cls.TYPEZ[1], page_weight)
+        return cls(name, cls.TYPES[1], page_weight)
      
 
 book = Book.hardcover("Laurel Hell", 1600)
@@ -49,7 +53,7 @@ print(book, light)
 ```python
 def divide(dividend, diviser):
     if diviser == 0:
-        raise ZeroDivisionError("DIvisor cannot be 0.")
+        raise ZeroDivisionError("Divisor cannot be 0.")
     
     return dividend/diviser
 
@@ -58,6 +62,7 @@ def calculate(*values, operator):
 
 result = calculate(20, 4, operator=divide)
 print(result)
+# <Book Laurel Hell, hardcover, weiging 1700g> <Book the bottle, paperback, weiging 400g>
 ```
 
 ### First Class Function 2: Uses function arguments to search in a list of dictionaries.
@@ -79,6 +84,7 @@ def get_friend_name(friend):
     return friend["name"]
 
 print(search(friends, "Nyarlathotep", get_friend_name))
+# {'name': 'Nyarlathotep', 'age': 8888811}
 ```
 
 

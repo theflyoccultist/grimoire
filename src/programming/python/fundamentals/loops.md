@@ -1,3 +1,5 @@
+# Loops
+
 ### For Loop: Demonstrates looping through a list with a for loop.
 
 ```python
@@ -5,6 +7,11 @@ friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
 
 for friend in friends:
     print(f"{friend} is my friend.")
+
+# Anna is my friend.
+# Bellatrix is my friend.
+# Ianou is my friend.
+# Alexis is my friend.
 ```
 
 ### While Loop: Repeats until the user decides to stop playing the guessing game.
@@ -26,16 +33,3 @@ while True:
         print("sorry, it's wrong!")
 ```
 
-### Unpacking: Demonstrates unpacking keyword arguments with **kwargs.
-
-```python
-def named(**kwargs):
-    print(kwargs)
-
-def print_nicely(**kwargs):
-    named(**kwargs)
-    for arg, value in kwargs.items():
-        print(f"{arg}: {value}")
-
-print_nicely(name= "bob", age= "25")
-```

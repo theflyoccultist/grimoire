@@ -1,4 +1,4 @@
-# Python OOP Cheat Sheet 🐍
+# Python OOP
 
 ## 1. Classes & Objects
 
@@ -13,10 +13,11 @@ class MyClass:
         return f"Hello, {self.name}!"
 
 obj = MyClass("PwatPwat")
+
 print(obj.greet())  # Output: Hello, PwatPwat!
 ```
 
-## 2. Encapsulation (a.k.a Hiding Your Shame)
+## 2. Encapsulation
 
 Use underscores to suggest "please don’t touch this" (but Python won't stop you because it believes in free will).
 
@@ -98,6 +99,7 @@ book2 = Book("Charli")
 shelf = Bookshelf(book, book2)
 
 print(shelf)
+# Bookshelf with 2 Books.
 ```
 
 #### When to Use Composition?
@@ -134,6 +136,7 @@ book = Book.hardcover("Laurel Hell", 1600)
 light = Book.paperback("the bottle", 400)
 
 print(book, light)
+# <Book Laurel Hell, hardcover, weiging 1700g> <Book the bottle, paperback, weiging 400g>
 ```
 
 #### Use `@classmethod` when:
@@ -219,9 +222,6 @@ class Person :
     def __init__(self, name, age):
         self.name = name
         self.age = age
-
-    # def __str__(self):
-    #     return f"Person {self.name}; {self.age} years old."
     
     def __repr__(self):
         return f"<Person({self.name}, {self.age})>"
@@ -229,6 +229,7 @@ class Person :
 
 katheryn = Person("Katheryn", 44)
 print(katheryn)
+# <Person (Katheryn, 44)>
 ```
 
 #### Use `__repr__` when:

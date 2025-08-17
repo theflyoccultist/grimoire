@@ -1,0 +1,6 @@
+- Python Fundamentals
+- Control Flow
+- Functions
+- Python OOP
+- Advanced
+- Error Handling
