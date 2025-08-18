@@ -1,5 +1,7 @@
 # User Input
 
+In Python, we simply use `input()` to await for user input in a Python command line application.
+
 ### Age Calculation: This program converts an input age into months and seconds.
 
 ```python

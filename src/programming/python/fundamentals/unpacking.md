@@ -1,4 +1,5 @@
 # Unpacking
+(Work in Progress)
 
 ### Destructure A Variable: Variable unpacking with tuples and lists.
 
@@ -39,7 +40,7 @@ print_nicely(name= "bob", age= "25")
 # age: 25
 ```
 
-## A Python calculator accepting operations with more than two numbers.
+## Project Demo: a Python calculator accepting operations with more than two numbers.
 
 ```python
 

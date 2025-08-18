@@ -9,9 +9,9 @@ A clean professional setup for Python projects in Public Repositories:
 - Imports: isort (keeps imports clean, alphabetized).
 
 - Linting: flake8 or ruff (to catch stray sins).
-(On a local machine, python-lsp-server already includes flake8.)
+(On a local machine, python-lsp-server already includes flake8. But in case collaborators doesn't have it, it's a good idea to include it.)
 
-- Type checking: mypy.
+- Static type checking: mypy.
 
 - Testing: pytest.
 
