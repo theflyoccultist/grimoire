@@ -13291,6 +13291,7 @@ requests, dotenv, venv, black, pytest
 <li>Error Handling</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="user-input"><a class="header" href="#user-input">User Input</a></h1>
+<p>In Python, we simply use <code>input()</code> to await for user input in a Python command line application.</p>
 <h3 id="age-calculation-this-program-converts-an-input-age-into-months-and-seconds"><a class="header" href="#age-calculation-this-program-converts-an-input-age-into-months-and-seconds">Age Calculation: This program converts an input age into months and seconds.</a></h3>
 <pre><code class="language-python">age = int(input("Enter your age:"))
 months = age * 12
@@ -13564,12 +13565,59 @@ for index, word in enumerate(word_list):
 'Found an S, stopping iteration.'
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lists-1"><a class="header" href="#lists-1">Lists</a></h1>
+<p>(Work in progress)</p>
 <p>A <code>list</code> is a mutable collection of items in sequence. Like most collections (see the built-ins tuple, dict and set), lists can hold reference to any (or multiple) data type(s) - including other lists. Like any sequence, items can be accessed via 0-based index number from the left and -1-based index from the right. Lists can be copied in whole or in part via slice notation or <code>&lt;list&gt;.copy()</code>.</p>
 <p>Lists support both common and mutable sequence operations such as <code>min()</code>/<code>max()</code>, <code>&lt;list&gt;.index()</code>, <code>.append()</code> and <code>.reverse()</code>. List elements can be iterated over using the <code>for item in &lt;list&gt;</code> construct. <code>for index, item in enumerate(&lt;list&gt;)</code> can be used when both the element index and the element value are needed.</p>
 <p>Lists are implemented as dynamic arrays -- similar to Java's <code>Arraylist</code> type, and are most often used to store groups of similar data (strings, numbers, sets etc.) of unknown length (the number of entries may arbitrarily expand or shrink).</p>
 <p>Accessing elements, checking for membership via <code>in</code>, or appending items to the "right-hand" side of a list are all very efficient. Prepending (appending to the "left-hand" side) or inserting into the middle of a list are much less efficient because those operations require shifting elements to keep them in sequence. For a similar data structure that supports memory efficient <code>appends</code>/<code>pops</code> from both sides, see <code>collections.deque</code>, which has approximately the same O(1) performance in either direction.</p>
 <p>Because lists are mutable and can contain references to arbitrary Python objects, they also take up more space in memory than an array.array or a tuple (which is immutable) of the same apparent length. Despite this, lists are an extremely flexible and useful data structure and many built-in methods and operations in Python produce lists as their output.</p>
-<h3 id="example-for-list-comprehension"><a class="header" href="#example-for-list-comprehension">Example for list comprehension</a></h3>
+<h2 id="construction"><a class="header" href="#construction">Construction</a></h2>
+<p>A <code>list</code> can be declared as a literal with square <code>[]</code> brackets and commas between elements:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = []
+
+&gt;&gt;&gt; no_elements
+[]
+
+&gt;&gt;&gt; one_element = ["Guava"]
+
+&gt;&gt;&gt; one_element
+['Guava']
+
+&gt;&gt;&gt; elements_separated_with_commas = ["Parrot", "Bird", 334782]
+
+&gt;&gt;&gt; elements_separated_with_commas
+['Parrot', 'Bird', 334782]
+
+</code></pre>
+<p>For readability, line breaks can be used when there are many elements or nested data structures within a list.</p>
+<pre><code class="language-python">&gt;&gt;&gt; lots_of_entries = [
+      "Rose",
+      "Sunflower",
+      "Poppy",
+      "Pansy",
+      "Tulip",
+      "Fuchsia",
+      "Cyclamen",
+      "Lavender"
+   ]
+
+&gt;&gt;&gt; lots_of_entries
+['Rose', 'Sunflower', 'Poppy', 'Pansy', 'Tulip', 'Fuchsia', 'Cyclamen', 'Lavender']
+
+
+# Each data structure is on its own line to help clarify what they are.
+&gt;&gt;&gt; nested_data_structures = [
+      {"fish": "gold", "monkey": "brown", "parrot": "grey"},
+      ("fish", "mammal", "bird"),
+      ['water', 'jungle', 'sky']
+   ]
+
+&gt;&gt;&gt; nested_data_structures
+[{'fish': 'gold', 'monkey': 'brown', 'parrot': 'grey'}, ('fish', 'mammal', 'bird'), ['water', 'jungle', 'sky']]
+</code></pre>
+<h2 id="list-comprehensions"><a class="header" href="#list-comprehensions">List Comprehensions</a></h2>
+<p>In Python code, you will often see one liner functions called "List comprehensions". These are a concise way to create lists by applying an expression to each item in an iterable, often with optional filtering conditions. It allows for cleaner and more readable code compared to traditional loops.</p>
 <pre><code class="language-python">numbers = [1, 3, 5]
 doubled = [x * 2 for x in numbers]
 print(doubled)
@@ -13582,6 +13630,7 @@ print(starts_s)
 # ['samantha', 'sylvie', 'sultan']
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dictionaries"><a class="header" href="#dictionaries">Dictionaries</a></h1>
+<p>(Work in Progress)</p>
 <h3 id="dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Dictionary: Iterates through a dictionary of student attendance and prints results.</a></h3>
 <pre><code class="language-python">student_attendance = {"Rolf": 96, "Bob": 80, "Anna": 100}
 
@@ -13659,106 +13708,10 @@ def average_grade_all_students(student_list):
 print(average_grade_all_students(student_list))
 # 85.5
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functions-1"><a class="header" href="#functions-1">Functions</a></h1>
-<h3 id="functions-with-arguments-simple-function-demonstrating-division-with-error-handling"><a class="header" href="#functions-with-arguments-simple-function-demonstrating-division-with-error-handling">Functions with Arguments: Simple function demonstrating division with error handling.</a></h3>
-<pre><code class="language-python">def divide (dividend, divisor):
-    if divisor != 0:
-        return dividend/divisor
-    else:
-        return "you fool!"
-
-divide (6, 0)
-# 'you fool!'
-
-divide (6, 2)
-# 3.0
-</code></pre>
-<h3 id="lambda-we-are-getting-functional"><a class="header" href="#lambda-we-are-getting-functional">Lambda: We are getting functional!</a></h3>
-<pre><code class="language-python">add = lambda x , y : x + y
-print(add(8,5))
-# 13
-
-def double(x):
-    return x*2
-
-sequence = [1, 3, 5, 9] 
-doubled = [double(x) for x in sequence]
-doubled2 = list(map(double, sequence))
-
-print(doubled)
-# [2, 6, 10, 18]
-print(doubled2)
-# [2, 6, 10, 18]
-</code></pre>
-<h3 id="decorators-demonstrates-a-basic-function-decorator-for-access-control"><a class="header" href="#decorators-demonstrates-a-basic-function-decorator-for-access-control">Decorators: Demonstrates a basic function decorator for access control.</a></h3>
-<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
-
-def get_admin_password():
-    return "1234"
-
-def make_secure(func):
-    def secure_function():
-        if user["access_level"] == "admin":
-            return func()
-        else:
-            return f"no admin permissions for {user['username']}"
-        
-    return secure_function
-
-get_admin_password = make_secure(get_admin_password)
-
-print(get_admin_password())
-# 1234
-
-user = {"username": "maniac", "access_level": "hacker"}
-# no admin permissions for maniac
-</code></pre>
-<h3 id="decorators--uses-the-decorator-syntax-to-apply-a-decorator"><a class="header" href="#decorators--uses-the-decorator-syntax-to-apply-a-decorator">Decorators @: Uses the @decorator syntax to apply a decorator.</a></h3>
-<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
-
-def make_secure(func):
-    def secure_function():
-        if user["access_level"] == "admin":
-            return func()
-        else:
-            return f"no admin permissons for {user['username']}"
-        
-    return secure_function
-
-@make_secure
-def get_admin_password():
-    return "1234"
-
-
-print(get_admin_password())
-</code></pre>
-<h3 id="decorators-with-parameters-enhances-decorators-to-accept-parameters"><a class="header" href="#decorators-with-parameters-enhances-decorators-to-accept-parameters">Decorators With Parameters: Enhances decorators to accept parameters.</a></h3>
-<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
-
-def make_secure(func):
-    def secure_function(*args, **kwargs):
-        if user["access_level"] == "admin":
-            return func(*args, **kwargs)
-        else:
-            return f"no admin permissons for {user['username']}"
-        
-    return secure_function
-
-@make_secure
-def get_password(panel):
-    if panel == "admin":
-        return "1234"
-    elif panel == "billing":
-        return "super_secure_password"
-
-
-print(get_password("billing"))
-# super_secure_password
-
-print(get_password("admin"))
-# 1234
-</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="sets"><a class="header" href="#sets">Sets</a></h1>
+<p>(Work in progress)</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
+<p>(Work in progress)</p>
 <h2 id="classes--objects"><a class="header" href="#classes--objects">Classes &amp; Objects</a></h2>
 <p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
 <pre><code class="language-python">class MyClass:
@@ -13979,6 +13932,7 @@ print(p.greet())  # Output: Hello from Person!
 <li>Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
+<p>(Work in Progress)</p>
 <h3 id="destructure-a-variable-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Variable unpacking with tuples and lists.</a></h3>
 <ul>
 <li>
@@ -14018,7 +13972,7 @@ print_nicely(name= "bob", age= "25")
 # name: bob
 # age: 25
 </code></pre>
-<h2 id="a-python-calculator-accepting-operations-with-more-than-two-numbers"><a class="header" href="#a-python-calculator-accepting-operations-with-more-than-two-numbers">A Python calculator accepting operations with more than two numbers.</a></h2>
+<h2 id="project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers"><a class="header" href="#project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers">Project Demo: a Python calculator accepting operations with more than two numbers.</a></h2>
 <pre><code class="language-python">
 def multiply(*args):
     total = 1
@@ -14165,6 +14119,99 @@ except TooManyPagesError as e:
 
 # You have now read 50 pages out of 70.
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="function-decorators"><a class="header" href="#function-decorators">Function Decorators</a></h1>
+<ul>
+<li>A decorator is just a function that takes another function as input and returns a new function.</li>
+<li>That new function usually calls the old one, but can add stuff before or after.</li>
+</ul>
+<h2 id="basic-decorator"><a class="header" href="#basic-decorator">Basic Decorator</a></h2>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+
+def get_admin_password():
+    return "1234"
+
+
+def make_secure(func):
+    def secure_function():
+        if user["access_level"] == "admin":
+            return func()
+        else:
+            return f"no admin permissions for {user['username']}"
+        
+    return secure_function
+
+
+get_admin_password = make_secure(get_admin_password)
+print(get_admin_password()) # 1234
+
+</code></pre>
+<p>Note the line <code>get_admin_password = make_secure(get_admin_password)</code>. This is how you achieve a basic decorator.</p>
+<h2 id="using--syntax"><a class="header" href="#using--syntax">Using <code>@</code> syntax</a></h2>
+<p>Python devs got tired of writing <code>get_admin_password = make_secure(get_admin_password)</code>, so they invented the <code>@</code> decorator syntax. It is literally just shorthand for the same thing:</p>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def make_secure(func):
+    def secure_function():
+        if user["access_level"] == "admin":
+            return func()
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+@make_secure
+def get_admin_password():
+    return "1234"
+
+
+print(get_admin_password()) #1234
+</code></pre>
+<p>Much cleaner, and it reads like "decorate this function with <code>make_secure</code>.</p>
+<h3 id="decorators-with-parameters"><a class="header" href="#decorators-with-parameters">Decorators With Parameters</a></h3>
+<p>Decorators aren't limited to zero-argument functions. With <code>*args, **kwargs</code>, you can wrap any function no matter its parameters:</p>
+<pre><code class="language-python">user = {"username": "jose", "access_level": "admin"}
+
+def make_secure(func):
+    def secure_function(*args, **kwargs):
+        if user["access_level"] == "admin":
+            return func(*args, **kwargs)
+        else:
+            return f"no admin permissons for {user['username']}"
+        
+    return secure_function
+
+@make_secure
+def get_password(panel):
+    if panel == "admin":
+        return "1234"
+    elif panel == "billing":
+        return "super_secure_password"
+
+
+print(get_password("billing"))  # super_secure_password
+print(get_password("admin"))    # 1234
+</code></pre>
+<p>Now the decorator can protect any function, regardless of how many arguments it takes.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lambdas"><a class="header" href="#lambdas">Lambdas</a></h1>
+<p>(Work in progress)</p>
+<h3 id="we-are-getting-functional"><a class="header" href="#we-are-getting-functional">We are getting functional!</a></h3>
+<pre><code class="language-python">add = lambda x , y : x + y
+print(add(8,5))
+# 13
+
+def double(x):
+    return x*2
+
+sequence = [1, 3, 5, 9] 
+doubled = [double(x) for x in sequence]
+doubled2 = list(map(double, sequence))
+
+print(doubled)
+# [2, 6, 10, 18]
+print(doubled2)
+# [2, 6, 10, 18]
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
 <p>A <code>generator</code> is a function or expression that returns a special type of iterator called generator iterator. <code>generator-iterators</code> are lazy: they do not store their values in memory, but generate their values when needed.</p>
 <p>A generator function looks like any other function, but contains one or more yield expressions. Each <code>yield</code> will suspend code execution, saving the current execution rate (including all local variables and try statements). When the generator resumes, it picks up state from the suspension - unlike regular functions which reset with every call.</p>
@@ -14272,6 +14319,7 @@ StopIteration
 <p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
 <pre><code></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h1>
+<p>(Work in Progress)</p>
 <h2 id="use-type-hints-for-better-function-and-class-documentation"><a class="header" href="#use-type-hints-for-better-function-and-class-documentation">Use type hints for better function and class documentation.</a></h2>
 <pre><code class="language-python">class Book:
     TYPES = ("hardcover", "paperback")
@@ -14320,19 +14368,175 @@ print(rolf.grades)
 </code></pre>
 <pre><code></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="imports"><a class="header" href="#imports">Imports</a></h1>
-<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
-<pre><code class="language-python">from imports_mymodule import divide 
-#or import imports_mymodule
+<p>Imports in Python let you reuse code across multiple files. Instead of writing the same functions everywhere, you can split your project into modules and packages, and import them when needed.</p>
+<h2 id="import-code"><a class="header" href="#import-code">Import Code</a></h2>
+<p>The simplest way: grab a function (or the whole module) from another file.</p>
+<pre><code class="language-python">from imports_mymodule import divide # grab a function 
+# import imports_mymodule           # imports the whole module
 
 print(divide(10,2))
 </code></pre>
-<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
+<h2 id="import-module"><a class="header" href="#import-module">Import Module</a></h2>
+<p>Here's the module <code>imports_mymodule.py</code>:</p>
 <pre><code class="language-python">def divide(divident, divisor):
     return divident/divisor
 
 print("imports_mymodule.py: ", __name__)
-# imports_mymodule.py: __main__
 </code></pre>
+<p>When you run this file directly:
+<code>python imports_mymodule.py</code> : <code>__name__ == "__main__"</code></p>
+<p>When you import it into another file:
+<code>import imports_mymodule</code> : <code>__name__ == "imports_mymodule"</code></p>
+<p>That's how Python knows if a file is a script or a module.</p>
+<h2 id="the-if-__name__--__main__-trick"><a class="header" href="#the-if-__name__--__main__-trick">The <code>if __name__ == "__main__":</code> Trick</a></h2>
+<p>This lets a file be both runnable directly and importable as a module without executing test code every time.</p>
+<pre><code class="language-python">def divide(dividend, divisor):
+    return dividend / divisor
+
+if __name__ == "__main__":
+    # only runs when this file is executed directly
+    print(divide(10, 2))
+</code></pre>
+<h2 id="import-styles"><a class="header" href="#import-styles">Import Styles</a></h2>
+<h4 id="import-whole-module"><a class="header" href="#import-whole-module">Import whole module</a></h4>
+<pre><code class="language-python">import math
+print(math.sqrt(16))
+</code></pre>
+<p>Safer, explicit, keeps namespace clean.</p>
+<h4 id="import-specific-function--class"><a class="header" href="#import-specific-function--class">Import specific function / class</a></h4>
+<pre><code class="language-python">from math import sqrt
+print(sqrt(16))
+</code></pre>
+<p>Shorter, but watch out for name clashes.</p>
+<h4 id="import-everything-not-recommended"><a class="header" href="#import-everything-not-recommended">Import everything (not recommended)</a></h4>
+<pre><code class="language-python">from math import *
+</code></pre>
+<h4 id="alias-imports"><a class="header" href="#alias-imports">Alias Imports</a></h4>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+</code></pre>
+<p>Python dev culture loves short aliases.</p>
+<h2 id="multi-file-projects-modules--packages"><a class="header" href="#multi-file-projects-modules--packages">Multi-File Projects (Modules &amp; Packages)</a></h2>
+<p>Imagine this structure:</p>
+<pre><code>my_project/
+│
+├── main.py
+├── utils/
+│   ├── __init__.py
+│   ├── math_tools.py
+│   └── string_tools.py
+</code></pre>
+<ul>
+<li><code>__init__.py</code> turns a folder into a package.</li>
+<li>You can now import across files:</li>
+</ul>
+<pre><code class="language-python"># main.py
+from utils.math_tools import divide
+from utils import string_tools
+
+print(divide(10, 2))
+print(string_tools.shout("hello"))
+</code></pre>
+<h2 id="relative-imports-inside-a-package"><a class="header" href="#relative-imports-inside-a-package">Relative Imports (inside a package)</a></h2>
+<p>From within a package, you can import relative to the current module:</p>
+<pre><code class="language-python">
+# utils/string_tools.py
+from .math_tools import divide   # relative import
+
+def shout(text):
+    return text.upper() + "!!!"
+
+</code></pre>
+<p>Best practices:</p>
+<ul>
+<li>Use absolute imports (<code>from utils.math_tools import divide</code>) for clarity.</li>
+<li>Only use relative imports (<code>from .math_tools import divide</code>) inside packages when refactoring a project.</li>
+</ul>
+<h2 id="what-goes-in-__init__py"><a class="header" href="#what-goes-in-__init__py">What goes in <code>__init__.py</code></a></h2>
+<p>In modern Python (3.3+), just having the folder is enough to make it a package, but <code>__init__.py</code> still matters for controlling how your package behaves when imported.</p>
+<h4 id="empty-file"><a class="header" href="#empty-file">Empty File</a></h4>
+<p>If you don't need anything special, just leave it empty.
+This makes Python treat the folder as a package:</p>
+<pre><code>
+utils/
+ ├── __init__.py   # can be empty
+ ├── math_tools.py
+ └── string_tools.py
+
+</code></pre>
+<p>You can then do:</p>
+<pre><code class="language-python">
+from utils import math_tools
+
+</code></pre>
+<h4 id="re-export-selected-functions-package-api"><a class="header" href="#re-export-selected-functions-package-api">Re-Export Selected Functions (Package API)</a></h4>
+<p>You can expose only certain things when someone imports the package:</p>
+<pre><code class="language-python">
+# utils/__init__.py
+from .math_tools import divide
+from .string_tools import shout
+
+__all__ = ["divide", "shout"]
+
+</code></pre>
+<p>Now you can do:</p>
+<pre><code class="language-python">
+from utils import divide, shout
+
+</code></pre>
+<h4 id="initialization-logic-rare-but-possible"><a class="header" href="#initialization-logic-rare-but-possible">Initialization Logic (rare, but possible)</a></h4>
+<p>You can run code when the package is imported.</p>
+<pre><code class="language-python">
+# utils/__init__.py
+print("Loading utils package...")
+
+</code></pre>
+<p>But to be honest, keep <code>__init__.py</code> clean, and use it mostly for defining what's public.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="using-pip-and-venv"><a class="header" href="#using-pip-and-venv">Using pip and venv</a></h1>
+<p>The <code>venv</code> module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their site directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” Python, and by default is isolated from the packages in the base environment, so that only those explicitly installed in the virtual environment are available.</p>
+<p>When used from within a virtual environment, common installation tools such as pip will install Python packages into a virtual environment without needing to be told to do so explicitly.</p>
+<p>A virtual environment is (amongst other things):</p>
+<ul>
+<li>
+<p>Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.</p>
+</li>
+<li>
+<p>Contained in a directory, conventionally named <code>.venv</code> or <code>venv</code> in the project directory, or under a container directory for lots of virtual environments, such as <code>~/.virtualenvs</code>.</p>
+</li>
+<li>
+<p>Not checked into source control systems such as Git.</p>
+</li>
+<li>
+<p>Considered as disposable – it should be simple to delete and recreate it from scratch. You don’t place any project code in the environment.</p>
+</li>
+<li>
+<p>Not considered as movable or copyable – you just recreate the same environment in the target location.</p>
+</li>
+</ul>
+<h4 id="creating-a-venv-in-your-project-directory"><a class="header" href="#creating-a-venv-in-your-project-directory">Creating a venv in your project directory</a></h4>
+<pre><code class="language-bash">python -m venv venv
+</code></pre>
+<h4 id="activating-it"><a class="header" href="#activating-it">Activating it</a></h4>
+<pre><code class="language-bash"># Linux
+source venv/bin/activate
+
+# Windows
+venv\scripts\activate
+</code></pre>
+<p>Now your shell will show <code>(venv)</code> before the prompt. That means you're inside the virtual prompt.</p>
+<h4 id="installing-packages"><a class="header" href="#installing-packages">Installing packages</a></h4>
+<pre><code class="language-bash">pip install requests
+</code></pre>
+<p>If you are inside venv, this will only install it in your venv, not your system.</p>
+<h4 id="freezing-dependencies"><a class="header" href="#freezing-dependencies">Freezing dependencies</a></h4>
+<pre><code class="language-bash">pip freeze &gt; requirements.txt
+</code></pre>
+<p>Later, recreate environment:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<blockquote>
+<p>Never use <code>sudo pip install</code>. This has the potential to nuke your Linux distribution.</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
 <p>A clean professional setup for Python projects in Public Repositories:</p>
 <ul>
@@ -14347,10 +14551,10 @@ print("imports_mymodule.py: ", __name__)
 </li>
 <li>
 <p>Linting: flake8 or ruff (to catch stray sins).
-(On a local machine, python-lsp-server already includes flake8.)</p>
+(On a local machine, python-lsp-server already includes flake8. But in case collaborators doesn't have it, it's a good idea to include it.)</p>
 </li>
 <li>
-<p>Type checking: mypy.</p>
+<p>Static type checking: mypy.</p>
 </li>
 <li>
 <p>Testing: pytest.</p>
@@ -14360,6 +14564,37 @@ print("imports_mymodule.py: ", __name__)
 </li>
 </ul>
 <p>You can set up all of these elements in a <code>pyproject.toml</code> file.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-poetry"><a class="header" href="#setting-up-poetry">Setting up Poetry</a></h1>
+<ul>
+<li>If you are just hacking scripts, <code>pip + venv</code> is fine.</li>
+<li>But if you're writing a real project, you will need to use Poetry.</li>
+</ul>
+<p>Here is why:</p>
+<ul>
+<li>Just like venv, it creates a virtual environment automatically per project.</li>
+<li>It handles dependency resolution more intelligently.</li>
+<li>Uses <code>pyproject.toml</code> for project metadata and dependencies:</li>
+</ul>
+<pre><code class="language-toml">[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+flask = "^2.3.0"
+</code></pre>
+<ul>
+<li>Generates a <code>poetry.lock</code> file to pin exact versions.</li>
+<li>Can also build and publish packages (in case you want to release your own libraries).</li>
+</ul>
+<p>Pros: more reproductible environments.
+Cons: slower than pip, extra tool to install.</p>
+<p>Workflow:</p>
+<pre><code class="language-bash">poetry init         # create pyproject.toml
+poetry add flask    # add dependency
+poetry install      # install dependencies
+poetry run python   # run inside venv
+</code></pre>
+<p>To use it, you will first need to get <a href="https://github.com/pypa/pipx">pipx</a>, and then install it with:</p>
+<pre><code class="language-bash">pipx install poetry
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>

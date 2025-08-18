@@ -176,19 +176,130 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="imports"><a class="header" href="#imports">Imports</a></h1>
-<h3 id="import-code-demonstrates-module-imports-and-function-usage"><a class="header" href="#import-code-demonstrates-module-imports-and-function-usage">Import Code: Demonstrates module imports and function usage.</a></h3>
-<pre><code class="language-python">from imports_mymodule import divide 
-#or import imports_mymodule
+<p>Imports in Python let you reuse code across multiple files. Instead of writing the same functions everywhere, you can split your project into modules and packages, and import them when needed.</p>
+<h2 id="import-code"><a class="header" href="#import-code">Import Code</a></h2>
+<p>The simplest way: grab a function (or the whole module) from another file.</p>
+<pre><code class="language-python">from imports_mymodule import divide # grab a function 
+# import imports_mymodule           # imports the whole module
 
 print(divide(10,2))
 </code></pre>
-<h3 id="import-module-shows-how-modules-define-reusable-functions"><a class="header" href="#import-module-shows-how-modules-define-reusable-functions">Import Module: Shows how modules define reusable functions.</a></h3>
+<h2 id="import-module"><a class="header" href="#import-module">Import Module</a></h2>
+<p>Here's the module <code>imports_mymodule.py</code>:</p>
 <pre><code class="language-python">def divide(divident, divisor):
     return divident/divisor
 
 print("imports_mymodule.py: ", __name__)
-# imports_mymodule.py: __main__
 </code></pre>
+<p>When you run this file directly:
+<code>python imports_mymodule.py</code> : <code>__name__ == "__main__"</code></p>
+<p>When you import it into another file:
+<code>import imports_mymodule</code> : <code>__name__ == "imports_mymodule"</code></p>
+<p>That's how Python knows if a file is a script or a module.</p>
+<h2 id="the-if-__name__--__main__-trick"><a class="header" href="#the-if-__name__--__main__-trick">The <code>if __name__ == "__main__":</code> Trick</a></h2>
+<p>This lets a file be both runnable directly and importable as a module without executing test code every time.</p>
+<pre><code class="language-python">def divide(dividend, divisor):
+    return dividend / divisor
+
+if __name__ == "__main__":
+    # only runs when this file is executed directly
+    print(divide(10, 2))
+</code></pre>
+<h2 id="import-styles"><a class="header" href="#import-styles">Import Styles</a></h2>
+<h4 id="import-whole-module"><a class="header" href="#import-whole-module">Import whole module</a></h4>
+<pre><code class="language-python">import math
+print(math.sqrt(16))
+</code></pre>
+<p>Safer, explicit, keeps namespace clean.</p>
+<h4 id="import-specific-function--class"><a class="header" href="#import-specific-function--class">Import specific function / class</a></h4>
+<pre><code class="language-python">from math import sqrt
+print(sqrt(16))
+</code></pre>
+<p>Shorter, but watch out for name clashes.</p>
+<h4 id="import-everything-not-recommended"><a class="header" href="#import-everything-not-recommended">Import everything (not recommended)</a></h4>
+<pre><code class="language-python">from math import *
+</code></pre>
+<h4 id="alias-imports"><a class="header" href="#alias-imports">Alias Imports</a></h4>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+</code></pre>
+<p>Python dev culture loves short aliases.</p>
+<h2 id="multi-file-projects-modules--packages"><a class="header" href="#multi-file-projects-modules--packages">Multi-File Projects (Modules &amp; Packages)</a></h2>
+<p>Imagine this structure:</p>
+<pre><code>my_project/
+│
+├── main.py
+├── utils/
+│   ├── __init__.py
+│   ├── math_tools.py
+│   └── string_tools.py
+</code></pre>
+<ul>
+<li><code>__init__.py</code> turns a folder into a package.</li>
+<li>You can now import across files:</li>
+</ul>
+<pre><code class="language-python"># main.py
+from utils.math_tools import divide
+from utils import string_tools
+
+print(divide(10, 2))
+print(string_tools.shout("hello"))
+</code></pre>
+<h2 id="relative-imports-inside-a-package"><a class="header" href="#relative-imports-inside-a-package">Relative Imports (inside a package)</a></h2>
+<p>From within a package, you can import relative to the current module:</p>
+<pre><code class="language-python">
+# utils/string_tools.py
+from .math_tools import divide   # relative import
+
+def shout(text):
+    return text.upper() + "!!!"
+
+</code></pre>
+<p>Best practices:</p>
+<ul>
+<li>Use absolute imports (<code>from utils.math_tools import divide</code>) for clarity.</li>
+<li>Only use relative imports (<code>from .math_tools import divide</code>) inside packages when refactoring a project.</li>
+</ul>
+<h2 id="what-goes-in-__init__py"><a class="header" href="#what-goes-in-__init__py">What goes in <code>__init__.py</code></a></h2>
+<p>In modern Python (3.3+), just having the folder is enough to make it a package, but <code>__init__.py</code> still matters for controlling how your package behaves when imported.</p>
+<h4 id="empty-file"><a class="header" href="#empty-file">Empty File</a></h4>
+<p>If you don't need anything special, just leave it empty.
+This makes Python treat the folder as a package:</p>
+<pre><code>
+utils/
+ ├── __init__.py   # can be empty
+ ├── math_tools.py
+ └── string_tools.py
+
+</code></pre>
+<p>You can then do:</p>
+<pre><code class="language-python">
+from utils import math_tools
+
+</code></pre>
+<h4 id="re-export-selected-functions-package-api"><a class="header" href="#re-export-selected-functions-package-api">Re-Export Selected Functions (Package API)</a></h4>
+<p>You can expose only certain things when someone imports the package:</p>
+<pre><code class="language-python">
+# utils/__init__.py
+from .math_tools import divide
+from .string_tools import shout
+
+__all__ = ["divide", "shout"]
+
+</code></pre>
+<p>Now you can do:</p>
+<pre><code class="language-python">
+from utils import divide, shout
+
+</code></pre>
+<h4 id="initialization-logic-rare-but-possible"><a class="header" href="#initialization-logic-rare-but-possible">Initialization Logic (rare, but possible)</a></h4>
+<p>You can run code when the package is imported.</p>
+<pre><code class="language-python">
+# utils/__init__.py
+print("Loading utils package...")
+
+</code></pre>
+<p>But to be honest, keep <code>__init__.py</code> clean, and use it mostly for defining what's public.</p>
 
                     </main>
 
@@ -198,7 +309,7 @@ print("imports_mymodule.py: ", __name__)
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/pip-venv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -212,7 +323,7 @@ print("imports_mymodule.py: ", __name__)
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/pip-venv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

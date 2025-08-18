@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Error Handling - Debugging Grimoire</title>
+        <title>Using pip and venv - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,108 +175,61 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="error-handling-in-python"><a class="header" href="#error-handling-in-python">Error Handling in Python</a></h1>
-<h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
-<pre><code class="language-python">def divide(dividend, divisor):
-    if divisor == 0:
-        raise ZeroDivisionError("Divisor cannot be 0.")
-    
-    return dividend / divisor
-
-grades = []
-
-print("Welcome to the average grade program.")
-try:
-    average = divide(sum(grades), len(grades))
-except ZeroDivisionError:
-    print("There are no grades yet in your list.")
-else:
-    print(f"The average grade is {average}.")
-finally:
-    print("Thank you!")
-
-# Welcome to the average grade program.
-# There are no grades yet in your list.
-# Thank you!
-
-grades = [15, 100, 84, 54, 10, 90]
-
-# Welcome to the average grade program.
-# The average grade is 58.833333333336.
-# Thank you!
+                        <h1 id="using-pip-and-venv"><a class="header" href="#using-pip-and-venv">Using pip and venv</a></h1>
+<p>The <code>venv</code> module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their site directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” Python, and by default is isolated from the packages in the base environment, so that only those explicitly installed in the virtual environment are available.</p>
+<p>When used from within a virtual environment, common installation tools such as pip will install Python packages into a virtual environment without needing to be told to do so explicitly.</p>
+<p>A virtual environment is (amongst other things):</p>
+<ul>
+<li>
+<p>Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.</p>
+</li>
+<li>
+<p>Contained in a directory, conventionally named <code>.venv</code> or <code>venv</code> in the project directory, or under a container directory for lots of virtual environments, such as <code>~/.virtualenvs</code>.</p>
+</li>
+<li>
+<p>Not checked into source control systems such as Git.</p>
+</li>
+<li>
+<p>Considered as disposable – it should be simple to delete and recreate it from scratch. You don’t place any project code in the environment.</p>
+</li>
+<li>
+<p>Not considered as movable or copyable – you just recreate the same environment in the target location.</p>
+</li>
+</ul>
+<h4 id="creating-a-venv-in-your-project-directory"><a class="header" href="#creating-a-venv-in-your-project-directory">Creating a venv in your project directory</a></h4>
+<pre><code class="language-bash">python -m venv venv
 </code></pre>
-<h3 id="error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries"><a class="header" href="#error-handling-if-the-element-was-not-found-in-a-list-of-dictionaries">Error Handling: if the element was not found in a list of dictionaries.</a></h3>
-<pre><code class="language-python">def search(sequence, expected, finder):
-    for elem in sequence:
-        if finder(elem) == expected:
-            return elem
-    raise RuntimeError(f"Could not find an element with {expected}.")
+<h4 id="activating-it"><a class="header" href="#activating-it">Activating it</a></h4>
+<pre><code class="language-bash"># Linux
+source venv/bin/activate
 
-friends = [
-    {"name": "Rolf Lilia", "age": 28},
-    {"name": "Odin the Great", "age": 877},
-    {"name": "Nyarlathotep", "age": 8888811},
-]
-
-def get_friend_name(friend):
-    return friend["name"]
-
-print(search(friends, "Nyarlathotep", get_friend_name))
-# {'name': 'Nyarlathotep', 'age': 8888811}
-
-
-print(search(friends, "PwatPwat", get_friend_name))
-# RuntimeError: Could not find an element with PwatPwat.
+# Windows
+venv\scripts\activate
 </code></pre>
-<h3 id="custom-errors-creates-a-custom-exception-class-for-book-page-validation"><a class="header" href="#custom-errors-creates-a-custom-exception-class-for-book-page-validation">Custom Errors: Creates a custom exception class for book page validation.</a></h3>
-<pre><code class="language-python">class TooManyPagesError(ValueError):
-    pass
-
-class Book:
-    def __init__(self, name: str, page_count: int):
-        self.name = name
-        self.page_count = page_count
-        self.pages_read = 0
-
-    def __repr__(self):
-        return (
-            f"&lt;Book {self.name}, read {self.pages_read} out of {self.page_count}&gt;"
-        )
-    
-    def read(self, pages: int):
-        if self.pages_read + pages &gt; self.page_count:
-            raise TooManyPagesError(
-                f"You tried to read {self.pages_read + pages} pages, but this book only has {self.page_count} pages."
-            )
-        self.pages_read += pages
-        print(f"You have now read {self.pages_read} pages out of {self.page_count}.")
-
-try:
-    pout = Book("pout guide", 70)
-    pout.read(80)
-except TooManyPagesError as e:
-    print(e)
-
-# You tried to read 80 pages, but this book only has 70 pages.
-
-try:
-    pout = Book("pout guide", 70)
-    pout.read(50)
-except TooManyPagesError as e:
-    print(e)
-
-# You have now read 50 pages out of 70.
+<p>Now your shell will show <code>(venv)</code> before the prompt. That means you're inside the virtual prompt.</p>
+<h4 id="installing-packages"><a class="header" href="#installing-packages">Installing packages</a></h4>
+<pre><code class="language-bash">pip install requests
 </code></pre>
+<p>If you are inside venv, this will only install it in your venv, not your system.</p>
+<h4 id="freezing-dependencies"><a class="header" href="#freezing-dependencies">Freezing dependencies</a></h4>
+<pre><code class="language-bash">pip freeze &gt; requirements.txt
+</code></pre>
+<p>Later, recreate environment:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<blockquote>
+<p>Never use <code>sudo pip install</code>. This has the potential to nuke your Linux distribution.</p>
+</blockquote>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/imports.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/function-decorators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -286,11 +239,11 @@ except TooManyPagesError as e:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/unpacking.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/imports.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/function-decorators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/python-repo.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
