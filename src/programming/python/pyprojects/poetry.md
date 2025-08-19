@@ -18,8 +18,14 @@ flask = "^2.3.0"
 - Generates a `poetry.lock` file to pin exact versions.
 - Can also build and publish packages (in case you want to release your own libraries).
 
-Pros: more reproductible environments.
-Cons: slower than pip, extra tool to install.
+>> - Pros: more reproductible environments.
+>> - Cons: slower than pip, extra tool to install.
+
+To use it, you will first need to get [pipx](https://github.com/pypa/pipx), which will allow Python scripts to be used as if they were standalone command line tools. Then you can install Poetry with:
+
+```bash
+pipx install poetry
+```
 
 Workflow:
 
@@ -30,8 +36,10 @@ poetry install      # install dependencies
 poetry run python   # run inside venv
 ```
 
-To use it, you will first need to get [pipx](https://github.com/pypa/pipx), and then install it with:
+Install some dev tools:
 
 ```bash
-pipx install poetry
+poetry add --dev black isort ruff mypy pytest
 ```
+
+
