@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Loops - Debugging Grimoire</title>
+        <title>Tuples - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,251 +175,176 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="loops"><a class="header" href="#loops">Loops</a></h1>
-<p>Python has two looping constructs. <code>while</code> loops for indefinite (uncounted) iteration and <code>for</code> loops for definite, (counted) iteration. The keywords <code>break</code>, <code>continue</code>, and <code>else</code> help customize loop behavior. <code>range()</code> and <code>enumerate()</code> help with loop counting and indexing.</p>
-<h2 id="while-loops"><a class="header" href="#while-loops">While Loops</a></h2>
-<p><code>while</code> loops will continue to execute as long as the <code>loop expression</code> or "test" evaluates to <code>True</code> in a <code>boolean context</code>, terminating when it evaluates to <code>False</code>:</p>
+                        <h1 id="tuples"><a class="header" href="#tuples">Tuples</a></h1>
+<p>A tuple is an immutable collection of items in sequence.</p>
+<p>Like most collections (see the built-ins list, dict and set), tuples can hold any (or multiple) data type(s) -- including other tuples. The elements of a tuple can be iterated over using the <code>for item in &lt;tuple&gt;</code> construct. If both element index and value are needed, <code>for index, item in enumerate(&lt;tuple&gt;)</code> can be used.</p>
+<p>Like any sequence, elements within tuples can be accessed via bracket notation using a 0-based index number from the left or a -1-based index number from the right. Tuples can be copied in whole or in part via slice notation or <code>&lt;tuple&gt;.copy()</code>, and support all common sequence operations. Being immutable, tuples do not support mutable sequence operations.</p>
+<p>Tuples take up very little memory space compared to other collection types and have constant (O(1)) access time when using an index. However, they cannot be resized, sorted, or altered once created, so are less flexible when frequent changes or updates to data are needed. If frequent updates or expansions are required, a <code>list</code>, <code>collections.deque</code>, or <code>array.array</code> might be a better data structure.</p>
+<h2 id="tuple-construction"><a class="header" href="#tuple-construction">Tuple Construction</a></h2>
+<p>Tuples can be formed in multiple ways, using either the <code>tuple</code> class constructor or the <code>(&lt;element_1&gt;, &lt;element_2&gt;)</code> (<code>tuple</code> literal) declaration.</p>
+<h4 id="using-the-tuple-constructor-empty-or-with-an-iterable"><a class="header" href="#using-the-tuple-constructor-empty-or-with-an-iterable">Using the tuple() constructor empty or with an iterable:</a></h4>
 <pre><code class="language-python">
-# Lists are considered "truthy" in a boolean context if they
-# contain one or more values, and "falsy" if they are empty.
+&gt;&gt;&gt; no_elements = tuple()
+()
 
-&gt;&gt;&gt; placeholders = ["spam", "ham", "eggs", "green_spam", "green_ham", "green_eggs"]
+# The constructor *requires* an iterable, so single elements must be passed in a list or another tuple.
+&gt;&gt;&gt; one_element = tuple([16])
+(16,)
 
-&gt;&gt;&gt; while placeholders:
-...     print(placeholders.pop(0))
+</code></pre>
+<p>Strings are iterable, so using a single <code>str</code> as an argument to the <code>tuple()</code> constructor can have surprising results:</p>
+<pre><code class="language-python">
+# String elements (characters) are iterated through and added to the tuple
+&gt;&gt;&gt; multiple_elements_string = tuple("Timbuktu")
+('T', 'i', 'm', 'b', 'u', 'k', 't', 'u')
+
+</code></pre>
+<p>Other iterables also have their elements added one by one:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; multiple_elements_list = tuple(["Parrot", "Bird", 334782])
+("Parrot", "Bird", 334782)
+
+&gt;&gt;&gt; multiple_elements_set = tuple({2, 3, 5, 7, 11})
+(2,3,5,7,11)
+
+</code></pre>
+<p>The iteration default for <code>dict</code> is over the keys. To include both keys and values in a tuple made from a dictionary, use <code>&lt;dict&gt;.items()</code>, which will return an iterator of (key, value) tuples.</p>
+<pre><code class="language-python">
+source_data = {"fish": "gold", 
+               "monkey": "brown"}
+
+&gt;&gt;&gt; multiple_elements_dict_1 = tuple(source_data)
+('fish', 'monkey')
+
+&gt;&gt;&gt; multiple_elements_dict_2 = tuple(source_data.items())
+(('fish', 'gold'), ('monkey', 'brown'))
+
+</code></pre>
+<h4 id="declaring-a-tuple-as-a-literal-"><a class="header" href="#declaring-a-tuple-as-a-literal-">Declaring a tuple as a literal :</a></h4>
+<p>Because the <code>tuple()</code> constructor only takes iterables (or nothing) as arguments, it is much easier to create a one-tuple via the literal method.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = ()
+()
+
+&gt;&gt;&gt; one_element = ("Guava",)
+("Guava",)
+
+</code></pre>
+<p>Note that generally parentheses are not required to create a tuple literal - only commas. However, using <code>(&lt;element)1&gt;, &lt;element_2&gt;)</code> is considered more readable in most circumstances. Parentheses are also required in cases of ambiguity, such as an empty or one-item tuple or where a function takes a tuple as an argument.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; elements_separated_with_commas = "Parrot", "Bird", 334782
+("Parrot", "Bird", 334782)
+
+&gt;&gt;&gt; elements_with_commas_and_parentheses = ("Triangle", 60, 60, 60)
+("Triangle", 60, 60, 60)
+
+</code></pre>
+<p>Other data structures can be included as tuple elements, including other tuples.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; nested_data_structures = ({"fish": "gold", "monkey": "brown", "parrot" : "grey"}, ("fish", "mammal", "bird"))
+({"fish": "gold", "monkey": "brown", "parrot" : "grey"}, ("fish", "mammal", "bird"))
+
+&gt;&gt;&gt; nested_data_structures_1 = (["fish", "gold", "monkey", "brown", "parrot", "grey"], ("fish", "mammal", "bird"))
+(["fish", "gold", "monkey", "brown", "parrot", "grey"], ("fish", "mammal", "bird"))
+
+</code></pre>
+<p>Tuples can be concatenated using plus <code>+</code> operator, which unpacks each tuple creating a new, combined tuple.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; new_via_concatenate = ("George", 5) + ("cat", "Tabby")
+("George", 5, "cat", "Tabby")
+
+#likewise, using the multiplication operator * is the equivalent of using + n times
+&gt;&gt;&gt; first_group = ("cat", "dog", "elephant")
+
+&gt;&gt;&gt; multiplied_group = first_group * 3
+('cat', 'dog', 'elephant', 'cat', 'dog', 'elephant', 'cat', 'dog', 'elephant')
+
+</code></pre>
+<h2 id="accessing-data"><a class="header" href="#accessing-data">Accessing Data</a></h2>
+<p>Elements inside tuples (like the other sequence types <code>str</code> and <code>list</code>), can be accessed via bracket notation. Indexes can be from <code>left --&gt; right</code> (starting at zero) or <code>right --&gt; left</code> (starting at -1). Tuples can also be copied in whole or in part via slice notation or using <code>&lt;tuple&gt;.copy()</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+
+#name is at index 0 or index -4
+&gt;&gt;&gt; student_name = student_info[0]
+Alyssa
+
+&gt;&gt;&gt; student_name = student_info[-4]
+Alyssa
+
+#age is at index 3 or index -1
+&gt;&gt;&gt; student_age_1 = student_info[3]
+8
+
+&gt;&gt;&gt; student_age_2 = student_info[-1]
+8
+
+</code></pre>
+<h2 id="iteration-over-elements"><a class="header" href="#iteration-over-elements">Iteration Over Elements</a></h2>
+<p>Elements inside tuples can be iterated over in a loop using for <code>item in &lt;tuple&gt;</code> syntax. If both indexes and values are needed, <code>for index, item in enumerate(&lt;tuple&gt;)</code> can be used.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+&gt;&gt;&gt; for item in student_info:
+...   print(item)
+
 ...
-'spam'
-'ham'
-'eggs'
-'green_spam'
-'green_ham'
-'green_eggs'
+Alyssa
+grade 3
+female
+8
 
-</code></pre>
-<p>Thanks to <code>while</code> loops, we can improve on the guessing number program that we've seen previously. This program will stop only once the user has guessed the number correctly.</p>
-<pre><code class="language-python">
-number = 7
+&gt;&gt;&gt; for index, item in enumerate(student_info):
+...  print("Index is: " + str(index) + ", value is: " + str(item) +".")
 
-while True:
-    user_input = input("Would you like to play? (Y/n)")
-    if user_input == "n":
-        break
-
-    user_number = int(input("Guess our number: "))
-    if user_number == number:
-        print("you guessed correctly!")
-    elif abs(number - user_number) == 1:
-        print("You were off by one.")
-    else:
-        print("sorry, it's wrong!")
-
-</code></pre>
-<h2 id="for-loop"><a class="header" href="#for-loop">For Loop:</a></h2>
-<p>The basic <code>for</code> loop in Python is better described as a <code>for each</code> which cycles through the values of any iterable object, terminating when there are no values returned from calling <code>next()</code> (raising a <code>StopIteration</code>).</p>
-<p>This simple program demonstrates looping through a list with a for loop.</p>
-<pre><code class="language-python">
-friends = ["Anna", "Bellatrix", "Ianou", "Alexis"]
-
-for friend in friends:
-    print(f"{friend} is my friend.")
-
-# Anna is my friend.
-# Bellatrix is my friend.
-# Ianou is my friend.
-# Alexis is my friend.
-
-</code></pre>
-<p>Another example:</p>
-<pre><code class="language-python">
-&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo"]
-
-&gt;&gt;&gt; for word in word_list:
-...    if word.startswith("b"):
-...        print(f"{word.title()} starts with a B.")
-...    else:
-...        print(f"{word.title()} doesn't start with a B.")
 ...
-'Bird starts with a B.'
-'Chicken doesn\'t start with a B.'
-'Barrel starts with a B.'
-'Bongo starts with a B.'
+Index is: 0, value is: Alyssa.
+Index is: 1, value is: grade 3.
+Index is: 2, value is: female.
+Index is: 3, value is: 8.
 
 </code></pre>
-<h2 id="sequence-object-range"><a class="header" href="#sequence-object-range">Sequence Object <code>range()</code></a></h2>
-<p>When there isn't a specific <code>iterable</code> given, the special <code>range()</code> sequence is used as a loop counter. <code>range()</code> requires an <code>int</code> before which to <code>stop</code> the sequence, and can optionally take <code>start</code> and <code>step</code> parameters. If no start number is provided, the sequence will begin with 0. <code>range()</code> objects are lazy (values are generated on request), support all common sequence operations, and take up a fixed amount of memory, no matter how long the sequence specified. Interestingly, <code>range()</code> is not an iterator, and can be used in many non-looping contexts where a sequence of numbers is needed.</p>
+<h2 id="tuples-as-homogeneous-information"><a class="header" href="#tuples-as-homogeneous-information">Tuples as Homogeneous Information</a></h2>
+<p>Tuples are often used as records containing data that is organizationally or conceptually homogeneous and treated as a single unit of information -- even if individual elements are of heterogeneous data types.</p>
+<pre><code class="language-python">&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+</code></pre>
+<p>Tuples are also used when homogeneous immutable sequences of data are needed for hashability, storage in a set, or creation of keys in a dictionary.</p>
+<p>Note that while tuples are in most cases immutable, because they can contain any data structure or object they can become mutable if any of their elements is a mutable type. Using a mutable data type within a tuple will make the enclosing tuple un-hashable.</p>
 <pre><code class="language-python">
-# Here we use range to produce some numbers, rather than creating a list of them in memory.
-# The values will start with 1 and stop *before* 7.
+&gt;&gt;&gt; cmyk_color_map = {
+                      (.69, .3, .48, .1) : ("Teal 700", (59, 178, 146), 0x3BB292),
+                      (0, .5, 1, 0) : ("Pantone 151", (247, 127, 1), 0xF77F01),
+                      (.37, .89, 0, .44) : ("Pantone 267", (89, 16, 142), 0x59108E),
+                      (0, 1, .46, .45) : ("Pantone 228", (140, 0, 76), 0x8C004C)
+                     }
 
-&gt;&gt;&gt; for number in range(1, 7):
-...    if number % 2 == 0:
-...       print(f"{number} is even.")
-...    else:
-...       print(f"{number} is odd.")
-'1 is odd.'
-'2 is even.'
-'3 is odd.'
-'4 is even.'
-'5 is odd.'
-'6 is even.'
+&gt;&gt;&gt;&gt; unique_rgb_colors = {
+                          (59, 178, 146),
+                          (247, 127, 1),
+                          (89, 16, 142),
+                          (140, 0, 76),
+                          (76, 0, 140)
+                         }
 
-# range() can also take a *step* parameter.
-# Here we use range to produce only the "odd" numbers, starting with 3 and stopping *before* 15.
+&gt;&gt;&gt; teal_700 = hash((59, 178, 146))
 
-&gt;&gt;&gt; for number in range(3, 15, 2):
-...    if number % 2 == 0:
-...       print(f"{number} is even.")
-...    else:
-...       print(f"{number} is odd.")
-...
-'3 is odd.'
-'5 is odd.'
-'7 is odd.'
-'9 is odd.'
-'11 is odd.'
-'13 is odd.'
+&gt;&gt;&gt; teal_700 = hash(("Pantone 228", [(140, 0, 76), 0x8C004C]))
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'list'
 
 </code></pre>
-<h2 id="values-and-indexes-with-enumerate"><a class="header" href="#values-and-indexes-with-enumerate">Values and Indexes with enumerate()</a></h2>
-<p>If both values and indexes are needed, the built-in <code>enumerate(&lt;iterable&gt;)</code> will return an <code>iterator</code> over (<code>index</code>, <code>value</code>) pairs:</p>
-<pre><code class="language-python">
-&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "apple"]
-
-# *index* and *word* are the loop variables.
-# Loop variables can be any valid python name.
-
-&gt;&gt;&gt; for index, word in enumerate(word_list):
-...    if word.startswith("b"):
-...        print(f"{word.title()} (at index {index}) starts with a B.")
-...    else:
-...        print(f"{word.title()} (at index {index}) doesn't start with a B.")
-...
-'Bird (at index 0) starts with a B.'
-'Chicken (at index 1) doesn\'t start with a B.'
-'Barrel (at index 2) starts with a B.'
-'Apple (at index 3) doesn\'t start with a B.'
-
-
-# The same method can be used as a "lookup" for pairing items between two lists.
-# Of course, if the lengths or indexes don't line up, this doesn't work.
-
-&gt;&gt;&gt; word_list = ["cat", "chicken", "barrel", "apple", "spinach"]
-&gt;&gt;&gt; category_list = ["mammal", "bird", "thing", "fruit", "vegetable"]
-
-&gt;&gt;&gt; for index, word in enumerate(word_list):
-...    print(f"{word.title()} is in category: {category_list[index]}.")
-...
-'Cat is in category: mammal.'
-'Chicken is in category: bird.'
-'Barrel is in category: thing.'
-'Apple is in category: fruit.'
-'Spinach is in category: vegetable.'
-
-</code></pre>
-<p>The <code>enumerate(&lt;iterable&gt;)</code> function can also be set to <code>start</code> the index count at a different number:</p>
-<pre><code class="language-python">
-# Here, the index count will start at 1.
-&gt;&gt;&gt; for position, word in enumerate(word_list, start=1):
-...    if word.startswith("b"):
-...        print(f"{word.title()} (at position {position}) starts with a B.")
-...    else:
-...        print(f"{word.title()} (at position {position}) doesn't start with a B.")
-...
-'Bird (at position 1) starts with a B.'
-'Chicken (at position 2) doesn\'t start with a B.'
-'Barrel (at position 3) starts with a B.'
-'Apple (at position 4) doesn\'t start with a B.'
-
-</code></pre>
-<h2 id="altering-loop-behavior"><a class="header" href="#altering-loop-behavior">Altering Loop Behavior</a></h2>
-<p>The <code>continue</code> keyword can be used to skip forward to the next iteration cycle:</p>
-<pre><code class="language-python">
-word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple", "bear"]
-
-# This will skip *bird*, at index 0
-for index, word in enumerate(word_list):
-    if index == 0:
-        continue
-    if word.startswith("b"):
-        print(f"{word.title()} (at index {index}) starts with a b.")
-
-'Barrel (at index 2) starts with a b.'
-'Bongo (at index 3) starts with a b.'
-'Bear (at index 6) starts with a b.'
-
-</code></pre>
-<p>The <code>break</code> (like in many C-related languages) keyword can be used to stop the iteration and "break out" of the innermost enclosing <code>loop</code>:</p>
-<pre><code class="language-python">
-&gt;&gt;&gt;  word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
-
-&gt;&gt;&gt; for index, word in enumerate(word_list):
-...    if word.startswith("b"):
-...        print(f"{word.title()} (at index {index}) starts with a B.")
-...    elif word == "sliver":
-...       break
-...    else:
-...       print(f"{word.title()} doesn't start with a B.")
-... print("loop broken.")
-...
-'Bird (at index 0) starts with a B.'
-'Chicken doesn\'t start with a B.'
-'Barrel (at index 2) starts with a B.'
-'Bongo (at index 3) starts with a B.'
-'loop broken.'
-
-</code></pre>
-<p>The loop <code>else</code> clause is unique to Python and can be used for "wrap up" or "concluding" actions when iteration has been exhausted. Statements following the <code>else</code> keyword will not execute if iteration terminates via <code>break</code>:</p>
-<pre><code class="language-python">
-&gt;&gt;&gt; word_list = ["bird", "chicken", "barrel", "bongo", "sliver", "apple"]
-
-# Using enumerate to get both an index and a value.
-
-&gt;&gt;&gt; for index, word in enumerate(word_list):
-...    word = word.title()
-...    if word.startswith("B"):
-...        print(f"{word} (at index {index}) starts with a B.")
-
-...# This executes once *StopIteration* is raised and 
-...# there are no more items to iterate through.
-...# Note the indentation, which lines up with the for keyword.
-...else:
-...    print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
-...
-'Bird (at index 0) starts with a B.'
-'Barrel (at index 2) starts with a B.'
-'Bongo (at index 3) starts with a B.'
-'Found the above b-words, out of 6 words in the word list.'
-
-
-# Terminating a loop via *break* will bypass the loop *else* clause
-
-&gt;&gt;&gt; for index, word in enumerate(word_list):
-...    word = word.title()
-...    if word.startswith("B"):
-...       print(f"{word} (at index {index}) starts with a B.")
-...    if word.startswith("S"):
-...        print("Found an S, stopping iteration.")
-...        break
-
-... # This statement does not run, because a *break* was triggered.
-... else:
-...   print(f"Found the above b-words, out of {len(word_list)} words in the word list.")
-...
-'Bird (at index 0) starts with a B.'
-'Barrel (at index 2) starts with a B.'
-'Bongo (at index 3) starts with a B.'
-'Found an S, stopping iteration.'
-</code></pre>
+<h2 id="extended-tuples-and-related-data-types"><a class="header" href="#extended-tuples-and-related-data-types">Extended tuples and related data types</a></h2>
+<p>Tuples are often used as records, but the data inside them can only be accessed via position/index. The <code>namedtuple()</code> class in the <code>collections</code> module extends basic tuple functionality to allow access of elements by name. Additionally, users can adapt a <code>dataclass</code> to provide similar named attribute functionality, with a some pros and cons.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/list-ops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/loops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/tuples.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/dictionaries.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -429,11 +354,11 @@ for index, word in enumerate(word_list):
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/list-ops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/loops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/tuples.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/dictionaries.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -176,7 +176,6 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="lists"><a class="header" href="#lists">Lists</a></h1>
-<p>(Work in progress)</p>
 <p>A <code>list</code> is a mutable collection of items in sequence. Like most collections (see the built-ins tuple, dict and set), lists can hold reference to any (or multiple) data type(s) - including other lists. Like any sequence, items can be accessed via 0-based index number from the left and -1-based index from the right. Lists can be copied in whole or in part via slice notation or <code>&lt;list&gt;.copy()</code>.</p>
 <p>Lists support both common and mutable sequence operations such as <code>min()</code>/<code>max()</code>, <code>&lt;list&gt;.index()</code>, <code>.append()</code> and <code>.reverse()</code>. List elements can be iterated over using the <code>for item in &lt;list&gt;</code> construct. <code>for index, item in enumerate(&lt;list&gt;)</code> can be used when both the element index and the element value are needed.</p>
 <p>Lists are implemented as dynamic arrays -- similar to Java's <code>Arraylist</code> type, and are most often used to store groups of similar data (strings, numbers, sets etc.) of unknown length (the number of entries may arbitrarily expand or shrink).</p>
@@ -202,7 +201,8 @@
 
 </code></pre>
 <p>For readability, line breaks can be used when there are many elements or nested data structures within a list.</p>
-<pre><code class="language-python">&gt;&gt;&gt; lots_of_entries = [
+<pre><code class="language-python">
+&gt;&gt;&gt; lots_of_entries = [
       "Rose",
       "Sunflower",
       "Poppy",
@@ -226,30 +226,227 @@
 
 &gt;&gt;&gt; nested_data_structures
 [{'fish': 'gold', 'monkey': 'brown', 'parrot': 'grey'}, ('fish', 'mammal', 'bird'), ['water', 'jungle', 'sky']]
+
 </code></pre>
-<h2 id="list-comprehensions"><a class="header" href="#list-comprehensions">List Comprehensions</a></h2>
-<p>In Python code, you will often see one liner functions called "List comprehensions". These are a concise way to create lists by applying an expression to each item in an iterable, often with optional filtering conditions. It allows for cleaner and more readable code compared to traditional loops.</p>
-<pre><code class="language-python">numbers = [1, 3, 5]
-doubled = [x * 2 for x in numbers]
-print(doubled)
-# [2, 6, 10]
+<p>The <code>list()</code> constructor can be used empty or with an iterable as an argument. Elements in the iterable are cycled through by the constructor and added to the list in order:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = list()
+&gt;&gt;&gt; no_elements
+[]
 
-friends = ["samantha", "sylvie", "adam", "rain", "anna", "sultan"]
-starts_s = [friend for friend in friends if friend.startswith('s')]
+# The tuple is unpacked and each element is added.
+&gt;&gt;&gt; multiple_elements_from_tuple = list(("Parrot", "Bird", 334782))
 
-print(starts_s)
-# ['samantha', 'sylvie', 'sultan']
+&gt;&gt;&gt; multiple_elements_from_tuple
+['Parrot', 'Bird', 334782]
+
+# The set is unpacked and each element is added.
+&gt;&gt;&gt; multiple_elements_from_set = list({2, 3, 5, 7, 11})
+
+&gt;&gt;&gt; multiple_elements_from_set
+[2, 3, 5, 7, 11]
+
+</code></pre>
+<p>Results when using a list constructor with a string or a dict may be surprising:</p>
+<pre><code class="language-python">
+# String elements (Unicode code points) are iterated through and added *individually*.
+&gt;&gt;&gt; multiple_elements_string = list("Timbuktu")
+
+&gt;&gt;&gt; multiple_elements_string
+['T', 'i', 'm', 'b', 'u', 'k', 't', 'u']
+
+# Unicode separators and positioning code points are also added *individually*.
+&gt;&gt;&gt; multiple_code_points_string = list('अभ्यास')
+
+&gt;&gt;&gt; multiple_code_points_string
+['अ', 'भ', '्', 'य', 'ा', 'स']
+
+# The iteration default for dictionaries is over the keys, so only key data is inserted into the list.
+&gt;&gt;&gt; source_data = {"fish": "gold", "monkey": "brown"}
+&gt;&gt;&gt; list(source_data)
+['fish', 'monkey']
+
+</code></pre>
+<p>Because the <code>list()</code> constructor will only take iterables (or nothing) as arguments, objects that are not iterable will raise a <code>TypeError</code>. Consequently, it is much easier to create a one-item list via the literal method.</p>
+<pre><code class="language-python">
+# Numbers are not iterable, and so attempting to create a list with a number passed to the constructor fails.
+&gt;&gt;&gt; one_element = list(16)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: 'int' object is not iterable
+
+# Tuples *are* iterable, so passing a one-element tuple to the constructor does work, but it's awkward
+&gt;&gt;&gt; one_element_from_iterable = list((16,))
+
+&gt;&gt;&gt; one_element_from_iterable
+[16]
+
+</code></pre>
+<h2 id="accessing-elements"><a class="header" href="#accessing-elements">Accessing elements</a></h2>
+<p>Items inside lists (as well as elements in other sequence types such as <code>str</code> &amp; <code>tuple</code>), can be accessed using bracket notation. Indexes can be from <code>left --&gt; right</code> (starting at zero) or <code>right --&gt; left</code> (starting at -1).</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; breakfast_foods = ["Oatmeal", "Fruit Salad", "Eggs", "Toast"]
+
+# Oatmeal is at index 0 or index -4.
+&gt;&gt;&gt; breakfast_foods[0]
+'Oatmeal'
+
+&gt;&gt;&gt; breakfast_foods[-4]
+'Oatmeal'
+
+# Eggs are at index -2 or 2
+&gt;&gt;&gt; breakfast_foods[-2]
+'Eggs'
+
+&gt;&gt;&gt; breakfast_foods[2]
+'Eggs'
+
+# Toast is at -1
+&gt;&gt;&gt; breakfast_foods[-1]
+'Toast'
+
+</code></pre>
+<p>A section of a list can be accessed via slice notation (<code>&lt;list&gt;[start:stop]</code>). A slice is defined as an element sequence at position <code>index</code>, such that <code>start &lt;= index &lt; stop</code>. Slicing returns a copy of the "sliced" items and does not modify the original <code>list</code>.</p>
+<p>A <code>step</code> parameter can also be used in the slice (<code>&lt;list&gt;[&lt;start&gt;:&lt;stop&gt;:&lt;step&gt;]</code>) to "skip over" or filter the returned elements (for example, a step of 2 will select every other element in the section):</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; colors = ["Red", "Purple", "Green", "Yellow", "Orange", "Pink", "Blue", "Grey"]
+
+# If there is no step parameter, the step is assumed to be 1.
+&gt;&gt;&gt; middle_colors = colors[2:6]
+
+&gt;&gt;&gt; middle_colors
+['Green', 'Yellow', 'Orange', 'Pink']
+
+# If the start or stop parameters are omitted, the slice will
+# start at index zero, and will stop at the end of the list.
+&gt;&gt;&gt; primary_colors = colors[::3]
+
+&gt;&gt;&gt; primary_colors
+['Red', 'Yellow', 'Blue']
+
+</code></pre>
+<h2 id="working-with-lists"><a class="header" href="#working-with-lists">Working with lists</a></h2>
+<p>Lists supply an iterator, and can be looped through/over in the same manner as other sequence types, using either <code>for item in &lt;list&gt;</code> or <code>for index, item in enumerate(&lt;list&gt;)</code>:</p>
+<pre><code class="language-python">
+# Make a list, and then loop through it to print out the elements
+&gt;&gt;&gt; colors = ["Orange", "Green", "Grey", "Blue"]
+&gt;&gt;&gt; for item in colors:
+...     print(item)
+...
+Orange
+Green
+Grey
+Blue
+
+
+# Print the same list, but with the indexes of the colors included
+&gt;&gt;&gt; colors = ["Orange", "Green", "Grey", "Blue"]
+&gt;&gt;&gt; for index, item in enumerate(colors):
+...     print(item, ":", index)
+...
+Orange : 0
+Green : 1
+Grey : 2
+Blue : 3
+
+
+# Start with a list of numbers and then loop through and print out their cubes.
+&gt;&gt;&gt; numbers_to_cube = [5, 13, 12, 16]
+&gt;&gt;&gt; for number in numbers_to_cube:
+...     print(number**3)
+...
+125
+2197
+1728
+4096
+</code></pre>
+<p>One common way to compose a list of values is to use <code>&lt;list&gt;.append()</code> within a loop:</p>
+<pre><code class="language-python">&gt;&gt;&gt; cubes_to_1000 = []
+&gt;&gt;&gt; for number in range(11):
+...    cubes_to_1000.append(number**3)
+
+&gt;&gt;&gt; cubes_to_1000
+[0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000]
+
+</code></pre>
+<p>Lists can also be combined via various techniques:</p>
+<pre><code class="language-python">
+# Using the plus + operator unpacks each list and creates a new list, but it is not efficient.
+&gt;&gt;&gt; new_via_concatenate = ["George", 5] + ["cat", "Tabby"]
+
+&gt;&gt;&gt; new_via_concatenate
+['George', 5, 'cat', 'Tabby']
+
+# Likewise, using the multiplication operator * is the equivalent of using + n times.
+&gt;&gt;&gt; first_group = ["cat", "dog", "elephant"]
+&gt;&gt;&gt; multiplied_group = first_group * 3
+
+&gt;&gt;&gt; multiplied_group
+['cat', 'dog', 'elephant', 'cat', 'dog', 'elephant', 'cat', 'dog', 'elephant']
+
+# Another method for combining 2 lists is to use slice assignment or a loop-append.
+# This assigns the second list to index 0 in the first list.
+&gt;&gt;&gt; first_one = ["cat", "Tabby"]
+&gt;&gt;&gt; second_one = ["George", 5]
+&gt;&gt;&gt; first_one[0:0] = second_one
+
+&gt;&gt;&gt; first_one
+['George', 5, 'cat', 'Tabby']
+
+# This loops through the first list and appends its items to the end of the second list.
+&gt;&gt;&gt; first_one = ["cat", "Tabby"]
+&gt;&gt;&gt; second_one = ["George", 5]
+
+&gt;&gt;&gt; for item in first_one:
+...      second_one.append(item)
+
+&gt;&gt;&gt; second_one
+['George', 5, 'cat', 'Tabby']
+
+</code></pre>
+<h2 id="some-cautions"><a class="header" href="#some-cautions">Some cautions</a></h2>
+<p>Recall that variables in Python are labels that point to underlying objects. <code>lists</code> add one more layer as container objects -- they hold object references for their collected items. This can lead to multiple potential issues when working with lists, if not handled properly.</p>
+<h4 id="assigning-more-than-one-variable-name"><a class="header" href="#assigning-more-than-one-variable-name">Assigning more than one variable name</a></h4>
+<p>Assigning a <code>list</code> object to a new variable name does not copy the <code>list</code> object nor its elements. Any change made to the elements in the list under the new name impact the original.</p>
+<p>Making a shallow_copy via <code>list.copy()</code> or slice will avoid this first-level referencing complication. A shallow_copy will create a new list object, but will not create new objects for the contained list elements. This type of copy will usually be enough for you to add or remove items from the two list objects independently, and effectively have two "separate" lists.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; actual_names = ["Tony", "Natasha", "Thor", "Bruce"]
+
+# Assigning a new variable name does not make a copy of the container or its data.
+&gt;&gt;&gt; same_list = actual_names
+
+#  Altering the list via the new name is the same as altering the list via the old name.
+&gt;&gt;&gt; same_list.append("Clarke")
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
+&gt;&gt;&gt; actual_names
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
+#  Likewise, altering the data in the list via the original name will also alter the data under the new name.
+&gt;&gt;&gt; actual_names[0] = "Wanda"
+['Wanda', 'Natasha', 'Thor', 'Bruce', 'Clarke']
+
+# If you copy the list, there will be two separate list objects which can be changed independently.
+&gt;&gt;&gt; copied_list = actual_names.copy()
+&gt;&gt;&gt; copied_list[0] = "Tony"
+
+&gt;&gt;&gt; actual_names
+['Wanda', 'Natasha', 'Thor', 'Bruce', 'Clarke']
+
+&gt;&gt;&gt; copied_list
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/loops.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/user-input.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/dictionaries.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/list-ops.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -259,11 +456,11 @@ print(starts_s)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/loops.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/user-input.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/dictionaries.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/list-ops.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

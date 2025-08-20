@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Dictionaries - Debugging Grimoire</title>
+        <title>Dicts - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -176,8 +176,238 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="dictionaries"><a class="header" href="#dictionaries">Dictionaries</a></h1>
-<p>(Work in Progress)</p>
-<h3 id="dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Dictionary: Iterates through a dictionary of student attendance and prints results.</a></h3>
+<p>A dictionary (<code>dict</code>) in Python is a data structure that associates hashable keys to values and is known in other programming languages as a resizable hash table, hashmap, or associative array. Dictionaries are Python's only built-in mapping type.</p>
+<ul>
+<li>
+<p><code>Keys</code> must be hashable and unique across the dictionary. Key types can include numbers, str, or tuples (of immutable values). They cannot contain mutable data structures such as lists, dicts, or sets. As of Python 3.7, dict key order is guaranteed to be the order in which entries are inserted.</p>
+</li>
+<li>
+<p><code>values</code> can be of any data type or structure. Values can also nest arbitrarily, so they can include lists-of-lists, sub-dictionaries, and other custom or compound data structures.</p>
+</li>
+</ul>
+<p>Given a key, dictionaries can retrieve a value in (on average) constant time (independent of the number of entries). Compared to searching for a value within a list or array (without knowing the index position), a dict uses significantly more memory, but has very rapid retrieval.</p>
+<p>Dictionaries are especially useful in scenarios where the collection of items is large and must be accessed and updated frequently.</p>
+<h2 id="dictionary-construction"><a class="header" href="#dictionary-construction">Dictionary Construction</a></h2>
+<p>Dictionaries can be created in many different ways, including:</p>
+<ul>
+<li>Using the <code>fromkeys()</code> classmethod</li>
+<li>Creating dictionary comprehensions</li>
+<li>Merging two dictionaries via unpacking (<code>**</code>)</li>
+<li>Merging dictionaries via the <code>|</code> (update) operator</li>
+<li>Using a loop to iteratively add entries to a previously created empty dict.</li>
+</ul>
+<p>The two most straightforward methods are the dictionary constructor and the dictionary literal.</p>
+<h4 id="the-dictionary-constructor"><a class="header" href="#the-dictionary-constructor">The Dictionary Constructor</a></h4>
+<p><code>dict()</code> (the constructor for the dict class) can be used with any iterable of <code>key</code>, <code>value</code> pairs. It can also be called with a series of <code>&lt;name&gt;=&lt;value&gt;</code> arguments:</p>
+<pre><code class="language-python">
+# Passing a list of key,value tuples.
+&gt;&gt;&gt; wombat = dict([('name', 'Wombat'),('speed', 23),
+                   ('land_animal', True)])
+{'name': 'Wombat', 'speed': 23, 'land_animal': True}
+
+
+# Using key=value arguments.
+&gt;&gt;&gt; bear = dict(name="Black Bear", speed=40, land_animal=True)
+{'name': 'Black Bear', 'speed': 40, 'land_animal': True}
+
+</code></pre>
+<h4 id="dictionary-literals"><a class="header" href="#dictionary-literals">Dictionary Literals</a></h4>
+<p>A dictionary can also be directly entered as a dictionary literal, using curly brackets (<code>{}</code>) enclosing <code>key : value</code> pairs. Entries that are enclosed in the <code>{}</code> can also appear on separate lines:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; whale = {"name": "Blue Whale", 
+             "speed": 35, 
+             "land_animal": False}
+{'name': 'Blue Whale', 'speed': 35, 'land_animal': False}
+
+&gt;&gt;&gt; wombat = {'name': 'Wombat',
+              'speed': 23,
+              'land_animal': True,
+              'color': 'Brindle'}
+
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True, 'color': 'Brindle'}
+
+</code></pre>
+<h4 id="nested-dictionaries"><a class="header" href="#nested-dictionaries">Nested Dictionaries</a></h4>
+<p>Dictionaries can be arbitrarily nested:</p>
+<pre><code class="language-python">
+animals = {
+            "Real" : {
+                "Winged" : {
+                            "Sparrow" : {'name': 'sparrow','speed': 12, 'land_animal': True},
+                            "Kestrel" : {'name': 'kestrel', 'speed': 15, 'land_animal': True}
+                           },
+                "Legged" : {
+                            "Wombat" : {'name': 'Wombat', 'speed': 23, 'land_animal': True},
+                            "Black Bear": {'name': 'Black Bear', 'speed': 40, 'land_animal': True},
+                            "Polecat" : {'name': 'Polecat', 'speed': 15, 'land_animal': True}
+                           },
+                "Other" :  {
+                            "Whale" : {'name': 'Blue Whale', 'speed': 35, 'land_animal': False},
+                            "Orca" : {'name': 'Orca', 'speed': 45, 'land_animal': False},
+                            "Snake" : {'name': 'Python', 'speed': 25, 'land_animal': True}
+                            }
+                },
+        
+        "Imaginary": {
+                "Winged" : {
+                            "Dragon" : {'name': 'Fire Dragon','speed': 100, 'land_animal': True},
+                            "Phoenix" : {'name': 'Phoenix', 'speed': 1500, 'land_animal': True}
+                            },
+                "Legged" : {
+                            "Sphinx" : {'name': 'Sphinx','speed': 10, 'land_animal': True},
+                            "Minotaur" : {'name': 'Minotaur', 'speed': 5, 'land_animal': True}
+                            },
+                "Other" :  {}
+                }
+       }
+
+</code></pre>
+<h2 id="accessing-values-in-a-dict"><a class="header" href="#accessing-values-in-a-dict">Accessing Values in a dict</a></h2>
+<p>You can access a value in a dictionary using a key in square brackets. If a key does not exist, a <code>KeyError</code> is thrown:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; bear["speed"]
+40
+
+&gt;&gt;&gt; bear["color"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'color'
+
+</code></pre>
+<p>Accessing an entry via the <code>get(&lt;key&gt;, &lt;default value&gt;)</code> method can avoid the <code>KeyError</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; bear.get("color", 'not found')
+'not found'
+
+</code></pre>
+<h4 id="accessing-nested-dictionary-entries"><a class="header" href="#accessing-nested-dictionary-entries">Accessing Nested Dictionary Entries</a></h4>
+<p>To access entries in nested dictionaries, use successive brackets. If a given key is missing, the usual <code>KeyError</code> will be thrown:</p>
+<pre><code class="language-python">
+# Using the animals nested dictionary.
+&gt;&gt;&gt; animals["Real"]["winged"]["Kestrel"]["speed"]
+15
+
+&gt;&gt;&gt; animals["Imaginary"]["winged"]["Kestrel"]["speed"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'Kestrel'
+
+</code></pre>
+<p>To avoid the <code>KeyError</code>, <code>.get()</code> can be used, but the calls to <code>.get()</code> must be chained:</p>
+<pre><code class="language-python">
+# Using the animals nested dictionary.
+# Note the use of parenthesis to enable placing the 
+# .get() calls on separate lines.
+&gt;&gt;&gt; (animals.get("Imaginary", {})
+            .get("Legged", {})
+            .get("Sphinx", {})
+            .get("Color", "I have no idea!"))
+'I have no idea!'
+
+</code></pre>
+<h2 id="changing-or-adding-dictionary-values"><a class="header" href="#changing-or-adding-dictionary-values">Changing or Adding Dictionary Values</a></h2>
+<p>You can change an entry <code>value</code> by assigning to its key:</p>
+<pre><code class="language-python">
+# Assigning the value "Grizzly Bear" to the name key.
+&gt;&gt;&gt; bear["name"] = "Grizzly Bear"
+{'name': 'Grizzly Bear', 'speed': 40, 'land_animal': True}
+
+&gt;&gt;&gt; whale["speed"] = 25
+{'name': 'Blue Whale', 'speed': 25, 'land_animal': False}
+
+</code></pre>
+<p>New <code>key : value</code> pairs can be added in the same fashion:</p>
+<pre><code class="language-python">
+# Adding an new "color" key with a new "tawney" value.
+&gt;&gt;&gt; bear["color"] = 'tawney'
+{'name': 'Grizzly Bear', 'speed': 40, 'land_animal': True, 'color': 'tawney'}
+
+&gt;&gt;&gt; whale["blowholes"] = 1
+{'name': 'Blue Whale', 'speed': 25, 'land_animal': False, 'blowholes': 1}
+
+</code></pre>
+<h2 id="removing-pop-ing-and-del-dictionary-entries"><a class="header" href="#removing-pop-ing-and-del-dictionary-entries">Removing (Pop-ing and del) Dictionary Entries</a></h2>
+<p>You can use the <code>.pop(&lt;key&gt;)</code> method to delete a dictionary entry. <code>.pop()</code> removes the (<code>key</code>, <code>value</code>) pair and returns the value for use. Like <code>.get()</code>, <code>.pop(&lt;key&gt;)</code> accepts second argument (<code>dict.pop(&lt;key&gt;, &lt;default value&gt;)</code>) that will be returned if the key is not found. This prevents a <code>KeyError</code> being raised:</p>
+<pre><code class="language-python">
+# Using .pop() removes both the key and value, returning the value.
+&gt;&gt;&gt; bear.pop("name")
+'Grizzly Bear'
+
+
+# The "name" key is now removed from the dictionary.
+# Attempting .pop() a second time will throw a KeyError.
+&gt;&gt;&gt; bear.pop("name")
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'name'
+
+
+# Using a default argument with .pop() will 
+# prevent a KeyError from a missing key.
+&gt;&gt;&gt; bear.pop("name", "Unknown")
+'Unknown'
+
+</code></pre>
+<p>You can also use the <code>del</code> statement to remove a single or multiple entries. A <code>KeyError</code> is raised if the entry to be removed is not found in the dictionary:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; wombat = {'name': 'Wombat',
+              'speed': 23,
+              'land_animal': True,
+              'color': 'Brindle',
+              'talent': 'Singing',
+              'size': 'small'}
+
+# Remove a single entry from the dictionary.
+&gt;&gt;&gt; del wombat["color"]
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True, 'talent': 'Singing', 'size': 'small'}
+
+
+# Remove multiple entries from the dictionary.
+&gt;&gt;&gt; del wombat["talent"], wombat["size"]
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True}
+
+
+# Attempting a deletion of a non-existent key raises a KeyError
+&gt;&gt;&gt; del wombat["number_of_legs"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'number_of_legs'
+
+</code></pre>
+<h2 id="looping-throughiterating-over-a-dictionary"><a class="header" href="#looping-throughiterating-over-a-dictionary">Looping Through/Iterating over a Dictionary</a></h2>
+<p>Looping through a dictionary using <code>for item in dict</code> or <code>while item</code> will iterate over the keys by default. You can access values within the same loop by using square brackets:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; for key in bear:
+&gt;&gt;&gt;     print((key, bear[key])) #this prints a tuple of (key, value)
+('name', 'Black Bear')
+('speed', 40)
+('land_animal', True)
+
+</code></pre>
+<p>You can also use the <code>.items()</code> method, which returns (<code>key</code>, <code>value</code>) tuples:</p>
+<pre><code class="language-python">
+# dict.items() forms (key, value tuples) that can be 
+# unpacked and iterated over.
+&gt;&gt;&gt; for key, value in whale.items():
+&gt;&gt;&gt;     print(key, ":", value)
+name : Blue Whale
+speed : 25
+land_animal : False
+blowholes : 1
+
+</code></pre>
+<p>Likewise, <code>.keys()</code> will return the <code>keys</code> and <code>.values()</code> will return the <code>values</code>.</p>
+<h2 id="extending-dictionary-functionality-the-collections-module"><a class="header" href="#extending-dictionary-functionality-the-collections-module">Extending Dictionary Functionality: The Collections Module</a></h2>
+<p>The <code>collections</code> module adds specialized functionality to Python's standard collection-based datatypes (dictionary, set, list, tuple). Three of the most useful dictionary-based classes are:</p>
+<ul>
+<li><code>Counter</code> automatically counts items and returns them in a <code>dict</code> with the items as keys and their counts as values.</li>
+<li><code>OrderedDict</code>, has methods specialized for arranging the order of dictionary entries.</li>
+<li><code>defaultdict</code> uses a factory method to set a default value if a <code>key</code> is not found when trying to retrieve or assign to a dictionary entry.</li>
+</ul>
+<h4 id="code-example-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#code-example-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Code example: Iterates through a dictionary of student attendance and prints results.</a></h4>
 <pre><code class="language-python">student_attendance = {"Rolf": 96, "Bob": 80, "Anna": 100}
 
 for student, attendance in student_attendance.items():
@@ -187,7 +417,7 @@ for student, attendance in student_attendance.items():
 # Bob: 80
 # Anna: 100
 </code></pre>
-<h3 id="dictionary-2-implements-a-simple-username-password-authentication-system"><a class="header" href="#dictionary-2-implements-a-simple-username-password-authentication-system">Dictionary 2: Implements a simple username-password authentication system.</a></h3>
+<h4 id="code-example-implements-a-simple-username-password-authentication-system"><a class="header" href="#code-example-implements-a-simple-username-password-authentication-system">Code example: Implements a simple username-password authentication system.</a></h4>
 <pre><code class="language-python">users = [
     (0, "Bob", "password"),
     (1, "Rolf", "bob123"),
@@ -211,7 +441,7 @@ else:
 # Enter your password: password
 # Your details are correct!
 </code></pre>
-<h3 id="dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class">Dictionary 3: Calculates average grades for an individual student and a class.</a></h3>
+<h4 id="code-example-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#code-example-calculates-average-grades-for-an-individual-student-and-a-class">Code example: Calculates average grades for an individual student and a class.</a></h4>
 <ul>
 <li>Inside of a dictionary, you can store pair data, but you can also store different data types like tuples.</li>
 </ul>
@@ -259,11 +489,11 @@ print(average_grade_all_students(student_list))
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/lists.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/tuples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/sets.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/dict-ops.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -273,11 +503,11 @@ print(average_grade_all_students(student_list))
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/lists.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/tuples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/sets.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/dict-ops.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

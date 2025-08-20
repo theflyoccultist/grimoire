@@ -176,7 +176,263 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
-<p>(Work in Progress)</p>
+<p>Unpacking refers to the act of extracting the elements of a collection, such as a <code>list</code>, <code>tuple</code>, or <code>dict</code>, using iteration. Unpacked values can then be assigned to variables within the same statement. A very common example of this behavior is <code>for item in list</code>, where <code>item</code> takes on the value of each <code>list</code> element in turn throughout the iteration.</p>
+<p>Multiple assignment is the ability to assign multiple variables to unpacked values within one statement. This allows for code to be more concise and readable, and is done by separating the variables to be assigned with a comma such as <code>first, second, third = (1,2,3)</code> or <code>for index, item in enumerate(iterable)</code>.</p>
+<p>The special operators <code>*</code> and <code>**</code> are often used in unpacking contexts. <code>*</code> can be used to combine multiple <code>lists</code>/<code>tuples</code> into one <code>list</code>/<code>tuple</code> by unpacking each into a new common <code>list</code>/<code>tuple</code>. <code>**</code> can be used to combine multiple dictionaries into one dictionary by unpacking each into a new common <code>dict</code>.</p>
+<p>When the <code>*</code> operator is used without a collection, it packs a number of values into a <code>list</code>. This is often used in multiple assignment to group all "leftover" elements that do not have individual assignments into a single variable.</p>
+<p>It is common in Python to also exploit this unpacking/packing behavior when using or defining functions that take an arbitrary number of positional or keyword arguments. You will often see these "special" parameters defined as <code>def some_function(*args, **kwargs)</code> and the "special" arguments used as <code>some_function(*some_tuple, **some_dict)</code>.</p>
+<blockquote>
+<p>[!WARNING]
+<code>*&lt;variable_name&gt;</code> and <code>**&lt;variable_name&gt;</code> should not be confused with <code>*</code> and <code>**</code>. While <code>*</code> and <code>**</code> are used for multiplication and exponentiation respectively, <code>*&lt;variable_name&gt;</code> and <code>**&lt;variable_name&gt;</code> are used as packing and unpacking operators.</p>
+</blockquote>
+<h2 id="multiple-assignment"><a class="header" href="#multiple-assignment">Multiple assignment</a></h2>
+<p>In multiple assignment, the number of variables on the left side of the assignment operator (<code>=</code>) must match the number of values on the right side. To separate the values, use a comma <code>,</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; a, b = 1, 2
+&gt;&gt;&gt; a
+1
+</code></pre>
+<p>If the multiple assignment gets an incorrect number of variables for the values given, a <code>ValueError</code> will be thrown:</p>
+<pre><code class="language-python">&gt;&gt;&gt; x, y, z = 1, 2
+
+ValueError: too many values to unpack (expected 3, got 2)
+</code></pre>
+<p>Multiple assignment is not limited to one data type:</p>
+<pre><code class="language-python">&gt;&gt;&gt; x, y, z = 1, "Hello", True
+&gt;&gt;&gt; x
+1
+
+&gt;&gt;&gt; y
+'Hello'
+
+&gt;&gt;&gt; z
+True
+</code></pre>
+<p>Multiple assignment can be used to swap elements in <code>lists</code>. This practice is pretty common in sorting algorithms. For example:</p>
+<pre><code class="language-python">&gt;&gt;&gt; numbers = [1, 2]
+&gt;&gt;&gt; numbers[0], numbers[1] = numbers[1], numbers[0]
+&gt;&gt;&gt; numbers
+[2, 1]
+</code></pre>
+<p>Since <code>tuples</code> are immutable, you can't swap elements in a <code>tuple</code>.</p>
+<h2 id="unpacking-1"><a class="header" href="#unpacking-1">Unpacking</a></h2>
+<p>[Note]</p>
+<blockquote>
+<p>The examples below use lists but the same concepts apply to tuples.</p>
+</blockquote>
+<p>In Python, it is possible to unpack the elements of <code>list</code>/<code>tuple</code>/<code>dictionary</code> into distinct variables. Since values appear within <code>lists</code>/<code>tuples</code> in a specific order, they are unpacked into variables in the same order:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry"]
+&gt;&gt;&gt; x, y, z = fruits
+&gt;&gt;&gt; x
+"apple"
+</code></pre>
+<p>If there are values that are not needed then you can use <code>_</code> to flag them:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry"]
+&gt;&gt;&gt; _, _, z = fruits
+&gt;&gt;&gt; z
+"cherry"
+</code></pre>
+<h4 id="deep-unpacking"><a class="header" href="#deep-unpacking">Deep unpacking</a></h4>
+<p>Unpacking and assigning values from a <code>list</code>/<code>tuple</code> inside of a <code>list</code> or <code>tuple</code> (also known as nested lists/tuples), works in the same way a shallow unpacking does, but often needs qualifiers to clarify the values context or position:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [[a, b], [c, d]] = fruits_vegetables
+&gt;&gt;&gt; a
+"apple"
+
+&gt;&gt;&gt; d
+"potato"
+</code></pre>
+<p>You can also deeply unpack just a portion of a nested <code>list</code>/<code>tuple</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [a, [c, d]] = fruits_vegetables
+&gt;&gt;&gt; a
+["apple", "banana"]
+
+&gt;&gt;&gt; c
+"carrot"
+</code></pre>
+<p>If the unpacking has variables with incorrect placement and/or an incorrect number of values, you will get a <code>ValueError</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [[a, b], [d]] = fruits_vegetables
+
+ValueError: too many values to unpack (expected 1)
+</code></pre>
+<h4 id="unpacking-a-listtuple-with-"><a class="header" href="#unpacking-a-listtuple-with-">Unpacking a list/tuple with <code>*</code></a></h4>
+<p>When unpacking a list/tuple you can use the <code>*</code> operator to capture "leftover" values. This is clearer than slicing the list/tuple (which in some situations is less readable). For example, we can extract the first element and pack the remaining values into a new list without the first element:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry", "orange", "kiwi", "melon", "mango"]
+&gt;&gt;&gt; x, *last = fruits
+&gt;&gt;&gt; x
+"apple"
+
+&gt;&gt;&gt; last
+["banana", "cherry", "orange", "kiwi", "melon", "mango"]
+</code></pre>
+<p>We can also extract the values at the beginning and end of the list while grouping all the values in the middle:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry", "orange", "kiwi", "melon", "mango"]
+&gt;&gt;&gt; x, *middle, y, z = fruits
+&gt;&gt;#&gt; y
+"melon"
+
+&gt;&gt;&gt; middle
+["banana", "cherry", "orange", "kiwi"]
+</code></pre>
+<p>We can also use <code>*</code> in deep unpacking:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana", "melon"], ["carrot", "potato", "tomato"]]
+&gt;&gt;&gt; [[a, *rest], b] = fruits_vegetables
+&gt;&gt;&gt; a
+"apple"
+
+&gt;&gt;&gt; rest
+["banana", "melon"]
+</code></pre>
+<h4 id="unpacking-a-dictionary"><a class="header" href="#unpacking-a-dictionary">Unpacking a dictionary</a></h4>
+<p>Unpacking a dictionary is a bit different from unpacking a list/tuple. Iteration over dictionaries defaults to the keys. So when unpacking a dict, you can only unpack the keys and not the values:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory
+&gt;&gt;&gt; x
+"apple"
+</code></pre>
+<p>If you want to unpack the values then you can use the <code>&lt;dict&gt;.values()</code> method:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory.values()
+&gt;&gt;&gt; x
+6
+</code></pre>
+<p>If both keys and values are needed, use the <code>&lt;dict&gt;.items()</code> method. <code>&lt;dict&gt;.items()</code> generates an iterable view containing key-value pairs. These can be unpacked into a tuple:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory.items()
+&gt;&gt;&gt; x
+("apple", 6)
+</code></pre>
+<h2 id="packing"><a class="header" href="#packing">Packing</a></h2>
+<p>Packing is the ability to group multiple values into one list that is assigned to a variable. This is useful when you want to unpack values, make changes, and then pack the results back into a variable. It also makes it possible to perform merges on 2 or more lists/tuples/dicts.</p>
+<h4 id="packing-a-listtuple-with-"><a class="header" href="#packing-a-listtuple-with-">Packing a list/tuple with <code>*</code></a></h4>
+<p>Packing a list/tuple can be done using the <code>*</code> operator. This will pack all the values into a list/tuple.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; fruits = ("apple", "banana", "cherry")
+&gt;&gt;&gt; more_fruits = ["orange", "kiwi", "melon", "mango"]
+
+# fruits and more_fruits are unpacked and then their elements are packed into combined_fruits
+&gt;&gt;&gt; combined_fruits = *fruits, *more_fruits
+
+# If there is no * on to the left of the "=" the result is a tuple
+&gt;&gt;&gt; combined_fruits
+("apple", "banana", "cherry", "orange", "kiwi", "melon", "mango")
+
+# If the * operator is used on the left side of "=" the result is a list.
+# Note the trailing comma. 
+&gt;&gt;&gt; *combined_fruits_too, = *fruits, *more_fruits
+&gt;&gt;&gt; combined_fruits_too
+['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']
+
+# A list literal can be used instead, but might not be as readable.
+&gt;&gt;&gt; [*combined_fruits_too] = *fruits, *more_fruits
+&gt;&gt;&gt; combined_fruits_too
+['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']
+
+</code></pre>
+<p>For more details on the use of <code>*</code> and <code>**</code>, check out PEP 3132 and PEP 448.</p>
+<h4 id="packing-a-dictionary-with-"><a class="header" href="#packing-a-dictionary-with-">Packing a dictionary with <code>**</code></a></h4>
+<p>Packing a dictionary is done by using the <code>**</code> operator. This will pack all key-value pairs from one dictionary into another dictionary, or combine two dictionaries together.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; more_fruits_inventory = {"orange": 4, "kiwi": 1, "melon": 2, "mango": 3}
+
+# fruits_inventory and more_fruits_inventory are unpacked into key-values pairs and combined.
+&gt;&gt;&gt; combined_fruits_inventory = {**fruits_inventory, **more_fruits_inventory}
+
+# then the pairs are packed into combined_fruits_inventory
+&gt;&gt;&gt; combined_fruits_inventory
+{"apple": 6, "banana": 2, "cherry": 3, "orange": 4, "kiwi": 1, "melon": 2, "mango": 3}
+
+</code></pre>
+<h2 id="usage-of--and--with-functions"><a class="header" href="#usage-of--and--with-functions">Usage of * and ** with functions</a></h2>
+<h4 id="packing-with-function-parameters"><a class="header" href="#packing-with-function-parameters">Packing with function parameters</a></h4>
+<p>When you create a function that accepts an arbitrary number of arguments, you can use <code>*args</code> or <code>**kwargs</code> in the function definition. <code>*args</code> is used to pack an arbitrary number of positional (non-keyworded) arguments and <code>**kwargs</code> is used to pack an arbitrary number of keyword arguments.</p>
+<p>Usage of <code>*args</code>:</p>
+<pre><code class="language-python"># This function is defined to take any number of positional arguments
+
+&gt;&gt;&gt; def my_function(*args):
+...   print(args)
+
+# Arguments given to the function are packed into a tuple
+
+&gt;&gt;&gt; my_function(1, 2, 3)
+(1, 2, 3)
+
+&gt;&gt;&gt; my_function("Hello")
+("Hello")
+
+&gt;&gt;&gt; my_function(1, 2, 3, "Hello", "Mars")
+(1, 2, 3, "Hello", "Mars")
+</code></pre>
+<p>Usage of <code>**kwargs</code>:</p>
+<pre><code class="language-python"># This function is defined to take any number of keyword arguments
+
+&gt;&gt;&gt; def my_function(**kwargs):
+...   print(kwargs)
+
+# Arguments given to the function are packed into a dictionary
+
+&gt;&gt;&gt; my_function(a=1, b=2, c=3)
+{"a": 1, "b": 2, "c": 3}
+</code></pre>
+<p><code>*args</code> and <code>**kwargs</code> can also be used in combination with one another:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(*args, **kwargs):
+...   print(sum(args))
+...   for key, value in kwargs.items():
+...       print(str(key) + " = " + str(value))
+
+&gt;&gt;&gt; my_function(1, 2, 3, a=1, b=2, c=3)
+6
+a = 1
+b = 2
+c = 3
+</code></pre>
+<p>You can also write parameters before <code>*args</code> to allow for specific positional arguments. Individual keyword arguments then have to appear before <code>**kwargs</code>.</p>
+<p>Arguments have to be structured like this:</p>
+<p><code>def my_function(&lt;positional_args&gt;, *args, &lt;key-word_args&gt;, **kwargs)</code></p>
+<p>If you don't follow this order then you will get an error.</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(a, b, *args):
+...   print(a)
+...   print(b)
+...   print(args)
+
+&gt;&gt;&gt; my_function(1, 2, 3, 4, 5)
+1
+2
+(3, 4, 5)
+</code></pre>
+<p>Writing arguments in an incorrect order will result in an error:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(*args, a, b):
+...   print(args)
+
+&gt;&gt;&gt;my_function(1, 2, 3, 4, 5)
+Traceback (most recent call last):
+  File "c:\something.py", line 3, in &lt;module&gt;
+    my_function(1, 2, 3, 4, 5)
+TypeError: my_function() missing 2 required keyword-only arguments: 'a' and 'b'
+</code></pre>
+<h4 id="unpacking-into-function-calls"><a class="header" href="#unpacking-into-function-calls">Unpacking into function calls</a></h4>
+<p>You can use <code>*</code> to unpack a list/tuple of arguments into a function call. This is very useful for functions that don't accept an iterable:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(a, b, c):
+...   print(c)
+...   print(b)
+...   print(a)
+
+numbers = [1, 2, 3]
+&gt;&gt;&gt; my_function(*numbers)
+3
+2
+1
+</code></pre>
+<p>Using <code>*</code> unpacking with the <code>zip()</code> function is another common use case. Since <code>zip()</code> takes multiple iterables and returns a list of tuples with the values from each iterable grouped:</p>
+<pre><code class="language-python">&gt;&gt;&gt; values = (['x', 'y', 'z'], [1, 2, 3], [True, False, True])
+&gt;&gt;&gt; a, *rest = zip(*values)
+&gt;&gt;&gt; rest
+[('y', 2, False), ('z', 3, True)]
+</code></pre>
+<hr />
+<h2 id="fundamental-concepts"><a class="header" href="#fundamental-concepts">Fundamental Concepts</a></h2>
 <h3 id="destructure-a-variable-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Variable unpacking with tuples and lists.</a></h3>
 <ul>
 <li>
@@ -276,11 +532,11 @@ print(apply(12, 2, 2, 3, operator="/"))
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/oop.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/fundamentals/sets.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/errors.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/fundamentals/generators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -290,11 +546,11 @@ print(apply(12, 2, 2, 3, operator="/"))
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/oop.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/fundamentals/sets.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/errors.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/fundamentals/generators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

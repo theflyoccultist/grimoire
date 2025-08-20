@@ -13329,6 +13329,381 @@ if user_input == "y":
 # Guess our number: 7
 # you guessed correctly!
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lists-1"><a class="header" href="#lists-1">Lists</a></h1>
+<p>A <code>list</code> is a mutable collection of items in sequence. Like most collections (see the built-ins tuple, dict and set), lists can hold reference to any (or multiple) data type(s) - including other lists. Like any sequence, items can be accessed via 0-based index number from the left and -1-based index from the right. Lists can be copied in whole or in part via slice notation or <code>&lt;list&gt;.copy()</code>.</p>
+<p>Lists support both common and mutable sequence operations such as <code>min()</code>/<code>max()</code>, <code>&lt;list&gt;.index()</code>, <code>.append()</code> and <code>.reverse()</code>. List elements can be iterated over using the <code>for item in &lt;list&gt;</code> construct. <code>for index, item in enumerate(&lt;list&gt;)</code> can be used when both the element index and the element value are needed.</p>
+<p>Lists are implemented as dynamic arrays -- similar to Java's <code>Arraylist</code> type, and are most often used to store groups of similar data (strings, numbers, sets etc.) of unknown length (the number of entries may arbitrarily expand or shrink).</p>
+<p>Accessing elements, checking for membership via <code>in</code>, or appending items to the "right-hand" side of a list are all very efficient. Prepending (appending to the "left-hand" side) or inserting into the middle of a list are much less efficient because those operations require shifting elements to keep them in sequence. For a similar data structure that supports memory efficient <code>appends</code>/<code>pops</code> from both sides, see <code>collections.deque</code>, which has approximately the same O(1) performance in either direction.</p>
+<p>Because lists are mutable and can contain references to arbitrary Python objects, they also take up more space in memory than an array.array or a tuple (which is immutable) of the same apparent length. Despite this, lists are an extremely flexible and useful data structure and many built-in methods and operations in Python produce lists as their output.</p>
+<h2 id="construction"><a class="header" href="#construction">Construction</a></h2>
+<p>A <code>list</code> can be declared as a literal with square <code>[]</code> brackets and commas between elements:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = []
+
+&gt;&gt;&gt; no_elements
+[]
+
+&gt;&gt;&gt; one_element = ["Guava"]
+
+&gt;&gt;&gt; one_element
+['Guava']
+
+&gt;&gt;&gt; elements_separated_with_commas = ["Parrot", "Bird", 334782]
+
+&gt;&gt;&gt; elements_separated_with_commas
+['Parrot', 'Bird', 334782]
+
+</code></pre>
+<p>For readability, line breaks can be used when there are many elements or nested data structures within a list.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; lots_of_entries = [
+      "Rose",
+      "Sunflower",
+      "Poppy",
+      "Pansy",
+      "Tulip",
+      "Fuchsia",
+      "Cyclamen",
+      "Lavender"
+   ]
+
+&gt;&gt;&gt; lots_of_entries
+['Rose', 'Sunflower', 'Poppy', 'Pansy', 'Tulip', 'Fuchsia', 'Cyclamen', 'Lavender']
+
+
+# Each data structure is on its own line to help clarify what they are.
+&gt;&gt;&gt; nested_data_structures = [
+      {"fish": "gold", "monkey": "brown", "parrot": "grey"},
+      ("fish", "mammal", "bird"),
+      ['water', 'jungle', 'sky']
+   ]
+
+&gt;&gt;&gt; nested_data_structures
+[{'fish': 'gold', 'monkey': 'brown', 'parrot': 'grey'}, ('fish', 'mammal', 'bird'), ['water', 'jungle', 'sky']]
+
+</code></pre>
+<p>The <code>list()</code> constructor can be used empty or with an iterable as an argument. Elements in the iterable are cycled through by the constructor and added to the list in order:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = list()
+&gt;&gt;&gt; no_elements
+[]
+
+# The tuple is unpacked and each element is added.
+&gt;&gt;&gt; multiple_elements_from_tuple = list(("Parrot", "Bird", 334782))
+
+&gt;&gt;&gt; multiple_elements_from_tuple
+['Parrot', 'Bird', 334782]
+
+# The set is unpacked and each element is added.
+&gt;&gt;&gt; multiple_elements_from_set = list({2, 3, 5, 7, 11})
+
+&gt;&gt;&gt; multiple_elements_from_set
+[2, 3, 5, 7, 11]
+
+</code></pre>
+<p>Results when using a list constructor with a string or a dict may be surprising:</p>
+<pre><code class="language-python">
+# String elements (Unicode code points) are iterated through and added *individually*.
+&gt;&gt;&gt; multiple_elements_string = list("Timbuktu")
+
+&gt;&gt;&gt; multiple_elements_string
+['T', 'i', 'm', 'b', 'u', 'k', 't', 'u']
+
+# Unicode separators and positioning code points are also added *individually*.
+&gt;&gt;&gt; multiple_code_points_string = list('अभ्यास')
+
+&gt;&gt;&gt; multiple_code_points_string
+['अ', 'भ', '्', 'य', 'ा', 'स']
+
+# The iteration default for dictionaries is over the keys, so only key data is inserted into the list.
+&gt;&gt;&gt; source_data = {"fish": "gold", "monkey": "brown"}
+&gt;&gt;&gt; list(source_data)
+['fish', 'monkey']
+
+</code></pre>
+<p>Because the <code>list()</code> constructor will only take iterables (or nothing) as arguments, objects that are not iterable will raise a <code>TypeError</code>. Consequently, it is much easier to create a one-item list via the literal method.</p>
+<pre><code class="language-python">
+# Numbers are not iterable, and so attempting to create a list with a number passed to the constructor fails.
+&gt;&gt;&gt; one_element = list(16)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: 'int' object is not iterable
+
+# Tuples *are* iterable, so passing a one-element tuple to the constructor does work, but it's awkward
+&gt;&gt;&gt; one_element_from_iterable = list((16,))
+
+&gt;&gt;&gt; one_element_from_iterable
+[16]
+
+</code></pre>
+<h2 id="accessing-elements"><a class="header" href="#accessing-elements">Accessing elements</a></h2>
+<p>Items inside lists (as well as elements in other sequence types such as <code>str</code> &amp; <code>tuple</code>), can be accessed using bracket notation. Indexes can be from <code>left --&gt; right</code> (starting at zero) or <code>right --&gt; left</code> (starting at -1).</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; breakfast_foods = ["Oatmeal", "Fruit Salad", "Eggs", "Toast"]
+
+# Oatmeal is at index 0 or index -4.
+&gt;&gt;&gt; breakfast_foods[0]
+'Oatmeal'
+
+&gt;&gt;&gt; breakfast_foods[-4]
+'Oatmeal'
+
+# Eggs are at index -2 or 2
+&gt;&gt;&gt; breakfast_foods[-2]
+'Eggs'
+
+&gt;&gt;&gt; breakfast_foods[2]
+'Eggs'
+
+# Toast is at -1
+&gt;&gt;&gt; breakfast_foods[-1]
+'Toast'
+
+</code></pre>
+<p>A section of a list can be accessed via slice notation (<code>&lt;list&gt;[start:stop]</code>). A slice is defined as an element sequence at position <code>index</code>, such that <code>start &lt;= index &lt; stop</code>. Slicing returns a copy of the "sliced" items and does not modify the original <code>list</code>.</p>
+<p>A <code>step</code> parameter can also be used in the slice (<code>&lt;list&gt;[&lt;start&gt;:&lt;stop&gt;:&lt;step&gt;]</code>) to "skip over" or filter the returned elements (for example, a step of 2 will select every other element in the section):</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; colors = ["Red", "Purple", "Green", "Yellow", "Orange", "Pink", "Blue", "Grey"]
+
+# If there is no step parameter, the step is assumed to be 1.
+&gt;&gt;&gt; middle_colors = colors[2:6]
+
+&gt;&gt;&gt; middle_colors
+['Green', 'Yellow', 'Orange', 'Pink']
+
+# If the start or stop parameters are omitted, the slice will
+# start at index zero, and will stop at the end of the list.
+&gt;&gt;&gt; primary_colors = colors[::3]
+
+&gt;&gt;&gt; primary_colors
+['Red', 'Yellow', 'Blue']
+
+</code></pre>
+<h2 id="working-with-lists"><a class="header" href="#working-with-lists">Working with lists</a></h2>
+<p>Lists supply an iterator, and can be looped through/over in the same manner as other sequence types, using either <code>for item in &lt;list&gt;</code> or <code>for index, item in enumerate(&lt;list&gt;)</code>:</p>
+<pre><code class="language-python">
+# Make a list, and then loop through it to print out the elements
+&gt;&gt;&gt; colors = ["Orange", "Green", "Grey", "Blue"]
+&gt;&gt;&gt; for item in colors:
+...     print(item)
+...
+Orange
+Green
+Grey
+Blue
+
+
+# Print the same list, but with the indexes of the colors included
+&gt;&gt;&gt; colors = ["Orange", "Green", "Grey", "Blue"]
+&gt;&gt;&gt; for index, item in enumerate(colors):
+...     print(item, ":", index)
+...
+Orange : 0
+Green : 1
+Grey : 2
+Blue : 3
+
+
+# Start with a list of numbers and then loop through and print out their cubes.
+&gt;&gt;&gt; numbers_to_cube = [5, 13, 12, 16]
+&gt;&gt;&gt; for number in numbers_to_cube:
+...     print(number**3)
+...
+125
+2197
+1728
+4096
+</code></pre>
+<p>One common way to compose a list of values is to use <code>&lt;list&gt;.append()</code> within a loop:</p>
+<pre><code class="language-python">&gt;&gt;&gt; cubes_to_1000 = []
+&gt;&gt;&gt; for number in range(11):
+...    cubes_to_1000.append(number**3)
+
+&gt;&gt;&gt; cubes_to_1000
+[0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000]
+
+</code></pre>
+<p>Lists can also be combined via various techniques:</p>
+<pre><code class="language-python">
+# Using the plus + operator unpacks each list and creates a new list, but it is not efficient.
+&gt;&gt;&gt; new_via_concatenate = ["George", 5] + ["cat", "Tabby"]
+
+&gt;&gt;&gt; new_via_concatenate
+['George', 5, 'cat', 'Tabby']
+
+# Likewise, using the multiplication operator * is the equivalent of using + n times.
+&gt;&gt;&gt; first_group = ["cat", "dog", "elephant"]
+&gt;&gt;&gt; multiplied_group = first_group * 3
+
+&gt;&gt;&gt; multiplied_group
+['cat', 'dog', 'elephant', 'cat', 'dog', 'elephant', 'cat', 'dog', 'elephant']
+
+# Another method for combining 2 lists is to use slice assignment or a loop-append.
+# This assigns the second list to index 0 in the first list.
+&gt;&gt;&gt; first_one = ["cat", "Tabby"]
+&gt;&gt;&gt; second_one = ["George", 5]
+&gt;&gt;&gt; first_one[0:0] = second_one
+
+&gt;&gt;&gt; first_one
+['George', 5, 'cat', 'Tabby']
+
+# This loops through the first list and appends its items to the end of the second list.
+&gt;&gt;&gt; first_one = ["cat", "Tabby"]
+&gt;&gt;&gt; second_one = ["George", 5]
+
+&gt;&gt;&gt; for item in first_one:
+...      second_one.append(item)
+
+&gt;&gt;&gt; second_one
+['George', 5, 'cat', 'Tabby']
+
+</code></pre>
+<h2 id="some-cautions"><a class="header" href="#some-cautions">Some cautions</a></h2>
+<p>Recall that variables in Python are labels that point to underlying objects. <code>lists</code> add one more layer as container objects -- they hold object references for their collected items. This can lead to multiple potential issues when working with lists, if not handled properly.</p>
+<h4 id="assigning-more-than-one-variable-name"><a class="header" href="#assigning-more-than-one-variable-name">Assigning more than one variable name</a></h4>
+<p>Assigning a <code>list</code> object to a new variable name does not copy the <code>list</code> object nor its elements. Any change made to the elements in the list under the new name impact the original.</p>
+<p>Making a shallow_copy via <code>list.copy()</code> or slice will avoid this first-level referencing complication. A shallow_copy will create a new list object, but will not create new objects for the contained list elements. This type of copy will usually be enough for you to add or remove items from the two list objects independently, and effectively have two "separate" lists.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; actual_names = ["Tony", "Natasha", "Thor", "Bruce"]
+
+# Assigning a new variable name does not make a copy of the container or its data.
+&gt;&gt;&gt; same_list = actual_names
+
+#  Altering the list via the new name is the same as altering the list via the old name.
+&gt;&gt;&gt; same_list.append("Clarke")
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
+&gt;&gt;&gt; actual_names
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
+#  Likewise, altering the data in the list via the original name will also alter the data under the new name.
+&gt;&gt;&gt; actual_names[0] = "Wanda"
+['Wanda', 'Natasha', 'Thor', 'Bruce', 'Clarke']
+
+# If you copy the list, there will be two separate list objects which can be changed independently.
+&gt;&gt;&gt; copied_list = actual_names.copy()
+&gt;&gt;&gt; copied_list[0] = "Tony"
+
+&gt;&gt;&gt; actual_names
+['Wanda', 'Natasha', 'Thor', 'Bruce', 'Clarke']
+
+&gt;&gt;&gt; copied_list
+["Tony", "Natasha", "Thor", "Bruce", "Clarke"]
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="list-operations"><a class="header" href="#list-operations">List Operations</a></h1>
+<p>Python provides many useful methods for working with lists.</p>
+<p>Because lists are mutable, list-methods alter the original list object passed into the method. If mutation is undesirable, a shallow copy (at minimum_) of the original list needs to be made via <code>slice</code> or <code>&lt;list&gt;.copy()</code>.</p>
+<h2 id="adding-items"><a class="header" href="#adding-items">Adding Items</a></h2>
+<p>Adding items to the end of an existing list can be done via <code>&lt;list&gt;.append(&lt;item&gt;)</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.append(9)
+
+&gt;&gt;&gt; numbers
+[1, 2, 3, 9]
+
+</code></pre>
+<p>Rather than appending, <code>&lt;list&gt;.insert(&lt;index&gt;, &lt;item&gt;)</code> adds the item to a specific index within the list. <code>&lt;index&gt;</code> is the index of the item before which you want the new item to appear. <item> is the element to be inserted.</p>
+<p>Note: If <code>&lt;index&gt;</code> is 0, the item will be added to the start of the list. If <code>&lt;index&gt;</code> is greater than the final index on the list, the item will be added in the final position -- the equivalent of using <code>&lt;list&gt;.append(&lt;item&gt;)</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.insert(0, -2)
+
+&gt;&gt;&gt; numbers
+[-2, 1, 2, 3]
+
+&gt;&gt;&gt; numbers.insert(1, 0)
+
+&gt;&gt;&gt; numbers
+[-2, 0, 1, 2, 3]
+
+</code></pre>
+<p>An iterable can be combined with an existing list (concatenating the two) via <code>&lt;list&gt;.extend(&lt;iterable&gt;)</code>. <code>&lt;list&gt;.extend(&lt;iterable&gt;)</code> will unpack the supplied iterable, adding its elements in the same order to the end of the target list (using <code>&lt;list&gt;.append(&lt;item&gt;</code>) in this circumstance would add the entire iterable as a single item.).</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; other_numbers = [5, 6, 7]
+
+&gt;&gt;&gt; numbers.extend(other_numbers)
+
+&gt;&gt;&gt; numbers
+[1, 2, 3, 5, 6, 7]
+
+&gt;&gt;&gt; numbers.extend([8, 9])
+
+&gt;&gt;&gt; numbers
+[1, 2, 3, 5, 6, 7, 8, 9]
+
+</code></pre>
+<h2 id="removing-items"><a class="header" href="#removing-items">Removing Items</a></h2>
+<p><code>&lt;list&gt;.remove(&lt;item&gt;)</code> can be used to remove an element from the list. <code>&lt;list&gt;.remove(&lt;item&gt;)</code> will throw a <code>ValueError</code> if the element is not present in the list.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.remove(2)
+
+&gt;&gt;&gt; numbers
+[1, 3]
+
+# Trying to remove a value that is not in the list throws a ValueError.
+&gt;&gt;&gt; numbers.remove(0)
+ValueError: list.remove(x): x not in list
+
+</code></pre>
+<p>Alternatively, using <code>&lt;list&gt;.pop(&lt;index&gt;)</code> method will both remove and return an element for use.</p>
+<p><code>&lt;list&gt;.pop(&lt;index&gt;)</code> takes one optional parameter: the index of the element to remove and return. If the optional <code>&lt;index&gt;</code> argument is not specified, the last element of the list will be removed and returned. If <code>&lt;index&gt;</code> is a higher number than the final index of the list, an <code>IndexError</code> will be thrown.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.pop(0)
+1
+
+&gt;&gt;&gt; numbers
+[2, 3]
+&gt;&gt;&gt; numbers.pop()
+3
+
+&gt;&gt;&gt; numbers
+[2]
+
+# This will throw an error because there is only index 0.
+&gt;&gt;&gt; numbers.pop(1)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+IndexError: pop index out of range
+
+</code></pre>
+<p>All items can be removed from a list via <code>&lt;list&gt;.clear()</code>. It does not take any parameters.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.clear()
+
+&gt;&gt;&gt; numbers
+[]
+
+</code></pre>
+<h2 id="reversing-and-reordering"><a class="header" href="#reversing-and-reordering">Reversing and reordering</a></h2>
+<p>The order of list elements can be reversed in place with <code>&lt;list&gt;.reverse()</code>. This will mutate the original list.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; numbers = [1, 2, 3]
+&gt;&gt;&gt; numbers.reverse()
+
+&gt;&gt;&gt; numbers
+[3, 2, 1]
+
+</code></pre>
+<p>A list can be re-ordered in place with the help of <code>&lt;list&gt;.sort()</code>. Default sort order is ascending from the left. The Python docs offer additional tips and techniques for sorting.</p>
+<h2 id="list-comprehensions"><a class="header" href="#list-comprehensions">List Comprehensions</a></h2>
+<p>In Python code, you will often see one liner functions called "List comprehensions". These are a concise way to create lists by applying an expression to each item in an iterable, often with optional filtering conditions. It allows for cleaner and more readable code compared to traditional loops.</p>
+<pre><code class="language-python">numbers = [1, 3, 5]
+doubled = [x * 2 for x in numbers]
+print(doubled)
+# [2, 6, 10]
+
+friends = ["samantha", "sylvie", "adam", "rain", "anna", "sultan"]
+starts_s = [friend for friend in friends if friend.startswith('s')]
+
+print(starts_s)
+# ['samantha', 'sylvie', 'sultan']
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="loops"><a class="header" href="#loops">Loops</a></h1>
 <p>Python has two looping constructs. <code>while</code> loops for indefinite (uncounted) iteration and <code>for</code> loops for definite, (counted) iteration. The keywords <code>break</code>, <code>continue</code>, and <code>else</code> help customize loop behavior. <code>range()</code> and <code>enumerate()</code> help with loop counting and indexing.</p>
 <h2 id="while-loops"><a class="header" href="#while-loops">While Loops</a></h2>
@@ -13564,74 +13939,399 @@ for index, word in enumerate(word_list):
 'Bongo (at index 3) starts with a B.'
 'Found an S, stopping iteration.'
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="lists-1"><a class="header" href="#lists-1">Lists</a></h1>
-<p>(Work in progress)</p>
-<p>A <code>list</code> is a mutable collection of items in sequence. Like most collections (see the built-ins tuple, dict and set), lists can hold reference to any (or multiple) data type(s) - including other lists. Like any sequence, items can be accessed via 0-based index number from the left and -1-based index from the right. Lists can be copied in whole or in part via slice notation or <code>&lt;list&gt;.copy()</code>.</p>
-<p>Lists support both common and mutable sequence operations such as <code>min()</code>/<code>max()</code>, <code>&lt;list&gt;.index()</code>, <code>.append()</code> and <code>.reverse()</code>. List elements can be iterated over using the <code>for item in &lt;list&gt;</code> construct. <code>for index, item in enumerate(&lt;list&gt;)</code> can be used when both the element index and the element value are needed.</p>
-<p>Lists are implemented as dynamic arrays -- similar to Java's <code>Arraylist</code> type, and are most often used to store groups of similar data (strings, numbers, sets etc.) of unknown length (the number of entries may arbitrarily expand or shrink).</p>
-<p>Accessing elements, checking for membership via <code>in</code>, or appending items to the "right-hand" side of a list are all very efficient. Prepending (appending to the "left-hand" side) or inserting into the middle of a list are much less efficient because those operations require shifting elements to keep them in sequence. For a similar data structure that supports memory efficient <code>appends</code>/<code>pops</code> from both sides, see <code>collections.deque</code>, which has approximately the same O(1) performance in either direction.</p>
-<p>Because lists are mutable and can contain references to arbitrary Python objects, they also take up more space in memory than an array.array or a tuple (which is immutable) of the same apparent length. Despite this, lists are an extremely flexible and useful data structure and many built-in methods and operations in Python produce lists as their output.</p>
-<h2 id="construction"><a class="header" href="#construction">Construction</a></h2>
-<p>A <code>list</code> can be declared as a literal with square <code>[]</code> brackets and commas between elements:</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tuples-1"><a class="header" href="#tuples-1">Tuples</a></h1>
+<p>A tuple is an immutable collection of items in sequence.</p>
+<p>Like most collections (see the built-ins list, dict and set), tuples can hold any (or multiple) data type(s) -- including other tuples. The elements of a tuple can be iterated over using the <code>for item in &lt;tuple&gt;</code> construct. If both element index and value are needed, <code>for index, item in enumerate(&lt;tuple&gt;)</code> can be used.</p>
+<p>Like any sequence, elements within tuples can be accessed via bracket notation using a 0-based index number from the left or a -1-based index number from the right. Tuples can be copied in whole or in part via slice notation or <code>&lt;tuple&gt;.copy()</code>, and support all common sequence operations. Being immutable, tuples do not support mutable sequence operations.</p>
+<p>Tuples take up very little memory space compared to other collection types and have constant (O(1)) access time when using an index. However, they cannot be resized, sorted, or altered once created, so are less flexible when frequent changes or updates to data are needed. If frequent updates or expansions are required, a <code>list</code>, <code>collections.deque</code>, or <code>array.array</code> might be a better data structure.</p>
+<h2 id="tuple-construction"><a class="header" href="#tuple-construction">Tuple Construction</a></h2>
+<p>Tuples can be formed in multiple ways, using either the <code>tuple</code> class constructor or the <code>(&lt;element_1&gt;, &lt;element_2&gt;)</code> (<code>tuple</code> literal) declaration.</p>
+<h4 id="using-the-tuple-constructor-empty-or-with-an-iterable"><a class="header" href="#using-the-tuple-constructor-empty-or-with-an-iterable">Using the tuple() constructor empty or with an iterable:</a></h4>
 <pre><code class="language-python">
-&gt;&gt;&gt; no_elements = []
+&gt;&gt;&gt; no_elements = tuple()
+()
 
-&gt;&gt;&gt; no_elements
-[]
-
-&gt;&gt;&gt; one_element = ["Guava"]
-
-&gt;&gt;&gt; one_element
-['Guava']
-
-&gt;&gt;&gt; elements_separated_with_commas = ["Parrot", "Bird", 334782]
-
-&gt;&gt;&gt; elements_separated_with_commas
-['Parrot', 'Bird', 334782]
+# The constructor *requires* an iterable, so single elements must be passed in a list or another tuple.
+&gt;&gt;&gt; one_element = tuple([16])
+(16,)
 
 </code></pre>
-<p>For readability, line breaks can be used when there are many elements or nested data structures within a list.</p>
-<pre><code class="language-python">&gt;&gt;&gt; lots_of_entries = [
-      "Rose",
-      "Sunflower",
-      "Poppy",
-      "Pansy",
-      "Tulip",
-      "Fuchsia",
-      "Cyclamen",
-      "Lavender"
-   ]
+<p>Strings are iterable, so using a single <code>str</code> as an argument to the <code>tuple()</code> constructor can have surprising results:</p>
+<pre><code class="language-python">
+# String elements (characters) are iterated through and added to the tuple
+&gt;&gt;&gt; multiple_elements_string = tuple("Timbuktu")
+('T', 'i', 'm', 'b', 'u', 'k', 't', 'u')
 
-&gt;&gt;&gt; lots_of_entries
-['Rose', 'Sunflower', 'Poppy', 'Pansy', 'Tulip', 'Fuchsia', 'Cyclamen', 'Lavender']
-
-
-# Each data structure is on its own line to help clarify what they are.
-&gt;&gt;&gt; nested_data_structures = [
-      {"fish": "gold", "monkey": "brown", "parrot": "grey"},
-      ("fish", "mammal", "bird"),
-      ['water', 'jungle', 'sky']
-   ]
-
-&gt;&gt;&gt; nested_data_structures
-[{'fish': 'gold', 'monkey': 'brown', 'parrot': 'grey'}, ('fish', 'mammal', 'bird'), ['water', 'jungle', 'sky']]
 </code></pre>
-<h2 id="list-comprehensions"><a class="header" href="#list-comprehensions">List Comprehensions</a></h2>
-<p>In Python code, you will often see one liner functions called "List comprehensions". These are a concise way to create lists by applying an expression to each item in an iterable, often with optional filtering conditions. It allows for cleaner and more readable code compared to traditional loops.</p>
-<pre><code class="language-python">numbers = [1, 3, 5]
-doubled = [x * 2 for x in numbers]
-print(doubled)
-# [2, 6, 10]
+<p>Other iterables also have their elements added one by one:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; multiple_elements_list = tuple(["Parrot", "Bird", 334782])
+("Parrot", "Bird", 334782)
 
-friends = ["samantha", "sylvie", "adam", "rain", "anna", "sultan"]
-starts_s = [friend for friend in friends if friend.startswith('s')]
+&gt;&gt;&gt; multiple_elements_set = tuple({2, 3, 5, 7, 11})
+(2,3,5,7,11)
 
-print(starts_s)
-# ['samantha', 'sylvie', 'sultan']
 </code></pre>
+<p>The iteration default for <code>dict</code> is over the keys. To include both keys and values in a tuple made from a dictionary, use <code>&lt;dict&gt;.items()</code>, which will return an iterator of (key, value) tuples.</p>
+<pre><code class="language-python">
+source_data = {"fish": "gold", 
+               "monkey": "brown"}
+
+&gt;&gt;&gt; multiple_elements_dict_1 = tuple(source_data)
+('fish', 'monkey')
+
+&gt;&gt;&gt; multiple_elements_dict_2 = tuple(source_data.items())
+(('fish', 'gold'), ('monkey', 'brown'))
+
+</code></pre>
+<h4 id="declaring-a-tuple-as-a-literal-"><a class="header" href="#declaring-a-tuple-as-a-literal-">Declaring a tuple as a literal :</a></h4>
+<p>Because the <code>tuple()</code> constructor only takes iterables (or nothing) as arguments, it is much easier to create a one-tuple via the literal method.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; no_elements = ()
+()
+
+&gt;&gt;&gt; one_element = ("Guava",)
+("Guava",)
+
+</code></pre>
+<p>Note that generally parentheses are not required to create a tuple literal - only commas. However, using <code>(&lt;element)1&gt;, &lt;element_2&gt;)</code> is considered more readable in most circumstances. Parentheses are also required in cases of ambiguity, such as an empty or one-item tuple or where a function takes a tuple as an argument.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; elements_separated_with_commas = "Parrot", "Bird", 334782
+("Parrot", "Bird", 334782)
+
+&gt;&gt;&gt; elements_with_commas_and_parentheses = ("Triangle", 60, 60, 60)
+("Triangle", 60, 60, 60)
+
+</code></pre>
+<p>Other data structures can be included as tuple elements, including other tuples.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; nested_data_structures = ({"fish": "gold", "monkey": "brown", "parrot" : "grey"}, ("fish", "mammal", "bird"))
+({"fish": "gold", "monkey": "brown", "parrot" : "grey"}, ("fish", "mammal", "bird"))
+
+&gt;&gt;&gt; nested_data_structures_1 = (["fish", "gold", "monkey", "brown", "parrot", "grey"], ("fish", "mammal", "bird"))
+(["fish", "gold", "monkey", "brown", "parrot", "grey"], ("fish", "mammal", "bird"))
+
+</code></pre>
+<p>Tuples can be concatenated using plus <code>+</code> operator, which unpacks each tuple creating a new, combined tuple.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; new_via_concatenate = ("George", 5) + ("cat", "Tabby")
+("George", 5, "cat", "Tabby")
+
+#likewise, using the multiplication operator * is the equivalent of using + n times
+&gt;&gt;&gt; first_group = ("cat", "dog", "elephant")
+
+&gt;&gt;&gt; multiplied_group = first_group * 3
+('cat', 'dog', 'elephant', 'cat', 'dog', 'elephant', 'cat', 'dog', 'elephant')
+
+</code></pre>
+<h2 id="accessing-data"><a class="header" href="#accessing-data">Accessing Data</a></h2>
+<p>Elements inside tuples (like the other sequence types <code>str</code> and <code>list</code>), can be accessed via bracket notation. Indexes can be from <code>left --&gt; right</code> (starting at zero) or <code>right --&gt; left</code> (starting at -1). Tuples can also be copied in whole or in part via slice notation or using <code>&lt;tuple&gt;.copy()</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+
+#name is at index 0 or index -4
+&gt;&gt;&gt; student_name = student_info[0]
+Alyssa
+
+&gt;&gt;&gt; student_name = student_info[-4]
+Alyssa
+
+#age is at index 3 or index -1
+&gt;&gt;&gt; student_age_1 = student_info[3]
+8
+
+&gt;&gt;&gt; student_age_2 = student_info[-1]
+8
+
+</code></pre>
+<h2 id="iteration-over-elements"><a class="header" href="#iteration-over-elements">Iteration Over Elements</a></h2>
+<p>Elements inside tuples can be iterated over in a loop using for <code>item in &lt;tuple&gt;</code> syntax. If both indexes and values are needed, <code>for index, item in enumerate(&lt;tuple&gt;)</code> can be used.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+&gt;&gt;&gt; for item in student_info:
+...   print(item)
+
+...
+Alyssa
+grade 3
+female
+8
+
+&gt;&gt;&gt; for index, item in enumerate(student_info):
+...  print("Index is: " + str(index) + ", value is: " + str(item) +".")
+
+...
+Index is: 0, value is: Alyssa.
+Index is: 1, value is: grade 3.
+Index is: 2, value is: female.
+Index is: 3, value is: 8.
+
+</code></pre>
+<h2 id="tuples-as-homogeneous-information"><a class="header" href="#tuples-as-homogeneous-information">Tuples as Homogeneous Information</a></h2>
+<p>Tuples are often used as records containing data that is organizationally or conceptually homogeneous and treated as a single unit of information -- even if individual elements are of heterogeneous data types.</p>
+<pre><code class="language-python">&gt;&gt;&gt; student_info = ("Alyssa", "grade 3", "female", 8 )
+</code></pre>
+<p>Tuples are also used when homogeneous immutable sequences of data are needed for hashability, storage in a set, or creation of keys in a dictionary.</p>
+<p>Note that while tuples are in most cases immutable, because they can contain any data structure or object they can become mutable if any of their elements is a mutable type. Using a mutable data type within a tuple will make the enclosing tuple un-hashable.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; cmyk_color_map = {
+                      (.69, .3, .48, .1) : ("Teal 700", (59, 178, 146), 0x3BB292),
+                      (0, .5, 1, 0) : ("Pantone 151", (247, 127, 1), 0xF77F01),
+                      (.37, .89, 0, .44) : ("Pantone 267", (89, 16, 142), 0x59108E),
+                      (0, 1, .46, .45) : ("Pantone 228", (140, 0, 76), 0x8C004C)
+                     }
+
+&gt;&gt;&gt;&gt; unique_rgb_colors = {
+                          (59, 178, 146),
+                          (247, 127, 1),
+                          (89, 16, 142),
+                          (140, 0, 76),
+                          (76, 0, 140)
+                         }
+
+&gt;&gt;&gt; teal_700 = hash((59, 178, 146))
+
+&gt;&gt;&gt; teal_700 = hash(("Pantone 228", [(140, 0, 76), 0x8C004C]))
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'list'
+
+</code></pre>
+<h2 id="extended-tuples-and-related-data-types"><a class="header" href="#extended-tuples-and-related-data-types">Extended tuples and related data types</a></h2>
+<p>Tuples are often used as records, but the data inside them can only be accessed via position/index. The <code>namedtuple()</code> class in the <code>collections</code> module extends basic tuple functionality to allow access of elements by name. Additionally, users can adapt a <code>dataclass</code> to provide similar named attribute functionality, with a some pros and cons.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dictionaries"><a class="header" href="#dictionaries">Dictionaries</a></h1>
-<p>(Work in Progress)</p>
-<h3 id="dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#dictionary-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Dictionary: Iterates through a dictionary of student attendance and prints results.</a></h3>
+<p>A dictionary (<code>dict</code>) in Python is a data structure that associates hashable keys to values and is known in other programming languages as a resizable hash table, hashmap, or associative array. Dictionaries are Python's only built-in mapping type.</p>
+<ul>
+<li>
+<p><code>Keys</code> must be hashable and unique across the dictionary. Key types can include numbers, str, or tuples (of immutable values). They cannot contain mutable data structures such as lists, dicts, or sets. As of Python 3.7, dict key order is guaranteed to be the order in which entries are inserted.</p>
+</li>
+<li>
+<p><code>values</code> can be of any data type or structure. Values can also nest arbitrarily, so they can include lists-of-lists, sub-dictionaries, and other custom or compound data structures.</p>
+</li>
+</ul>
+<p>Given a key, dictionaries can retrieve a value in (on average) constant time (independent of the number of entries). Compared to searching for a value within a list or array (without knowing the index position), a dict uses significantly more memory, but has very rapid retrieval.</p>
+<p>Dictionaries are especially useful in scenarios where the collection of items is large and must be accessed and updated frequently.</p>
+<h2 id="dictionary-construction"><a class="header" href="#dictionary-construction">Dictionary Construction</a></h2>
+<p>Dictionaries can be created in many different ways, including:</p>
+<ul>
+<li>Using the <code>fromkeys()</code> classmethod</li>
+<li>Creating dictionary comprehensions</li>
+<li>Merging two dictionaries via unpacking (<code>**</code>)</li>
+<li>Merging dictionaries via the <code>|</code> (update) operator</li>
+<li>Using a loop to iteratively add entries to a previously created empty dict.</li>
+</ul>
+<p>The two most straightforward methods are the dictionary constructor and the dictionary literal.</p>
+<h4 id="the-dictionary-constructor"><a class="header" href="#the-dictionary-constructor">The Dictionary Constructor</a></h4>
+<p><code>dict()</code> (the constructor for the dict class) can be used with any iterable of <code>key</code>, <code>value</code> pairs. It can also be called with a series of <code>&lt;name&gt;=&lt;value&gt;</code> arguments:</p>
+<pre><code class="language-python">
+# Passing a list of key,value tuples.
+&gt;&gt;&gt; wombat = dict([('name', 'Wombat'),('speed', 23),
+                   ('land_animal', True)])
+{'name': 'Wombat', 'speed': 23, 'land_animal': True}
+
+
+# Using key=value arguments.
+&gt;&gt;&gt; bear = dict(name="Black Bear", speed=40, land_animal=True)
+{'name': 'Black Bear', 'speed': 40, 'land_animal': True}
+
+</code></pre>
+<h4 id="dictionary-literals"><a class="header" href="#dictionary-literals">Dictionary Literals</a></h4>
+<p>A dictionary can also be directly entered as a dictionary literal, using curly brackets (<code>{}</code>) enclosing <code>key : value</code> pairs. Entries that are enclosed in the <code>{}</code> can also appear on separate lines:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; whale = {"name": "Blue Whale", 
+             "speed": 35, 
+             "land_animal": False}
+{'name': 'Blue Whale', 'speed': 35, 'land_animal': False}
+
+&gt;&gt;&gt; wombat = {'name': 'Wombat',
+              'speed': 23,
+              'land_animal': True,
+              'color': 'Brindle'}
+
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True, 'color': 'Brindle'}
+
+</code></pre>
+<h4 id="nested-dictionaries"><a class="header" href="#nested-dictionaries">Nested Dictionaries</a></h4>
+<p>Dictionaries can be arbitrarily nested:</p>
+<pre><code class="language-python">
+animals = {
+            "Real" : {
+                "Winged" : {
+                            "Sparrow" : {'name': 'sparrow','speed': 12, 'land_animal': True},
+                            "Kestrel" : {'name': 'kestrel', 'speed': 15, 'land_animal': True}
+                           },
+                "Legged" : {
+                            "Wombat" : {'name': 'Wombat', 'speed': 23, 'land_animal': True},
+                            "Black Bear": {'name': 'Black Bear', 'speed': 40, 'land_animal': True},
+                            "Polecat" : {'name': 'Polecat', 'speed': 15, 'land_animal': True}
+                           },
+                "Other" :  {
+                            "Whale" : {'name': 'Blue Whale', 'speed': 35, 'land_animal': False},
+                            "Orca" : {'name': 'Orca', 'speed': 45, 'land_animal': False},
+                            "Snake" : {'name': 'Python', 'speed': 25, 'land_animal': True}
+                            }
+                },
+        
+        "Imaginary": {
+                "Winged" : {
+                            "Dragon" : {'name': 'Fire Dragon','speed': 100, 'land_animal': True},
+                            "Phoenix" : {'name': 'Phoenix', 'speed': 1500, 'land_animal': True}
+                            },
+                "Legged" : {
+                            "Sphinx" : {'name': 'Sphinx','speed': 10, 'land_animal': True},
+                            "Minotaur" : {'name': 'Minotaur', 'speed': 5, 'land_animal': True}
+                            },
+                "Other" :  {}
+                }
+       }
+
+</code></pre>
+<h2 id="accessing-values-in-a-dict"><a class="header" href="#accessing-values-in-a-dict">Accessing Values in a dict</a></h2>
+<p>You can access a value in a dictionary using a key in square brackets. If a key does not exist, a <code>KeyError</code> is thrown:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; bear["speed"]
+40
+
+&gt;&gt;&gt; bear["color"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'color'
+
+</code></pre>
+<p>Accessing an entry via the <code>get(&lt;key&gt;, &lt;default value&gt;)</code> method can avoid the <code>KeyError</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; bear.get("color", 'not found')
+'not found'
+
+</code></pre>
+<h4 id="accessing-nested-dictionary-entries"><a class="header" href="#accessing-nested-dictionary-entries">Accessing Nested Dictionary Entries</a></h4>
+<p>To access entries in nested dictionaries, use successive brackets. If a given key is missing, the usual <code>KeyError</code> will be thrown:</p>
+<pre><code class="language-python">
+# Using the animals nested dictionary.
+&gt;&gt;&gt; animals["Real"]["winged"]["Kestrel"]["speed"]
+15
+
+&gt;&gt;&gt; animals["Imaginary"]["winged"]["Kestrel"]["speed"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'Kestrel'
+
+</code></pre>
+<p>To avoid the <code>KeyError</code>, <code>.get()</code> can be used, but the calls to <code>.get()</code> must be chained:</p>
+<pre><code class="language-python">
+# Using the animals nested dictionary.
+# Note the use of parenthesis to enable placing the 
+# .get() calls on separate lines.
+&gt;&gt;&gt; (animals.get("Imaginary", {})
+            .get("Legged", {})
+            .get("Sphinx", {})
+            .get("Color", "I have no idea!"))
+'I have no idea!'
+
+</code></pre>
+<h2 id="changing-or-adding-dictionary-values"><a class="header" href="#changing-or-adding-dictionary-values">Changing or Adding Dictionary Values</a></h2>
+<p>You can change an entry <code>value</code> by assigning to its key:</p>
+<pre><code class="language-python">
+# Assigning the value "Grizzly Bear" to the name key.
+&gt;&gt;&gt; bear["name"] = "Grizzly Bear"
+{'name': 'Grizzly Bear', 'speed': 40, 'land_animal': True}
+
+&gt;&gt;&gt; whale["speed"] = 25
+{'name': 'Blue Whale', 'speed': 25, 'land_animal': False}
+
+</code></pre>
+<p>New <code>key : value</code> pairs can be added in the same fashion:</p>
+<pre><code class="language-python">
+# Adding an new "color" key with a new "tawney" value.
+&gt;&gt;&gt; bear["color"] = 'tawney'
+{'name': 'Grizzly Bear', 'speed': 40, 'land_animal': True, 'color': 'tawney'}
+
+&gt;&gt;&gt; whale["blowholes"] = 1
+{'name': 'Blue Whale', 'speed': 25, 'land_animal': False, 'blowholes': 1}
+
+</code></pre>
+<h2 id="removing-pop-ing-and-del-dictionary-entries"><a class="header" href="#removing-pop-ing-and-del-dictionary-entries">Removing (Pop-ing and del) Dictionary Entries</a></h2>
+<p>You can use the <code>.pop(&lt;key&gt;)</code> method to delete a dictionary entry. <code>.pop()</code> removes the (<code>key</code>, <code>value</code>) pair and returns the value for use. Like <code>.get()</code>, <code>.pop(&lt;key&gt;)</code> accepts second argument (<code>dict.pop(&lt;key&gt;, &lt;default value&gt;)</code>) that will be returned if the key is not found. This prevents a <code>KeyError</code> being raised:</p>
+<pre><code class="language-python">
+# Using .pop() removes both the key and value, returning the value.
+&gt;&gt;&gt; bear.pop("name")
+'Grizzly Bear'
+
+
+# The "name" key is now removed from the dictionary.
+# Attempting .pop() a second time will throw a KeyError.
+&gt;&gt;&gt; bear.pop("name")
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'name'
+
+
+# Using a default argument with .pop() will 
+# prevent a KeyError from a missing key.
+&gt;&gt;&gt; bear.pop("name", "Unknown")
+'Unknown'
+
+</code></pre>
+<p>You can also use the <code>del</code> statement to remove a single or multiple entries. A <code>KeyError</code> is raised if the entry to be removed is not found in the dictionary:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; wombat = {'name': 'Wombat',
+              'speed': 23,
+              'land_animal': True,
+              'color': 'Brindle',
+              'talent': 'Singing',
+              'size': 'small'}
+
+# Remove a single entry from the dictionary.
+&gt;&gt;&gt; del wombat["color"]
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True, 'talent': 'Singing', 'size': 'small'}
+
+
+# Remove multiple entries from the dictionary.
+&gt;&gt;&gt; del wombat["talent"], wombat["size"]
+&gt;&gt;&gt; wombat
+{'name': 'Wombat', 'speed': 23, 'land_animal': True}
+
+
+# Attempting a deletion of a non-existent key raises a KeyError
+&gt;&gt;&gt; del wombat["number_of_legs"]
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+KeyError: 'number_of_legs'
+
+</code></pre>
+<h2 id="looping-throughiterating-over-a-dictionary"><a class="header" href="#looping-throughiterating-over-a-dictionary">Looping Through/Iterating over a Dictionary</a></h2>
+<p>Looping through a dictionary using <code>for item in dict</code> or <code>while item</code> will iterate over the keys by default. You can access values within the same loop by using square brackets:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; for key in bear:
+&gt;&gt;&gt;     print((key, bear[key])) #this prints a tuple of (key, value)
+('name', 'Black Bear')
+('speed', 40)
+('land_animal', True)
+
+</code></pre>
+<p>You can also use the <code>.items()</code> method, which returns (<code>key</code>, <code>value</code>) tuples:</p>
+<pre><code class="language-python">
+# dict.items() forms (key, value tuples) that can be 
+# unpacked and iterated over.
+&gt;&gt;&gt; for key, value in whale.items():
+&gt;&gt;&gt;     print(key, ":", value)
+name : Blue Whale
+speed : 25
+land_animal : False
+blowholes : 1
+
+</code></pre>
+<p>Likewise, <code>.keys()</code> will return the <code>keys</code> and <code>.values()</code> will return the <code>values</code>.</p>
+<h2 id="extending-dictionary-functionality-the-collections-module"><a class="header" href="#extending-dictionary-functionality-the-collections-module">Extending Dictionary Functionality: The Collections Module</a></h2>
+<p>The <code>collections</code> module adds specialized functionality to Python's standard collection-based datatypes (dictionary, set, list, tuple). Three of the most useful dictionary-based classes are:</p>
+<ul>
+<li><code>Counter</code> automatically counts items and returns them in a <code>dict</code> with the items as keys and their counts as values.</li>
+<li><code>OrderedDict</code>, has methods specialized for arranging the order of dictionary entries.</li>
+<li><code>defaultdict</code> uses a factory method to set a default value if a <code>key</code> is not found when trying to retrieve or assign to a dictionary entry.</li>
+</ul>
+<h4 id="code-example-iterates-through-a-dictionary-of-student-attendance-and-prints-results"><a class="header" href="#code-example-iterates-through-a-dictionary-of-student-attendance-and-prints-results">Code example: Iterates through a dictionary of student attendance and prints results.</a></h4>
 <pre><code class="language-python">student_attendance = {"Rolf": 96, "Bob": 80, "Anna": 100}
 
 for student, attendance in student_attendance.items():
@@ -13641,7 +14341,7 @@ for student, attendance in student_attendance.items():
 # Bob: 80
 # Anna: 100
 </code></pre>
-<h3 id="dictionary-2-implements-a-simple-username-password-authentication-system"><a class="header" href="#dictionary-2-implements-a-simple-username-password-authentication-system">Dictionary 2: Implements a simple username-password authentication system.</a></h3>
+<h4 id="code-example-implements-a-simple-username-password-authentication-system"><a class="header" href="#code-example-implements-a-simple-username-password-authentication-system">Code example: Implements a simple username-password authentication system.</a></h4>
 <pre><code class="language-python">users = [
     (0, "Bob", "password"),
     (1, "Rolf", "bob123"),
@@ -13665,7 +14365,7 @@ else:
 # Enter your password: password
 # Your details are correct!
 </code></pre>
-<h3 id="dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#dictionary-3-calculates-average-grades-for-an-individual-student-and-a-class">Dictionary 3: Calculates average grades for an individual student and a class.</a></h3>
+<h4 id="code-example-calculates-average-grades-for-an-individual-student-and-a-class"><a class="header" href="#code-example-calculates-average-grades-for-an-individual-student-and-a-class">Code example: Calculates average grades for an individual student and a class.</a></h4>
 <ul>
 <li>Inside of a dictionary, you can store pair data, but you can also store different data types like tuples.</li>
 </ul>
@@ -13708,8 +14408,769 @@ def average_grade_all_students(student_list):
 print(average_grade_all_students(student_list))
 # 85.5
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dict-operations"><a class="header" href="#dict-operations">Dict Operations</a></h1>
+<p>The <code>dict</code> class in Python provides many useful methods for working with dictionaries. Some were introduced in the concept for <code>dicts</code>. Here we cover a few more - along with some techniques for iterating through and manipulating dictionaries.</p>
+<ul>
+<li><code>dict.setdefault()</code> automatically adds keys without throwing a <code>KeyError</code>.</li>
+<li><code>dict.fromkeys(iterable, &lt;default value&gt;)</code> creates a new <code>dict</code> from any number of iterables.</li>
+<li><code>.keys()</code>, <code>.values()</code>, and <code>.items()</code> provide convenient iterators.</li>
+<li><code>sorted(&lt;dict&gt;.items())</code> can easily re-order entries in a <code>dict</code>.</li>
+<li><code>dict_one.update(&lt;dict_two&gt;)</code> updates one <code>dict</code> with overlapping values from another dict.</li>
+<li><code>dict | other_dict</code> and <code>dict |= other_dict</code> merges or updates two <code>dict</code>s via operators.</li>
+<li><code>reversed(dict.keys())</code>, <code>reversed(dict.values())</code>, or <code>reversed(dict.items())</code> produce reversed views.</li>
+<li><code>&lt;dict&gt;.popitem()</code> removes and returns a key, value pair.</li>
+</ul>
+<h2 id="setdefault-for-error-free-insertion"><a class="header" href="#setdefault-for-error-free-insertion"><code>setdefault()</code> for Error-Free Insertion</a></h2>
+<p>The dictionary concept previously covered that <code>.get(key, &lt;default value&gt;)</code> returns an existing <code>value</code> or the <code>default value</code> if a <code>key</code> is not found in a dictionary, thereby avoiding a <code>KeyError</code>. This works well in situations where you would rather not have extra error handling but cannot trust that a looked-for <code>key</code> will be present.</p>
+<p>For a similarly "safe" (without <code>KeyError</code>) insertion operation, there is the <code>.setdefault(key, &lt;default value&gt;)</code> method. <code>setdefault(key, &lt;default value&gt;)</code> will return the <code>value</code> if the <code>key</code> is found in the dictionary. If the key is not found, it will insert the (<code>key</code>, <code>default value</code>) pair and return the <code>default value</code> for use.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I = {'Grassy Green': '#9bc400', 'Purple Mountains Majesty': '#8076a3', 'Misty Mountain Pink': '#f9c5bd'}
+
+# Looking for the value associated with key "Rock Brown".The key does not exist, 
+# so it is added with the default value, and the value is returned.
+&gt;&gt;&gt; palette.setdefault('Rock Brown', '#694605')
+'#694605'
+
+# The (key, default value) pair has now been added to the dictionary.
+&gt;&gt;&gt; palette_I
+{'Grassy Green': '#9bc400', 'Purple Mountains Majesty': '#8076a3', 'Misty Mountain Pink': '#f9c5bd', 'Rock Brown': '#694605'}
+
+</code></pre>
+<h2 id="fromkeys-to-populate-a-dictionary-from-an-iterable"><a class="header" href="#fromkeys-to-populate-a-dictionary-from-an-iterable"><code>fromkeys()</code> to Populate a Dictionary from an Iterable</a></h2>
+<p>To quickly populate a dictionary with various <code>keys</code> and default values, the class method <code>fromkeys(iterable, &lt;default value&gt;)</code> will iterate through an iterable of <code>keys</code> and create a new <code>dict</code>. All values will be set to the <code>default value</code> provided:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; new_dict = dict.fromkeys(['Grassy Green', 'Purple Mountains Majesty', 'Misty Mountain Pink'], 'fill in hex color here')
+
+{'Grassy Green': 'fill in hex color here',
+ 'Purple Mountains Majesty': 'fill in hex color here',
+ 'Misty Mountain Pink': 'fill in hex color here'}
+
+</code></pre>
+<h2 id="remove-and-return-a-key-value-pair-with-popitem"><a class="header" href="#remove-and-return-a-key-value-pair-with-popitem">Remove and Return a (key, value) Pair With <code>.popitem()</code></a></h2>
+<p><code>.popitem()</code> removes &amp; returns a single (<code>key</code>, <code>value</code>) pair from a dictionary. Pairs are returned in Last-in-First-out (LIFO) order. If the dictionary is empty, calling <code>popitem()</code> will raise a <code>KeyError</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I = {'Grassy Green': '#9bc400', 
+                 'Purple Mountains Majesty': '#8076a3', 
+                 'Misty Mountain Pink': '#f9c5bd'}
+&gt;&gt;&gt; palette_I.popitem()
+('Misty Mountain Pink', '#f9c5bd')
+
+&gt;&gt;&gt; palette_I.popitem()
+('Purple Mountains Majesty', '#8076a3')
+
+&gt;&gt;&gt; palette_I.popitem()
+('Grassy Green', '#9bc400')
+
+# All (key, value) pairs have been removed.
+&gt;&gt;&gt; palette_I.popitem()
+Traceback (most recent call last):
+
+  line 1, in &lt;module&gt;
+    palette_I.popitem()
+
+KeyError: 'popitem(): dictionary is empty'
+
+</code></pre>
+<h2 id="iterating-over-entries-in-a-dictionary-via-views"><a class="header" href="#iterating-over-entries-in-a-dictionary-via-views">Iterating Over Entries in a Dictionary Via Views</a></h2>
+<p>The <code>.keys()</code>, <code>.values()</code>, and <code>.items()</code> methods return iterable views of a dictionary.</p>
+<p>These views can be used to easily loop over entries without altering them. Views are also dynamic -- when underlying dictionary data changes, the associated <code>view object</code> will reflect the change:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I = {'Grassy Green': '#9bc400', 
+                 'Purple Mountains Majesty': '#8076a3', 
+                 'Misty Mountain Pink': '#f9c5bd'}
+
+# Using .keys() returns a list of keys.
+&gt;&gt;&gt; palette_I.keys()
+dict_keys(['Grassy Green', 'Purple Mountains Majesty', 'Misty Mountain Pink'])
+
+# Using .values() returns a list of values.
+&gt;&gt;&gt; palette_I.values()
+dict_values(['#9bc400', '#8076a3', '#f9c5bd'])
+
+# Using .items() returns a list of (key, value) tuples.
+&gt;&gt;&gt; palette_I.items()
+dict_items([('Grassy Green', '#9bc400'), ('Purple Mountains Majesty', '#8076a3'), ('Misty Mountain Pink', '#f9c5bd')])
+
+# Views are dynamic.  Changing values in the dict 
+# changes all of the associated views.
+&gt;&gt;&gt; palette_I['Purple Mountains Majesty'] = (128, 118, 163)
+&gt;&gt;&gt; palette_I['Deep Red'] = '#932432'
+
+&gt;&gt;&gt; palette_I.values()
+dict_values(['#9bc400', (128, 118, 163), '#f9c5bd', '#932432'])
+
+&gt;&gt;&gt; palette_I.keys()
+dict_keys(['Grassy Green', 'Purple Mountains Majesty', 'Misty Mountain Pink', 'Deep Red'])
+
+&gt;&gt;&gt; palette_I.items()
+dict_items([('Grassy Green', '#9bc400'), ('Purple Mountains Majesty', (128, 118, 163)), ('Misty Mountain Pink', '#f9c5bd'), ('Deep Red', '#932432')])
+
+</code></pre>
+<h2 id="more-on-keys-values-and-items"><a class="header" href="#more-on-keys-values-and-items">More on <code>.keys()</code>, <code>.values()</code>, and <code>.items()</code></a></h2>
+<p>In Python 3.7+, <code>dicts</code> preserve the order in which entries are inserted allowing First-in, First-out (FIFO), iteration when using <code>.keys()</code>, <code>.values()</code>, or <code>.items()</code>.</p>
+<p>In Python 3.8+, views are also reversible. This allows keys, values, or (<code>key</code>, <code>value</code>) pairs to be iterated over in Last-in, First-out (LIFO) order by using <code>reversed(&lt;dict&gt;.keys())</code>, <code>reversed(&lt;dict&gt;.values())</code>, or <code>reversed(&lt;dict&gt;.items())</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_II = {'Factory Stone Purple': '#7c677f', 
+                  'Green Treeline': '#478559', 
+                  'Purple baseline': '#161748'}
+&gt;&gt;&gt; for item in palette_II.items():
+...     print(item)
+...
+('Factory Stone Purple', '#7c677f')
+('Green Treeline', '#478559')
+('Purple baseline', '#161748')
+
+&gt;&gt;&gt; for item in reversed(palette_II.items()):
+...    print (item)
+...
+('Purple baseline', '#161748')
+('Green Treeline', '#478559')
+('Factory Stone Purple', '#7c677f')
+
+</code></pre>
+<h2 id="combine-dictionaries-with-update"><a class="header" href="#combine-dictionaries-with-update">Combine Dictionaries with <code>.update()</code></a></h2>
+<p><code>&lt;dict_one&gt;.update(&lt;dict_two&gt;)</code> can be used to combine two dictionaries. This method will take the (<code>key</code>,<code>value</code>) pairs of <code>&lt;dict_two&gt;</code> and write them into <code>&lt;dict_one&gt;</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I = {'Grassy Green': '#9bc400',
+                 'Purple Mountains Majesty': '#8076a3',
+                  'Misty Mountain Pink': '#f9c5bd'}
+&gt;&gt;&gt; palette_II = {'Factory Stone Purple': '#7c677f',
+                  'Green Treeline': '#478559',
+                  'Purple Baseline': '#161748'}
+
+&gt;&gt;&gt; palette_I.update(palette_II)
+
+# Note that new items from palette_II are added.
+&gt;&gt;&gt; palette_I
+{'Grassy Green': '#9bc400', 'Purple Mountains Majesty': '#8076a3', 'Misty Mountain Pink': '#f9c5bd', 'Factory Stone Purple': '#7c677f', 'Green Treeline': '#478559', 'Purple Baseline': '#161748'}
+
+</code></pre>
+<p>Where keys in the two dictionaries overlap, the <code>value</code> in <code>dict_one</code> will be overwritten by the corresponding <code>value</code> from <code>dict_two</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I =   {'Grassy Green': '#9bc400', 
+                   'Purple Mountains Majesty': '#8076a3', 
+                   'Misty Mountain Pink': '#f9c5bd', 
+                   'Factory Stone Purple': '#7c677f', 
+                   'Green Treeline': '#478559', 
+                   'Purple baseline': '#161748'}
+                   
+&gt;&gt;&gt; palette_III = {'Grassy Green': (155, 196, 0), 
+                   'Purple Mountains Majesty': (128, 118, 163),
+                   'Misty Mountain Pink': (249, 197, 189)}
+&gt;&gt;&gt; palette_I.update(palette_III)
+
+# Overlapping values in palette_I are replaced with 
+# values from palette_III
+&gt;&gt;&gt; palette_I
+{'Grassy Green': (155, 196, 0),
+  'Purple Mountains Majesty': (128, 118, 163), 
+  'Misty Mountain Pink': (249, 197, 189), 
+  'Factory Stone Purple': '#7c677f', 
+  'Green Treeline': '#478559', 'Purple baseline': '#161748'}
+
+</code></pre>
+<h2 id="merge-or-update-dictionaries-via-the-union--operators"><a class="header" href="#merge-or-update-dictionaries-via-the-union--operators">Merge or Update Dictionaries Via the Union (|) Operators</a></h2>
+<p>Python 3.9 introduces a different means of merging <code>dicts</code>: the <code>union</code> operators. <code>dict_one | dict_two</code> will create a new dictionary, made up of the (<code>key</code>, <code>value</code>) pairs of <code>dict_one</code> and <code>dict_two</code>. When both dictionaries share keys, <code>dict_two</code> values take precedence.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_I = {'Grassy Green': '#9bc400', 
+                 'Purple Mountains Majesty': '#8076a3', 
+                 'Misty Mountain Pink': '#f9c5bd'}
+
+&gt;&gt;&gt; palette_II = {'Factory Stone Purple': '#7c677f', 
+                  'Green Treeline': '#478559', 
+                  'Purple baseline': '#161748'}
+
+&gt;&gt;&gt; new_dict = palette_I | palette_II
+&gt;&gt;&gt; new_dict
+...
+{'Grassy Green': '#9bc400',
+ 'Purple Mountains Majesty': '#8076a3',
+ 'Misty Mountain Pink': '#f9c5bd',
+ 'Factory Stone Purple': '#7c677f',
+ 'Green Treeline': '#478559',
+ 'Purple baseline': '#161748'}
+</code></pre>
+<p><code>dict_one |= other</code> behaves similar to <code>&lt;dict_one&gt;.update(&lt;other&gt;)</code>, but in this case, other can be either a <code>dict</code> or an iterable of (<code>key</code>, <code>value</code>) pairs:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; palette_III = {'Grassy Green': (155, 196, 0),
+                   'Purple Mountains Majesty': (128, 118, 163),
+                   'Misty Mountain Pink': (249, 197, 189)}
+&gt;&gt;&gt; new_dict |= palette_III
+&gt;&gt;&gt; new_dict
+...
+{'Grassy Green': (155, 196, 0),
+'Purple Mountains Majesty': (128, 118, 163),
+'Misty Mountain Pink': (249, 197, 189),
+'Factory Stone Purple': '#7c677f',
+'Green Treeline': '#478559',
+'Purple baseline': '#161748'}
+
+</code></pre>
+<h2 id="sorting-a-dictionary"><a class="header" href="#sorting-a-dictionary">Sorting a Dictionary</a></h2>
+<p>Dictionaries do not have a built-in sorting method. However, it is possible to sort a <code>dict</code> view using the built-in function <code>sorted()</code> with <code>.items()</code>. The sorted view can then be used to create a new dictionary. Unless a sort key is specified, the default sort is over dictionary <code>keys</code>.</p>
+<pre><code class="language-python">
+# Default ordering for a dictionary is last in, first out (LIFO).
+&gt;&gt;&gt; color_palette = {'Grassy Green': '#9bc400', 
+                    'Purple Mountains Majesty': '#8076a3', 
+                    'Misty Mountain Pink': '#f9c5bd', 
+                    'Factory Stone Purple': '#7c677f', 
+                    'Green Treeline': '#478559', 
+                    'Purple baseline': '#161748'}
+ 
+ 
+# The default sort order for a dictionary uses the keys.
+&gt;&gt;&gt; sorted_palette = dict(sorted(color_palette.items()))
+&gt;&gt;&gt; sorted_palette
+{'Factory Stone Purple': '#7c677f',
+ 'Grassy Green': '#9bc400',
+ 'Green Treeline': '#478559',
+ 'Misty Mountain Pink': '#f9c5bd',
+ 'Purple Mountains Majesty': '#8076a3',
+ 'Purple baseline': '#161748'}
+
+
+# A sort key can be provided in the form
+# of an anonymous function (lambda). 
+&gt;&gt;&gt; value_sorted_palette = dict(sorted(color_palette.items(), key=lambda color: color[1]))
+&gt;&gt;&gt; value_sorted_palette
+{'Purple baseline': '#161748',
+ 'Green Treeline': '#478559',
+ 'Factory Stone Purple': '#7c677f',
+ 'Purple Mountains Majesty': '#8076a3',
+ 'Grassy Green': '#9bc400',
+ 'Misty Mountain Pink': '#f9c5bd'} 
+
+</code></pre>
+<h2 id="transposing-a-dictionaries-keys-and-values"><a class="header" href="#transposing-a-dictionaries-keys-and-values">Transposing a Dictionaries Keys and Values</a></h2>
+<p>Swapping keys and values reliably in a dictionary takes a little work, but can be accomplished via a loop using <code>dict.items()</code> or in a dictionary comprehension. Safe swapping assumes that <code>dict</code> keys and values are both hashable.</p>
+<pre><code class="language-python">
+color_reference = {'Purple Mountains Majesty': '#8076a3',
+                   'Misty Mountain Pink': '#f9c5bd',
+                   'Factory Stone Purple': '#7c677f',
+                   'Green Treeline': '#478559',
+                   'Purple baseline': '#161748'}
+
+# Creating a new dictionary to hold the swapped entries.
+&gt;&gt;&gt; swapped_color_reference = {}
+
+# Iterating through the dictionary, using values as keys.
+&gt;&gt;&gt; for key, value in color_reference.items():
+...     swapped_color_reference[value] = key
+
+&gt;&gt;&gt; swapped_color_reference
+{'#8076a3': 'Purple Mountains Majesty',
+ '#f9c5bd': 'Misty Mountain Pink',
+ '#7c677f': 'Factory Stone Purple',
+ '#478559': 'Green Treeline',
+ '#161748': 'Purple baseline'}
+
+ 
+# A dictionary comprehension can also be used to swap entries.
+&gt;&gt;&gt; swapped = {value: key for key, value in
+               color_reference.items()}
+&gt;&gt;&gt; swapped
+{'#8076a3': 'Purple Mountains Majesty',
+ '#f9c5bd': 'Misty Mountain Pink',
+ '#7c677f': 'Factory Stone Purple',
+ '#478559': 'Green Treeline',
+ '#161748': 'Purple baseline'}
+
+</code></pre>
+<p>If the values stored in the <code>dict</code> are not unique, extra checks become necessary before key and value swapping can happen:</p>
+<pre><code class="language-python">
+# Things become more complicated if there are duplicates in 
+# potential key values.This dict is arranged by hex, RGB, and HSL
+# keys, but values repeat.
+&gt;&gt;&gt; extended_colors = {'#8076a3': 'Purple Mountains Majesty',
+                       (128, 118, 163): 'Purple Mountains Majesty',
+                       (21, 28, 0, 36): 'Purple Mountains Majesty',
+                       '#f9c5bd': 'Misty Mountain Pink',
+                       (249, 197, 189): 'Misty Mountain Pink',
+                       (0, 21, 24, 2): 'Misty Mountain Pink',
+                       '#7c677f': 'Factory Stone Purple',
+                       (124, 103, 127): 'Factory Stone Purple',
+                       (2, 19, 0, 50): 'Factory Stone Purple',
+                       '#478559': 'Green Treeline',
+                       (71, 133, 89): 'Green Treeline',
+                       (47, 0, 33, 48): 'Green Treeline'}
+                                
+# New empty dictionary for holding swapped entries.
+&gt;&gt;&gt; consolidated_colors = {}
+
+# Iterating over (key, value) pairs using .items()
+&gt;&gt;&gt; for key, value in extended_color_reference.items():
+...    if value in consolidated_colors: #Check if key has already been created.
+...        consolidated_colors[value].append(key)
+...    else:
+...        consolidated_colors[value] = [key]  #Create a value list with the former key in it.
+
+&gt;&gt;&gt; consolidated_colors
+{'Purple Mountains Majesty': ['#8076a3', (128, 118, 163), (21, 28, 0, 36)],
+ 'Misty Mountain Pink': ['#f9c5bd', (249, 197, 189), (0, 21, 24, 2)],
+ 'Factory Stone Purple': ['#7c677f', (124, 103, 127), (2, 19, 0, 50)],
+ 'Green Treeline': ['#478559', (71, 133, 89), (47, 0, 33, 48)]}  
+
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sets"><a class="header" href="#sets">Sets</a></h1>
 <p>(Work in progress)</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
+<p>Unpacking refers to the act of extracting the elements of a collection, such as a <code>list</code>, <code>tuple</code>, or <code>dict</code>, using iteration. Unpacked values can then be assigned to variables within the same statement. A very common example of this behavior is <code>for item in list</code>, where <code>item</code> takes on the value of each <code>list</code> element in turn throughout the iteration.</p>
+<p>Multiple assignment is the ability to assign multiple variables to unpacked values within one statement. This allows for code to be more concise and readable, and is done by separating the variables to be assigned with a comma such as <code>first, second, third = (1,2,3)</code> or <code>for index, item in enumerate(iterable)</code>.</p>
+<p>The special operators <code>*</code> and <code>**</code> are often used in unpacking contexts. <code>*</code> can be used to combine multiple <code>lists</code>/<code>tuples</code> into one <code>list</code>/<code>tuple</code> by unpacking each into a new common <code>list</code>/<code>tuple</code>. <code>**</code> can be used to combine multiple dictionaries into one dictionary by unpacking each into a new common <code>dict</code>.</p>
+<p>When the <code>*</code> operator is used without a collection, it packs a number of values into a <code>list</code>. This is often used in multiple assignment to group all "leftover" elements that do not have individual assignments into a single variable.</p>
+<p>It is common in Python to also exploit this unpacking/packing behavior when using or defining functions that take an arbitrary number of positional or keyword arguments. You will often see these "special" parameters defined as <code>def some_function(*args, **kwargs)</code> and the "special" arguments used as <code>some_function(*some_tuple, **some_dict)</code>.</p>
+<blockquote>
+<p>[!WARNING]
+<code>*&lt;variable_name&gt;</code> and <code>**&lt;variable_name&gt;</code> should not be confused with <code>*</code> and <code>**</code>. While <code>*</code> and <code>**</code> are used for multiplication and exponentiation respectively, <code>*&lt;variable_name&gt;</code> and <code>**&lt;variable_name&gt;</code> are used as packing and unpacking operators.</p>
+</blockquote>
+<h2 id="multiple-assignment"><a class="header" href="#multiple-assignment">Multiple assignment</a></h2>
+<p>In multiple assignment, the number of variables on the left side of the assignment operator (<code>=</code>) must match the number of values on the right side. To separate the values, use a comma <code>,</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; a, b = 1, 2
+&gt;&gt;&gt; a
+1
+</code></pre>
+<p>If the multiple assignment gets an incorrect number of variables for the values given, a <code>ValueError</code> will be thrown:</p>
+<pre><code class="language-python">&gt;&gt;&gt; x, y, z = 1, 2
+
+ValueError: too many values to unpack (expected 3, got 2)
+</code></pre>
+<p>Multiple assignment is not limited to one data type:</p>
+<pre><code class="language-python">&gt;&gt;&gt; x, y, z = 1, "Hello", True
+&gt;&gt;&gt; x
+1
+
+&gt;&gt;&gt; y
+'Hello'
+
+&gt;&gt;&gt; z
+True
+</code></pre>
+<p>Multiple assignment can be used to swap elements in <code>lists</code>. This practice is pretty common in sorting algorithms. For example:</p>
+<pre><code class="language-python">&gt;&gt;&gt; numbers = [1, 2]
+&gt;&gt;&gt; numbers[0], numbers[1] = numbers[1], numbers[0]
+&gt;&gt;&gt; numbers
+[2, 1]
+</code></pre>
+<p>Since <code>tuples</code> are immutable, you can't swap elements in a <code>tuple</code>.</p>
+<h2 id="unpacking-1"><a class="header" href="#unpacking-1">Unpacking</a></h2>
+<p>[Note]</p>
+<blockquote>
+<p>The examples below use lists but the same concepts apply to tuples.</p>
+</blockquote>
+<p>In Python, it is possible to unpack the elements of <code>list</code>/<code>tuple</code>/<code>dictionary</code> into distinct variables. Since values appear within <code>lists</code>/<code>tuples</code> in a specific order, they are unpacked into variables in the same order:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry"]
+&gt;&gt;&gt; x, y, z = fruits
+&gt;&gt;&gt; x
+"apple"
+</code></pre>
+<p>If there are values that are not needed then you can use <code>_</code> to flag them:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry"]
+&gt;&gt;&gt; _, _, z = fruits
+&gt;&gt;&gt; z
+"cherry"
+</code></pre>
+<h4 id="deep-unpacking"><a class="header" href="#deep-unpacking">Deep unpacking</a></h4>
+<p>Unpacking and assigning values from a <code>list</code>/<code>tuple</code> inside of a <code>list</code> or <code>tuple</code> (also known as nested lists/tuples), works in the same way a shallow unpacking does, but often needs qualifiers to clarify the values context or position:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [[a, b], [c, d]] = fruits_vegetables
+&gt;&gt;&gt; a
+"apple"
+
+&gt;&gt;&gt; d
+"potato"
+</code></pre>
+<p>You can also deeply unpack just a portion of a nested <code>list</code>/<code>tuple</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [a, [c, d]] = fruits_vegetables
+&gt;&gt;&gt; a
+["apple", "banana"]
+
+&gt;&gt;&gt; c
+"carrot"
+</code></pre>
+<p>If the unpacking has variables with incorrect placement and/or an incorrect number of values, you will get a <code>ValueError</code>:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana"], ["carrot", "potato"]]
+&gt;&gt;&gt; [[a, b], [d]] = fruits_vegetables
+
+ValueError: too many values to unpack (expected 1)
+</code></pre>
+<h4 id="unpacking-a-listtuple-with-"><a class="header" href="#unpacking-a-listtuple-with-">Unpacking a list/tuple with <code>*</code></a></h4>
+<p>When unpacking a list/tuple you can use the <code>*</code> operator to capture "leftover" values. This is clearer than slicing the list/tuple (which in some situations is less readable). For example, we can extract the first element and pack the remaining values into a new list without the first element:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry", "orange", "kiwi", "melon", "mango"]
+&gt;&gt;&gt; x, *last = fruits
+&gt;&gt;&gt; x
+"apple"
+
+&gt;&gt;&gt; last
+["banana", "cherry", "orange", "kiwi", "melon", "mango"]
+</code></pre>
+<p>We can also extract the values at the beginning and end of the list while grouping all the values in the middle:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits = ["apple", "banana", "cherry", "orange", "kiwi", "melon", "mango"]
+&gt;&gt;&gt; x, *middle, y, z = fruits
+&gt;&gt;#&gt; y
+"melon"
+
+&gt;&gt;&gt; middle
+["banana", "cherry", "orange", "kiwi"]
+</code></pre>
+<p>We can also use <code>*</code> in deep unpacking:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_vegetables = [["apple", "banana", "melon"], ["carrot", "potato", "tomato"]]
+&gt;&gt;&gt; [[a, *rest], b] = fruits_vegetables
+&gt;&gt;&gt; a
+"apple"
+
+&gt;&gt;&gt; rest
+["banana", "melon"]
+</code></pre>
+<h4 id="unpacking-a-dictionary"><a class="header" href="#unpacking-a-dictionary">Unpacking a dictionary</a></h4>
+<p>Unpacking a dictionary is a bit different from unpacking a list/tuple. Iteration over dictionaries defaults to the keys. So when unpacking a dict, you can only unpack the keys and not the values:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory
+&gt;&gt;&gt; x
+"apple"
+</code></pre>
+<p>If you want to unpack the values then you can use the <code>&lt;dict&gt;.values()</code> method:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory.values()
+&gt;&gt;&gt; x
+6
+</code></pre>
+<p>If both keys and values are needed, use the <code>&lt;dict&gt;.items()</code> method. <code>&lt;dict&gt;.items()</code> generates an iterable view containing key-value pairs. These can be unpacked into a tuple:</p>
+<pre><code class="language-python">&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; x, y, z = fruits_inventory.items()
+&gt;&gt;&gt; x
+("apple", 6)
+</code></pre>
+<h2 id="packing"><a class="header" href="#packing">Packing</a></h2>
+<p>Packing is the ability to group multiple values into one list that is assigned to a variable. This is useful when you want to unpack values, make changes, and then pack the results back into a variable. It also makes it possible to perform merges on 2 or more lists/tuples/dicts.</p>
+<h4 id="packing-a-listtuple-with-"><a class="header" href="#packing-a-listtuple-with-">Packing a list/tuple with <code>*</code></a></h4>
+<p>Packing a list/tuple can be done using the <code>*</code> operator. This will pack all the values into a list/tuple.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; fruits = ("apple", "banana", "cherry")
+&gt;&gt;&gt; more_fruits = ["orange", "kiwi", "melon", "mango"]
+
+# fruits and more_fruits are unpacked and then their elements are packed into combined_fruits
+&gt;&gt;&gt; combined_fruits = *fruits, *more_fruits
+
+# If there is no * on to the left of the "=" the result is a tuple
+&gt;&gt;&gt; combined_fruits
+("apple", "banana", "cherry", "orange", "kiwi", "melon", "mango")
+
+# If the * operator is used on the left side of "=" the result is a list.
+# Note the trailing comma. 
+&gt;&gt;&gt; *combined_fruits_too, = *fruits, *more_fruits
+&gt;&gt;&gt; combined_fruits_too
+['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']
+
+# A list literal can be used instead, but might not be as readable.
+&gt;&gt;&gt; [*combined_fruits_too] = *fruits, *more_fruits
+&gt;&gt;&gt; combined_fruits_too
+['apple', 'banana', 'cherry', 'orange', 'kiwi', 'melon', 'mango']
+
+</code></pre>
+<p>For more details on the use of <code>*</code> and <code>**</code>, check out PEP 3132 and PEP 448.</p>
+<h4 id="packing-a-dictionary-with-"><a class="header" href="#packing-a-dictionary-with-">Packing a dictionary with <code>**</code></a></h4>
+<p>Packing a dictionary is done by using the <code>**</code> operator. This will pack all key-value pairs from one dictionary into another dictionary, or combine two dictionaries together.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; fruits_inventory = {"apple": 6, "banana": 2, "cherry": 3}
+&gt;&gt;&gt; more_fruits_inventory = {"orange": 4, "kiwi": 1, "melon": 2, "mango": 3}
+
+# fruits_inventory and more_fruits_inventory are unpacked into key-values pairs and combined.
+&gt;&gt;&gt; combined_fruits_inventory = {**fruits_inventory, **more_fruits_inventory}
+
+# then the pairs are packed into combined_fruits_inventory
+&gt;&gt;&gt; combined_fruits_inventory
+{"apple": 6, "banana": 2, "cherry": 3, "orange": 4, "kiwi": 1, "melon": 2, "mango": 3}
+
+</code></pre>
+<h2 id="usage-of--and--with-functions"><a class="header" href="#usage-of--and--with-functions">Usage of * and ** with functions</a></h2>
+<h4 id="packing-with-function-parameters"><a class="header" href="#packing-with-function-parameters">Packing with function parameters</a></h4>
+<p>When you create a function that accepts an arbitrary number of arguments, you can use <code>*args</code> or <code>**kwargs</code> in the function definition. <code>*args</code> is used to pack an arbitrary number of positional (non-keyworded) arguments and <code>**kwargs</code> is used to pack an arbitrary number of keyword arguments.</p>
+<p>Usage of <code>*args</code>:</p>
+<pre><code class="language-python"># This function is defined to take any number of positional arguments
+
+&gt;&gt;&gt; def my_function(*args):
+...   print(args)
+
+# Arguments given to the function are packed into a tuple
+
+&gt;&gt;&gt; my_function(1, 2, 3)
+(1, 2, 3)
+
+&gt;&gt;&gt; my_function("Hello")
+("Hello")
+
+&gt;&gt;&gt; my_function(1, 2, 3, "Hello", "Mars")
+(1, 2, 3, "Hello", "Mars")
+</code></pre>
+<p>Usage of <code>**kwargs</code>:</p>
+<pre><code class="language-python"># This function is defined to take any number of keyword arguments
+
+&gt;&gt;&gt; def my_function(**kwargs):
+...   print(kwargs)
+
+# Arguments given to the function are packed into a dictionary
+
+&gt;&gt;&gt; my_function(a=1, b=2, c=3)
+{"a": 1, "b": 2, "c": 3}
+</code></pre>
+<p><code>*args</code> and <code>**kwargs</code> can also be used in combination with one another:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(*args, **kwargs):
+...   print(sum(args))
+...   for key, value in kwargs.items():
+...       print(str(key) + " = " + str(value))
+
+&gt;&gt;&gt; my_function(1, 2, 3, a=1, b=2, c=3)
+6
+a = 1
+b = 2
+c = 3
+</code></pre>
+<p>You can also write parameters before <code>*args</code> to allow for specific positional arguments. Individual keyword arguments then have to appear before <code>**kwargs</code>.</p>
+<p>Arguments have to be structured like this:</p>
+<p><code>def my_function(&lt;positional_args&gt;, *args, &lt;key-word_args&gt;, **kwargs)</code></p>
+<p>If you don't follow this order then you will get an error.</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(a, b, *args):
+...   print(a)
+...   print(b)
+...   print(args)
+
+&gt;&gt;&gt; my_function(1, 2, 3, 4, 5)
+1
+2
+(3, 4, 5)
+</code></pre>
+<p>Writing arguments in an incorrect order will result in an error:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(*args, a, b):
+...   print(args)
+
+&gt;&gt;&gt;my_function(1, 2, 3, 4, 5)
+Traceback (most recent call last):
+  File "c:\something.py", line 3, in &lt;module&gt;
+    my_function(1, 2, 3, 4, 5)
+TypeError: my_function() missing 2 required keyword-only arguments: 'a' and 'b'
+</code></pre>
+<h4 id="unpacking-into-function-calls"><a class="header" href="#unpacking-into-function-calls">Unpacking into function calls</a></h4>
+<p>You can use <code>*</code> to unpack a list/tuple of arguments into a function call. This is very useful for functions that don't accept an iterable:</p>
+<pre><code class="language-python">&gt;&gt;&gt; def my_function(a, b, c):
+...   print(c)
+...   print(b)
+...   print(a)
+
+numbers = [1, 2, 3]
+&gt;&gt;&gt; my_function(*numbers)
+3
+2
+1
+</code></pre>
+<p>Using <code>*</code> unpacking with the <code>zip()</code> function is another common use case. Since <code>zip()</code> takes multiple iterables and returns a list of tuples with the values from each iterable grouped:</p>
+<pre><code class="language-python">&gt;&gt;&gt; values = (['x', 'y', 'z'], [1, 2, 3], [True, False, True])
+&gt;&gt;&gt; a, *rest = zip(*values)
+&gt;&gt;&gt; rest
+[('y', 2, False), ('z', 3, True)]
+</code></pre>
+<hr />
+<h2 id="fundamental-concepts"><a class="header" href="#fundamental-concepts">Fundamental Concepts</a></h2>
+<h3 id="destructure-a-variable-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Variable unpacking with tuples and lists.</a></h3>
+<ul>
+<li>
+<p>Unpacking with <code>_</code> to ignore middle value.</p>
+</li>
+<li>
+<p>head gets the first item.</p>
+</li>
+<li>
+<p>*tail (with a * splat operator) captures the rest into a list.</p>
+</li>
+</ul>
+<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
+name, _, profession = person
+
+print(name, profession)
+# Bob Mechanician
+
+head, *tail = [1,2,3,4,5]
+print(head)
+# 1
+print(tail)
+# [2, 3, 4, 5]
+</code></pre>
+<h3 id="unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-keyword-arguments-with-kwargs">Unpacking keyword arguments with <code>**kwargs</code>.</a></h3>
+<pre><code class="language-python">def named(**kwargs):
+    print(kwargs)
+
+def print_nicely(**kwargs):
+    named(**kwargs)
+    for arg, value in kwargs.items():
+        print(f"{arg}: {value}")
+
+print_nicely(name= "bob", age= "25")
+
+# {'name': 'bob', 'age': '25'}
+# name: bob
+# age: 25
+</code></pre>
+<h2 id="project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers"><a class="header" href="#project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers">Project Demo: a Python calculator accepting operations with more than two numbers.</a></h2>
+<pre><code class="language-python">
+def multiply(*args):
+    total = 1
+    for arg in args:
+        total = total * arg
+
+    return total
+
+
+def substract(*args):
+    diff = args[0]
+    for i in range(1, len(args)):
+        diff = diff - args[i]
+    return diff
+
+
+def divide(*args):
+    diff = args[0]
+    for i in range(1, len(args)):
+        if args[i] == 0:
+            raise ZeroDivisionError("Divisor cannot be 0.")
+        diff = diff / args[i]
+    return diff
+
+
+def apply(*args, operator):
+    if operator == "*":
+        return multiply(*args)
+    elif operator == "/":
+        return divide(*args)
+    elif operator == "+":
+        return sum(args)
+    elif operator == "-":
+        return substract(*args)
+    else:
+        return "no valid operator detected."
+
+
+print(apply(1, 3, 5, 7, operator="*"))
+# 105
+
+print(apply(1, 3, 5, 7, operator="+"))
+# 16
+
+print(apply(10, 2, 3, 2, operator="-"))
+# 3
+
+# print(apply(10, 2, 0, 2, operator="/"))
+# ZeroDivisionError
+
+print(apply(12, 2, 2, 3, operator="/"))
+# 1.0
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
+<p>A <code>generator</code> is a function or expression that returns a special type of iterator called generator iterator. <code>generator-iterators</code> are lazy: they do not store their values in memory, but generate their values when needed.</p>
+<p>A generator function looks like any other function, but contains one or more yield expressions. Each <code>yield</code> will suspend code execution, saving the current execution rate (including all local variables and try statements). When the generator resumes, it picks up state from the suspension - unlike regular functions which reset with every call.</p>
+<h2 id="constructing-a-generator"><a class="header" href="#constructing-a-generator">Constructing a generator</a></h2>
+<p>Generators are constructed much like other looping or recursive functions, but require a <code>yield</code> expression, which we will explore in depth a bit later.</p>
+<p>An example is a function that returns the squares from a given list of numbers.
+As currently written, all input must be processed before any values can be returned:</p>
+<pre><code class="language-python">def squares(list_of_numbers):
+    squares = []
+    for number in list_of_numbers:
+        squares.append(number ** 2)
+    return squares
+</code></pre>
+<p>You can convert that function into a generator like this:</p>
+<pre><code class="language-python">def squares_generator(list_of_numbers):
+    for number in list_of_numbers:
+        yield number ** 2
+</code></pre>
+<p>The rationale behind this is that you use a generator when you do not need all the values at once.</p>
+<p>This saves memory and processing power, since only the value you are currently working on is calculated.</p>
+<h2 id="using-a-generator"><a class="header" href="#using-a-generator">Using a generator</a></h2>
+<p>Generators may be used in place of most <code>iterables</code> in Python. This includes functions or objects that require an <code>iterable</code>/<code>iterator</code> as an argument.</p>
+<p>To use the <code>squares_generator()</code> generator:</p>
+<pre><code class="language-python">squared_numbers = squares_generator([1, 2, 3, 4])
+
+for square in squared_numbers:
+    print(square)
+
+1
+4
+9
+16
+</code></pre>
+<p>Values within a generator can also be produced/accessed via the <code>next()</code> function. <code>next()</code> calls the <code>__next__()</code> method of a generator object, "advancing" or evaluating the generator code up to its <code>yield</code> expression, which then "yields" or returns the value.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; squared_numbers = squares_generator([1, 2])
+
+&gt;&gt;&gt; next(squared_numbers)
+1
+&gt;&gt;&gt; next(squared_numbers)
+4
+</code></pre>
+<p>When a <code>generator</code> is fully consumed and has no more values to return, it throws a <code>StopIteration</code> error.</p>
+<pre><code class="language-python">&gt;&gt;&gt; next(squared_numbers)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+StopIteration
+</code></pre>
+<h2 id="difference-between-iterables-and-generators"><a class="header" href="#difference-between-iterables-and-generators">Difference between iterables and generators</a></h2>
+<p>Generators are a special sub-set of iterators. <code>Iterators</code> are the mechanism/protocol that enables looping over iterables. Generators and the iterators returned by common Python <code>iterables</code> act very similarly, but there are some important differences to note:</p>
+<ul>
+<li>
+<p>Generators are one-way; there is no "backing up" to a previous value.</p>
+</li>
+<li>
+<p>Iterating over generators consume the returned values; no resetting.</p>
+</li>
+<li>
+<p>Generators (being lazily evaluated) are not sortable and can not be reversed.</p>
+</li>
+<li>
+<p>Generators do not have indexes, so you can't reference a previous or future value using addition or subtraction.</p>
+</li>
+<li>
+<p>Generators cannot be used with the len() function.</p>
+</li>
+<li>
+<p>Generators can be finite or infinite, be careful when collecting all values from an infinite generator.</p>
+</li>
+</ul>
+<h2 id="the-yield-expression"><a class="header" href="#the-yield-expression">The yield expression</a></h2>
+<p>The yield expression is very similar to the <code>return</code> expression.</p>
+<p>Unlike the <code>return</code> expression, <code>yield</code> gives up values to the caller at a specific point, suspending evaluation/return of any additional values until they are requested.</p>
+<p>When <code>yield</code> is evaluated, it pauses the execution of the enclosing function and returns any values of the function at that point in time.</p>
+<p>The function then stays in scope, and when <code>__next__()</code> is called, execution resumes until yield is encountered again.</p>
+<p>Note</p>
+<blockquote>
+<blockquote>
+<p>Using yield expressions is prohibited outside of functions.</p>
+</blockquote>
+</blockquote>
+<pre><code class="language-python">&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+
+&gt;&gt;&gt; lets_try = infinite_sequence()
+&gt;&gt;&gt; lets_try.__next__()
+0
+&gt;&gt;&gt; lets_try.__next__()
+1
+</code></pre>
+<h2 id="why-generators"><a class="header" href="#why-generators">Why generators?</a></h2>
+<p>Generators are useful in a lot of applications.</p>
+<p>When working with a large collection, you might not want to put all of its values into memory. A generator can be used to work on larger data piece-by-piece, saving memory and improving performance.</p>
+<p>Generators are also very helpful when a process or calculation is complex, expensive, or infinite:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; def infinite_sequence():
+...     current_number = 0
+...     while True:
+...         yield current_number
+...         current_number += 1
+</code></pre>
+<p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
+<pre><code></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
 <p>(Work in progress)</p>
 <h2 id="classes--objects"><a class="header" href="#classes--objects">Classes &amp; Objects</a></h2>
@@ -13931,102 +15392,131 @@ print(p.greet())  # Output: Hello from Person!
 <li>This injects a method into a class at runtime.</li>
 <li>Python also has metaclasses, which let you dynamically change how classes behave (but it's rarely needed).</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
-<p>(Work in Progress)</p>
-<h3 id="destructure-a-variable-variable-unpacking-with-tuples-and-lists"><a class="header" href="#destructure-a-variable-variable-unpacking-with-tuples-and-lists">Destructure A Variable: Variable unpacking with tuples and lists.</a></h3>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="imports"><a class="header" href="#imports">Imports</a></h1>
+<p>Imports in Python let you reuse code across multiple files. Instead of writing the same functions everywhere, you can split your project into modules and packages, and import them when needed.</p>
+<h2 id="import-code"><a class="header" href="#import-code">Import Code</a></h2>
+<p>The simplest way: grab a function (or the whole module) from another file.</p>
+<pre><code class="language-python">from imports_mymodule import divide # grab a function 
+# import imports_mymodule           # imports the whole module
+
+print(divide(10,2))
+</code></pre>
+<h2 id="import-module"><a class="header" href="#import-module">Import Module</a></h2>
+<p>Here's the module <code>imports_mymodule.py</code>:</p>
+<pre><code class="language-python">def divide(divident, divisor):
+    return divident/divisor
+
+print("imports_mymodule.py: ", __name__)
+</code></pre>
+<p>When you run this file directly:
+<code>python imports_mymodule.py</code> : <code>__name__ == "__main__"</code></p>
+<p>When you import it into another file:
+<code>import imports_mymodule</code> : <code>__name__ == "imports_mymodule"</code></p>
+<p>That's how Python knows if a file is a script or a module.</p>
+<h2 id="the-if-__name__--__main__-trick"><a class="header" href="#the-if-__name__--__main__-trick">The <code>if __name__ == "__main__":</code> Trick</a></h2>
+<p>This lets a file be both runnable directly and importable as a module without executing test code every time.</p>
+<pre><code class="language-python">def divide(dividend, divisor):
+    return dividend / divisor
+
+if __name__ == "__main__":
+    # only runs when this file is executed directly
+    print(divide(10, 2))
+</code></pre>
+<h2 id="import-styles"><a class="header" href="#import-styles">Import Styles</a></h2>
+<h4 id="import-whole-module"><a class="header" href="#import-whole-module">Import whole module</a></h4>
+<pre><code class="language-python">import math
+print(math.sqrt(16))
+</code></pre>
+<p>Safer, explicit, keeps namespace clean.</p>
+<h4 id="import-specific-function--class"><a class="header" href="#import-specific-function--class">Import specific function / class</a></h4>
+<pre><code class="language-python">from math import sqrt
+print(sqrt(16))
+</code></pre>
+<p>Shorter, but watch out for name clashes.</p>
+<h4 id="import-everything-not-recommended"><a class="header" href="#import-everything-not-recommended">Import everything (not recommended)</a></h4>
+<pre><code class="language-python">from math import *
+</code></pre>
+<h4 id="alias-imports"><a class="header" href="#alias-imports">Alias Imports</a></h4>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+</code></pre>
+<p>Python dev culture loves short aliases.</p>
+<h2 id="multi-file-projects-modules--packages"><a class="header" href="#multi-file-projects-modules--packages">Multi-File Projects (Modules &amp; Packages)</a></h2>
+<p>Imagine this structure:</p>
+<pre><code>my_project/
+│
+├── main.py
+├── utils/
+│   ├── __init__.py
+│   ├── math_tools.py
+│   └── string_tools.py
+</code></pre>
 <ul>
-<li>
-<p>Unpacking with <code>_</code> to ignore middle value.</p>
-</li>
-<li>
-<p>head gets the first item.</p>
-</li>
-<li>
-<p>*tail (with a * splat operator) captures the rest into a list.</p>
-</li>
+<li><code>__init__.py</code> turns a folder into a package.</li>
+<li>You can now import across files:</li>
 </ul>
-<pre><code class="language-python">person = ("Bob", 42, "Mechanician")
-name, _, profession = person
+<pre><code class="language-python"># main.py
+from utils.math_tools import divide
+from utils import string_tools
 
-print(name, profession)
-# Bob Mechanician
-
-head, *tail = [1,2,3,4,5]
-print(head)
-# 1
-print(tail)
-# [2, 3, 4, 5]
+print(divide(10, 2))
+print(string_tools.shout("hello"))
 </code></pre>
-<h3 id="unpacking-keyword-arguments-with-kwargs"><a class="header" href="#unpacking-keyword-arguments-with-kwargs">Unpacking keyword arguments with <code>**kwargs</code>.</a></h3>
-<pre><code class="language-python">def named(**kwargs):
-    print(kwargs)
-
-def print_nicely(**kwargs):
-    named(**kwargs)
-    for arg, value in kwargs.items():
-        print(f"{arg}: {value}")
-
-print_nicely(name= "bob", age= "25")
-
-# {'name': 'bob', 'age': '25'}
-# name: bob
-# age: 25
-</code></pre>
-<h2 id="project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers"><a class="header" href="#project-demo-a-python-calculator-accepting-operations-with-more-than-two-numbers">Project Demo: a Python calculator accepting operations with more than two numbers.</a></h2>
+<h2 id="relative-imports-inside-a-package"><a class="header" href="#relative-imports-inside-a-package">Relative Imports (inside a package)</a></h2>
+<p>From within a package, you can import relative to the current module:</p>
 <pre><code class="language-python">
-def multiply(*args):
-    total = 1
-    for arg in args:
-        total = total * arg
+# utils/string_tools.py
+from .math_tools import divide   # relative import
 
-    return total
-
-
-def substract(*args):
-    diff = args[0]
-    for i in range(1, len(args)):
-        diff = diff - args[i]
-    return diff
-
-
-def divide(*args):
-    diff = args[0]
-    for i in range(1, len(args)):
-        if args[i] == 0:
-            raise ZeroDivisionError("Divisor cannot be 0.")
-        diff = diff / args[i]
-    return diff
-
-
-def apply(*args, operator):
-    if operator == "*":
-        return multiply(*args)
-    elif operator == "/":
-        return divide(*args)
-    elif operator == "+":
-        return sum(args)
-    elif operator == "-":
-        return substract(*args)
-    else:
-        return "no valid operator detected."
-
-
-print(apply(1, 3, 5, 7, operator="*"))
-# 105
-
-print(apply(1, 3, 5, 7, operator="+"))
-# 16
-
-print(apply(10, 2, 3, 2, operator="-"))
-# 3
-
-# print(apply(10, 2, 0, 2, operator="/"))
-# ZeroDivisionError
-
-print(apply(12, 2, 2, 3, operator="/"))
-# 1.0
+def shout(text):
+    return text.upper() + "!!!"
 
 </code></pre>
+<p>Best practices:</p>
+<ul>
+<li>Use absolute imports (<code>from utils.math_tools import divide</code>) for clarity.</li>
+<li>Only use relative imports (<code>from .math_tools import divide</code>) inside packages when refactoring a project.</li>
+</ul>
+<h2 id="what-goes-in-__init__py"><a class="header" href="#what-goes-in-__init__py">What goes in <code>__init__.py</code></a></h2>
+<p>In modern Python (3.3+), just having the folder is enough to make it a package, but <code>__init__.py</code> still matters for controlling how your package behaves when imported.</p>
+<h4 id="empty-file"><a class="header" href="#empty-file">Empty File</a></h4>
+<p>If you don't need anything special, just leave it empty.
+This makes Python treat the folder as a package:</p>
+<pre><code>
+utils/
+ ├── __init__.py   # can be empty
+ ├── math_tools.py
+ └── string_tools.py
+
+</code></pre>
+<p>You can then do:</p>
+<pre><code class="language-python">
+from utils import math_tools
+
+</code></pre>
+<h4 id="re-export-selected-functions-package-api"><a class="header" href="#re-export-selected-functions-package-api">Re-Export Selected Functions (Package API)</a></h4>
+<p>You can expose only certain things when someone imports the package:</p>
+<pre><code class="language-python">
+# utils/__init__.py
+from .math_tools import divide
+from .string_tools import shout
+
+__all__ = ["divide", "shout"]
+
+</code></pre>
+<p>Now you can do:</p>
+<pre><code class="language-python">
+from utils import divide, shout
+
+</code></pre>
+<h4 id="initialization-logic-rare-but-possible"><a class="header" href="#initialization-logic-rare-but-possible">Initialization Logic (rare, but possible)</a></h4>
+<p>You can run code when the package is imported.</p>
+<pre><code class="language-python">
+# utils/__init__.py
+print("Loading utils package...")
+
+</code></pre>
+<p>But to be honest, keep <code>__init__.py</code> clean, and use it mostly for defining what's public.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling-in-python"><a class="header" href="#error-handling-in-python">Error Handling in Python</a></h1>
 <h3 id="errors-demonstrates-exception-handling-with-try-except-finally"><a class="header" href="#errors-demonstrates-exception-handling-with-try-except-finally">Errors: Demonstrates exception handling with try-except-finally.</a></h3>
 <pre><code class="language-python">def divide(dividend, divisor):
@@ -14212,112 +15702,6 @@ print(doubled)
 print(doubled2)
 # [2, 6, 10, 18]
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
-<p>A <code>generator</code> is a function or expression that returns a special type of iterator called generator iterator. <code>generator-iterators</code> are lazy: they do not store their values in memory, but generate their values when needed.</p>
-<p>A generator function looks like any other function, but contains one or more yield expressions. Each <code>yield</code> will suspend code execution, saving the current execution rate (including all local variables and try statements). When the generator resumes, it picks up state from the suspension - unlike regular functions which reset with every call.</p>
-<h2 id="constructing-a-generator"><a class="header" href="#constructing-a-generator">Constructing a generator</a></h2>
-<p>Generators are constructed much like other looping or recursive functions, but require a <code>yield</code> expression, which we will explore in depth a bit later.</p>
-<p>An example is a function that returns the squares from a given list of numbers.
-As currently written, all input must be processed before any values can be returned:</p>
-<pre><code class="language-python">def squares(list_of_numbers):
-    squares = []
-    for number in list_of_numbers:
-        squares.append(number ** 2)
-    return squares
-</code></pre>
-<p>You can convert that function into a generator like this:</p>
-<pre><code class="language-python">def squares_generator(list_of_numbers):
-    for number in list_of_numbers:
-        yield number ** 2
-</code></pre>
-<p>The rationale behind this is that you use a generator when you do not need all the values at once.</p>
-<p>This saves memory and processing power, since only the value you are currently working on is calculated.</p>
-<h2 id="using-a-generator"><a class="header" href="#using-a-generator">Using a generator</a></h2>
-<p>Generators may be used in place of most <code>iterables</code> in Python. This includes functions or objects that require an <code>iterable</code>/<code>iterator</code> as an argument.</p>
-<p>To use the <code>squares_generator()</code> generator:</p>
-<pre><code class="language-python">squared_numbers = squares_generator([1, 2, 3, 4])
-
-for square in squared_numbers:
-    print(square)
-
-1
-4
-9
-16
-</code></pre>
-<p>Values within a generator can also be produced/accessed via the <code>next()</code> function. <code>next()</code> calls the <code>__next__()</code> method of a generator object, "advancing" or evaluating the generator code up to its <code>yield</code> expression, which then "yields" or returns the value.</p>
-<pre><code class="language-python">
-&gt;&gt;&gt; squared_numbers = squares_generator([1, 2])
-
-&gt;&gt;&gt; next(squared_numbers)
-1
-&gt;&gt;&gt; next(squared_numbers)
-4
-</code></pre>
-<p>When a <code>generator</code> is fully consumed and has no more values to return, it throws a <code>StopIteration</code> error.</p>
-<pre><code class="language-python">&gt;&gt;&gt; next(squared_numbers)
-Traceback (most recent call last):
-  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
-StopIteration
-</code></pre>
-<h2 id="difference-between-iterables-and-generators"><a class="header" href="#difference-between-iterables-and-generators">Difference between iterables and generators</a></h2>
-<p>Generators are a special sub-set of iterators. <code>Iterators</code> are the mechanism/protocol that enables looping over iterables. Generators and the iterators returned by common Python <code>iterables</code> act very similarly, but there are some important differences to note:</p>
-<ul>
-<li>
-<p>Generators are one-way; there is no "backing up" to a previous value.</p>
-</li>
-<li>
-<p>Iterating over generators consume the returned values; no resetting.</p>
-</li>
-<li>
-<p>Generators (being lazily evaluated) are not sortable and can not be reversed.</p>
-</li>
-<li>
-<p>Generators do not have indexes, so you can't reference a previous or future value using addition or subtraction.</p>
-</li>
-<li>
-<p>Generators cannot be used with the len() function.</p>
-</li>
-<li>
-<p>Generators can be finite or infinite, be careful when collecting all values from an infinite generator.</p>
-</li>
-</ul>
-<h2 id="the-yield-expression"><a class="header" href="#the-yield-expression">The yield expression</a></h2>
-<p>The yield expression is very similar to the <code>return</code> expression.</p>
-<p>Unlike the <code>return</code> expression, <code>yield</code> gives up values to the caller at a specific point, suspending evaluation/return of any additional values until they are requested.</p>
-<p>When <code>yield</code> is evaluated, it pauses the execution of the enclosing function and returns any values of the function at that point in time.</p>
-<p>The function then stays in scope, and when <code>__next__()</code> is called, execution resumes until yield is encountered again.</p>
-<p>Note</p>
-<blockquote>
-<blockquote>
-<p>Using yield expressions is prohibited outside of functions.</p>
-</blockquote>
-</blockquote>
-<pre><code class="language-python">&gt;&gt;&gt; def infinite_sequence():
-...     current_number = 0
-...     while True:
-...         yield current_number
-...         current_number += 1
-
-&gt;&gt;&gt; lets_try = infinite_sequence()
-&gt;&gt;&gt; lets_try.__next__()
-0
-&gt;&gt;&gt; lets_try.__next__()
-1
-</code></pre>
-<h2 id="why-generators"><a class="header" href="#why-generators">Why generators?</a></h2>
-<p>Generators are useful in a lot of applications.</p>
-<p>When working with a large collection, you might not want to put all of its values into memory. A generator can be used to work on larger data piece-by-piece, saving memory and improving performance.</p>
-<p>Generators are also very helpful when a process or calculation is complex, expensive, or infinite:</p>
-<pre><code class="language-python">
-&gt;&gt;&gt; def infinite_sequence():
-...     current_number = 0
-...     while True:
-...         yield current_number
-...         current_number += 1
-</code></pre>
-<p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
-<pre><code></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h1>
 <p>(Work in Progress)</p>
 <h2 id="use-type-hints-for-better-function-and-class-documentation"><a class="header" href="#use-type-hints-for-better-function-and-class-documentation">Use type hints for better function and class documentation.</a></h2>
@@ -14367,131 +15751,14 @@ print(rolf.grades)
 # []
 </code></pre>
 <pre><code></code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="imports"><a class="header" href="#imports">Imports</a></h1>
-<p>Imports in Python let you reuse code across multiple files. Instead of writing the same functions everywhere, you can split your project into modules and packages, and import them when needed.</p>
-<h2 id="import-code"><a class="header" href="#import-code">Import Code</a></h2>
-<p>The simplest way: grab a function (or the whole module) from another file.</p>
-<pre><code class="language-python">from imports_mymodule import divide # grab a function 
-# import imports_mymodule           # imports the whole module
-
-print(divide(10,2))
-</code></pre>
-<h2 id="import-module"><a class="header" href="#import-module">Import Module</a></h2>
-<p>Here's the module <code>imports_mymodule.py</code>:</p>
-<pre><code class="language-python">def divide(divident, divisor):
-    return divident/divisor
-
-print("imports_mymodule.py: ", __name__)
-</code></pre>
-<p>When you run this file directly:
-<code>python imports_mymodule.py</code> : <code>__name__ == "__main__"</code></p>
-<p>When you import it into another file:
-<code>import imports_mymodule</code> : <code>__name__ == "imports_mymodule"</code></p>
-<p>That's how Python knows if a file is a script or a module.</p>
-<h2 id="the-if-__name__--__main__-trick"><a class="header" href="#the-if-__name__--__main__-trick">The <code>if __name__ == "__main__":</code> Trick</a></h2>
-<p>This lets a file be both runnable directly and importable as a module without executing test code every time.</p>
-<pre><code class="language-python">def divide(dividend, divisor):
-    return dividend / divisor
-
-if __name__ == "__main__":
-    # only runs when this file is executed directly
-    print(divide(10, 2))
-</code></pre>
-<h2 id="import-styles"><a class="header" href="#import-styles">Import Styles</a></h2>
-<h4 id="import-whole-module"><a class="header" href="#import-whole-module">Import whole module</a></h4>
-<pre><code class="language-python">import math
-print(math.sqrt(16))
-</code></pre>
-<p>Safer, explicit, keeps namespace clean.</p>
-<h4 id="import-specific-function--class"><a class="header" href="#import-specific-function--class">Import specific function / class</a></h4>
-<pre><code class="language-python">from math import sqrt
-print(sqrt(16))
-</code></pre>
-<p>Shorter, but watch out for name clashes.</p>
-<h4 id="import-everything-not-recommended"><a class="header" href="#import-everything-not-recommended">Import everything (not recommended)</a></h4>
-<pre><code class="language-python">from math import *
-</code></pre>
-<h4 id="alias-imports"><a class="header" href="#alias-imports">Alias Imports</a></h4>
-<pre><code class="language-python">import numpy as np
-import pandas as pd
-</code></pre>
-<p>Python dev culture loves short aliases.</p>
-<h2 id="multi-file-projects-modules--packages"><a class="header" href="#multi-file-projects-modules--packages">Multi-File Projects (Modules &amp; Packages)</a></h2>
-<p>Imagine this structure:</p>
-<pre><code>my_project/
-│
-├── main.py
-├── utils/
-│   ├── __init__.py
-│   ├── math_tools.py
-│   └── string_tools.py
-</code></pre>
-<ul>
-<li><code>__init__.py</code> turns a folder into a package.</li>
-<li>You can now import across files:</li>
+<div style="break-before: page; page-break-before: always;"></div><ul>
+<li>Python Fundamentals</li>
+<li>Control Flow</li>
+<li>Functions</li>
+<li>Python OOP</li>
+<li>Advanced</li>
+<li>Error Handling</li>
 </ul>
-<pre><code class="language-python"># main.py
-from utils.math_tools import divide
-from utils import string_tools
-
-print(divide(10, 2))
-print(string_tools.shout("hello"))
-</code></pre>
-<h2 id="relative-imports-inside-a-package"><a class="header" href="#relative-imports-inside-a-package">Relative Imports (inside a package)</a></h2>
-<p>From within a package, you can import relative to the current module:</p>
-<pre><code class="language-python">
-# utils/string_tools.py
-from .math_tools import divide   # relative import
-
-def shout(text):
-    return text.upper() + "!!!"
-
-</code></pre>
-<p>Best practices:</p>
-<ul>
-<li>Use absolute imports (<code>from utils.math_tools import divide</code>) for clarity.</li>
-<li>Only use relative imports (<code>from .math_tools import divide</code>) inside packages when refactoring a project.</li>
-</ul>
-<h2 id="what-goes-in-__init__py"><a class="header" href="#what-goes-in-__init__py">What goes in <code>__init__.py</code></a></h2>
-<p>In modern Python (3.3+), just having the folder is enough to make it a package, but <code>__init__.py</code> still matters for controlling how your package behaves when imported.</p>
-<h4 id="empty-file"><a class="header" href="#empty-file">Empty File</a></h4>
-<p>If you don't need anything special, just leave it empty.
-This makes Python treat the folder as a package:</p>
-<pre><code>
-utils/
- ├── __init__.py   # can be empty
- ├── math_tools.py
- └── string_tools.py
-
-</code></pre>
-<p>You can then do:</p>
-<pre><code class="language-python">
-from utils import math_tools
-
-</code></pre>
-<h4 id="re-export-selected-functions-package-api"><a class="header" href="#re-export-selected-functions-package-api">Re-Export Selected Functions (Package API)</a></h4>
-<p>You can expose only certain things when someone imports the package:</p>
-<pre><code class="language-python">
-# utils/__init__.py
-from .math_tools import divide
-from .string_tools import shout
-
-__all__ = ["divide", "shout"]
-
-</code></pre>
-<p>Now you can do:</p>
-<pre><code class="language-python">
-from utils import divide, shout
-
-</code></pre>
-<h4 id="initialization-logic-rare-but-possible"><a class="header" href="#initialization-logic-rare-but-possible">Initialization Logic (rare, but possible)</a></h4>
-<p>You can run code when the package is imported.</p>
-<pre><code class="language-python">
-# utils/__init__.py
-print("Loading utils package...")
-
-</code></pre>
-<p>But to be honest, keep <code>__init__.py</code> clean, and use it mostly for defining what's public.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="using-pip-and-venv"><a class="header" href="#using-pip-and-venv">Using pip and venv</a></h1>
 <p>The <code>venv</code> module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their site directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” Python, and by default is isolated from the packages in the base environment, so that only those explicitly installed in the virtual environment are available.</p>
 <p>When used from within a virtual environment, common installation tools such as pip will install Python packages into a virtual environment without needing to be told to do so explicitly.</p>
@@ -14537,33 +15804,6 @@ venv\scripts\activate
 <blockquote>
 <p>Never use <code>sudo pip install</code>. This has the potential to nuke your Linux distribution.</p>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
-<p>A clean professional setup for Python projects in Public Repositories:</p>
-<ul>
-<li>
-<p>Typing: add type hints everywhere (inputs/outputs especially).</p>
-</li>
-<li>
-<p>Formatter: Black (auto-format, no arguments, saves you brain cells).</p>
-</li>
-<li>
-<p>Imports: isort (keeps imports clean, alphabetized).</p>
-</li>
-<li>
-<p>Linting: flake8 or ruff (to catch stray sins).
-(On a local machine, python-lsp-server already includes flake8. But in case collaborators doesn't have it, it's a good idea to include it.)</p>
-</li>
-<li>
-<p>Static type checking: mypy.</p>
-</li>
-<li>
-<p>Testing: pytest.</p>
-</li>
-<li>
-<p>CI/CD: GitHub Actions with those steps baked in.</p>
-</li>
-</ul>
-<p>You can set up all of these elements in a <code>pyproject.toml</code> file.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-poetry"><a class="header" href="#setting-up-poetry">Setting up Poetry</a></h1>
 <ul>
 <li>If you are just hacking scripts, <code>pip + venv</code> is fine.</li>
@@ -14584,17 +15824,175 @@ flask = "^2.3.0"
 <li>Generates a <code>poetry.lock</code> file to pin exact versions.</li>
 <li>Can also build and publish packages (in case you want to release your own libraries).</li>
 </ul>
-<p>Pros: more reproductible environments.
-Cons: slower than pip, extra tool to install.</p>
+<blockquote>
+<blockquote>
+<ul>
+<li>Pros: more reproductible environments.</li>
+<li>Cons: slower than pip, extra tool to install.</li>
+</ul>
+</blockquote>
+</blockquote>
+<p>To use it, you will first need to get <a href="https://github.com/pypa/pipx">pipx</a>, which will allow Python scripts to be used as if they were standalone command line tools. Then you can install Poetry with:</p>
+<pre><code class="language-bash">pipx install poetry
+</code></pre>
 <p>Workflow:</p>
 <pre><code class="language-bash">poetry init         # create pyproject.toml
 poetry add flask    # add dependency
 poetry install      # install dependencies
 poetry run python   # run inside venv
 </code></pre>
-<p>To use it, you will first need to get <a href="https://github.com/pypa/pipx">pipx</a>, and then install it with:</p>
-<pre><code class="language-bash">pipx install poetry
+<p>Install some dev tools:</p>
+<pre><code class="language-bash">poetry add --dev black isort ruff mypy pytest
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-uv"><a class="header" href="#setting-up-uv">Setting up UV</a></h1>
+<p>The Rust cult has struck again, this time targeting Python users by offering them a dependency and version manager. UV is fast, and over caffeinated. It does a lot of things at once, such as replacing pyenv, pip, pipx and Poetry. On archlinux, installing python-pipx did not work, so I had to go for this tool instead, compiling from source with cargo. Compiling Rust programs is quite slow and it made me age while I was waiting for it to finish. But fortunately, uv is pretty straightforward to use and there isn't much of a learning curve.</p>
+<h4 id="initialize-a-project-with-uv"><a class="header" href="#initialize-a-project-with-uv">Initialize a project with uv:</a></h4>
+<pre><code class="language-bash">uv init my_project
+</code></pre>
+<h4 id="add-dependencies"><a class="header" href="#add-dependencies">Add dependencies:</a></h4>
+<pre><code class="language-bash">uv add flask jinja2 feedparser flask-limiter gunicorn
+</code></pre>
+<h4 id="add-dev-dependencies"><a class="header" href="#add-dev-dependencies">Add dev dependencies:</a></h4>
+<pre><code class="language-bash">uv add --dev black isort ruff mypy pytest
+</code></pre>
+<h4 id="lock-dependencies-for-reproductibility"><a class="header" href="#lock-dependencies-for-reproductibility">Lock dependencies for reproductibility:</a></h4>
+<pre><code class="language-bash">uv lock
+</code></pre>
+<h4 id="run-a-project-the-uv-run-command-also-activates-venv"><a class="header" href="#run-a-project-the-uv-run-command-also-activates-venv">Run a project (the uv run command also activates venv):</a></h4>
+<pre><code class="language-bash">uv run python src/main.py
+</code></pre>
+<h2 id="some-other-perks"><a class="header" href="#some-other-perks">Some other perks</a></h2>
+<p>Python version management:</p>
+<pre><code class="language-bash">uv python install 3.12
+uv run --python 3.12 python --version
+</code></pre>
+<p>System-wide safe tools (pipx replacement):</p>
+<pre><code class="language-bash">uv tool install black
+uv tool install ruff
+</code></pre>
+<p>Reproductibility for collaborators:</p>
+<p>They would just have to run these commands, and they would be in the same environment as you.</p>
+<pre><code class="language-bash">uv sync
+uv run pytest
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
+<p>A clean professional setup for Python projects in Public Repositories. This ensures consistency, code quality, and trust when others contribute.</p>
+<h4 id="1-project-structure"><a class="header" href="#1-project-structure">1. Project Structure</a></h4>
+<pre><code>
+my_project/
+│
+├── src/                # main code lives here (best practice)
+│   └── my_project/
+│       ├── __init__.py
+│       └── core.py
+│
+├── tests/              # pytest discovers tests automatically
+│   └── test_core.py
+│
+├── pyproject.toml      # dependencies &amp; tooling config
+├── README.md           # project overview
+├── LICENSE             # always add one
+└── .gitignore
+
+</code></pre>
+<h4 id="2-typing-add-type-hints-everywhere-example"><a class="header" href="#2-typing-add-type-hints-everywhere-example">2. Typing: add type hints everywhere. Example:</a></h4>
+<pre><code class="language-python">
+def divide(dividend: float, divisor: float) -&gt; float:
+    return dividend / divisor
+
+</code></pre>
+<p>This makes mypy much more useful.</p>
+<h4 id="3-formatting-and-imports"><a class="header" href="#3-formatting-and-imports">3. Formatting and imports</a></h4>
+<ul>
+<li>Black (auto-format, no arguments).</li>
+<li>Imports: isort (keeps imports clean, alphabetized).</li>
+</ul>
+<p>Instead of fighting about tabs vs spaces, let Black be the dictator.</p>
+<p>Run manually, or automate via pre commit hooks:</p>
+<pre><code class="language-bash">uv run black --check src tests
+uv run isort --check-only src tests
+</code></pre>
+<h4 id="4-linting--static-checks"><a class="header" href="#4-linting--static-checks">4. Linting &amp; static checks</a></h4>
+<ul>
+<li>ruff: modern, super fast, replaces flake8 + isort + pydocstyle in one tool.</li>
+<li>mypy: static type checking.</li>
+</ul>
+<pre><code class="language-bash">uv run ruff check .
+uv run mypy src
+</code></pre>
+<h4 id="5-testing"><a class="header" href="#5-testing">5. Testing</a></h4>
+<p>Use pytest for simplicity:</p>
+<pre><code class="language-bash">uv run pytest
+</code></pre>
+<h4 id="6-dependencies-in-pyprojecttoml"><a class="header" href="#6-dependencies-in-pyprojecttoml">6. Dependencies in <code>pyproject.toml</code></a></h4>
+<p>Example config for UV. Except for the <code>[project]</code> section, you don't really have to edit it manually as the <code>uv/poetry add</code> command edits the dependencies automatically.</p>
+<pre><code class="language-toml">[project]
+name = "rss-feed-parser"
+version = "0.1.0"
+description = "A tiny RSS parser with HTML templates."
+authors = ["Your Name &lt;you@example.com&gt;"]
+
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = "&gt;=3.13"
+dependencies = [
+    "flask (&gt;=3.1.0,&lt;4.0.0)",
+    "jinja2 (&gt;=3.1.6,&lt;4.0.0)",
+    "feedparser (&gt;=6.0.11,&lt;7.0.0)",
+    "flask-limiter (&gt;=3.12,&lt;4.0)",
+    "gunicorn (&gt;=23.0.0,&lt;24.0.0)"
+]
+
+[dependency-groups]
+dev = [
+    "black&gt;=25.1.0",
+    "isort&gt;=6.0.1",
+    "mypy&gt;=1.17.1",
+    "pytest&gt;=8.4.1",
+    "ruff&gt;=0.12.9",
+]
+
+</code></pre>
+<h4 id="7-github-actions-cicd"><a class="header" href="#7-github-actions-cicd">7. GitHub Actions (CI/CD)</a></h4>
+<p>Add <code>.github/workflows/ci.yml</code></p>
+<pre><code class="language-yaml">
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Run formatters
+        run: uv run black --check src tests &amp;&amp; uv run isort --check-only src tests
+
+      - name: Run linter
+        run: uv run ruff check .
+
+      - name: Type check
+        run: uv run mypy src
+
+      - name: Run tests
+        run: uv run python -m pytest
+
+</code></pre>
+<p>With this workflow, you can ensure every pull PR is formatted, linted, type-checked and tested.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>

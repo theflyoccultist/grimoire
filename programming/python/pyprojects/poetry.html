@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Lambdas - Debugging Grimoire</title>
+        <title>Setting up Poetry - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,35 +175,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="lambdas"><a class="header" href="#lambdas">Lambdas</a></h1>
-<p>(Work in progress)</p>
-<h3 id="we-are-getting-functional"><a class="header" href="#we-are-getting-functional">We are getting functional!</a></h3>
-<pre><code class="language-python">add = lambda x , y : x + y
-print(add(8,5))
-# 13
-
-def double(x):
-    return x*2
-
-sequence = [1, 3, 5, 9] 
-doubled = [double(x) for x in sequence]
-doubled2 = list(map(double, sequence))
-
-print(doubled)
-# [2, 6, 10, 18]
-print(doubled2)
-# [2, 6, 10, 18]
+                        <h1 id="setting-up-poetry"><a class="header" href="#setting-up-poetry">Setting up Poetry</a></h1>
+<ul>
+<li>If you are just hacking scripts, <code>pip + venv</code> is fine.</li>
+<li>But if you're writing a real project, you will need to use Poetry.</li>
+</ul>
+<p>Here is why:</p>
+<ul>
+<li>Just like venv, it creates a virtual environment automatically per project.</li>
+<li>It handles dependency resolution more intelligently.</li>
+<li>Uses <code>pyproject.toml</code> for project metadata and dependencies:</li>
+</ul>
+<pre><code class="language-toml">[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+flask = "^2.3.0"
+</code></pre>
+<ul>
+<li>Generates a <code>poetry.lock</code> file to pin exact versions.</li>
+<li>Can also build and publish packages (in case you want to release your own libraries).</li>
+</ul>
+<blockquote>
+<blockquote>
+<ul>
+<li>Pros: more reproductible environments.</li>
+<li>Cons: slower than pip, extra tool to install.</li>
+</ul>
+</blockquote>
+</blockquote>
+<p>To use it, you will first need to get <a href="https://github.com/pypa/pipx">pipx</a>, which will allow Python scripts to be used as if they were standalone command line tools. Then you can install Poetry with:</p>
+<pre><code class="language-bash">pipx install poetry
+</code></pre>
+<p>Workflow:</p>
+<pre><code class="language-bash">poetry init         # create pyproject.toml
+poetry add flask    # add dependency
+poetry install      # install dependencies
+poetry run python   # run inside venv
+</code></pre>
+<p>Install some dev tools:</p>
+<pre><code class="language-bash">poetry add --dev black isort ruff mypy pytest
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/fundamentals/function-decorators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/pyprojects/pip-venv.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/fundamentals/type-hints.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/pyprojects/uv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -213,11 +234,11 @@ print(doubled2)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/fundamentals/function-decorators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/pyprojects/pip-venv.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/fundamentals/type-hints.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/pyprojects/uv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
