@@ -3,9 +3,10 @@
 Welcome to my C++ notes.
 
 - [Fundamentals](fundamentals/)
-- [Object-Oriented Programming](oop/README.md)
-- [Language Features](features/)
+- [Object-Oriented Programming](oop/)
 - [Practical Algorithms](algorithms/)
+- [Modern C++ features (C++11 and later)](features/)
+- [The Boost Library](lib_boost/)
 
 ---
 
@@ -20,7 +21,7 @@ sudo apt install build-essential
 
 This installs both the C and C++ compilers (gcc and g++), along with useful build tools like make.
 
-For debugging and memory checking, install:
+Always recommended! For debugging and memory checking, install:
 
 ```sh
 sudo apt install gdb valgrind
@@ -67,3 +68,14 @@ make
 ```
 
 CMake also has the advantage of making your project work with any compiler and make cross platform builds, so it's generally a great idea to use it in a project.
+
+## Setting up clangd on its own to try out new C++ features
+
+- There is also a way to let clangd know that you are using the C++26 standard, without having to bundle a whole project with CMake (if you just want to quickly test it without this linter screaming at you).
+
+To do that, simply create a `.clangd` file in the directory where you store your C++ "experiments" and add this:
+
+```yaml
+CompileFlags:
+  Add: [-std=c++26]
+```

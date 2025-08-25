@@ -1,5 +1,4 @@
 # Python OOP
-(Work in progress)
 
 ## Classes & Objects
 

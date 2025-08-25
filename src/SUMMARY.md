@@ -189,14 +189,20 @@
       - [Error Handling](programming/python/fundamentals/errors.md)
       - [Function Decorators](programming/python/fundamentals/function-decorators.md)
       - [Lambdas](programming/python/fundamentals/lambdas.md)
-      - [Type Hints](programming/python/fundamentals/type-hints.md)
 
     - [Working with Python Projects](programming/python/pyprojects/README.md)
       - [Using pip and venv](programming/python/pyprojects/pip-venv.md)
       - [Setting up Poetry](programming/python/pyprojects/poetry.md)
       - [Setting up UV](programming/python/pyprojects/uv.md)
       - [Python Repository Setup](programming/python/pyprojects/python-repo.md)
-  
+
+    - [Standard Library](programming/python/std-lib/README.md)
+      - [Typing Library: Type Hints](programming/python/std-lib/type-hints.md)
+      - [Itertools](programming/python/std-lib/itertools.md)
+      - [Itertools pt.2](programming/python/std-lib/itertools2.md)
+      - [Itertools pt.3](programming/python/std-lib/itertools3.md)
+      - [Funcools](programming/python/std-lib/functools.md)
+
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
     - [OOP](programming/ruby/OOP.md)

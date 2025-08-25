@@ -1,15 +1,13 @@
-A full Python refresher.
+A full Python guide.
 
-To explore for Python Street Cred:
+- [Python Fundamentals](fundamentals/)
+- [Setting up a Python Project](pyprojects/)
+- [Standard Library Goodies](std-lib/)
 
-```
-os, sys, pathlib, subprocess, logging, argparse/click/typer
-paramiko, fabric, psutil, pyyaml/json
-requests, dotenv, venv, black, pytest
-```
 
-Standard Library:
+
+External Libraries:
 
 ```
-itertools, collections, functools, pathlib(again), concurrent.futures, datetime
+paramiko, fabric, psutil, pyyaml/json, dotenv, pytest
 ```

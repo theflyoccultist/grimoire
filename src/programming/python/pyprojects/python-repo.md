@@ -44,8 +44,8 @@ Instead of fighting about tabs vs spaces, let Black be the dictator.
 Run manually, or automate via pre commit hooks:
 
 ```bash
-uv run black --check src tests
-uv run isort --check-only src tests
+uv run black src tests
+uv run isort src tests
 ```
 
 #### 4. Linting & static checks
@@ -63,7 +63,7 @@ uv run mypy src
 Use pytest for simplicity:
 
 ```bash
-uv run pytest
+uv run python -m pytest
 ```
 
 #### 6. Dependencies in `pyproject.toml`

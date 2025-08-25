@@ -1,6 +1,17 @@
-- Python Fundamentals
-- Control Flow
-- Functions
-- Python OOP
-- Advanced
-- Error Handling
+## Python fundamentals
+  - [User Input](user-input.md)
+  - [Lists](lists.md)
+  - [List Operations](list-ops.md)
+  - [Loops](loops.md)
+  - [Tuples](tuples.md)
+  - [Dicts](dictionaries.md)
+  - [Dict Operations](dict-ops.md)
+  - [Sets](sets.md)
+  - [Unpacking](unpacking.md)
+  - [Generators](generators.md)
+  - [OOP](oop.md)
+  - [Imports](imports.md)
+  - [Error Handling](errors.md)
+  - [Function Decorators](function-decorators.md)
+  - [Lambdas](lambdas.md)
+  - [Type Hints](type-hints.md)

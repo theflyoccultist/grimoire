@@ -1,10 +1,14 @@
-# Lambdas
+# Lambda functions
 (Work in progress)
 
 ### We are getting functional!
 
 ```python
 add = lambda x , y : x + y
+# a more concise way to write 
+# def add (x, y): 
+#    x + y
+
 print(add(8,5))
 # 13
 

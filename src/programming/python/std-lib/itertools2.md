@@ -79,8 +79,37 @@ for item in result:
 
 ```
 
+A C++ implementation of the same example, made just to jumpscare the casual python programmers:
 
-This makes a pleasant pattern. Go check it out!
+```cpp
+#include <iostream>
+#include <string>
+
+void product(const std::string &elems, int repeat, std::string &current) {
+  if (current.size() == repeat) {
+    std::cout << current << "\n";
+    return;
+  }
+
+  for (auto c : elems) {
+    current.push_back(c);
+    product(elems, repeat, current);
+    current.pop_back();
+  }
+}
+
+int main() {
+  std::string elems = "0123";
+  int repeat = 4;
+  std::string current;
+
+  product(elems, repeat, current);
+}
+
+```
+
+
+`combinations_with_replacement` makes for a pleasant pattern. Go check it out!
 
 ```python
 import itertools
@@ -157,5 +186,4 @@ for item in combined:
 # 3
 # Corey
 # Nicole
-
 ```
