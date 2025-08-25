@@ -47,7 +47,7 @@
       - [Armstrong Numbers](programming/bash/exercism/armstrong.md)
 
   - [C 🏗️](programming/c/README.md)
-    - [Good To Know](programming/c/good-to-know/README.md)
+    - [Debugging and Build Tools](programming/c/good-to-know/README.md)
       - [Usage of Makefiles](programming/c/good-to-know/makefiles.md)
       - [Usage of GDB](programming/c/good-to-know/gdb.md)
       - [Usage of Valgrind](programming/c/good-to-know/valgrind.md)
@@ -94,6 +94,8 @@
       - [Converting a C program to C++ OOP](programming/cpp/oop/c-to-cpp.md)
       - [Monolithic Program to Modular C++ Class](programming/cpp/oop/monolithic-to-modular.md)
       - [OOP with Scope Resolution Operators](programming/cpp/oop/scope-resolution.md)
+      - [Operator Overloading](programming/cpp/oop/ostream.md)
+      - [Deep Copy Constructor](programming/cpp/oop/deep-copy.md)
       - [Templates](programming/cpp/oop/templates.md)
       - [More About Templates](programming/cpp/oop/templates2.md)
       - [Inheritance and derived classes](programming/cpp/oop/inheritance_derived.md)
@@ -201,14 +203,13 @@
       - [Itertools](programming/python/std-lib/itertools.md)
       - [Itertools pt.2](programming/python/std-lib/itertools2.md)
       - [Itertools pt.3](programming/python/std-lib/itertools3.md)
-      - [Funcools](programming/python/std-lib/functools.md)
+      - [Functools](programming/python/std-lib/functools.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)
     - [OOP](programming/ruby/OOP.md)
     - [:params vs @instance_variables](programming/ruby/params_instancevariables.md)
     - [Ruby's Functional Paradigms](programming/ruby/ruby-functional.md)
-
     - [Setup a Redis Rate Limiter Middleware in Ruby](programming/ruby/setup_redis_ruby.md)
     - [Use SQLite as Your Rate Limiter in Ruby](programming/ruby/sqlite_ratelimit_ruby.md)
     - [Quick Sinatra Setup](programming/ruby/Quick_Sinatra_Setup.md)

@@ -1,6 +1,6 @@
 # C++ 🤖
 
-Welcome to my C++ notes.
+You, who loves a difficult to write and extremely performant program... Run before it's too late!
 
 - [Fundamentals](fundamentals/)
 - [Object-Oriented Programming](oop/)
