@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Ruby 💎 - Debugging Grimoire</title>
+        <title>Deep Copy Constructor - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,18 +175,153 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="ruby"><a class="header" href="#ruby">Ruby</a></h1>
-<p>Very nice, very well designed. In a parallel reality this has taken the place of Python as THE general purpose scripting language. But in this one, it's a guilty pleasure language that I'll continue indulging into.</p>
+                        <h1 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h1>
+<p>C++ has a doubly linked list in the std library, but you should know how they are implemented under the hood.</p>
+<h3 id="why-do-we-need-a-deep-copy-constructor"><a class="header" href="#why-do-we-need-a-deep-copy-constructor">Why Do We Need a Deep Copy Constructor?</a></h3>
+<p>By default, when you copy an object in C++, the compiler performs a shallow copy, meaning:</p>
+<ul>
+<li>It copies the memory addresses instead of duplicating the data itself.</li>
+<li>If the copied object modifies the data, the original object also changes because they share the same memory.</li>
+<li>When one object is destroyed, the other might point to an invalid memory location (dangling pointers).</li>
+</ul>
+<p>To avoid this nightmare, we manually implement a deep copy constructor. This ensures:</p>
+<ul>
+<li>Each object gets its own separate copy of the data.</li>
+<li>Deleting one object doesn’t affect the others.</li>
+<li>No accidental shared memory corruption.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class list_element {
+public:
+    int d;
+    list_element* next;
+
+    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
+};
+
+class list {
+public:
+    list() : head(nullptr), cursor(nullptr) {}
+    ~list();  // Destructor to free memory
+    list(const list&amp; lst);  // Copy constructor
+
+    void prepend(int n);    // Insert at front value n
+    int get_element() { return cursor-&gt;d; }
+    void advanced() { cursor = cursor-&gt;next; }
+    void print();
+
+private:
+    list_element* head;
+    list_element* cursor;
+};
+
+// Destructor implementation
+list::~list() {
+    while (head != nullptr) {
+        list_element* temp = head;
+        head = head-&gt;next;
+        delete temp;
+    }
+}
+
+// Deep copy constructor
+list::list(const list&amp; lst) {
+    if (lst.head == nullptr) {
+        head = nullptr;
+        cursor = nullptr;
+    } else {
+        cursor = lst.head;
+        list_element* h = new list_element(cursor-&gt;d);
+        list_element* previous = h;
+        head = h;
+        cursor = cursor-&gt;next;
+
+        while (cursor != nullptr) {
+            h = new list_element(cursor-&gt;d);
+            previous-&gt;next = h;
+            previous = h;
+            cursor = cursor-&gt;next;
+        }
+
+        cursor = head;
+    }
+}
+
+void list::prepend(int n) {
+    if (head == nullptr)  // empty list case
+        cursor = head = new list_element(n, head);
+    else    // add to front-chain
+        head = new list_element(n, head);
+}
+
+void list::print() {
+    list_element* h = head;
+    while (h != nullptr) {
+        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
+        h = h-&gt;next;
+    }
+    cout &lt;&lt; "###" &lt;&lt; endl;
+}
+
+int main() {
+    list a, b;
+    a.prepend(9); a.prepend(8);
+    cout &lt;&lt; "list a" &lt;&lt; endl;
+    a.print();
+
+    // Use the copy constructor
+    list c = a;
+    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
+    c.print();
+
+    for (int i = 0; i &lt; 40; ++i)
+        b.prepend(i * i);
+    cout &lt;&lt; "list b" &lt;&lt; endl;
+    b.print();
+
+    return 0;
+}
+</code></pre>
+<h3 id="expected-output"><a class="header" href="#expected-output">Expected Output</a></h3>
+<pre><code class="language-cpp">list a
+8, 9, ###
+list c (copy of a)
+8, 9, ###
+list b
+1521, 1444, 1369, ..., 0, ###
+</code></pre>
+<p>Why is list c identical to list a?</p>
+<ul>
+<li>Because it was deep copied, not shallow copied.</li>
+<li>Modifying c will not affect a, proving that they are independent lists.</li>
+</ul>
+<h2 id="c-rule-of-three-or-five"><a class="header" href="#c-rule-of-three-or-five">C++ Rule of Three (or Five)</a></h2>
+<p>If a class manages dynamic memory, you MUST define these manually:</p>
+<ul>
+<li>Copy Constructor (list(const list&amp;))</li>
+<li>Copy Assignment Operator (operator=)</li>
+<li>Destructor (~list())</li>
+<li>(Optional) Move Constructor (list(list&amp;&amp;))</li>
+<li>(Optional) Move Assignment Operator (operator=(list&amp;&amp;))</li>
+</ul>
+<p>Without these, you get shallow copies, which can lead to:</p>
+<ul>
+<li>Memory leaks</li>
+<li>Double deletion errors</li>
+<li>Undefined behavior</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../programming/python/std-lib/functools.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/cpp/oop/ostream.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/cpp/oop/templates.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -196,11 +331,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../programming/python/std-lib/functools.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/cpp/oop/ostream.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../programming/ruby/ruby-basics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/cpp/oop/templates.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -215,13 +350,13 @@
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

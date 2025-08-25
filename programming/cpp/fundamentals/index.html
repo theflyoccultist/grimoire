@@ -176,173 +176,18 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="a-quick-tour-of-the-c-fundamentals-"><a class="header" href="#a-quick-tour-of-the-c-fundamentals-">A quick tour of the C++ fundamentals 💀</a></h1>
-<h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
-<p>C++ has multiple ways to declare variables, and some are better than others:</p>
-<pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
-int y(20);   // Constructor-style initialization
-int z{30};   // C++11 Uniform Initialization (safer, avoids narrowing conversions)
-
-std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; " " &lt;&lt; z &lt;&lt; std::endl;
-</code></pre>
-<p>Prefer {} (uniform initialization) because it avoids weird implicit conversions:</p>
-<pre><code class="language-cpp">double d{4.5};
-int i{d};  // ❌ ERROR: Narrowing conversion not allowed!
-</code></pre>
-<h2 id="2-pointers-and-references"><a class="header" href="#2-pointers-and-references">2. Pointers and References</a></h2>
-<p>C++ inherits pointers from C, but adds references to make life slightly easier:</p>
-<p>Pointers (Classic C-style)</p>
-<pre><code class="language-cpp">int a = 10;
-int* ptr = &amp;a;  // Pointer stores the memory address of 'a'
-
-std::cout &lt;&lt; *ptr &lt;&lt; std::endl;  // Dereference the pointer (output: 10)
-</code></pre>
-<p>References (C++ Feature)</p>
-<pre><code class="language-cpp">int x = 42;
-int&amp; ref = x;  // Reference to x (alias)
-
-ref = 50;  // Modifies x as well
-std::cout &lt;&lt; x &lt;&lt; std::endl;  // Output: 50
-</code></pre>
-<p>Use references instead of pointers when:</p>
 <ul>
-<li>You don’t need null values.</li>
-<li>You don’t want to manually dereference things.</li>
+<li><a href="01-arrays.html">Arrays</a></li>
+<li><a href="02-structures.html">Structures</a></li>
+<li><a href="03-pointers.html">Pointers</a></li>
+<li><a href="04-referencing.html">Referencing</a></li>
+<li><a href="05-pointer_to_struct.html">Pointer to Struct</a></li>
+<li><a href="06-functions.html">Functions</a></li>
+<li><a href="07-parameter-passing-methods.html">Parameter Passing Methods</a></li>
+<li><a href="08-array-as-parameter.html">Array As Parameter</a></li>
+<li><a href="09-struct-as-parameter.html">Struct As Parameter</a></li>
 </ul>
-<p>🚨 Pointers are still useful for dynamic memory allocation &amp; function arguments that can be null.</p>
-<h2 id="3-dynamic-memory-heap-allocation"><a class="header" href="#3-dynamic-memory-heap-allocation">3. Dynamic Memory (Heap Allocation)</a></h2>
-<p>C++ lets you manually allocate and deallocate memory with <code>new</code> and <code>delete</code> (but later you should use smart pointers).</p>
-<pre><code class="language-cpp">int* heapInt = new int(99);  // Allocate an int on the heap
-std::cout &lt;&lt; *heapInt &lt;&lt; std::endl;  // Output: 99
-
-delete heapInt;  // Free memory (or you'll have a memory leak)
-</code></pre>
-<p>🚨 Memory Management Rules</p>
-<ul>
-<li>Every new must have a corresponding delete.</li>
-<li>Every new[] (array allocation) must have a corresponding delete[].</li>
-</ul>
-<pre><code class="language-cpp">int* arr = new int[10];  // Allocating an array
-delete[] arr;  // Use delete[] for arrays!
-</code></pre>
-<p>In modern C++, prefer std::vector or smart pointers instead of raw new/delete.</p>
-<h2 id="4-functions-pass-by-value-reference-and-pointer"><a class="header" href="#4-functions-pass-by-value-reference-and-pointer">4. Functions: Pass by Value, Reference, and Pointer</a></h2>
-<h3 id="pass-by-value-makes-a-copy"><a class="header" href="#pass-by-value-makes-a-copy">Pass by Value (Makes a Copy)</a></h3>
-<pre><code class="language-cpp">void changeValue(int num) {
-    num = 100;  // This only changes the local copy
-}
-
-int x = 5;
-changeValue(x);
-std::cout &lt;&lt; x;  // Still 5 (copy was modified, not the original)
-</code></pre>
-<h3 id="pass-by-reference-modifies-original"><a class="header" href="#pass-by-reference-modifies-original">Pass by Reference (Modifies Original)</a></h3>
-<pre><code class="language-cpp">void changeRef(int&amp; num) {
-    num = 100;
-}
-
-int x = 5;
-changeRef(x);
-std::cout &lt;&lt; x;  // Now it's 100
-</code></pre>
-<h3 id="pass-by-pointer-also-modifies-original"><a class="header" href="#pass-by-pointer-also-modifies-original">Pass by Pointer (Also Modifies Original)</a></h3>
-<pre><code class="language-cpp">void changePointer(int* num) {
-    *num = 100;  // Dereferencing modifies the actual value
-}
-
-int x = 5;
-changePointer(&amp;x);
-std::cout &lt;&lt; x;  // Output: 100
-</code></pre>
-<ul>
-<li>Use references when modification is required.</li>
-<li>Pass by value when you want a copy (not for large objects).</li>
-<li>Use pointers when passing optional values (nullable).</li>
-</ul>
-<h2 id="5-const-read-only-safety"><a class="header" href="#5-const-read-only-safety">5. <code>const</code>: Read-Only Safety</a></h2>
-<p><code>const</code> makes sure your variables can’t be modified accidentally.</p>
-<pre><code class="language-cpp">const int a = 10;  // Can’t change a
-a = 20;  // ❌ ERROR!
-</code></pre>
-<p><code>const</code> with Pointers</p>
-<pre><code class="language-cpp">const int* ptr = &amp;a;  // Pointer to constant int (data is immutable)
-int* const ptr2 = &amp;a;  // Constant pointer (address is immutable)
-const int* const ptr3 = &amp;a;  // Both data and address are immutable
-</code></pre>
-<p>🚨 If something doesn’t need to change, mark it <code>const</code>!
-(Especially function parameters, so you don’t accidentally modify them.)</p>
-<h2 id="6-structs-vs-classes"><a class="header" href="#6-structs-vs-classes">6. Structs vs Classes</a></h2>
-<p>Structs in C++ are like classes, except their members are public by default.</p>
-<pre><code class="language-cpp">struct Point {
-    int x, y;
-};
-</code></pre>
-<pre><code class="language-cpp">class Point {
-public:
-    int x, y;
-};
-</code></pre>
-<ul>
-<li>Use struct when you just need a simple data container.</li>
-<li>Use class when you need encapsulation, methods, and complex logic.</li>
-</ul>
-<h2 id="7-enum-and-enum-class"><a class="header" href="#7-enum-and-enum-class">7. <code>enum</code> and <code>enum class</code></a></h2>
-<p>C++ has two types of enums, but only one is safe.</p>
-<h3 id="traditional-c-style-enum-unsafe"><a class="header" href="#traditional-c-style-enum-unsafe">Traditional C-style Enum (Unsafe)</a></h3>
-<pre><code class="language-cpp">enum Color { RED, GREEN, BLUE };
-Color c = RED;
-</code></pre>
-<p>🚨 Problem: Color values are just ints, so they can accidentally mix with unrelated values.</p>
-<h3 id="c11-enum-class-scoped-and-safer"><a class="header" href="#c11-enum-class-scoped-and-safer">C++11 enum class (Scoped and Safer)</a></h3>
-<pre><code class="language-cpp">enum class Color { RED, GREEN, BLUE };
-Color c = Color::RED;
-</code></pre>
-<ul>
-<li>Prevents name conflicts.</li>
-<li>Doesn’t implicitly convert to int.</li>
-</ul>
-<h2 id="8-input--output-stream-handling"><a class="header" href="#8-input--output-stream-handling">8. Input &amp; Output (Stream Handling)</a></h2>
-<h4 id="basic-io"><a class="header" href="#basic-io">Basic I/O</a></h4>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-int main() {
-    string name;
-    cout &lt;&lt; "Enter your name: ";
-    cin &gt;&gt; name;
-    cout &lt;&lt; "Hello, " &lt;&lt; name &lt;&lt; "!" &lt;&lt; endl;
-}
-</code></pre>
-<p>🚨 Issue: cin &gt;&gt; name; only takes one word.</p>
-<h4 id="reading-full-lines"><a class="header" href="#reading-full-lines">Reading Full Lines</a></h4>
-<pre><code class="language-cpp">string fullName;
-getline(cin, fullName);
-</code></pre>
-<h2 id="9-arrays--vectors"><a class="header" href="#9-arrays--vectors">9. Arrays &amp; Vectors</a></h2>
-<h4 id="c-style-array"><a class="header" href="#c-style-array">C-Style Array</a></h4>
-<pre><code class="language-cpp">int arr[5] = {1, 2, 3, 4, 5};
-</code></pre>
-<p>🚨 Problems: No size tracking, no bounds checking.</p>
-<h4 id="modern-alternative-stdvector"><a class="header" href="#modern-alternative-stdvector">Modern Alternative: std::vector</a></h4>
-<pre><code class="language-cpp">#include &lt;vector&gt;
-std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
-vec.push_back(6);
-std::cout &lt;&lt; vec[2];  // Safe indexing
-</code></pre>
-<ul>
-<li>Automatically resizes.</li>
-<li>Safer than raw arrays.</li>
-</ul>
-<h2 id="10-the-auto-keyword"><a class="header" href="#10-the-auto-keyword">10. The <code>auto</code> Keyword</a></h2>
-<p>C++ lets you infer types automatically with auto:</p>
-<pre><code class="language-cpp">auto num = 42;  // Compiler infers int
-auto pi = 3.14;  // Compiler infers double
-auto word = "hello";  // Compiler infers const char*
-</code></pre>
-<ul>
-<li>Good for readability, especially with long types.</li>
-<li>Avoid using auto everywhere, it reduces code clarity.</li>
-</ul>
-<h2 id="bonus-a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#bonus-a-basic-program-to-convert-miles-to-kilometers">Bonus: A Basic Program to Convert Miles to Kilometers</a></h2>
+<h2 id="intro-a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#intro-a-basic-program-to-convert-miles-to-kilometers">Intro: A Basic Program to Convert Miles to Kilometers</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;limits&gt;
 using namespace std;
@@ -394,7 +239,7 @@ int main() {
 <li>This is only useful for very small functions (like our convert() function) because function calls have a small overhead.</li>
 <li>Modern compilers already optimize this automatically, so using inline manually is usually unnecessary.</li>
 </ul>
-<h2 id="bonus-a-simple-program-to-calculate-a-sum"><a class="header" href="#bonus-a-simple-program-to-calculate-a-sum">Bonus: A Simple Program to Calculate A Sum</a></h2>
+<h2 id="intro-2-a-simple-program-to-calculate-a-sum"><a class="header" href="#intro-2-a-simple-program-to-calculate-a-sum">Intro 2: A Simple Program to Calculate A Sum</a></h2>
 <pre><code class="language-cpp">// C to C++ conversion
 
 #include &lt;iostream&gt;

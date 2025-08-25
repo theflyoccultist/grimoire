@@ -2120,7 +2120,13 @@ done
 [ "$1" == "$result" ] &amp;&amp; echo true || echo false
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c"><a class="header" href="#c">C</a></h1>
-<p>Very old, very fast and minimal, basically never goes out of style.</p>
+<p>Very old, very fast and minimal, basically never goes out of style. If you had to choose only one systems language, go for this one. It bites back though.</p>
+<ul>
+<li><a href="programming/c/good-to-know/">Debugging and Build Tools</a></li>
+<li><a href="programming/c/fundamentals/">Fundamentals</a></li>
+<li><a href="programming/c/data_structures/">Data Structures</a></li>
+<li><a href="programming/c/ncurses/">ncurses</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="good-to-know"><a class="header" href="#good-to-know">Good To Know</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="usage-of-makefiles"><a class="header" href="#usage-of-makefiles">Usage of Makefiles</a></h1>
 <p>Why use Makefiles in C and C++?</p>
@@ -5359,7 +5365,7 @@ int main() {
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c-"><a class="header" href="#c-">C++ 🤖</a></h1>
-<p>Welcome to my C++ notes.</p>
+<p>You, who loves a difficult to write and extremely performant program... Run before it's too late!</p>
 <ul>
 <li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
 <li><a href="programming/cpp/oop/">Object-Oriented Programming</a></li>
@@ -5427,173 +5433,18 @@ make
   Add: [-std=c++26]
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="a-quick-tour-of-the-c-fundamentals-"><a class="header" href="#a-quick-tour-of-the-c-fundamentals-">A quick tour of the C++ fundamentals 💀</a></h1>
-<h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
-<p>C++ has multiple ways to declare variables, and some are better than others:</p>
-<pre><code class="language-cpp">int x = 10;  // Traditional C-style initialization
-int y(20);   // Constructor-style initialization
-int z{30};   // C++11 Uniform Initialization (safer, avoids narrowing conversions)
-
-std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; " " &lt;&lt; z &lt;&lt; std::endl;
-</code></pre>
-<p>Prefer {} (uniform initialization) because it avoids weird implicit conversions:</p>
-<pre><code class="language-cpp">double d{4.5};
-int i{d};  // ❌ ERROR: Narrowing conversion not allowed!
-</code></pre>
-<h2 id="2-pointers-and-references"><a class="header" href="#2-pointers-and-references">2. Pointers and References</a></h2>
-<p>C++ inherits pointers from C, but adds references to make life slightly easier:</p>
-<p>Pointers (Classic C-style)</p>
-<pre><code class="language-cpp">int a = 10;
-int* ptr = &amp;a;  // Pointer stores the memory address of 'a'
-
-std::cout &lt;&lt; *ptr &lt;&lt; std::endl;  // Dereference the pointer (output: 10)
-</code></pre>
-<p>References (C++ Feature)</p>
-<pre><code class="language-cpp">int x = 42;
-int&amp; ref = x;  // Reference to x (alias)
-
-ref = 50;  // Modifies x as well
-std::cout &lt;&lt; x &lt;&lt; std::endl;  // Output: 50
-</code></pre>
-<p>Use references instead of pointers when:</p>
 <ul>
-<li>You don’t need null values.</li>
-<li>You don’t want to manually dereference things.</li>
+<li><a href="programming/cpp/fundamentals/01-arrays.html">Arrays</a></li>
+<li><a href="programming/cpp/fundamentals/02-structures.html">Structures</a></li>
+<li><a href="programming/cpp/fundamentals/03-pointers.html">Pointers</a></li>
+<li><a href="programming/cpp/fundamentals/04-referencing.html">Referencing</a></li>
+<li><a href="programming/cpp/fundamentals/05-pointer_to_struct.html">Pointer to Struct</a></li>
+<li><a href="programming/cpp/fundamentals/06-functions.html">Functions</a></li>
+<li><a href="programming/cpp/fundamentals/07-parameter-passing-methods.html">Parameter Passing Methods</a></li>
+<li><a href="programming/cpp/fundamentals/08-array-as-parameter.html">Array As Parameter</a></li>
+<li><a href="programming/cpp/fundamentals/09-struct-as-parameter.html">Struct As Parameter</a></li>
 </ul>
-<p>🚨 Pointers are still useful for dynamic memory allocation &amp; function arguments that can be null.</p>
-<h2 id="3-dynamic-memory-heap-allocation"><a class="header" href="#3-dynamic-memory-heap-allocation">3. Dynamic Memory (Heap Allocation)</a></h2>
-<p>C++ lets you manually allocate and deallocate memory with <code>new</code> and <code>delete</code> (but later you should use smart pointers).</p>
-<pre><code class="language-cpp">int* heapInt = new int(99);  // Allocate an int on the heap
-std::cout &lt;&lt; *heapInt &lt;&lt; std::endl;  // Output: 99
-
-delete heapInt;  // Free memory (or you'll have a memory leak)
-</code></pre>
-<p>🚨 Memory Management Rules</p>
-<ul>
-<li>Every new must have a corresponding delete.</li>
-<li>Every new[] (array allocation) must have a corresponding delete[].</li>
-</ul>
-<pre><code class="language-cpp">int* arr = new int[10];  // Allocating an array
-delete[] arr;  // Use delete[] for arrays!
-</code></pre>
-<p>In modern C++, prefer std::vector or smart pointers instead of raw new/delete.</p>
-<h2 id="4-functions-pass-by-value-reference-and-pointer"><a class="header" href="#4-functions-pass-by-value-reference-and-pointer">4. Functions: Pass by Value, Reference, and Pointer</a></h2>
-<h3 id="pass-by-value-makes-a-copy"><a class="header" href="#pass-by-value-makes-a-copy">Pass by Value (Makes a Copy)</a></h3>
-<pre><code class="language-cpp">void changeValue(int num) {
-    num = 100;  // This only changes the local copy
-}
-
-int x = 5;
-changeValue(x);
-std::cout &lt;&lt; x;  // Still 5 (copy was modified, not the original)
-</code></pre>
-<h3 id="pass-by-reference-modifies-original"><a class="header" href="#pass-by-reference-modifies-original">Pass by Reference (Modifies Original)</a></h3>
-<pre><code class="language-cpp">void changeRef(int&amp; num) {
-    num = 100;
-}
-
-int x = 5;
-changeRef(x);
-std::cout &lt;&lt; x;  // Now it's 100
-</code></pre>
-<h3 id="pass-by-pointer-also-modifies-original"><a class="header" href="#pass-by-pointer-also-modifies-original">Pass by Pointer (Also Modifies Original)</a></h3>
-<pre><code class="language-cpp">void changePointer(int* num) {
-    *num = 100;  // Dereferencing modifies the actual value
-}
-
-int x = 5;
-changePointer(&amp;x);
-std::cout &lt;&lt; x;  // Output: 100
-</code></pre>
-<ul>
-<li>Use references when modification is required.</li>
-<li>Pass by value when you want a copy (not for large objects).</li>
-<li>Use pointers when passing optional values (nullable).</li>
-</ul>
-<h2 id="5-const-read-only-safety"><a class="header" href="#5-const-read-only-safety">5. <code>const</code>: Read-Only Safety</a></h2>
-<p><code>const</code> makes sure your variables can’t be modified accidentally.</p>
-<pre><code class="language-cpp">const int a = 10;  // Can’t change a
-a = 20;  // ❌ ERROR!
-</code></pre>
-<p><code>const</code> with Pointers</p>
-<pre><code class="language-cpp">const int* ptr = &amp;a;  // Pointer to constant int (data is immutable)
-int* const ptr2 = &amp;a;  // Constant pointer (address is immutable)
-const int* const ptr3 = &amp;a;  // Both data and address are immutable
-</code></pre>
-<p>🚨 If something doesn’t need to change, mark it <code>const</code>!
-(Especially function parameters, so you don’t accidentally modify them.)</p>
-<h2 id="6-structs-vs-classes"><a class="header" href="#6-structs-vs-classes">6. Structs vs Classes</a></h2>
-<p>Structs in C++ are like classes, except their members are public by default.</p>
-<pre><code class="language-cpp">struct Point {
-    int x, y;
-};
-</code></pre>
-<pre><code class="language-cpp">class Point {
-public:
-    int x, y;
-};
-</code></pre>
-<ul>
-<li>Use struct when you just need a simple data container.</li>
-<li>Use class when you need encapsulation, methods, and complex logic.</li>
-</ul>
-<h2 id="7-enum-and-enum-class"><a class="header" href="#7-enum-and-enum-class">7. <code>enum</code> and <code>enum class</code></a></h2>
-<p>C++ has two types of enums, but only one is safe.</p>
-<h3 id="traditional-c-style-enum-unsafe"><a class="header" href="#traditional-c-style-enum-unsafe">Traditional C-style Enum (Unsafe)</a></h3>
-<pre><code class="language-cpp">enum Color { RED, GREEN, BLUE };
-Color c = RED;
-</code></pre>
-<p>🚨 Problem: Color values are just ints, so they can accidentally mix with unrelated values.</p>
-<h3 id="c11-enum-class-scoped-and-safer"><a class="header" href="#c11-enum-class-scoped-and-safer">C++11 enum class (Scoped and Safer)</a></h3>
-<pre><code class="language-cpp">enum class Color { RED, GREEN, BLUE };
-Color c = Color::RED;
-</code></pre>
-<ul>
-<li>Prevents name conflicts.</li>
-<li>Doesn’t implicitly convert to int.</li>
-</ul>
-<h2 id="8-input--output-stream-handling"><a class="header" href="#8-input--output-stream-handling">8. Input &amp; Output (Stream Handling)</a></h2>
-<h4 id="basic-io"><a class="header" href="#basic-io">Basic I/O</a></h4>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-int main() {
-    string name;
-    cout &lt;&lt; "Enter your name: ";
-    cin &gt;&gt; name;
-    cout &lt;&lt; "Hello, " &lt;&lt; name &lt;&lt; "!" &lt;&lt; endl;
-}
-</code></pre>
-<p>🚨 Issue: cin &gt;&gt; name; only takes one word.</p>
-<h4 id="reading-full-lines"><a class="header" href="#reading-full-lines">Reading Full Lines</a></h4>
-<pre><code class="language-cpp">string fullName;
-getline(cin, fullName);
-</code></pre>
-<h2 id="9-arrays--vectors"><a class="header" href="#9-arrays--vectors">9. Arrays &amp; Vectors</a></h2>
-<h4 id="c-style-array"><a class="header" href="#c-style-array">C-Style Array</a></h4>
-<pre><code class="language-cpp">int arr[5] = {1, 2, 3, 4, 5};
-</code></pre>
-<p>🚨 Problems: No size tracking, no bounds checking.</p>
-<h4 id="modern-alternative-stdvector"><a class="header" href="#modern-alternative-stdvector">Modern Alternative: std::vector</a></h4>
-<pre><code class="language-cpp">#include &lt;vector&gt;
-std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
-vec.push_back(6);
-std::cout &lt;&lt; vec[2];  // Safe indexing
-</code></pre>
-<ul>
-<li>Automatically resizes.</li>
-<li>Safer than raw arrays.</li>
-</ul>
-<h2 id="10-the-auto-keyword"><a class="header" href="#10-the-auto-keyword">10. The <code>auto</code> Keyword</a></h2>
-<p>C++ lets you infer types automatically with auto:</p>
-<pre><code class="language-cpp">auto num = 42;  // Compiler infers int
-auto pi = 3.14;  // Compiler infers double
-auto word = "hello";  // Compiler infers const char*
-</code></pre>
-<ul>
-<li>Good for readability, especially with long types.</li>
-<li>Avoid using auto everywhere, it reduces code clarity.</li>
-</ul>
-<h2 id="bonus-a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#bonus-a-basic-program-to-convert-miles-to-kilometers">Bonus: A Basic Program to Convert Miles to Kilometers</a></h2>
+<h2 id="intro-a-basic-program-to-convert-miles-to-kilometers"><a class="header" href="#intro-a-basic-program-to-convert-miles-to-kilometers">Intro: A Basic Program to Convert Miles to Kilometers</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;limits&gt;
 using namespace std;
@@ -5645,7 +5496,7 @@ int main() {
 <li>This is only useful for very small functions (like our convert() function) because function calls have a small overhead.</li>
 <li>Modern compilers already optimize this automatically, so using inline manually is usually unnecessary.</li>
 </ul>
-<h2 id="bonus-a-simple-program-to-calculate-a-sum"><a class="header" href="#bonus-a-simple-program-to-calculate-a-sum">Bonus: A Simple Program to Calculate A Sum</a></h2>
+<h2 id="intro-2-a-simple-program-to-calculate-a-sum"><a class="header" href="#intro-2-a-simple-program-to-calculate-a-sum">Intro 2: A Simple Program to Calculate A Sum</a></h2>
 <pre><code class="language-cpp">// C to C++ conversion
 
 #include &lt;iostream&gt;
@@ -6213,7 +6064,23 @@ int main() {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="c-oop-overview-"><a class="header" href="#c-oop-overview-">C++ OOP Overview 💀</a></h1>
 <p>C++ is not a fully object-oriented language like Java—it gives you the choice of using OOP, procedural, or even template-based metaprogramming. However, when you do use OOP, C++ expects you to take responsibility (i.e., manual memory management, virtual destructors, and explicit inheritance rules).</p>
-<h2 id="basic-oop-program"><a class="header" href="#basic-oop-program">Basic OOP Program</a></h2>
+<p>So welcome to the C++ OOP section, and be prepared for madness.</p>
+<ul>
+<li><a href="programming/cpp/oop/c-to-cpp.html">Converting a C program to C++ OOP</a></li>
+<li><a href="programming/cpp/oop/monolithic-to-modular.html">Monolithic Program to Modular C++ Class</a></li>
+<li><a href="programming/cpp/oop/scope-resolution.html">OOP with Scope Resolution Operators</a></li>
+<li><a href="programming/cpp/oop/ostream.html">Operator Overloading</a></li>
+<li><a href="programming/cpp/oop/deep-copy.html">Deep Copy Constructor</a></li>
+<li><a href="programming/cpp/oop/templates.html">Templates</a></li>
+<li><a href="programming/cpp/oop/templates2.html">More About Templates</a></li>
+<li><a href="programming/cpp/oop/inheritance_derived.html">Inheritance and derived classes</a></li>
+<li><a href="programming/cpp/oop/inheritance_polymorphism.html">Inheritance and Polymorphism</a></li>
+<li><a href="programming/cpp/oop/virtual.html">Virtual Function Behavior</a></li>
+<li><a href="programming/cpp/oop/shapes.html">Shapes with OOP</a></li>
+<li><a href="programming/cpp/oop/move.html">Move Semantics</a></li>
+<li><a href="programming/cpp/oop/move2.html">Move Semantics pt.2</a></li>
+</ul>
+<h2 id="introduction-a-basic-program-with-an-oop-structure"><a class="header" href="#introduction-a-basic-program-with-an-oop-structure">Introduction: a basic Program with an OOP structure</a></h2>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 
@@ -6289,533 +6156,6 @@ int main() {
     return 0;
 }
 </code></pre>
-<h3 id="basic-class-definition-car"><a class="header" href="#basic-class-definition-car">Basic Class Definition: Car</a></h3>
-<p>Key Takeaways</p>
-<ol>
-<li><strong>Encapsulation</strong></li>
-</ol>
-<ul>
-<li>brand and speed are private, meaning they cannot be accessed outside of the class.</li>
-<li>Access is provided through getter functions (<code>getBrand()</code>, <code>getSpeed()</code>).</li>
-</ul>
-<ol start="2">
-<li><strong>Constructors &amp; Initialization Lists</strong></li>
-</ol>
-<ul>
-<li><code>Car(std::string b, int s) : brand(b), speed(s) {}</code> → This is a constructor with an initializer list.</li>
-<li>Instead of assigning values inside {} manually, we use direct initialization, which is faster and cleaner.</li>
-</ul>
-<ol start="3">
-<li><strong>Virtual Destructor <code>(~Car())</code></strong></li>
-</ol>
-<ul>
-<li>Why virtual? So that if you delete a <code>SportsCar</code> through a <code>Car*</code>, it calls the correct destructor.</li>
-<li>Without virtual, only <code>Car</code>'s destructor would run, and <code>SportsCar</code>'s destructor wouldn’t execute.</li>
-</ul>
-<ol start="4">
-<li><strong>Operator Overloading (&lt;&lt;)</strong></li>
-</ol>
-<ul>
-<li>We define <code>friend std::ostream&amp; operator&lt;&lt;(...)</code> to allow <code>std::cout &lt;&lt; myCar</code>.</li>
-<li>Friend functions allow non-member functions to access private class members.</li>
-</ul>
-<h3 id="inheritance-sportscar-extends-car"><a class="header" href="#inheritance-sportscar-extends-car">Inheritance: SportsCar Extends Car</a></h3>
-<p>Key Takeaways</p>
-<ol>
-<li><strong>Single Inheritance (class SportsCar : public Car)</strong></li>
-</ol>
-<ul>
-<li>SportsCar inherits all properties of Car but can add new behavior (turboBoost()).</li>
-<li>SportsCar(std::string b, int s) : Car(b, s) calls the base class (Car) constructor.</li>
-</ul>
-<ol start="2">
-<li><strong>Destructor Handling</strong></li>
-</ol>
-<ul>
-<li>Why is the destructor not virtual? Since Car already has a virtual destructor, it ensures that deleting a SportsCar object correctly calls both destructors.</li>
-<li>Destruction order: SportsCar's destructor runs first, then Car's.</li>
-</ul>
-<h3 id="the-main-function"><a class="header" href="#the-main-function">The main() Function</a></h3>
-<p>Key Takeaways</p>
-<ol>
-<li><strong>Automatic Object Lifetime Management</strong></li>
-</ol>
-<ul>
-<li>myCar and mySportsCar are stack-allocated.</li>
-<li>No need for delete because destructors run automatically when they go out of scope.</li>
-</ul>
-<ol start="2">
-<li><strong>Calling Methods on Objects</strong></li>
-</ol>
-<ul>
-<li>myCar.accelerate(); increases the speed by 10.</li>
-<li>mySportsCar.turboBoost(); is only available in SportsCar.</li>
-</ul>
-<ol start="3">
-<li><strong>Overloaded &lt;&lt; Operator Works as Expected</strong></li>
-</ol>
-<ul>
-<li><code>std::cout &lt;&lt; myCar &lt;&lt; std::endl;</code> → Calls the overloaded &lt;&lt; function.</li>
-</ul>
-<h2 id="oop-with-parameterized-constructors--operator-overloading-in-c"><a class="header" href="#oop-with-parameterized-constructors--operator-overloading-in-c">OOP with Parameterized Constructors &amp; Operator Overloading in C++</a></h2>
-<p>This program introduces parameterized constructors and expands on operator overloading, reinforcing core C++ OOP concepts. While it follows the same fundamental principles as the Car example, the use of constructors and the + operator overload adds complexity.</p>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class Point {
-private:
-    double x, y;
-
-public:
-    // Default constructor
-    Point() : x(0.0), y(0.0) {}
-
-    // Parameterized constructor
-    Point(double xVal, double yVal) : x(xVal), y(yVal) {}
-
-    // Getter for x
-    double getX() const {
-        return x;
-    }
-
-    // Setter for x
-    void setX(double v) {
-        x = v;
-    }
-
-    // Getter for y
-    double getY() const {
-        return y;
-    }
-
-    // Setter for y
-    void setY(double v) {
-        y = v;
-    }
-
-    // Overload the + operator
-    Point operator+ (const Point&amp; p) const {
-        return Point(x + p.x, y + p.y);
-    }
-
-    // Overload the &lt;&lt; operator for output
-    friend ostream&amp; operator &lt;&lt; (ostream&amp; out, const Point&amp; p) {
-        out &lt;&lt; "(" &lt;&lt; p.x &lt;&lt; ", " &lt;&lt; p.y &lt;&lt; ")";
-        return out;
-    }
-};
-
-int main() {
-    Point a(3.5, 2.5), b(2.5, 4.5), c;
-    cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; " b = " &lt;&lt; b &lt;&lt; endl;
-    c = a + b;
-    cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
-    return 0;
-}
-</code></pre>
-<h3 id="class-definition-point"><a class="header" href="#class-definition-point">Class Definition: Point</a></h3>
-<p>Key Takeaways</p>
-<pre><code class="language-cpp">Point() : x(0.0), y(0.0) {}
-</code></pre>
-<ol>
-<li><strong>Default Constructor (Point())</strong></li>
-</ol>
-<ul>
-<li>This constructor initializes x and y to 0.0 by default.</li>
-<li>Why use an initializer list (: x(0.0), y(0.0)) instead of assignment in {}?
-<ul>
-<li>Faster: Directly initializes members instead of assigning values later.</li>
-<li>Mandatory for const or reference members (not in this example, but useful elsewhere).</li>
-</ul>
-</li>
-</ul>
-<ol start="2">
-<li><strong>Parameterized Constructor (Point(double xVal, double yVal))</strong></li>
-</ol>
-<pre><code class="language-cpp">Point(double xVal, double yVal) : x(xVal), y(yVal) {}
-</code></pre>
-<p>Allows creating a Point object with custom values.</p>
-<ol start="3">
-<li><strong>Getter &amp; Setter Methods</strong></li>
-</ol>
-<pre><code class="language-cpp">double getX() const { return x; }
-void setX(double v) { x = v; }
-</code></pre>
-<ul>
-<li>const after getX() → Ensures getX() does not modify the object.</li>
-<li>Setters allow modification, while getters ensure read-only access.</li>
-</ul>
-<ol start="4">
-<li><strong>Operator Overloading</strong></li>
-</ol>
-<ul>
-<li>Overloading the + Operator</li>
-</ul>
-<pre><code class="language-cpp">Point operator+ (const Point&amp; p) const {
-    return Point(x + p.x, y + p.y);
-}
-</code></pre>
-<ul>
-<li>Allows adding Point objects like a + b.</li>
-<li>Why return a Point object?
-<ul>
-<li>Instead of modifying <code>this</code>, it creates a new Point.</li>
-</ul>
-</li>
-</ul>
-<p>Example:</p>
-<pre><code class="language-cpp">c = a + b;
-</code></pre>
-<p>Equivalent to <code>c = Point(a.getX() + b.getX(), a.getY() + b.getY());</code></p>
-<ul>
-<li>Overloading the &lt;&lt; Operator (Friend Function)</li>
-</ul>
-<pre><code class="language-cpp">friend ostream&amp; operator &lt;&lt; (ostream&amp; out, const Point&amp; p) {
-    out &lt;&lt; "(" &lt;&lt; p.x &lt;&lt; ", " &lt;&lt; p.y &lt;&lt; ")";
-    return out;
-}
-</code></pre>
-<p>Allows printing Point objects using:</p>
-<pre><code class="language-cpp">cout &lt;&lt; a;  // Outputs (3.5, 2.5)
-</code></pre>
-<p>Why is operator&lt;&lt; a friend function?</p>
-<ul>
-<li>It needs access to private members (x and y).</li>
-<li>Cannot be a member function because the first parameter must be ostream&amp;.</li>
-</ul>
-<h3 id="the-main-function-1"><a class="header" href="#the-main-function-1">The main() Function</a></h3>
-<pre><code class="language-cpp">int main() {
-    Point a(3.5, 2.5), b(2.5, 4.5), c;
-    cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; " b = " &lt;&lt; b &lt;&lt; endl;
-    c = a + b;
-    cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
-    return 0;
-}
-</code></pre>
-<ol>
-<li>What Happens Here?</li>
-</ol>
-<ul>
-<li>Objects are created:</li>
-</ul>
-<pre><code class="language-cpp">Point a(3.5, 2.5), b(2.5, 4.5), c;
-</code></pre>
-<ul>
-<li>a is initialized with (3.5, 2.5), b with (2.5, 4.5), and c is (0.0, 0.0) by default.</li>
-</ul>
-<p>Operator overloading is used:</p>
-<pre><code class="language-cpp">c = a + b;
-</code></pre>
-<ul>
-<li>
-<p>Triggers operator+() and stores the result in c.</p>
-</li>
-<li>
-<p>Objects are printed using operator&lt;&lt;:</p>
-</li>
-</ul>
-<pre><code class="language-cpp">cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
-</code></pre>
-<ul>
-<li>Calls operator&lt;&lt;() to format the output.</li>
-</ul>
-<p>Output:</p>
-<pre><code class="language-cpp">a = (3.5, 2.5) b = (2.5, 4.5)
-sum = (6, 7)
-</code></pre>
-<h2 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h2>
-<p>C++ has a doubly linked list in the std library, but you should know how they are implemented under the hood.</p>
-<h3 id="why-do-we-need-a-deep-copy-constructor"><a class="header" href="#why-do-we-need-a-deep-copy-constructor">Why Do We Need a Deep Copy Constructor?</a></h3>
-<p>By default, when you copy an object in C++, the compiler performs a shallow copy, meaning:</p>
-<ul>
-<li>It copies the memory addresses instead of duplicating the data itself.</li>
-<li>If the copied object modifies the data, the original object also changes because they share the same memory.</li>
-<li>When one object is destroyed, the other might point to an invalid memory location (dangling pointers).</li>
-</ul>
-<p>To avoid this nightmare, we manually implement a deep copy constructor. This ensures:</p>
-<ul>
-<li>Each object gets its own separate copy of the data.</li>
-<li>Deleting one object doesn’t affect the others.</li>
-<li>No accidental shared memory corruption.</li>
-</ul>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class list_element {
-public:
-    int d;
-    list_element* next;
-
-    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
-};
-
-class list {
-public:
-    list() : head(nullptr), cursor(nullptr) {}
-    ~list();  // Destructor to free memory
-    list(const list&amp; lst);  // Copy constructor
-
-    void prepend(int n);    // Insert at front value n
-    int get_element() { return cursor-&gt;d; }
-    void advanced() { cursor = cursor-&gt;next; }
-    void print();
-
-private:
-    list_element* head;
-    list_element* cursor;
-};
-
-// Destructor implementation
-list::~list() {
-    while (head != nullptr) {
-        list_element* temp = head;
-        head = head-&gt;next;
-        delete temp;
-    }
-}
-
-// Deep copy constructor
-list::list(const list&amp; lst) {
-    if (lst.head == nullptr) {
-        head = nullptr;
-        cursor = nullptr;
-    } else {
-        cursor = lst.head;
-        list_element* h = new list_element(cursor-&gt;d);
-        list_element* previous = h;
-        head = h;
-        cursor = cursor-&gt;next;
-
-        while (cursor != nullptr) {
-            h = new list_element(cursor-&gt;d);
-            previous-&gt;next = h;
-            previous = h;
-            cursor = cursor-&gt;next;
-        }
-
-        cursor = head;
-    }
-}
-
-void list::prepend(int n) {
-    if (head == nullptr)  // empty list case
-        cursor = head = new list_element(n, head);
-    else    // add to front-chain
-        head = new list_element(n, head);
-}
-
-void list::print() {
-    list_element* h = head;
-    while (h != nullptr) {
-        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
-        h = h-&gt;next;
-    }
-    cout &lt;&lt; "###" &lt;&lt; endl;
-}
-
-int main() {
-    list a, b;
-    a.prepend(9); a.prepend(8);
-    cout &lt;&lt; "list a" &lt;&lt; endl;
-    a.print();
-
-    // Use the copy constructor
-    list c = a;
-    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
-    c.print();
-
-    for (int i = 0; i &lt; 40; ++i)
-        b.prepend(i * i);
-    cout &lt;&lt; "list b" &lt;&lt; endl;
-    b.print();
-
-    return 0;
-}
-</code></pre>
-<h3 id="class-definition"><a class="header" href="#class-definition">Class Definition</a></h3>
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class list_element {
-public:
-    int d;
-    list_element* next;
-
-    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
-};
-</code></pre>
-<p>Each list_element stores:</p>
-<ul>
-<li>d (data).</li>
-<li>next (pointer to the next element).</li>
-</ul>
-<h4 id="the-list-class"><a class="header" href="#the-list-class">The <code>list</code> class</a></h4>
-<pre><code class="language-cpp">class list {
-public:
-    list() : head(nullptr), cursor(nullptr) {}
-    ~list();  // Destructor to free memory
-    list(const list&amp; lst);  // Copy constructor
-
-    void prepend(int n);    // Insert at front value n
-    int get_element() { return cursor-&gt;d; }
-    void advanced() { cursor = cursor-&gt;next; }
-    void print();
-
-private:
-    list_element* head;
-    list_element* cursor;
-};
-</code></pre>
-<ul>
-<li>Encapsulates a linked list.</li>
-<li>Implements deep copy via list(const list&amp; lst).</li>
-<li>Destructor (~list()) manually frees memory.</li>
-</ul>
-<h3 id="destructor-preventing-memory-leaks"><a class="header" href="#destructor-preventing-memory-leaks">Destructor: Preventing Memory leaks</a></h3>
-<pre><code class="language-cpp">list::~list() {
-    while (head != nullptr) {
-        list_element* temp = head;
-        head = head-&gt;next;
-        delete temp;  // Free each element
-    }
-}
-</code></pre>
-<ul>
-<li>Ensures no memory leaks when an object is destroyed.</li>
-<li>Deletes every node one by one.</li>
-<li>Without this, dynamically allocated list_elements would never be freed.</li>
-</ul>
-<h3 id="the-deep-copy-constructor"><a class="header" href="#the-deep-copy-constructor">The Deep Copy Constructor</a></h3>
-<pre><code class="language-cpp">list::list(const list&amp; lst) {
-    if (lst.head == nullptr) {
-        head = nullptr;
-        cursor = nullptr;
-    } else {
-        cursor = lst.head;
-        list_element* h = new list_element(cursor-&gt;d);  // Create first element
-        list_element* previous = h;
-        head = h;
-        cursor = cursor-&gt;next;
-
-        while (cursor != nullptr) {
-            h = new list_element(cursor-&gt;d);  // Deep copy each node
-            previous-&gt;next = h;
-            previous = h;
-            cursor = cursor-&gt;next;
-        }
-
-        cursor = head;
-    }
-}
-</code></pre>
-<p>How It Works</p>
-<ul>
-<li>Creates a new list_element for each node in the original list.</li>
-<li>Does NOT reuse pointers from the old list.</li>
-<li>Ensures the new object is an independent copy.
-What Happens If We Didn’t Do This?</li>
-</ul>
-<pre><code class="language-cpp">list c = a;  // Calls copy constructor
-</code></pre>
-<ul>
-<li>Without a deep copy, c would just reuse a's pointers.</li>
-<li>Modifying c would modify a, which is unintended behavior.</li>
-<li>Deleting c would leave a with dangling pointers, causing undefined behavior.</li>
-</ul>
-<h3 id="other-methods"><a class="header" href="#other-methods">Other Methods</a></h3>
-<ul>
-<li><strong>Prepend (Insert at Front)</strong></li>
-</ul>
-<pre><code class="language-cpp">void list::prepend(int n) {
-    if (head == nullptr)  // Empty list case
-        cursor = head = new list_element(n, head);
-    else    // Add new element at the front
-        head = new list_element(n, head);
-}
-</code></pre>
-<ul>
-<li>
-<p>Creates a new list_element and links it to the front of the list.</p>
-</li>
-<li>
-<p>If the list is empty, initializes cursor.</p>
-</li>
-<li>
-<p><strong>Print the List</strong></p>
-</li>
-</ul>
-<pre><code class="language-cpp">void list::print() {
-    list_element* h = head;
-    while (h != nullptr) {
-        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
-        h = h-&gt;next;
-    }
-    cout &lt;&lt; "###" &lt;&lt; endl;
-}
-</code></pre>
-<ul>
-<li>
-<p>Iterates over the list and prints each value.</p>
-</li>
-<li>
-<p>Stops when nullptr is reached.</p>
-</li>
-<li>
-<p><strong>The main() Function</strong></p>
-</li>
-</ul>
-<pre><code class="language-cpp">int main() {
-    list a, b;
-    a.prepend(9); a.prepend(8);
-    cout &lt;&lt; "list a" &lt;&lt; endl;
-    a.print();
-
-    // Use the copy constructor
-    list c = a;
-    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
-    c.print();
-
-    for (int i = 0; i &lt; 40; ++i)
-        b.prepend(i * i);
-    cout &lt;&lt; "list b" &lt;&lt; endl;
-    b.print();
-
-    return 0;
-}
-</code></pre>
-<ul>
-<li>Creates multiple lists (a, b, c).</li>
-<li>Copies a into c using the deep copy constructor.</li>
-<li>Adds elements to b and prints everything.</li>
-</ul>
-<h3 id="expected-output"><a class="header" href="#expected-output">Expected Output</a></h3>
-<pre><code class="language-cpp">list a
-8, 9, ###
-list c (copy of a)
-8, 9, ###
-list b
-1521, 1444, 1369, ..., 0, ###
-</code></pre>
-<p>Why is list c identical to list a?</p>
-<ul>
-<li>Because it was deep copied, not shallow copied.</li>
-<li>Modifying c will not affect a, proving that they are independent lists.</li>
-</ul>
-<p>C++ Rule of Three (or Five)</p>
-<p>If a class manages dynamic memory, you MUST define these manually:</p>
-<ul>
-<li>Copy Constructor (list(const list&amp;))</li>
-<li>Copy Assignment Operator (operator=)</li>
-<li>Destructor (~list())</li>
-<li>(Optional) Move Constructor (list(list&amp;&amp;))</li>
-<li>(Optional) Move Assignment Operator (operator=(list&amp;&amp;))</li>
-</ul>
-<p>Without these, you get shallow copies, which can lead to:</p>
-<ul>
-<li>Memory leaks</li>
-<li>Double deletion errors</li>
-<li>Undefined behavior</li>
-</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="converting-a-c-program-to-a-c-class"><a class="header" href="#converting-a-c-program-to-a-c-class">Converting a C program to a C++ class</a></h1>
 <p>Those two programs do the same thing. It is useful to know how to convert programs between each other.</p>
 <h3 id="c-program"><a class="header" href="#c-program">C program</a></h3>
@@ -6974,6 +6314,199 @@ int main() {
 }
 
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="operator-overloading"><a class="header" href="#operator-overloading">Operator Overloading</a></h1>
+<p>This program introduces parameterized constructors and expands on operator overloading. In this case we allow <code>&lt;&lt;</code> to be used to print stuff out.</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class Point {
+private:
+    double x, y;
+
+public:
+    // Default constructor
+    Point() : x(0.0), y(0.0) {}
+
+    // Parameterized constructor
+    Point(double xVal, double yVal) : x(xVal), y(yVal) {}
+
+    // Getter for x
+    double getX() const {
+        return x;
+    }
+
+    // Setter for x
+    void setX(double v) {
+        x = v;
+    }
+
+    // Getter for y
+    double getY() const {
+        return y;
+    }
+
+    // Setter for y
+    void setY(double v) {
+        y = v;
+    }
+
+    // Overload the + operator
+    Point operator+ (const Point&amp; p) const {
+        return Point(x + p.x, y + p.y);
+    }
+
+    // Overload the &lt;&lt; operator for output
+    friend ostream&amp; operator &lt;&lt; (ostream&amp; out, const Point&amp; p) {
+        out &lt;&lt; "(" &lt;&lt; p.x &lt;&lt; ", " &lt;&lt; p.y &lt;&lt; ")";
+        return out;
+    }
+};
+
+int main() {
+    Point a(3.5, 2.5), b(2.5, 4.5), c;
+    cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; " b = " &lt;&lt; b &lt;&lt; endl;
+    c = a + b;
+    cout &lt;&lt; "sum = " &lt;&lt; c &lt;&lt; endl;
+    return 0;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="deep-copy-constructor"><a class="header" href="#deep-copy-constructor">Deep Copy Constructor</a></h1>
+<p>C++ has a doubly linked list in the std library, but you should know how they are implemented under the hood.</p>
+<h3 id="why-do-we-need-a-deep-copy-constructor"><a class="header" href="#why-do-we-need-a-deep-copy-constructor">Why Do We Need a Deep Copy Constructor?</a></h3>
+<p>By default, when you copy an object in C++, the compiler performs a shallow copy, meaning:</p>
+<ul>
+<li>It copies the memory addresses instead of duplicating the data itself.</li>
+<li>If the copied object modifies the data, the original object also changes because they share the same memory.</li>
+<li>When one object is destroyed, the other might point to an invalid memory location (dangling pointers).</li>
+</ul>
+<p>To avoid this nightmare, we manually implement a deep copy constructor. This ensures:</p>
+<ul>
+<li>Each object gets its own separate copy of the data.</li>
+<li>Deleting one object doesn’t affect the others.</li>
+<li>No accidental shared memory corruption.</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class list_element {
+public:
+    int d;
+    list_element* next;
+
+    list_element(int n = 0, list_element* ptr = nullptr) : d(n), next(ptr) {}
+};
+
+class list {
+public:
+    list() : head(nullptr), cursor(nullptr) {}
+    ~list();  // Destructor to free memory
+    list(const list&amp; lst);  // Copy constructor
+
+    void prepend(int n);    // Insert at front value n
+    int get_element() { return cursor-&gt;d; }
+    void advanced() { cursor = cursor-&gt;next; }
+    void print();
+
+private:
+    list_element* head;
+    list_element* cursor;
+};
+
+// Destructor implementation
+list::~list() {
+    while (head != nullptr) {
+        list_element* temp = head;
+        head = head-&gt;next;
+        delete temp;
+    }
+}
+
+// Deep copy constructor
+list::list(const list&amp; lst) {
+    if (lst.head == nullptr) {
+        head = nullptr;
+        cursor = nullptr;
+    } else {
+        cursor = lst.head;
+        list_element* h = new list_element(cursor-&gt;d);
+        list_element* previous = h;
+        head = h;
+        cursor = cursor-&gt;next;
+
+        while (cursor != nullptr) {
+            h = new list_element(cursor-&gt;d);
+            previous-&gt;next = h;
+            previous = h;
+            cursor = cursor-&gt;next;
+        }
+
+        cursor = head;
+    }
+}
+
+void list::prepend(int n) {
+    if (head == nullptr)  // empty list case
+        cursor = head = new list_element(n, head);
+    else    // add to front-chain
+        head = new list_element(n, head);
+}
+
+void list::print() {
+    list_element* h = head;
+    while (h != nullptr) {
+        cout &lt;&lt; h-&gt;d &lt;&lt; ", ";
+        h = h-&gt;next;
+    }
+    cout &lt;&lt; "###" &lt;&lt; endl;
+}
+
+int main() {
+    list a, b;
+    a.prepend(9); a.prepend(8);
+    cout &lt;&lt; "list a" &lt;&lt; endl;
+    a.print();
+
+    // Use the copy constructor
+    list c = a;
+    cout &lt;&lt; "list c (copy of a)" &lt;&lt; endl;
+    c.print();
+
+    for (int i = 0; i &lt; 40; ++i)
+        b.prepend(i * i);
+    cout &lt;&lt; "list b" &lt;&lt; endl;
+    b.print();
+
+    return 0;
+}
+</code></pre>
+<h3 id="expected-output"><a class="header" href="#expected-output">Expected Output</a></h3>
+<pre><code class="language-cpp">list a
+8, 9, ###
+list c (copy of a)
+8, 9, ###
+list b
+1521, 1444, 1369, ..., 0, ###
+</code></pre>
+<p>Why is list c identical to list a?</p>
+<ul>
+<li>Because it was deep copied, not shallow copied.</li>
+<li>Modifying c will not affect a, proving that they are independent lists.</li>
+</ul>
+<h2 id="c-rule-of-three-or-five"><a class="header" href="#c-rule-of-three-or-five">C++ Rule of Three (or Five)</a></h2>
+<p>If a class manages dynamic memory, you MUST define these manually:</p>
+<ul>
+<li>Copy Constructor (list(const list&amp;))</li>
+<li>Copy Assignment Operator (operator=)</li>
+<li>Destructor (~list())</li>
+<li>(Optional) Move Constructor (list(list&amp;&amp;))</li>
+<li>(Optional) Move Assignment Operator (operator=(list&amp;&amp;))</li>
+</ul>
+<p>Without these, you get shallow copies, which can lead to:</p>
+<ul>
+<li>Memory leaks</li>
+<li>Double deletion errors</li>
+<li>Undefined behavior</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="templates"><a class="header" href="#templates">Templates</a></h1>
 <p>Templates in C++ are a nice feature that will prevent you from writing the exact same function for different data types. You define a generic <code>T</code> type and you can reuse the same function for <code>int</code>, <code>double</code> and <code>float</code>, even <code>char</code> without copy pasting!</p>
 <pre><code class="language-cpp">
@@ -12300,7 +11833,9 @@ While not used here, Go excels at concurrent computation—useful for parallel p
 <li><strong>Readability:</strong><br />
 Easier for teams to understand and maintain compared to lower-level languages.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="haskell"><a class="header" href="#haskell">Haskell</a></h1>
+<p>It's actually not so difficult, and the patterns are very satisfying to read and write.</p>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
 <h3 id="introduction-to-haskell"><a class="header" href="#introduction-to-haskell">Introduction to Haskell</a></h3>
 <p>Haskell is a pure functional programming language.</p>
 <p>There are no:</p>
@@ -16918,12 +16453,64 @@ for key, group in person_group:
 some text
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="functools"><a class="header" href="#functools">Functools</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
-<p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
-<p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
-<p>Ruby projects are also <strong>ridiculously easy to deploy</strong>, making it perfect for <strong>my DevOps journey</strong>—because what’s the point of studying infrastructure if I’m not constantly deploying things?</p>
-<p>Coming from my C studies, Ruby feels like a different world—<strong>full of abstractions, letting you get away with absurdly concise one-liners.</strong> Debugging is a <strong>breeze</strong>, and for scripting and automation, it offers an interesting alternative to Python.</p>
-<p>I had <strong>zero prior experience</strong> when I first picked it up, but that didn’t stop me from shipping projects with it. In this section of the grimoire, <strong>we’ll be discovering Ruby’s true power together</strong>—because it turns out, this language has more depth than it first appears.</p>
+<p>It's an interesting assortment of utilities that alters functions or methods in some way.</p>
+<h2 id="functoolscache"><a class="header" href="#functoolscache"><code>functools.cache</code></a></h2>
+<p>This has a memorizing power, that's why it's so good. It basically keeps some data allowing quicker lookup.</p>
+<pre><code class="language-python">
+from functools import cache
+
+
+@cache
+def factorial(n):
+    return n * factorial(n - 1) if n else 1
+
+
+print(factorial(10))
+# 3628800 
+# new lookups: recursive calls.
+
+print(factorial(5))
+# 120 just looks up cached value result
+
+print(factorial(12))
+# 479001600 makes some new recursive call, and add new cached value result
+
+# Crashes on those edge cases
+# print(-5)
+# print(1.5)
+
+</code></pre>
+<h2 id="functoolscached_property"><a class="header" href="#functoolscached_property"><code>functools.cached_property</code></a></h2>
+<p>This would be much slower if evaluated without cache. With this simple change, you can dramatically impact performance for expensive operations.</p>
+<p>This computes once, stashes it and then reuses it.</p>
+<pre><code class="language-python">
+from functools import cached_property
+
+
+class DataSet:
+    def __init__(self, sequence_of_numbers):
+        self._data = sequence_of_numbers
+
+    @cached_property
+    def sum(self):
+        return (sum(self._data))
+
+
+ds = DataSet([1, 2, 3, 4, 5])
+print(ds.sum)   # computes statistics.stdev once
+print(ds.sum)   # instant lookup, no recomputation. It won't reevaluate.
+
+
+del ds.sum
+
+ds._data.append(7)  # needs manual deletion to recalculate
+print(ds.sum)
+
+</code></pre>
+<p>Example projects where you could use this: simple calculator, database connection and file processing.</p>
+<h2 id="lru_cache"><a class="header" href="#lru_cache"><code>lru_cache</code></a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ruby"><a class="header" href="#ruby">Ruby</a></h1>
+<p>Very nice, very well designed. In a parallel reality this has taken the place of Python as THE general purpose scripting language. But in this one, it's a guilty pleasure language that I'll continue indulging into.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-cheat-sheet-"><a class="header" href="#ruby-cheat-sheet-">Ruby Cheat Sheet 💎</a></h1>
 <h2 id="1-syntax-and-data-types"><a class="header" href="#1-syntax-and-data-types">1. Syntax and Data Types</a></h2>
 <p>Ruby is elegant and readable, but its syntax can be weird if you're coming from C, C++, or Python.</p>
