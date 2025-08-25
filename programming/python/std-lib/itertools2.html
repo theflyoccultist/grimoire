@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Python Repository Setup - Debugging Grimoire</title>
+        <title>Itertools pt.2 - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,134 +175,179 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="python-repository-setup"><a class="header" href="#python-repository-setup">Python Repository Setup</a></h1>
-<p>A clean professional setup for Python projects in Public Repositories. This ensures consistency, code quality, and trust when others contribute.</p>
-<h4 id="1-project-structure"><a class="header" href="#1-project-structure">1. Project Structure</a></h4>
-<pre><code>
-my_project/
-│
-├── src/                # main code lives here (best practice)
-│   └── my_project/
-│       ├── __init__.py
-│       └── core.py
-│
-├── tests/              # pytest discovers tests automatically
-│   └── test_core.py
-│
-├── pyproject.toml      # dependencies &amp; tooling config
-├── README.md           # project overview
-├── LICENSE             # always add one
-└── .gitignore
+                        <h1 id="itertools-2"><a class="header" href="#itertools-2">Itertools 2</a></h1>
+<h2 id="starmap"><a class="header" href="#starmap"><code>starmap</code></a></h2>
+<p>Very similar to <code>map()</code></p>
+<pre><code class="language-python">squares = itertools.starmap(pow, [(0, 2), (1, 2), (2, 2)])
+
+print(list(squares))
+
+# [0, 1, 4]
+</code></pre>
+<h2 id="combinations"><a class="header" href="#combinations"><code>combinations</code></a></h2>
+<p>Order does not matter in this combination. If one is needed, see <code>permutations</code>.</p>
+<pre><code class="language-python">import itertools
+
+
+letters = ['a', 'b', 'c', 'd']
+
+result = itertools.combinations(letters, 2)
+
+for item in result:
+    print(item)
+
+# ('a', 'b')
+# ('a', 'c')
+# ('a', 'd')
+# ('b', 'c')
+# ('b', 'd')
+# ('c', 'd')
 
 </code></pre>
-<h4 id="2-typing-add-type-hints-everywhere-example"><a class="header" href="#2-typing-add-type-hints-everywhere-example">2. Typing: add type hints everywhere. Example:</a></h4>
+<h2 id="permutation"><a class="header" href="#permutation"><code>permutation</code></a></h2>
+<pre><code class="language-python">import itertools
+
+
+letters = ['a', 'b', 'c', 'd']
+
+result = itertools.product(numbers, 2)
+
+for item in result:
+    print(item)
+
+# ('a', 'b')
+# ('a', 'c')
+# ('a', 'd')
+# ('b', 'a')
+# ('b', 'c')
+# ('b', 'd')
+# ('c', 'a')
+# ('c', 'b')
+# ('c', 'd')
+# ('d', 'a')
+# ('d', 'b')
+# ('d', 'c')
+</code></pre>
+<p>This generates all possible values in order. To use with precaution. Good in capable hands.</p>
+<p>You could for example use it in a password breaker. Here's an example with four number digits:</p>
+<pre><code class="language-python">import itertools
+
+numbers = [0, 1, 2, 3]
+
+result = itertools.product(numbers, repeat=4)
+
+for item in result:
+    print(item)
+
+</code></pre>
+<p>A C++ implementation of the same example, made just to jumpscare the casual python programmers:</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+void product(const std::string &amp;elems, int repeat, std::string &amp;current) {
+  if (current.size() == repeat) {
+    std::cout &lt;&lt; current &lt;&lt; "\n";
+    return;
+  }
+
+  for (auto c : elems) {
+    current.push_back(c);
+    product(elems, repeat, current);
+    current.pop_back();
+  }
+}
+
+int main() {
+  std::string elems = "0123";
+  int repeat = 4;
+  std::string current;
+
+  product(elems, repeat, current);
+}
+
+</code></pre>
+<p><code>combinations_with_replacement</code> makes for a pleasant pattern. Go check it out!</p>
+<pre><code class="language-python">import itertools
+
+numbers = [0, 1, 2, 3]
+
+result = itertools.combinations_with_replacement(numbers, 4)
+
+for item in result:
+    print(item)
+
+# (0, 0, 0, 0)
+# (0, 0, 0, 1)
+# (0, 0, 0, 2)
+# (0, 0, 0, 3)
+# (0, 0, 1, 1)
+# (0, 0, 1, 2)
+# (0, 0, 1, 3)
+# (0, 0, 2, 2)
+# (0, 0, 2, 3)
+# (0, 0, 3, 3)
+# (0, 1, 1, 1)
+# (0, 1, 1, 2)
+# (0, 1, 1, 3)
+# (0, 1, 2, 2)
+# (0, 1, 2, 3)
+# (0, 1, 3, 3)
+# (0, 2, 2, 2)
+# (0, 2, 2, 3)
+# (0, 2, 3, 3)
+# (0, 3, 3, 3)
+# (1, 1, 1, 1)
+# (1, 1, 1, 2)
+# (1, 1, 1, 3)
+# (1, 1, 2, 2)
+# (1, 1, 2, 3)
+# (1, 1, 3, 3)
+# (1, 2, 2, 2)
+# (1, 2, 2, 3)
+# (1, 2, 3, 3)
+# (1, 3, 3, 3)
+# (2, 2, 2, 2)
+# (2, 2, 2, 3)
+# (2, 2, 3, 3)
+# (2, 3, 3, 3)
+# (3, 3, 3, 3)
+
+</code></pre>
+<p>Those have great use cases, but can unfortunately be pretty slow. Here is something that can be more efficient:</p>
+<h2 id="chain"><a class="header" href="#chain"><code>chain</code></a></h2>
 <pre><code class="language-python">
-def divide(dividend: float, divisor: float) -&gt; float:
-    return dividend / divisor
+import itertools
 
+letters = ['a', 'b', 'c', 'd']
+numbers = [0, 1, 2, 3]
+names = ['Corey', 'Nicole']
+
+combined = itertools.chain(letters, numbers, names)
+
+for item in combined:
+    print(item)
+
+# a
+# b
+# c
+# d
+# 0
+# 1
+# 2
+# 3
+# Corey
+# Nicole
 </code></pre>
-<p>This makes mypy much more useful.</p>
-<h4 id="3-formatting-and-imports"><a class="header" href="#3-formatting-and-imports">3. Formatting and imports</a></h4>
-<ul>
-<li>Black (auto-format, no arguments).</li>
-<li>Imports: isort (keeps imports clean, alphabetized).</li>
-</ul>
-<p>Instead of fighting about tabs vs spaces, let Black be the dictator.</p>
-<p>Run manually, or automate via pre commit hooks:</p>
-<pre><code class="language-bash">uv run black src tests
-uv run isort src tests
-</code></pre>
-<h4 id="4-linting--static-checks"><a class="header" href="#4-linting--static-checks">4. Linting &amp; static checks</a></h4>
-<ul>
-<li>ruff: modern, super fast, replaces flake8 + isort + pydocstyle in one tool.</li>
-<li>mypy: static type checking.</li>
-</ul>
-<pre><code class="language-bash">uv run ruff check .
-uv run mypy src
-</code></pre>
-<h4 id="5-testing"><a class="header" href="#5-testing">5. Testing</a></h4>
-<p>Use pytest for simplicity:</p>
-<pre><code class="language-bash">uv run python -m pytest
-</code></pre>
-<h4 id="6-dependencies-in-pyprojecttoml"><a class="header" href="#6-dependencies-in-pyprojecttoml">6. Dependencies in <code>pyproject.toml</code></a></h4>
-<p>Example config for UV. Except for the <code>[project]</code> section, you don't really have to edit it manually as the <code>uv/poetry add</code> command edits the dependencies automatically.</p>
-<pre><code class="language-toml">[project]
-name = "rss-feed-parser"
-version = "0.1.0"
-description = "A tiny RSS parser with HTML templates."
-authors = ["Your Name &lt;you@example.com&gt;"]
-
-license = {text = "MIT"}
-readme = "README.md"
-requires-python = "&gt;=3.13"
-dependencies = [
-    "flask (&gt;=3.1.0,&lt;4.0.0)",
-    "jinja2 (&gt;=3.1.6,&lt;4.0.0)",
-    "feedparser (&gt;=6.0.11,&lt;7.0.0)",
-    "flask-limiter (&gt;=3.12,&lt;4.0)",
-    "gunicorn (&gt;=23.0.0,&lt;24.0.0)"
-]
-
-[dependency-groups]
-dev = [
-    "black&gt;=25.1.0",
-    "isort&gt;=6.0.1",
-    "mypy&gt;=1.17.1",
-    "pytest&gt;=8.4.1",
-    "ruff&gt;=0.12.9",
-]
-
-</code></pre>
-<h4 id="7-github-actions-cicd"><a class="header" href="#7-github-actions-cicd">7. GitHub Actions (CI/CD)</a></h4>
-<p>Add <code>.github/workflows/ci.yml</code></p>
-<pre><code class="language-yaml">
-name: CI
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install uv
-        run: pip install uv
-
-      - name: Sync dependencies
-        run: uv sync --all-extras --dev
-
-      - name: Run formatters
-        run: uv run black --check src tests &amp;&amp; uv run isort --check-only src tests
-
-      - name: Run linter
-        run: uv run ruff check .
-
-      - name: Type check
-        run: uv run mypy src
-
-      - name: Run tests
-        run: uv run python -m pytest
-
-</code></pre>
-<p>With this workflow, you can ensure every pull PR is formatted, linted, type-checked and tested.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/pyprojects/uv.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/std-lib/itertools.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/python/std-lib/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/std-lib/itertools3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -312,11 +357,11 @@ jobs:
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/pyprojects/uv.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/std-lib/itertools.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/python/std-lib/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/std-lib/itertools3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

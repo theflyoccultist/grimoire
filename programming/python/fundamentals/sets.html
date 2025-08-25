@@ -176,7 +176,396 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="sets"><a class="header" href="#sets">Sets</a></h1>
-<p>(Work in progress)</p>
+<p>A <code>set</code> is a mutable and unordered collection of hashable objects. Set members must be distinct — duplicate items are not allowed. They can hold multiple different data types and even nested structures like a tuple of tuples — as long as all elements can be hashed. Sets also come in an immutable <code>frozensets</code> flavor.</p>
+<p>Sets are most commonly used to quickly remove duplicates from other data structures or item groupings. They are also used for efficient comparisons when sequencing and duplicate tracking are not needed.</p>
+<p>Like other collection types (dictionaries, lists, tuples), sets support:</p>
+<ul>
+<li>Iteration via <code>for item in &lt;set&gt;</code></li>
+<li>Membership checking via <code>in</code> and <code>not in</code>,</li>
+<li>Length calculation through <code>len()</code>, and</li>
+<li>Shallow copies through <code>copy()</code></li>
+</ul>
+<p><code>sets</code> do not support:</p>
+<ul>
+<li>Indexing of any kind</li>
+<li>Ordering via sorting or insertion</li>
+<li>Slicing</li>
+<li>Concatenation via +</li>
+</ul>
+<p>Checking membership in a <code>set</code> has constant time complexity (on average) versus checking membership in a <code>list</code> or <code>string</code>, where the time complexity grows as the length of the data increases. Methods such as <code>&lt;set&gt;.union()</code>, <code>&lt;set&gt;.intersection()</code>, or <code>&lt;set&gt;.difference()</code> also have constant time complexity (on average).</p>
+<h2 id="set-construction"><a class="header" href="#set-construction">Set Construction</a></h2>
+<p>While sets can be created in many different ways, the most straightforward construction methods are declaring a set literal, using the <code>set</code> class constructor (<code>set()</code>), and using a set comprehension.</p>
+<h4 id="set-literals"><a class="header" href="#set-literals">Set Literals</a></h4>
+<p>A set can be directly entered as a set literal with curly {} brackets and commas between elements. Duplicates are silently omitted:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; one_element = {'😀'}
+{'😀'}
+
+&gt;&gt;&gt; multiple_elements = {'😀', '😃', '😄', '😁'}
+{'😀', '😃', '😄', '😁'}
+
+&gt;&gt;&gt; multiple_duplicates =  {'Hello!', 'Hello!', 'Hello!', 
+                            '¡Hola!','Привіт!', 'こんにちは！', 
+                            '¡Hola!','Привіт!', 'こんにちは！'}
+{'こんにちは！', '¡Hola!', 'Hello!', 'Привіт!'}
+</code></pre>
+<p>Set literals use the same curly braces as <code>dict</code> literals, which means you need to use <code>set()</code> to create an empty <code>set</code>.</p>
+<h4 id="the-set-constructor"><a class="header" href="#the-set-constructor">The Set Constructor</a></h4>
+<p><code>set()</code> (the constructor for the <code>set</code> class) can be used with any <code>iterable</code> passed as an argument. Elements of the <code>iterable</code> are cycled through and added to the <code>set</code> individually. Element order is not preserved and duplicates are silently omitted:</p>
+<pre><code class="language-python">
+# To create an empty set, the constructor must be used.
+&gt;&gt;&gt; no_elements = set()
+set()
+
+# The tuple is unpacked &amp; each element is added.  
+# Duplicates are removed.
+&gt;&gt;&gt; elements_from_tuple = set(("Parrot", "Bird", 
+                               334782, "Bird", "Parrot"))
+{334782, 'Bird', 'Parrot'}
+
+# The list is unpacked &amp; each element is added.
+# Duplicates are removed.
+&gt;&gt;&gt; elements_from_list = set([2, 3, 2, 3, 3, 3, 5, 
+                              7, 11, 7, 11, 13, 13])
+{2, 3, 5, 7, 11, 13}
+</code></pre>
+<h4 id="set-comprehensions"><a class="header" href="#set-comprehensions">Set Comprehensions</a></h4>
+<p>Like <code>lists</code> and <code>dicts</code>, sets can be created via comprehension:</p>
+<pre><code class="language-python">
+# First, a list with duplicates
+&gt;&gt;&gt; numbers = [1,2,3,4,5,6,6,5,4,8,9,9,9,2,3,12,18]
+
+# This set comprehension squares the numbers divisible by 3
+# Duplicates are removed.
+&gt;&gt;&gt; calculated = {item**2 for item in numbers if item % 3 == 0}
+{9, 36, 81, 144, 324}
+</code></pre>
+<h4 id="gotchas-when-creating-sets"><a class="header" href="#gotchas-when-creating-sets">Gotchas when Creating Sets</a></h4>
+<p>Due to its "unpacking" behavior, using the <code>set</code> constructor with a string might be surprising:</p>
+<pre><code class="language-python">
+# String elements (Unicode code points) are 
+# iterated through and added *individually*.
+&gt;&gt;&gt; elements_string = set("Timbuktu")
+{'T', 'b', 'i', 'k', 'm', 't', 'u'}
+
+# Unicode separators and positioning code points 
+# are also added *individually*.
+&gt;&gt;&gt; multiple_code_points_string = set('अभ्यास')
+{'अ', 'भ', 'य', 'स', 'ा', '्'}
+</code></pre>
+<p>Remember: sets can hold different datatypes and nested datatypes, but all set elements must be hashable:</p>
+<pre><code class="language-python">
+# Attempting to use a list for a set member throws a TypeError
+&gt;&gt;&gt; lists_as_elements = {['😅','🤣'], 
+                        ['😂','🙂','🙃'], 
+                        ['😜', '🤪', '😝']}
+
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'list'
+
+
+# Standard sets are mutable, so they cannot be hashed.
+&gt;&gt;&gt; sets_as_elements = {{'😅','🤣'}, 
+                        {'😂','🙂','🙃'}, 
+                        {'😜', '🤪', '😝'}}
+
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'set'
+</code></pre>
+<p>However, a set of sets can be created via type <code>frozenset()</code>:</p>
+<pre><code class="language-python">
+# Frozensets don't have a literal form.
+&gt;&gt;&gt; set_1 = frozenset({'😜', '😝', '🤪'})
+&gt;&gt;&gt; set_2 = frozenset({'😅', '🤣'})
+&gt;&gt;&gt; set_3 = frozenset({'😂', '🙂', '🙃'})
+
+&gt;&gt;&gt; frozen_sets_as_elements = {set_1, set_2, set_3}
+&gt;&gt;&gt; frozen_sets_as_elements
+{frozenset({'😜', '😝', '🤪'}), frozenset({'😅', '🤣'}), 
+frozenset({'😂', '🙂', '🙃'})}
+</code></pre>
+<h2 id="adding-and-removing-set-members"><a class="header" href="#adding-and-removing-set-members">Adding and Removing Set Members</a></h2>
+<p>Elements can be added or removed from a <code>set</code> using the methods <code>&lt;set&gt;.add(&lt;item&gt;)</code> and <code>&lt;set&gt;.remove(&lt;item&gt;)</code>. The <code>.remove(&lt;item&gt;)</code> method will raise a <code>KeyError</code> if the item is not present in the <code>set</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; creatures = {'crow', 'duck', 'fish', 'monkey', 'elephant'}
+&gt;&gt;&gt; creatures.add('beaver')
+&gt;&gt;&gt; creatures.remove('duck')
+&gt;&gt;&gt; creatures
+{'beaver', 'crow', 'elephant', 'fish', 'monkey'}
+
+# Trying to remove an item that is not present raises a KeyError
+&gt;&gt;&gt; creatures.remove('bear')
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  KeyError: 'bear'
+</code></pre>
+<h4 id="additional-strategies-for-removing-set-members"><a class="header" href="#additional-strategies-for-removing-set-members">Additional Strategies for Removing Set Members</a></h4>
+<ul>
+<li><code>&lt;set&gt;.discard(&lt;item&gt;)</code> will remove an item from the set, but will not raise a <code>KeyError</code> if the item is not present.</li>
+<li><code>&lt;set&gt;.clear()</code> will remove all items from the set.</li>
+<li><code>&lt;set&gt;.pop()</code> will remove and return an arbitrary item, and raises a <code>KeyError</code> if the set is empty.</li>
+</ul>
+<h2 id="set-operations"><a class="header" href="#set-operations">Set Operations</a></h2>
+<p>Sets have methods that generally mimic mathematical set operations. Most (not all) of these methods have an operator equivalent. Methods generally take any <code>iterable</code> as an argument, while operators require that both sides of the operation are <code>sets</code> or <code>frozensets</code>.</p>
+<h4 id="membership-testing-between-sets"><a class="header" href="#membership-testing-between-sets">Membership Testing Between Sets</a></h4>
+<p>The <code>&lt;set&gt;.isdisjoint(&lt;other_collection&gt;)</code> method is used to test if a <code>sets</code> elements have any overlap with the elements of another. The method will accept any <code>iterable</code> or set as an argument. It will return <code>True</code> if the two sets have no elements in common, <code>False</code> if elements are shared.</p>
+<pre><code class="language-python">
+# Both mammals and additional_animals are lists.
+&gt;&gt;&gt; mammals = ['squirrel','dog','cat','cow', 'tiger', 'elephant']
+&gt;&gt;&gt; additional_animals = ['pangolin', 'panda', 'parrot', 
+                          'lemur', 'tiger', 'pangolin']
+
+# Animals is a dict.
+&gt;&gt;&gt; animals = {'chicken': 'white',
+               'sparrow': 'grey',
+               'eagle': 'brown and white',
+               'albatross': 'grey and white',
+               'crow': 'black',
+               'elephant': 'grey', 
+               'dog': 'rust',
+               'cow': 'black and white',
+               'tiger': 'orange and black',
+               'cat': 'grey',
+               'squirrel': 'black'}
+               
+# Birds is a set.
+&gt;&gt;&gt; birds = {'crow','sparrow','eagle','chicken', 'albatross'}
+
+# Mammals and birds don't share any elements.
+&gt;&gt;&gt; birds.isdisjoint(mammals)
+True
+
+# There are also no shared elements between 
+# additional_animals and birds.
+&gt;&gt;&gt; birds.isdisjoint(additional_animals)
+True
+
+# Animals and mammals have shared elements.
+# **Note** The first object needs to be a set or converted to a set
+# since .isdisjoint() is a set method.
+&gt;&gt;&gt; set(animals).isdisjoint(mammals)
+False
+</code></pre>
+<h4 id="checking-for-subsets-and-supersets"><a class="header" href="#checking-for-subsets-and-supersets">Checking for Subsets and Supersets</a></h4>
+<p><code>&lt;set&gt;.issubset(&lt;other_collection&gt;)</code> is used to check if every element in <code>&lt;set&gt;</code> is also in <code>&lt;other_collection&gt;</code>. The operator form is <code>&lt;set&gt; &lt;= &lt;other_set&gt;</code>:</p>
+<pre><code class="language-python">
+# Set methods will take any iterable as an argument.
+# All members of birds are also members of animals.
+&gt;&gt;&gt; birds.issubset(animals)
+True
+
+# All members of mammals also appear in animals.
+# **Note** The first object needs to be a set or converted to a set
+# since .issubset() is a set method.
+&gt;&gt;&gt; set(mammals).issubset(animals)
+True
+
+# Both objects need to be sets to use a set operator
+&gt;&gt;&gt; birds &lt;= set(mammals)
+False
+
+# A set is always a loose subset of itself.
+&gt;&gt;&gt; set(additional_animals) &lt;= set(additional_animals)
+True
+</code></pre>
+<p><code>&lt;set&gt;.issuperset(&lt;other_collection&gt;)</code> is the inverse of <code>.issubset()</code>. It is used to check if every element in <code>&lt;other_collection&gt;</code> is also in <code>&lt;set&gt;</code>. The operator form is <code>&lt;set&gt; &gt;= &lt;other_set&gt;</code>:</p>
+<pre><code class="language-python">
+# All members of mammals also appear in animals.
+# **Note** The first object needs to be a set or converted to a set
+# since .issuperset() is a set method.
+&gt;&gt;&gt; set(animals).issuperset(mammals)
+True
+
+# All members of animals do not show up as members of birds.
+&gt;&gt;&gt; birds.issuperset(animals)
+False
+
+# Both objects need to be sets to use a set operator
+&gt;&gt;&gt; birds &gt;= set(mammals)
+False
+
+# A set is always a loose superset of itself.
+&gt;&gt;&gt; set(animals) &gt;= set(animals)
+True
+</code></pre>
+<h4 id="proper-subsets-and-supersets"><a class="header" href="#proper-subsets-and-supersets">'Proper' Subsets and Supersets</a></h4>
+<p><code>&lt;set&gt; &lt; &lt;other_set&gt;</code> and <code>&lt;set&gt; &gt; &lt;other_set&gt;</code> are used to test for proper subsets. A <code>set</code> is a proper subset if (<code>&lt;set&gt; &lt;= &lt;other_set&gt;</code>) AND (<code>&lt;set&gt; != &lt;other_set&gt;</code>) for the <code>&lt;</code> operator.</p>
+<p>A <code>set</code> is a proper superset if (<code>&lt;set&gt; &gt;= &lt;other_set&gt;</code>) AND (<code>&lt;set&gt; != &lt;other_set&gt;</code>) for the <code>&gt;</code> operator. These operators have no method equivalent:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; animal_names = {'albatross','cat','chicken','cow','crow','dog',
+                   'eagle','elephant','sparrow','squirrel','tiger'}
+
+&gt;&gt;&gt; animals_also = {'albatross','cat','chicken','cow','crow','dog',
+                   'eagle','elephant','sparrow','squirrel','tiger'}
+
+&gt;&gt;&gt; mammals = {'squirrel','dog','cat','cow', 'tiger', 'elephant'}
+&gt;&gt;&gt; birds   = {'crow','sparrow','eagle','chicken', 'albatross'}
+
+&gt;&gt;&gt; mammals &lt; animal_names
+True
+
+&gt;&gt;&gt; animal_names &gt; birds
+True
+
+# A set is not a *proper subset* if set == other set.
+&gt;&gt;&gt; animals_also &lt; animal_names
+False
+
+# A set is never a *proper subset* of itself
+&gt;&gt;&gt; animals_also &lt; animals_also
+False
+</code></pre>
+<h4 id="set-unions"><a class="header" href="#set-unions">Set Unions</a></h4>
+<p><code>&lt;set&gt;.union(*&lt;other iterables&gt;)</code> returns a new <code>set</code> with elements from <code>&lt;set&gt;</code> and all <code>&lt;other iterables&gt;</code>. The operator form of this method is <code>&lt;set&gt; | &lt;other set 1&gt; | &lt;other set 2&gt; | ... | &lt;other set n&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perennials = {'Asparagus', 'Broccoli', 'Sweet Potato', 'Kale'}
+&gt;&gt;&gt; annuals = {'Corn', 'Zucchini', 'Sweet Peas', 'Summer Squash'}
+&gt;&gt;&gt; more_perennials = ['Radicchio', 'Rhubarb', 
+                      'Spinach', 'Watercress']
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; perennials.union(more_perennials)
+{'Asparagus','Broccoli','Kale','Radicchio','Rhubarb',
+'Spinach','Sweet Potato','Watercress'}
+
+# Operators require sets.
+&gt;&gt;&gt; set(more_perennials) | perennials
+{'Asparagus',
+ 'Broccoli',
+ 'Kale',
+ 'Radicchio',
+ 'Rhubarb',
+ 'Spinach',
+ 'Sweet Potato',
+ 'Watercress'}
+</code></pre>
+<h4 id="set-differences"><a class="header" href="#set-differences">Set Differences</a></h4>
+<p><code>&lt;set&gt;.difference(*&lt;other iterables&gt;)</code> returns a new set with elements from the original <code>&lt;set&gt;</code> that are not in <code>&lt;others&gt;</code>. The operator version of this method is <code>&lt;set&gt; - &lt;other set 1&gt; - &lt;other set 2&gt; - ...&lt;other set n&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; berries_and_veggies = {'Asparagus', 
+                          'Broccoli', 
+                          'Watercress', 
+                          'Goji Berries', 
+                          'Goose Berries', 
+                          'Ramps', 
+                          'Walking Onions', 
+                          'Blackberries', 
+                          'Strawberries', 
+                          'Rhubarb', 
+                          'Kale', 
+                          'Artichokes', 
+                          'Currants'}
+
+&gt;&gt;&gt; veggies = ('Asparagus', 'Broccoli', 'Watercress', 'Ramps',
+               'Walking Onions', 'Rhubarb', 'Kale', 'Artichokes')
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; berries = berries_and_veggies.difference(veggies)
+{'Blackberries','Currants','Goji Berries',
+ 'Goose Berries', 'Strawberries'}
+
+# Operators require sets.
+&gt;&gt;&gt; berries_and_veggies - berries
+{'Artichokes','Asparagus','Broccoli','Kale',
+'Ramps','Rhubarb','Walking Onions','Watercress'}
+</code></pre>
+<h4 id="set-intersections"><a class="header" href="#set-intersections">Set Intersections</a></h4>
+<p><code>&lt;set&gt;.intersection(*&lt;other iterables&gt;)</code> returns a new <code>set</code> with elements common to the original set and all <code>&lt;others&gt;</code> (in other words, the <code>set</code> where everything intersects). The operator version of this method is <code>&lt;set&gt; &amp; &lt;other set&gt; &amp; &lt;other set 2&gt; &amp; ... &lt;other set n&gt;</code></p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perennials = {'Annatto','Asafetida','Asparagus','Azalea',
+                 'Winter Savory', 'Broccoli','Curry Leaf','Fennel', 
+                 'Kaffir Lime','Kale','Lavender','Mint','Oranges',
+                 'Oregano', 'Tarragon', 'Wild Bergamot'}
+
+&gt;&gt;&gt; annuals = {'Corn', 'Zucchini', 'Sweet Peas', 'Marjoram', 
+              'Summer Squash', 'Okra','Shallots', 'Basil', 
+              'Cilantro', 'Cumin', 'Sunflower', 'Chervil', 
+              'Summer Savory'}
+
+&gt;&gt;&gt; herbs = ['Annatto','Asafetida','Basil','Chervil','Cilantro',
+            'Curry Leaf','Fennel','Kaffir Lime','Lavender',
+            'Marjoram','Mint','Oregano','Summer Savory' 
+            'Tarragon','Wild Bergamot','Wild Celery',
+            'Winter Savory']
+
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; perennial_herbs = perennials.intersection(herbs)
+{'Annatto', 'Asafetida', 'Curry Leaf', 'Fennel', 'Kaffir Lime',
+ 'Lavender', 'Mint', 'Oregano', 'Wild Bergamot','Winter Savory'}
+
+# Operators require both groups be sets.
+&gt;&gt;&gt; annuals &amp; set(herbs)
+ {'Basil', 'Chervil', 'Marjoram', 'Cilantro'}
+</code></pre>
+<h4 id="set-symmetric-differences"><a class="header" href="#set-symmetric-differences">Set Symmetric Differences</a></h4>
+<p><code>&lt;set&gt;.symmetric_difference(&lt;other iterable&gt;)</code> returns a new <code>set</code> that contains elements that are in <code>&lt;set&gt;</code> OR <code>&lt;other&gt;</code>, but not in both. The operator version of this method is <code>&lt;set&gt; ^ &lt;other set&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; plants_1 = {'🌲','🍈','🌵', '🥑','🌴', '🥭'}
+&gt;&gt;&gt; plants_2 = ('🌸','🌴', '🌺', '🌲', '🌻', '🌵')
+
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; fruit_and_flowers = plants_1.symmetric_difference(plants_2)
+&gt;&gt;&gt; fruit_and_flowers
+{'🌸', '🌺', '🍈', '🥑', '🥭','🌻' }
+
+
+# Operators require both groups be sets.
+&gt;&gt;&gt; fruit_and_flowers ^ plants_1
+{'🌲',  '🌸', '🌴', '🌵','🌺', '🌻'}
+
+&gt;&gt;&gt; fruit_and_flowers ^ plants_2
+{ '🥑', '🌴','🌲', '🌵', '🍈', '🥭'}
+</code></pre>
+<h2 id="note"><a class="header" href="#note">Note</a></h2>
+<p>A symmetric difference of more than two sets will result in a <code>set</code> that includes both the elements unique to each <code>set</code> AND elements shared between more than two sets in the series (details in the Wikipedia article on symmetric difference).</p>
+<p>To obtain only items unique to each <code>set</code> in the series, intersections between all 2-set combinations need to be aggregated in a separate step, and removed:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; one = {'black pepper','breadcrumbs','celeriac','chickpea flour',
+           'flour','lemon','parsley','salt','soy sauce',
+           'sunflower oil','water'}
+
+&gt;&gt;&gt; two = {'black pepper','cornstarch','garlic','ginger',
+           'lemon juice','lemon zest','salt','soy sauce','sugar',
+           'tofu','vegetable oil','vegetable stock','water'}
+
+&gt;&gt;&gt; three = {'black pepper','garlic','lemon juice','mixed herbs',
+             'nutritional yeast', 'olive oil','salt','silken tofu',
+             'smoked tofu','soy sauce','spaghetti','turmeric'}
+
+&gt;&gt;&gt; four = {'barley malt','bell pepper','cashews','flour',
+            'fresh basil','garlic','garlic powder', 'honey',
+            'mushrooms','nutritional yeast','olive oil','oregano',
+            'red onion', 'red pepper flakes','rosemary','salt',
+            'sugar','tomatoes','water','yeast'}
+
+&gt;&gt;&gt; intersections = (one &amp; two | one &amp; three | one &amp; four | 
+                     two &amp; three | two &amp; four | three &amp; four)
+...
+{'black pepper','flour','garlic','lemon juice','nutritional yeast', 
+'olive oil','salt','soy sauce', 'sugar','water'}
+
+# The ^ operation will include some of the items in intersections, 
+# which means it is not a "clean" symmetric difference - there
+# are overlapping members.
+&gt;&gt;&gt; (one ^ two ^ three ^ four) &amp; intersections
+{'black pepper', 'garlic', 'soy sauce', 'water'}
+
+# Overlapping members need to be removed in a separate step
+# when there are more than two sets that need symmetric difference.
+&gt;&gt;&gt; (one ^ two ^ three ^ four) - intersections
+...
+{'barley malt','bell pepper','breadcrumbs', 'cashews','celeriac',
+  'chickpea flour','cornstarch','fresh basil', 'garlic powder',
+  'ginger','honey','lemon','lemon zest','mixed herbs','mushrooms',
+  'oregano','parsley','red onion','red pepper flakes','rosemary',
+  'silken tofu','smoked tofu','spaghetti','sunflower oil', 'tofu', 
+  'tomatoes','turmeric','vegetable oil','vegetable stock','yeast'}
+
+</code></pre>
 
                     </main>
 

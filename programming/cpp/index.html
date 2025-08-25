@@ -179,9 +179,10 @@
 <p>Welcome to my C++ notes.</p>
 <ul>
 <li><a href="fundamentals/">Fundamentals</a></li>
-<li><a href="oop/README.html">Object-Oriented Programming</a></li>
-<li><a href="features/">Language Features</a></li>
+<li><a href="oop/">Object-Oriented Programming</a></li>
 <li><a href="algorithms/">Practical Algorithms</a></li>
+<li><a href="features/">Modern C++ features (C++11 and later)</a></li>
+<li><a href="lib_boost/">The Boost Library</a></li>
 </ul>
 <hr />
 <h2 id="setting-up-c-on-linux"><a class="header" href="#setting-up-c-on-linux">Setting Up C++ on Linux</a></h2>
@@ -190,7 +191,7 @@
 sudo apt install build-essential
 </code></pre>
 <p>This installs both the C and C++ compilers (gcc and g++), along with useful build tools like make.</p>
-<p>For debugging and memory checking, install:</p>
+<p>Always recommended! For debugging and memory checking, install:</p>
 <pre><code class="language-sh">sudo apt install gdb valgrind
 </code></pre>
 <h2 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h2>
@@ -234,6 +235,14 @@ cmake ..
 make
 </code></pre>
 <p>CMake also has the advantage of making your project work with any compiler and make cross platform builds, so it's generally a great idea to use it in a project.</p>
+<h2 id="setting-up-clangd-on-its-own-to-try-out-new-c-features"><a class="header" href="#setting-up-clangd-on-its-own-to-try-out-new-c-features">Setting up clangd on its own to try out new C++ features</a></h2>
+<ul>
+<li>There is also a way to let clangd know that you are using the C++26 standard, without having to bundle a whole project with CMake (if you just want to quickly test it without this linter screaming at you).</li>
+</ul>
+<p>To do that, simply create a <code>.clangd</code> file in the directory where you store your C++ "experiments" and add this:</p>
+<pre><code class="language-yaml">CompileFlags:
+  Add: [-std=c++26]
+</code></pre>
 
                     </main>
 

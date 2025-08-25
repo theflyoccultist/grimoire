@@ -175,11 +175,20 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
+                        <h1 id="curl-cheatsheet"><a class="header" href="#curl-cheatsheet">curl cheatsheet</a></h1>
+<h2 id="health-check-of-a-website"><a class="header" href="#health-check-of-a-website">Health check of a website</a></h2>
+<pre><code class="language-bash">curl -sSf http://example.org &gt; /dev/null
+</code></pre>
+<ul>
+<li>If the request was successful, it will return... Nothing. If it's unsuccessful, it will try for a while and then return <code>Could not resolve host: &lt;hostname&gt;</code></li>
+</ul>
+<h2 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h2>
 <pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
 </code></pre>
-<p>1..200: number of requests
-http://localhost:4567: the URL that needs to be tested</p>
+<ul>
+<li>1..200: number of requests</li>
+<li>http://localhost:4567: the URL that needs to be tested</li>
+</ul>
 
                     </main>
 

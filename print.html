@@ -1916,11 +1916,20 @@ Try typing something like:</p>
 </ul>
 <pre><code class="language-sh">grep -E "foo|bar" file.md
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="curl-cheatsheet"><a class="header" href="#curl-cheatsheet">curl cheatsheet</a></h1>
+<h2 id="health-check-of-a-website"><a class="header" href="#health-check-of-a-website">Health check of a website</a></h2>
+<pre><code class="language-bash">curl -sSf http://example.org &gt; /dev/null
+</code></pre>
+<ul>
+<li>If the request was successful, it will return... Nothing. If it's unsuccessful, it will try for a while and then return <code>Could not resolve host: &lt;hostname&gt;</code></li>
+</ul>
+<h2 id="how-to-test-if-your-rate-limiting-works"><a class="header" href="#how-to-test-if-your-rate-limiting-works">How to test if your rate limiting works:</a></h2>
 <pre><code class="language-bash">for i in {1..200}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4567; done
 </code></pre>
-<p>1..200: number of requests
-http://localhost:4567: the URL that needs to be tested</p>
+<ul>
+<li>1..200: number of requests</li>
+<li>http://localhost:4567: the URL that needs to be tested</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><p>Sort of mini projects done in Bash, it is worth adding because despite the language's limitations, you can do quite a lot with it.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="bash-week--fizzbuzz-but-cursed-plingplangplong-edition"><a class="header" href="#bash-week--fizzbuzz-but-cursed-plingplangplong-edition">Bash Week — FizzBuzz but Cursed (PlingPlangPlong Edition)</a></h2>
 <p>This is an advanced FizzBuzz-style exercise, adapted for Bash with <strong>O(1)</strong> performance.
@@ -5353,9 +5362,10 @@ int main() {
 <p>Welcome to my C++ notes.</p>
 <ul>
 <li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
-<li><a href="programming/cpp/oop/README.html">Object-Oriented Programming</a></li>
-<li><a href="programming/cpp/features/">Language Features</a></li>
+<li><a href="programming/cpp/oop/">Object-Oriented Programming</a></li>
 <li><a href="programming/cpp/algorithms/">Practical Algorithms</a></li>
+<li><a href="programming/cpp/features/">Modern C++ features (C++11 and later)</a></li>
+<li><a href="programming/cpp/lib_boost/">The Boost Library</a></li>
 </ul>
 <hr />
 <h2 id="setting-up-c-on-linux"><a class="header" href="#setting-up-c-on-linux">Setting Up C++ on Linux</a></h2>
@@ -5364,7 +5374,7 @@ int main() {
 sudo apt install build-essential
 </code></pre>
 <p>This installs both the C and C++ compilers (gcc and g++), along with useful build tools like make.</p>
-<p>For debugging and memory checking, install:</p>
+<p>Always recommended! For debugging and memory checking, install:</p>
 <pre><code class="language-sh">sudo apt install gdb valgrind
 </code></pre>
 <h2 id="setting-up-language-server-lsp-for-neovim"><a class="header" href="#setting-up-language-server-lsp-for-neovim">Setting Up Language Server (LSP) for Neovim</a></h2>
@@ -5408,6 +5418,14 @@ cmake ..
 make
 </code></pre>
 <p>CMake also has the advantage of making your project work with any compiler and make cross platform builds, so it's generally a great idea to use it in a project.</p>
+<h2 id="setting-up-clangd-on-its-own-to-try-out-new-c-features"><a class="header" href="#setting-up-clangd-on-its-own-to-try-out-new-c-features">Setting up clangd on its own to try out new C++ features</a></h2>
+<ul>
+<li>There is also a way to let clangd know that you are using the C++26 standard, without having to bundle a whole project with CMake (if you just want to quickly test it without this linter screaming at you).</li>
+</ul>
+<p>To do that, simply create a <code>.clangd</code> file in the directory where you store your C++ "experiments" and add this:</p>
+<pre><code class="language-yaml">CompileFlags:
+  Add: [-std=c++26]
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="a-quick-tour-of-the-c-fundamentals-"><a class="header" href="#a-quick-tour-of-the-c-fundamentals-">A quick tour of the C++ fundamentals 💀</a></h1>
 <h2 id="1-variables-data-types--initialization"><a class="header" href="#1-variables-data-types--initialization">1. Variables, Data Types &amp; Initialization</a></h2>
 <p>C++ has multiple ways to declare variables, and some are better than others:</p>
@@ -13273,22 +13291,33 @@ insertIn x ys 1 = x : ys
 insertIn x (y : ys) n = y : insertIn x ys (n - 1)
 
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><p>A full Python refresher.</p>
-<p>To explore for Python Street Cred:</p>
-<pre><code>os, sys, pathlib, subprocess, logging, argparse/click/typer
-paramiko, fabric, psutil, pyyaml/json
-requests, dotenv, venv, black, pytest
+<div style="break-before: page; page-break-before: always;"></div><p>A full Python guide.</p>
+<ul>
+<li><a href="programming/python/fundamentals/">Python Fundamentals</a></li>
+<li><a href="programming/python/pyprojects/">Setting up a Python Project</a></li>
+<li><a href="programming/python/std-lib/">Standard Library Goodies</a></li>
+</ul>
+<p>External Libraries:</p>
+<pre><code>paramiko, fabric, psutil, pyyaml/json, dotenv, pytest
 </code></pre>
-<p>Standard Library:</p>
-<pre><code>itertools, collections, functools, pathlib(again), concurrent.futures, datetime
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><ul>
-<li>Python Fundamentals</li>
-<li>Control Flow</li>
-<li>Functions</li>
-<li>Python OOP</li>
-<li>Advanced</li>
-<li>Error Handling</li>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="python-fundamentals"><a class="header" href="#python-fundamentals">Python fundamentals</a></h2>
+<ul>
+<li><a href="programming/python/fundamentals/user-input.html">User Input</a></li>
+<li><a href="programming/python/fundamentals/lists.html">Lists</a></li>
+<li><a href="programming/python/fundamentals/list-ops.html">List Operations</a></li>
+<li><a href="programming/python/fundamentals/loops.html">Loops</a></li>
+<li><a href="programming/python/fundamentals/tuples.html">Tuples</a></li>
+<li><a href="programming/python/fundamentals/dictionaries.html">Dicts</a></li>
+<li><a href="programming/python/fundamentals/dict-ops.html">Dict Operations</a></li>
+<li><a href="programming/python/fundamentals/sets.html">Sets</a></li>
+<li><a href="programming/python/fundamentals/unpacking.html">Unpacking</a></li>
+<li><a href="programming/python/fundamentals/generators.html">Generators</a></li>
+<li><a href="programming/python/fundamentals/oop.html">OOP</a></li>
+<li><a href="programming/python/fundamentals/imports.html">Imports</a></li>
+<li><a href="programming/python/fundamentals/errors.html">Error Handling</a></li>
+<li><a href="programming/python/fundamentals/function-decorators.html">Function Decorators</a></li>
+<li><a href="programming/python/fundamentals/lambdas.html">Lambdas</a></li>
+<li><a href="programming/python/fundamentals/type-hints.html">Type Hints</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="user-input"><a class="header" href="#user-input">User Input</a></h1>
 <p>In Python, we simply use <code>input()</code> to await for user input in a Python command line application.</p>
@@ -14712,7 +14741,396 @@ color_reference = {'Purple Mountains Majesty': '#8076a3',
 
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sets"><a class="header" href="#sets">Sets</a></h1>
-<p>(Work in progress)</p>
+<p>A <code>set</code> is a mutable and unordered collection of hashable objects. Set members must be distinct — duplicate items are not allowed. They can hold multiple different data types and even nested structures like a tuple of tuples — as long as all elements can be hashed. Sets also come in an immutable <code>frozensets</code> flavor.</p>
+<p>Sets are most commonly used to quickly remove duplicates from other data structures or item groupings. They are also used for efficient comparisons when sequencing and duplicate tracking are not needed.</p>
+<p>Like other collection types (dictionaries, lists, tuples), sets support:</p>
+<ul>
+<li>Iteration via <code>for item in &lt;set&gt;</code></li>
+<li>Membership checking via <code>in</code> and <code>not in</code>,</li>
+<li>Length calculation through <code>len()</code>, and</li>
+<li>Shallow copies through <code>copy()</code></li>
+</ul>
+<p><code>sets</code> do not support:</p>
+<ul>
+<li>Indexing of any kind</li>
+<li>Ordering via sorting or insertion</li>
+<li>Slicing</li>
+<li>Concatenation via +</li>
+</ul>
+<p>Checking membership in a <code>set</code> has constant time complexity (on average) versus checking membership in a <code>list</code> or <code>string</code>, where the time complexity grows as the length of the data increases. Methods such as <code>&lt;set&gt;.union()</code>, <code>&lt;set&gt;.intersection()</code>, or <code>&lt;set&gt;.difference()</code> also have constant time complexity (on average).</p>
+<h2 id="set-construction"><a class="header" href="#set-construction">Set Construction</a></h2>
+<p>While sets can be created in many different ways, the most straightforward construction methods are declaring a set literal, using the <code>set</code> class constructor (<code>set()</code>), and using a set comprehension.</p>
+<h4 id="set-literals"><a class="header" href="#set-literals">Set Literals</a></h4>
+<p>A set can be directly entered as a set literal with curly {} brackets and commas between elements. Duplicates are silently omitted:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; one_element = {'😀'}
+{'😀'}
+
+&gt;&gt;&gt; multiple_elements = {'😀', '😃', '😄', '😁'}
+{'😀', '😃', '😄', '😁'}
+
+&gt;&gt;&gt; multiple_duplicates =  {'Hello!', 'Hello!', 'Hello!', 
+                            '¡Hola!','Привіт!', 'こんにちは！', 
+                            '¡Hola!','Привіт!', 'こんにちは！'}
+{'こんにちは！', '¡Hola!', 'Hello!', 'Привіт!'}
+</code></pre>
+<p>Set literals use the same curly braces as <code>dict</code> literals, which means you need to use <code>set()</code> to create an empty <code>set</code>.</p>
+<h4 id="the-set-constructor"><a class="header" href="#the-set-constructor">The Set Constructor</a></h4>
+<p><code>set()</code> (the constructor for the <code>set</code> class) can be used with any <code>iterable</code> passed as an argument. Elements of the <code>iterable</code> are cycled through and added to the <code>set</code> individually. Element order is not preserved and duplicates are silently omitted:</p>
+<pre><code class="language-python">
+# To create an empty set, the constructor must be used.
+&gt;&gt;&gt; no_elements = set()
+set()
+
+# The tuple is unpacked &amp; each element is added.  
+# Duplicates are removed.
+&gt;&gt;&gt; elements_from_tuple = set(("Parrot", "Bird", 
+                               334782, "Bird", "Parrot"))
+{334782, 'Bird', 'Parrot'}
+
+# The list is unpacked &amp; each element is added.
+# Duplicates are removed.
+&gt;&gt;&gt; elements_from_list = set([2, 3, 2, 3, 3, 3, 5, 
+                              7, 11, 7, 11, 13, 13])
+{2, 3, 5, 7, 11, 13}
+</code></pre>
+<h4 id="set-comprehensions"><a class="header" href="#set-comprehensions">Set Comprehensions</a></h4>
+<p>Like <code>lists</code> and <code>dicts</code>, sets can be created via comprehension:</p>
+<pre><code class="language-python">
+# First, a list with duplicates
+&gt;&gt;&gt; numbers = [1,2,3,4,5,6,6,5,4,8,9,9,9,2,3,12,18]
+
+# This set comprehension squares the numbers divisible by 3
+# Duplicates are removed.
+&gt;&gt;&gt; calculated = {item**2 for item in numbers if item % 3 == 0}
+{9, 36, 81, 144, 324}
+</code></pre>
+<h4 id="gotchas-when-creating-sets"><a class="header" href="#gotchas-when-creating-sets">Gotchas when Creating Sets</a></h4>
+<p>Due to its "unpacking" behavior, using the <code>set</code> constructor with a string might be surprising:</p>
+<pre><code class="language-python">
+# String elements (Unicode code points) are 
+# iterated through and added *individually*.
+&gt;&gt;&gt; elements_string = set("Timbuktu")
+{'T', 'b', 'i', 'k', 'm', 't', 'u'}
+
+# Unicode separators and positioning code points 
+# are also added *individually*.
+&gt;&gt;&gt; multiple_code_points_string = set('अभ्यास')
+{'अ', 'भ', 'य', 'स', 'ा', '्'}
+</code></pre>
+<p>Remember: sets can hold different datatypes and nested datatypes, but all set elements must be hashable:</p>
+<pre><code class="language-python">
+# Attempting to use a list for a set member throws a TypeError
+&gt;&gt;&gt; lists_as_elements = {['😅','🤣'], 
+                        ['😂','🙂','🙃'], 
+                        ['😜', '🤪', '😝']}
+
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'list'
+
+
+# Standard sets are mutable, so they cannot be hashed.
+&gt;&gt;&gt; sets_as_elements = {{'😅','🤣'}, 
+                        {'😂','🙂','🙃'}, 
+                        {'😜', '🤪', '😝'}}
+
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+TypeError: unhashable type: 'set'
+</code></pre>
+<p>However, a set of sets can be created via type <code>frozenset()</code>:</p>
+<pre><code class="language-python">
+# Frozensets don't have a literal form.
+&gt;&gt;&gt; set_1 = frozenset({'😜', '😝', '🤪'})
+&gt;&gt;&gt; set_2 = frozenset({'😅', '🤣'})
+&gt;&gt;&gt; set_3 = frozenset({'😂', '🙂', '🙃'})
+
+&gt;&gt;&gt; frozen_sets_as_elements = {set_1, set_2, set_3}
+&gt;&gt;&gt; frozen_sets_as_elements
+{frozenset({'😜', '😝', '🤪'}), frozenset({'😅', '🤣'}), 
+frozenset({'😂', '🙂', '🙃'})}
+</code></pre>
+<h2 id="adding-and-removing-set-members"><a class="header" href="#adding-and-removing-set-members">Adding and Removing Set Members</a></h2>
+<p>Elements can be added or removed from a <code>set</code> using the methods <code>&lt;set&gt;.add(&lt;item&gt;)</code> and <code>&lt;set&gt;.remove(&lt;item&gt;)</code>. The <code>.remove(&lt;item&gt;)</code> method will raise a <code>KeyError</code> if the item is not present in the <code>set</code>:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; creatures = {'crow', 'duck', 'fish', 'monkey', 'elephant'}
+&gt;&gt;&gt; creatures.add('beaver')
+&gt;&gt;&gt; creatures.remove('duck')
+&gt;&gt;&gt; creatures
+{'beaver', 'crow', 'elephant', 'fish', 'monkey'}
+
+# Trying to remove an item that is not present raises a KeyError
+&gt;&gt;&gt; creatures.remove('bear')
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  KeyError: 'bear'
+</code></pre>
+<h4 id="additional-strategies-for-removing-set-members"><a class="header" href="#additional-strategies-for-removing-set-members">Additional Strategies for Removing Set Members</a></h4>
+<ul>
+<li><code>&lt;set&gt;.discard(&lt;item&gt;)</code> will remove an item from the set, but will not raise a <code>KeyError</code> if the item is not present.</li>
+<li><code>&lt;set&gt;.clear()</code> will remove all items from the set.</li>
+<li><code>&lt;set&gt;.pop()</code> will remove and return an arbitrary item, and raises a <code>KeyError</code> if the set is empty.</li>
+</ul>
+<h2 id="set-operations"><a class="header" href="#set-operations">Set Operations</a></h2>
+<p>Sets have methods that generally mimic mathematical set operations. Most (not all) of these methods have an operator equivalent. Methods generally take any <code>iterable</code> as an argument, while operators require that both sides of the operation are <code>sets</code> or <code>frozensets</code>.</p>
+<h4 id="membership-testing-between-sets"><a class="header" href="#membership-testing-between-sets">Membership Testing Between Sets</a></h4>
+<p>The <code>&lt;set&gt;.isdisjoint(&lt;other_collection&gt;)</code> method is used to test if a <code>sets</code> elements have any overlap with the elements of another. The method will accept any <code>iterable</code> or set as an argument. It will return <code>True</code> if the two sets have no elements in common, <code>False</code> if elements are shared.</p>
+<pre><code class="language-python">
+# Both mammals and additional_animals are lists.
+&gt;&gt;&gt; mammals = ['squirrel','dog','cat','cow', 'tiger', 'elephant']
+&gt;&gt;&gt; additional_animals = ['pangolin', 'panda', 'parrot', 
+                          'lemur', 'tiger', 'pangolin']
+
+# Animals is a dict.
+&gt;&gt;&gt; animals = {'chicken': 'white',
+               'sparrow': 'grey',
+               'eagle': 'brown and white',
+               'albatross': 'grey and white',
+               'crow': 'black',
+               'elephant': 'grey', 
+               'dog': 'rust',
+               'cow': 'black and white',
+               'tiger': 'orange and black',
+               'cat': 'grey',
+               'squirrel': 'black'}
+               
+# Birds is a set.
+&gt;&gt;&gt; birds = {'crow','sparrow','eagle','chicken', 'albatross'}
+
+# Mammals and birds don't share any elements.
+&gt;&gt;&gt; birds.isdisjoint(mammals)
+True
+
+# There are also no shared elements between 
+# additional_animals and birds.
+&gt;&gt;&gt; birds.isdisjoint(additional_animals)
+True
+
+# Animals and mammals have shared elements.
+# **Note** The first object needs to be a set or converted to a set
+# since .isdisjoint() is a set method.
+&gt;&gt;&gt; set(animals).isdisjoint(mammals)
+False
+</code></pre>
+<h4 id="checking-for-subsets-and-supersets"><a class="header" href="#checking-for-subsets-and-supersets">Checking for Subsets and Supersets</a></h4>
+<p><code>&lt;set&gt;.issubset(&lt;other_collection&gt;)</code> is used to check if every element in <code>&lt;set&gt;</code> is also in <code>&lt;other_collection&gt;</code>. The operator form is <code>&lt;set&gt; &lt;= &lt;other_set&gt;</code>:</p>
+<pre><code class="language-python">
+# Set methods will take any iterable as an argument.
+# All members of birds are also members of animals.
+&gt;&gt;&gt; birds.issubset(animals)
+True
+
+# All members of mammals also appear in animals.
+# **Note** The first object needs to be a set or converted to a set
+# since .issubset() is a set method.
+&gt;&gt;&gt; set(mammals).issubset(animals)
+True
+
+# Both objects need to be sets to use a set operator
+&gt;&gt;&gt; birds &lt;= set(mammals)
+False
+
+# A set is always a loose subset of itself.
+&gt;&gt;&gt; set(additional_animals) &lt;= set(additional_animals)
+True
+</code></pre>
+<p><code>&lt;set&gt;.issuperset(&lt;other_collection&gt;)</code> is the inverse of <code>.issubset()</code>. It is used to check if every element in <code>&lt;other_collection&gt;</code> is also in <code>&lt;set&gt;</code>. The operator form is <code>&lt;set&gt; &gt;= &lt;other_set&gt;</code>:</p>
+<pre><code class="language-python">
+# All members of mammals also appear in animals.
+# **Note** The first object needs to be a set or converted to a set
+# since .issuperset() is a set method.
+&gt;&gt;&gt; set(animals).issuperset(mammals)
+True
+
+# All members of animals do not show up as members of birds.
+&gt;&gt;&gt; birds.issuperset(animals)
+False
+
+# Both objects need to be sets to use a set operator
+&gt;&gt;&gt; birds &gt;= set(mammals)
+False
+
+# A set is always a loose superset of itself.
+&gt;&gt;&gt; set(animals) &gt;= set(animals)
+True
+</code></pre>
+<h4 id="proper-subsets-and-supersets"><a class="header" href="#proper-subsets-and-supersets">'Proper' Subsets and Supersets</a></h4>
+<p><code>&lt;set&gt; &lt; &lt;other_set&gt;</code> and <code>&lt;set&gt; &gt; &lt;other_set&gt;</code> are used to test for proper subsets. A <code>set</code> is a proper subset if (<code>&lt;set&gt; &lt;= &lt;other_set&gt;</code>) AND (<code>&lt;set&gt; != &lt;other_set&gt;</code>) for the <code>&lt;</code> operator.</p>
+<p>A <code>set</code> is a proper superset if (<code>&lt;set&gt; &gt;= &lt;other_set&gt;</code>) AND (<code>&lt;set&gt; != &lt;other_set&gt;</code>) for the <code>&gt;</code> operator. These operators have no method equivalent:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; animal_names = {'albatross','cat','chicken','cow','crow','dog',
+                   'eagle','elephant','sparrow','squirrel','tiger'}
+
+&gt;&gt;&gt; animals_also = {'albatross','cat','chicken','cow','crow','dog',
+                   'eagle','elephant','sparrow','squirrel','tiger'}
+
+&gt;&gt;&gt; mammals = {'squirrel','dog','cat','cow', 'tiger', 'elephant'}
+&gt;&gt;&gt; birds   = {'crow','sparrow','eagle','chicken', 'albatross'}
+
+&gt;&gt;&gt; mammals &lt; animal_names
+True
+
+&gt;&gt;&gt; animal_names &gt; birds
+True
+
+# A set is not a *proper subset* if set == other set.
+&gt;&gt;&gt; animals_also &lt; animal_names
+False
+
+# A set is never a *proper subset* of itself
+&gt;&gt;&gt; animals_also &lt; animals_also
+False
+</code></pre>
+<h4 id="set-unions"><a class="header" href="#set-unions">Set Unions</a></h4>
+<p><code>&lt;set&gt;.union(*&lt;other iterables&gt;)</code> returns a new <code>set</code> with elements from <code>&lt;set&gt;</code> and all <code>&lt;other iterables&gt;</code>. The operator form of this method is <code>&lt;set&gt; | &lt;other set 1&gt; | &lt;other set 2&gt; | ... | &lt;other set n&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perennials = {'Asparagus', 'Broccoli', 'Sweet Potato', 'Kale'}
+&gt;&gt;&gt; annuals = {'Corn', 'Zucchini', 'Sweet Peas', 'Summer Squash'}
+&gt;&gt;&gt; more_perennials = ['Radicchio', 'Rhubarb', 
+                      'Spinach', 'Watercress']
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; perennials.union(more_perennials)
+{'Asparagus','Broccoli','Kale','Radicchio','Rhubarb',
+'Spinach','Sweet Potato','Watercress'}
+
+# Operators require sets.
+&gt;&gt;&gt; set(more_perennials) | perennials
+{'Asparagus',
+ 'Broccoli',
+ 'Kale',
+ 'Radicchio',
+ 'Rhubarb',
+ 'Spinach',
+ 'Sweet Potato',
+ 'Watercress'}
+</code></pre>
+<h4 id="set-differences"><a class="header" href="#set-differences">Set Differences</a></h4>
+<p><code>&lt;set&gt;.difference(*&lt;other iterables&gt;)</code> returns a new set with elements from the original <code>&lt;set&gt;</code> that are not in <code>&lt;others&gt;</code>. The operator version of this method is <code>&lt;set&gt; - &lt;other set 1&gt; - &lt;other set 2&gt; - ...&lt;other set n&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; berries_and_veggies = {'Asparagus', 
+                          'Broccoli', 
+                          'Watercress', 
+                          'Goji Berries', 
+                          'Goose Berries', 
+                          'Ramps', 
+                          'Walking Onions', 
+                          'Blackberries', 
+                          'Strawberries', 
+                          'Rhubarb', 
+                          'Kale', 
+                          'Artichokes', 
+                          'Currants'}
+
+&gt;&gt;&gt; veggies = ('Asparagus', 'Broccoli', 'Watercress', 'Ramps',
+               'Walking Onions', 'Rhubarb', 'Kale', 'Artichokes')
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; berries = berries_and_veggies.difference(veggies)
+{'Blackberries','Currants','Goji Berries',
+ 'Goose Berries', 'Strawberries'}
+
+# Operators require sets.
+&gt;&gt;&gt; berries_and_veggies - berries
+{'Artichokes','Asparagus','Broccoli','Kale',
+'Ramps','Rhubarb','Walking Onions','Watercress'}
+</code></pre>
+<h4 id="set-intersections"><a class="header" href="#set-intersections">Set Intersections</a></h4>
+<p><code>&lt;set&gt;.intersection(*&lt;other iterables&gt;)</code> returns a new <code>set</code> with elements common to the original set and all <code>&lt;others&gt;</code> (in other words, the <code>set</code> where everything intersects). The operator version of this method is <code>&lt;set&gt; &amp; &lt;other set&gt; &amp; &lt;other set 2&gt; &amp; ... &lt;other set n&gt;</code></p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perennials = {'Annatto','Asafetida','Asparagus','Azalea',
+                 'Winter Savory', 'Broccoli','Curry Leaf','Fennel', 
+                 'Kaffir Lime','Kale','Lavender','Mint','Oranges',
+                 'Oregano', 'Tarragon', 'Wild Bergamot'}
+
+&gt;&gt;&gt; annuals = {'Corn', 'Zucchini', 'Sweet Peas', 'Marjoram', 
+              'Summer Squash', 'Okra','Shallots', 'Basil', 
+              'Cilantro', 'Cumin', 'Sunflower', 'Chervil', 
+              'Summer Savory'}
+
+&gt;&gt;&gt; herbs = ['Annatto','Asafetida','Basil','Chervil','Cilantro',
+            'Curry Leaf','Fennel','Kaffir Lime','Lavender',
+            'Marjoram','Mint','Oregano','Summer Savory' 
+            'Tarragon','Wild Bergamot','Wild Celery',
+            'Winter Savory']
+
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; perennial_herbs = perennials.intersection(herbs)
+{'Annatto', 'Asafetida', 'Curry Leaf', 'Fennel', 'Kaffir Lime',
+ 'Lavender', 'Mint', 'Oregano', 'Wild Bergamot','Winter Savory'}
+
+# Operators require both groups be sets.
+&gt;&gt;&gt; annuals &amp; set(herbs)
+ {'Basil', 'Chervil', 'Marjoram', 'Cilantro'}
+</code></pre>
+<h4 id="set-symmetric-differences"><a class="header" href="#set-symmetric-differences">Set Symmetric Differences</a></h4>
+<p><code>&lt;set&gt;.symmetric_difference(&lt;other iterable&gt;)</code> returns a new <code>set</code> that contains elements that are in <code>&lt;set&gt;</code> OR <code>&lt;other&gt;</code>, but not in both. The operator version of this method is <code>&lt;set&gt; ^ &lt;other set&gt;</code>.</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; plants_1 = {'🌲','🍈','🌵', '🥑','🌴', '🥭'}
+&gt;&gt;&gt; plants_2 = ('🌸','🌴', '🌺', '🌲', '🌻', '🌵')
+
+
+# Methods will take any iterable as an argument.
+&gt;&gt;&gt; fruit_and_flowers = plants_1.symmetric_difference(plants_2)
+&gt;&gt;&gt; fruit_and_flowers
+{'🌸', '🌺', '🍈', '🥑', '🥭','🌻' }
+
+
+# Operators require both groups be sets.
+&gt;&gt;&gt; fruit_and_flowers ^ plants_1
+{'🌲',  '🌸', '🌴', '🌵','🌺', '🌻'}
+
+&gt;&gt;&gt; fruit_and_flowers ^ plants_2
+{ '🥑', '🌴','🌲', '🌵', '🍈', '🥭'}
+</code></pre>
+<h2 id="note"><a class="header" href="#note">Note</a></h2>
+<p>A symmetric difference of more than two sets will result in a <code>set</code> that includes both the elements unique to each <code>set</code> AND elements shared between more than two sets in the series (details in the Wikipedia article on symmetric difference).</p>
+<p>To obtain only items unique to each <code>set</code> in the series, intersections between all 2-set combinations need to be aggregated in a separate step, and removed:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; one = {'black pepper','breadcrumbs','celeriac','chickpea flour',
+           'flour','lemon','parsley','salt','soy sauce',
+           'sunflower oil','water'}
+
+&gt;&gt;&gt; two = {'black pepper','cornstarch','garlic','ginger',
+           'lemon juice','lemon zest','salt','soy sauce','sugar',
+           'tofu','vegetable oil','vegetable stock','water'}
+
+&gt;&gt;&gt; three = {'black pepper','garlic','lemon juice','mixed herbs',
+             'nutritional yeast', 'olive oil','salt','silken tofu',
+             'smoked tofu','soy sauce','spaghetti','turmeric'}
+
+&gt;&gt;&gt; four = {'barley malt','bell pepper','cashews','flour',
+            'fresh basil','garlic','garlic powder', 'honey',
+            'mushrooms','nutritional yeast','olive oil','oregano',
+            'red onion', 'red pepper flakes','rosemary','salt',
+            'sugar','tomatoes','water','yeast'}
+
+&gt;&gt;&gt; intersections = (one &amp; two | one &amp; three | one &amp; four | 
+                     two &amp; three | two &amp; four | three &amp; four)
+...
+{'black pepper','flour','garlic','lemon juice','nutritional yeast', 
+'olive oil','salt','soy sauce', 'sugar','water'}
+
+# The ^ operation will include some of the items in intersections, 
+# which means it is not a "clean" symmetric difference - there
+# are overlapping members.
+&gt;&gt;&gt; (one ^ two ^ three ^ four) &amp; intersections
+{'black pepper', 'garlic', 'soy sauce', 'water'}
+
+# Overlapping members need to be removed in a separate step
+# when there are more than two sets that need symmetric difference.
+&gt;&gt;&gt; (one ^ two ^ three ^ four) - intersections
+...
+{'barley malt','bell pepper','breadcrumbs', 'cashews','celeriac',
+  'chickpea flour','cornstarch','fresh basil', 'garlic powder',
+  'ginger','honey','lemon','lemon zest','mixed herbs','mushrooms',
+  'oregano','parsley','red onion','red pepper flakes','rosemary',
+  'silken tofu','smoked tofu','spaghetti','sunflower oil', 'tofu', 
+  'tomatoes','turmeric','vegetable oil','vegetable stock','yeast'}
+
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="unpacking"><a class="header" href="#unpacking">Unpacking</a></h1>
 <p>Unpacking refers to the act of extracting the elements of a collection, such as a <code>list</code>, <code>tuple</code>, or <code>dict</code>, using iteration. Unpacked values can then be assigned to variables within the same statement. A very common example of this behavior is <code>for item in list</code>, where <code>item</code> takes on the value of each <code>list</code> element in turn throughout the iteration.</p>
 <p>Multiple assignment is the ability to assign multiple variables to unpacked values within one statement. This allows for code to be more concise and readable, and is done by separating the variables to be assigned with a comma such as <code>first, second, third = (1,2,3)</code> or <code>for index, item in enumerate(iterable)</code>.</p>
@@ -15172,7 +15590,6 @@ StopIteration
 <p>Now whenever <code>__next__()</code> is called on the <code>infinite_sequence</code> object, it will return the previous number + 1.</p>
 <pre><code></code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-oop"><a class="header" href="#python-oop">Python OOP</a></h1>
-<p>(Work in progress)</p>
 <h2 id="classes--objects"><a class="header" href="#classes--objects">Classes &amp; Objects</a></h2>
 <p>Python keeps it simple. No header files, no manually managing memory, no need to worry about your constructor causing a nuclear meltdown.</p>
 <pre><code class="language-python">class MyClass:
@@ -15683,10 +16100,14 @@ print(get_password("billing"))  # super_secure_password
 print(get_password("admin"))    # 1234
 </code></pre>
 <p>Now the decorator can protect any function, regardless of how many arguments it takes.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="lambdas"><a class="header" href="#lambdas">Lambdas</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lambda-functions"><a class="header" href="#lambda-functions">Lambda functions</a></h1>
 <p>(Work in progress)</p>
 <h3 id="we-are-getting-functional"><a class="header" href="#we-are-getting-functional">We are getting functional!</a></h3>
 <pre><code class="language-python">add = lambda x , y : x + y
+# a more concise way to write 
+# def add (x, y): 
+#    x + y
+
 print(add(8,5))
 # 13
 
@@ -15702,62 +16123,29 @@ print(doubled)
 print(doubled2)
 # [2, 6, 10, 18]
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="type-hints"><a class="header" href="#type-hints">Type Hints</a></h1>
-<p>(Work in Progress)</p>
-<h2 id="use-type-hints-for-better-function-and-class-documentation"><a class="header" href="#use-type-hints-for-better-function-and-class-documentation">Use type hints for better function and class documentation.</a></h2>
-<pre><code class="language-python">class Book:
-    TYPES = ("hardcover", "paperback")
-
-    def __init__(self, name: str, book_type: str, weight: int):
-        self.name = name
-        self.book_type = book_type
-        self.weight = weight
-
-   def __repr__(self) -&gt; str:
-        return f"&lt;Book {self.name}, {self.book_type}, weighing {self.weight}g&gt;"
-    
-    @classmethod
-    def hardcover(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPES[0], page_weight + 100)
-    
-    @classmethod
-    def paperback(cls, name: str, page_weight: int) -&gt; "Book":
-        return cls(name, cls.TYPES[1], page_weight)
-     
-
-book = Book.hardcover("Laurel Hell", 1600)
-light = Book.paperback("the bottle", 400)
-
-print(book, light)
-# &lt;Book Laurel Hell, hardcover, weighing 1700g&gt; &lt;Book the bottle, paperback, weighing 400g&gt;
-</code></pre>
-<h2 id="initializing-a-list-and-appending-elements-to-it-with-python-oop"><a class="header" href="#initializing-a-list-and-appending-elements-to-it-with-python-oop">Initializing a list, and appending elements to it with Python OOP.</a></h2>
-<pre><code class="language-python">from typing import List, Optional
-
-class Student:
-    def __init__(self, name: str, grades: Optional[List[int]] = None):
-        self.name = name
-        self.grades = grades or []
-
-    def take_exam(self, result: int):
-        self.grades.append(result)
-
-bob = Student("Bob")
-rolf = Student("Rolf")
-bob.take_exam(90)
-print(bob.grades)
-print(rolf.grades)
-# [90]
-# []
-</code></pre>
-<pre><code></code></pre>
-<div style="break-before: page; page-break-before: always;"></div><ul>
-<li>Python Fundamentals</li>
-<li>Control Flow</li>
-<li>Functions</li>
-<li>Python OOP</li>
-<li>Advanced</li>
-<li>Error Handling</li>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="working-with-python-projects"><a class="header" href="#working-with-python-projects">Working with Python Projects</a></h2>
+<ul>
+<li>
+<p><a href="programming/python/pyprojects/pip-venv.html">Using pip and venv</a></p>
+</li>
+<li>
+<p><a href="programming/python/pyprojects/poetry.html">Setting up Poetry</a></p>
+</li>
+<li>
+<p><a href="programming/python/pyprojects/uv.html">Setting up UV</a></p>
+</li>
+<li>
+<p><a href="programming/python/pyprojects/python-repo.html">Python Repository Setup</a></p>
+</li>
+<li>
+<p>Dev Dependencies that will be covered in this section:</p>
+<ul>
+<li>mypy</li>
+<li>black and isort</li>
+<li>ruff</li>
+<li>pytest</li>
+</ul>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="using-pip-and-venv"><a class="header" href="#using-pip-and-venv">Using pip and venv</a></h1>
 <p>The <code>venv</code> module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their site directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” Python, and by default is isolated from the packages in the base environment, so that only those explicitly installed in the virtual environment are available.</p>
@@ -15909,8 +16297,8 @@ def divide(dividend: float, divisor: float) -&gt; float:
 </ul>
 <p>Instead of fighting about tabs vs spaces, let Black be the dictator.</p>
 <p>Run manually, or automate via pre commit hooks:</p>
-<pre><code class="language-bash">uv run black --check src tests
-uv run isort --check-only src tests
+<pre><code class="language-bash">uv run black src tests
+uv run isort src tests
 </code></pre>
 <h4 id="4-linting--static-checks"><a class="header" href="#4-linting--static-checks">4. Linting &amp; static checks</a></h4>
 <ul>
@@ -15922,7 +16310,7 @@ uv run mypy src
 </code></pre>
 <h4 id="5-testing"><a class="header" href="#5-testing">5. Testing</a></h4>
 <p>Use pytest for simplicity:</p>
-<pre><code class="language-bash">uv run pytest
+<pre><code class="language-bash">uv run python -m pytest
 </code></pre>
 <h4 id="6-dependencies-in-pyprojecttoml"><a class="header" href="#6-dependencies-in-pyprojecttoml">6. Dependencies in <code>pyproject.toml</code></a></h4>
 <p>Example config for UV. Except for the <code>[project]</code> section, you don't really have to edit it manually as the <code>uv/poetry add</code> command edits the dependencies automatically.</p>
@@ -15993,6 +16381,543 @@ jobs:
 
 </code></pre>
 <p>With this workflow, you can ensure every pull PR is formatted, linted, type-checked and tested.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-python-standard-library"><a class="header" href="#the-python-standard-library">The Python Standard Library</a></h1>
+<p>Standard Library:</p>
+<pre><code>Left to explore:
+collections, functools, pathlib, concurrent.futures, datetime, os, sys, subprocess, logging, argparse
+types/typing, requests
+</code></pre>
+<ul>
+<li><a href="programming/python/std-lib/itertools.html">itertools pt.1</a></li>
+<li><a href="programming/python/std-lib/itertools2.html">itertools pt.2</a></li>
+<li><a href="programming/python/std-lib/itertools3.html">itertools pt.3</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="typing-library-type-hints"><a class="header" href="#typing-library-type-hints">Typing Library: Type Hints</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="itertools"><a class="header" href="#itertools">Itertools</a></h1>
+<ul>
+<li>A collection of iterator tools that works in a fast, concise and memory efficient way.</li>
+<li>It's sequential data you can loop over.</li>
+<li>Holds only one object in memory at a time.</li>
+<li>A standard library! Nothing to install to use this! Just <code>import itertools</code>!</li>
+</ul>
+<h2 id="count"><a class="header" href="#count"><code>Count</code></a></h2>
+<ul>
+<li>Just returns an iterator that counts</li>
+</ul>
+<p>This will result to  an infinite loop. Don't run this! You should always have something to specify how many times this should count.</p>
+<pre><code class="language-python">import itertools
+
+counter = itertools.count()
+
+for num in counter:
+    print(num)
+</code></pre>
+<p>You can run this because it's obvious that <code>print()</code> is there four times.</p>
+<pre><code class="language-python">import itertools
+
+counter = itertools.count()
+
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+# 0
+# 1
+# 2
+# 3
+</code></pre>
+<p>For the next example, let's say we wanted this data to be paired up with an index value. This is a nice use case for this <code>itertools.count()</code> function.</p>
+<pre><code class="language-python">
+data = [100, 200, 300, 400]
+
+daily_data = list(zip(itertools.count(), data))
+# zip(): combines two iterables and pairs the values together.
+# zip() itself needs to be iterated, for example with a loop
+# or by turning it into a list.
+# this is also lazy iteration.
+
+print(daily_data)
+# [(0, 100), (1, 200), (2, 300), (3, 400)]
+</code></pre>
+<p>Now we can also pass some arguments into this <code>count()</code> function, to start at a different place or step by a different amount. The counter also supports going backwards or in decimals.</p>
+<pre><code class="language-python">
+counter = itertools.count(start=5, step=2.5)
+
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+# 5
+# 7.5
+# 10.0
+# 12.5
+</code></pre>
+<h2 id="zip_longest"><a class="header" href="#zip_longest"><code>zip_longest</code></a></h2>
+<p>Like <code>zip()</code>, it pairs iterables together, but doesn't stop until the longest iterable is exhausted. It will fill the missing values with placeholders. By default (without the <code>fillvalue</code> parameter) it is <code>None</code></p>
+<pre><code class="language-python">data = [100, 200, 300, 400]
+
+daily_data = list(itertools.zip_longest(range(10), data, fillvalue="pwat"))
+
+print(daily_data)
+#[(0, 100), (1, 200), (2, 300), (3, 400), (4, 'pwat'), (5, 'pwat'), (6, 'pwat'), (7, 'pwat'), (8, 'pwat'), (9, 'pwat')]
+</code></pre>
+<h2 id="cycle"><a class="header" href="#cycle"><code>cycle</code></a></h2>
+<p>Also returns an iterator that goes on forever. It takes an iterable as an argument, and iterate through it over and over.</p>
+<pre><code class="language-python">counter = itertools.cycle([1, 2, 3])
+
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+# 1
+# 2
+# 3
+# 1
+# 2
+# 3
+</code></pre>
+<p>Pretty simple... But there's a lot you could do with this! For creating a switch for example, you could create a cycle with two values.</p>
+<h2 id="repeat-1"><a class="header" href="#repeat-1"><code>repeat</code></a></h2>
+<p>Yet another infinite iterator. Also very simple: just takes an input and repeats it indefinitely. With the <code>times</code> argument, we can set a limit on how many times it will repeat it.</p>
+<pre><code class="language-python">counter = itertools.repeat(2, times=3)
+
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+</code></pre>
+<p>After the third print statement, there will be a stop iteration error. But a for loop will avoid that error:</p>
+<pre><code class="language-python">print([i for i in itertools.repeat(2, 3)])
+# [2, 2, 2]
+</code></pre>
+<p>Supplies a stream of constant values to be used with map or zip:</p>
+<pre><code class="language-python">print(list(map(pow, range(10), itertools.repeat(2))))
+# [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+</code></pre>
+<p>A very fast way to loop over a fixed number of times:</p>
+<pre><code class="language-python">for _ in itertools.repeat(None, 3):
+    print("pwat")
+</code></pre>
+<p>This is faster than:</p>
+<pre><code class="language-python">for i in range(3):
+    print("pwat")
+</code></pre>
+<p>Another example:</p>
+<pre><code class="language-python">counter = itertools.repeat(7, times=7)
+
+print(list(counter))
+# [7, 7, 7, 7, 7, 7, 7]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="itertools-2"><a class="header" href="#itertools-2">Itertools 2</a></h1>
+<h2 id="starmap"><a class="header" href="#starmap"><code>starmap</code></a></h2>
+<p>Very similar to <code>map()</code></p>
+<pre><code class="language-python">squares = itertools.starmap(pow, [(0, 2), (1, 2), (2, 2)])
+
+print(list(squares))
+
+# [0, 1, 4]
+</code></pre>
+<h2 id="combinations"><a class="header" href="#combinations"><code>combinations</code></a></h2>
+<p>Order does not matter in this combination. If one is needed, see <code>permutations</code>.</p>
+<pre><code class="language-python">import itertools
+
+
+letters = ['a', 'b', 'c', 'd']
+
+result = itertools.combinations(letters, 2)
+
+for item in result:
+    print(item)
+
+# ('a', 'b')
+# ('a', 'c')
+# ('a', 'd')
+# ('b', 'c')
+# ('b', 'd')
+# ('c', 'd')
+
+</code></pre>
+<h2 id="permutation"><a class="header" href="#permutation"><code>permutation</code></a></h2>
+<pre><code class="language-python">import itertools
+
+
+letters = ['a', 'b', 'c', 'd']
+
+result = itertools.product(numbers, 2)
+
+for item in result:
+    print(item)
+
+# ('a', 'b')
+# ('a', 'c')
+# ('a', 'd')
+# ('b', 'a')
+# ('b', 'c')
+# ('b', 'd')
+# ('c', 'a')
+# ('c', 'b')
+# ('c', 'd')
+# ('d', 'a')
+# ('d', 'b')
+# ('d', 'c')
+</code></pre>
+<p>This generates all possible values in order. To use with precaution. Good in capable hands.</p>
+<p>You could for example use it in a password breaker. Here's an example with four number digits:</p>
+<pre><code class="language-python">import itertools
+
+numbers = [0, 1, 2, 3]
+
+result = itertools.product(numbers, repeat=4)
+
+for item in result:
+    print(item)
+
+</code></pre>
+<p>A C++ implementation of the same example, made just to jumpscare the casual python programmers:</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+void product(const std::string &amp;elems, int repeat, std::string &amp;current) {
+  if (current.size() == repeat) {
+    std::cout &lt;&lt; current &lt;&lt; "\n";
+    return;
+  }
+
+  for (auto c : elems) {
+    current.push_back(c);
+    product(elems, repeat, current);
+    current.pop_back();
+  }
+}
+
+int main() {
+  std::string elems = "0123";
+  int repeat = 4;
+  std::string current;
+
+  product(elems, repeat, current);
+}
+
+</code></pre>
+<p><code>combinations_with_replacement</code> makes for a pleasant pattern. Go check it out!</p>
+<pre><code class="language-python">import itertools
+
+numbers = [0, 1, 2, 3]
+
+result = itertools.combinations_with_replacement(numbers, 4)
+
+for item in result:
+    print(item)
+
+# (0, 0, 0, 0)
+# (0, 0, 0, 1)
+# (0, 0, 0, 2)
+# (0, 0, 0, 3)
+# (0, 0, 1, 1)
+# (0, 0, 1, 2)
+# (0, 0, 1, 3)
+# (0, 0, 2, 2)
+# (0, 0, 2, 3)
+# (0, 0, 3, 3)
+# (0, 1, 1, 1)
+# (0, 1, 1, 2)
+# (0, 1, 1, 3)
+# (0, 1, 2, 2)
+# (0, 1, 2, 3)
+# (0, 1, 3, 3)
+# (0, 2, 2, 2)
+# (0, 2, 2, 3)
+# (0, 2, 3, 3)
+# (0, 3, 3, 3)
+# (1, 1, 1, 1)
+# (1, 1, 1, 2)
+# (1, 1, 1, 3)
+# (1, 1, 2, 2)
+# (1, 1, 2, 3)
+# (1, 1, 3, 3)
+# (1, 2, 2, 2)
+# (1, 2, 2, 3)
+# (1, 2, 3, 3)
+# (1, 3, 3, 3)
+# (2, 2, 2, 2)
+# (2, 2, 2, 3)
+# (2, 2, 3, 3)
+# (2, 3, 3, 3)
+# (3, 3, 3, 3)
+
+</code></pre>
+<p>Those have great use cases, but can unfortunately be pretty slow. Here is something that can be more efficient:</p>
+<h2 id="chain"><a class="header" href="#chain"><code>chain</code></a></h2>
+<pre><code class="language-python">
+import itertools
+
+letters = ['a', 'b', 'c', 'd']
+numbers = [0, 1, 2, 3]
+names = ['Corey', 'Nicole']
+
+combined = itertools.chain(letters, numbers, names)
+
+for item in combined:
+    print(item)
+
+# a
+# b
+# c
+# d
+# 0
+# 1
+# 2
+# 3
+# Corey
+# Nicole
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="itertools-pt3"><a class="header" href="#itertools-pt3">Itertools pt.3</a></h1>
+<h2 id="islice"><a class="header" href="#islice"><code>islice</code></a></h2>
+<p>A function that will get slices over an iterator. To use this, you can provide three arguments.</p>
+<ul>
+<li>A range</li>
+<li>Beginning point</li>
+<li>End point</li>
+<li>Steps</li>
+</ul>
+<pre><code class="language-python">import itertools
+
+# result = itertools.islice(range(10), start=1, stop=5, step=2)
+
+result = itertools.islice(range(1000), 1, 8, 2)
+
+for item in result:
+    print(item)
+
+# 1
+# 3
+# 5
+# 7
+</code></pre>
+<p>Useful when:</p>
+<ul>
+<li>
+<p>We have an iterator that is too large for memory, so we only want a slice of it.</p>
+</li>
+<li>
+<p>Example: log file that is thousands of lines, but you only want to grab a selection of lines. This will avoid having to wait for the script to load the entire content of those files.</p>
+</li>
+<li>
+<p>Let's use <code>islice</code> over this!</p>
+</li>
+</ul>
+<pre><code>Date: 2077-05-34
+Author: Evil AI
+Description: This is a sample log file
+
+Some very long log file that machines likes to spit out a lot of the time.
+...
+We might be in the future, our computers are more powerful but not faster, as software had become proportionally inefficient.
+...
+Pretend it goes on forever
+</code></pre>
+<p>With something like this, we can choose to only grab the first three lines.</p>
+<pre><code class="language-python">with open('log.txt', 'r') as f:
+    header = itertools.islice(f, 3)
+
+    for line in header:
+        print(line, end='')
+</code></pre>
+<h2 id="compress"><a class="header" href="#compress"><code>compress</code></a></h2>
+<p>Potentially useful for machine learning!?</p>
+<pre><code class="language-python">letters = ['a', 'b', 'c', 'd']
+selectors = [True, False, True, True]
+# Let's pretend this is very long
+
+result = itertools.compress(letters, selectors)
+
+for item in result:
+    print(item)
+
+# a
+# c
+# d
+</code></pre>
+<p>This only selects the corresponding values to the selectors out of the <code>letters</code> list.</p>
+<p>It is a bit different to the filter function. That one determines whether something is true or false, but with compress, those values are just passed as an iterable.</p>
+<h2 id="filterfalse"><a class="header" href="#filterfalse"><code>filterfalse</code></a></h2>
+<pre><code class="language-python">def it_2(n):
+    if n &lt; 2:
+        return True
+
+
+numbers = [-1, -5, -8, 7, 0, 1, 2, 3]
+
+result = itertools.filterfalse(it_2, numbers)
+
+for item in result:
+    print(item)
+
+# 7
+# 2
+# 3
+</code></pre>
+<h2 id="dropwhile"><a class="header" href="#dropwhile"><code>dropwhile</code></a></h2>
+<pre><code class="language-python">
+def it_2(n):
+    if n &lt; 2:
+        return True
+
+
+numbers = [-5, -10, -8, -1, 1, 1, 1, 0, 1, 2, 3, 2, 1, 0, -8, -10]
+
+result = itertools.dropwhile(it_2, numbers)
+
+for item in result:
+    print(item)
+
+# 2
+# 3
+# 2
+# 1
+# 0
+# -8
+# -10
+</code></pre>
+<p>As you can see, this only drops numbers while the criteria is not met (item in numbers less than 2). But once it's met, it will stop filtering.</p>
+<h2 id="accumulate"><a class="header" href="#accumulate"><code>accumulate</code></a></h2>
+<p>This takes an iterable, and makes accumulated sums of each item that it sees. It will use addition by default, but you can use other operators as well.</p>
+<pre><code class="language-python">numbers = [-5, -10, -8, -1, 1, 1, 9, 0, 11, 2, 13, 2, 9, -8, -10]
+
+result = itertools.accumulate(numbers)
+
+for item in result:
+    print(item)
+
+# -5
+# -15
+# -23
+# -24
+# -23
+# -22
+# -13
+# -13
+# -2
+# 0
+# 13
+# 15
+# 24
+# 16
+# 6
+</code></pre>
+<h2 id="groupby"><a class="header" href="#groupby"><code>groupby</code></a></h2>
+<pre><code class="language-python">people = [
+    {
+        'name': 'John Doe',
+        'city': 'Gotham',
+        'state': 'NY'
+    },
+    {
+        'name': 'Jane Doe',
+        'city': 'Kings Landing',
+        'state': 'NY'
+    },
+    {
+        'name': 'Corey Schafer',
+        'city': 'Boulder',
+        'state': 'CO'
+    },
+    {
+        'name': 'Al Einstein',
+        'city': 'Denver',
+        'state': 'CO'
+    },
+    {
+        'name': 'John Henry',
+        'city': 'Hinton',
+        'state': 'WV'
+    },
+    {
+        'name': 'Randy Moss',
+        'city': 'Rand',
+        'state': 'WV'
+    },
+    {
+        'name': 'Nicole K',
+        'city': 'Asheville',
+        'state': 'NC'
+    },
+    {
+        'name': 'Jim Doe',
+        'city': 'Charlotte',
+        'state': 'NC'
+    },
+    {
+        'name': 'Jane Taylor',
+        'city': 'Faketown',
+        'state': 'NC'
+    }
+]
+# list of dictionaries: dictionary contains information about individual people
+# Let's say we want to group people by 'state' : 'NC'
+
+
+def get_state(person):
+    return person['state']
+
+
+person_group = itertools.groupby(people, get_state)
+
+for key, group in person_group:
+    print(key)
+    for person in group:
+        print(person)
+    print()
+
+# NY
+# {'name': 'John Doe', 'city': 'Gotham', 'state': 'NY'}
+# {'name': 'Jane Doe', 'city': 'Kings Landing', 'state': 'NY'}
+#
+# CO
+# {'name': 'Corey Schafer', 'city': 'Boulder', 'state': 'CO'}
+# {'name': 'Al Einstein', 'city': 'Denver', 'state': 'CO'}
+#
+# WV
+# {'name': 'John Henry', 'city': 'Hinton', 'state': 'WV'}
+# {'name': 'Randy Moss', 'city': 'Rand', 'state': 'WV'}
+#
+# NC
+# {'name': 'Nicole K', 'city': 'Asheville', 'state': 'NC'}
+# {'name': 'Jim Doe', 'city': 'Charlotte', 'state': 'NC'}
+# {'name': 'Jane Taylor', 'city': 'Faketown', 'state': 'NC'}
+</code></pre>
+<p>Yeah, this does a lot of work in the background to let us have some nice sorted data.</p>
+<ul>
+<li>One thing to note: the dict data must already be sorted before groupby can work properly.</li>
+<li>In that sense, it's a bit different from SQL <code>GROUP_BY</code> because that one doesn't care about sorting.</li>
+</ul>
+<h2 id="tee"><a class="header" href="#tee"><code>tee</code></a></h2>
+<ul>
+<li>To replicate an iterator easily.</li>
+<li>You can no longer use the original iterator after it has been copied. You can only use the copies.</li>
+</ul>
+<pre><code class="language-python">person_group = itertools.groupby(people, get_state)
+
+copy1, copy2 = itertools.tee(person_group)
+
+for key, group in person_group:
+    print(key, len(list(group)))
+    print()
+
+# NY 2
+# CO 2
+# WV 2
+# NC 3
+</code></pre>
+<p>This actually isn't quite the same as the Linux <code>tee</code> command, which lets you write some input to several files:</p>
+<pre><code class="language-bash">echo "copy me everywhere" | tee file1.txt file2.txt
+</code></pre>
+<pre><code class="language-bash">tee file.txt
+some text
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functools"><a class="header" href="#functools">Functools</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="why-ruby-because-i-had-enough-of-javascript"><a class="header" href="#why-ruby-because-i-had-enough-of-javascript">Why Ruby? Because I Had Enough of JavaScript.</a></h2>
 <p>I originally picked up Ruby out of <strong>pure JavaScript fatigue</strong>—I was tired of maintaining a monstrous Express + React project. It was easier to burn everything down and start fresh with a new language than continue suffering.</p>
 <p>That turned out to be <strong>one of my best decisions</strong>. By switching to Ruby’s Sinatra framework, I replaced 5000 lines of bloated code with <strong>a single backend file</strong> and some clean HTML templates. Alongside Python, Ruby will continue to be my go-to for <strong>small web projects</strong>—whether that’s to avoid paying monthly for some overhyped SaaS tool or simply to reclaim time lost to unnecessarily complicated frameworks.</p>
