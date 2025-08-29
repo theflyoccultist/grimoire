@@ -34,6 +34,8 @@ venv\scripts\activate
 
 Now your shell will show `(venv)` before the prompt. That means you're inside the virtual prompt.
 
+This is also the command to do when you want to resume your venv session.
+
 #### Installing packages
 
 ```bash

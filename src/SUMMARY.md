@@ -15,6 +15,7 @@
 - [Virtualization](virtualization/README.md)
   - [Set Up PostgreSQL in a Google Cloud VM using Docker Compose](virtualization/postgres-gcloud-vm.md)
   - [Create an HMAC Server API for the VM](virtualization/postgres-gcloud-vm2.md)
+  - [Set up a LAMP server](virtualization/lamp-server.md)
   - [Virt Manager Install on Arch Linux](virtualization/virt-manager.md)
   - [Using Virt Manager and Samba to retrieve old songs](virtualization/old-songs.md)
 
@@ -203,7 +204,10 @@
       - [Itertools](programming/python/std-lib/itertools.md)
       - [Itertools pt.2](programming/python/std-lib/itertools2.md)
       - [Itertools pt.3](programming/python/std-lib/itertools3.md)
-      - [Functools](programming/python/std-lib/functools.md)
+      - [Functools: Caching](programming/python/std-lib/functools-caching.md)
+      - [Functools: Partial & Reduce](programming/python/std-lib/functools-partial-reduce.md)
+      - [Functools: Wrappers](programming/python/std-lib/functools-wrappers.md)
+      - [Functools: Dispatches and Ordering](programming/python/std-lib/functools-dispatches-ordering.md)
 
   - [Ruby 💎](programming/ruby/README.md)
     - [Ruby Fundamentals](programming/ruby/ruby-basics.md)

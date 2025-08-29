@@ -11,3 +11,5 @@ types/typing, requests
 - [itertools pt.1](itertools.md)
 - [itertools pt.2](itertools2.md)
 - [itertools pt.3](itertools3.md)
+
+- [functools: caching](functools-caching.md)

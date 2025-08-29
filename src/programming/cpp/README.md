@@ -4,6 +4,7 @@ You, who loves a difficult to write and extremely performant program... Run befo
 
 - [Fundamentals](fundamentals/)
 - [Object-Oriented Programming](oop/)
+- [Recursion](recursion/)
 - [Practical Algorithms](algorithms/)
 - [Modern C++ features (C++11 and later)](features/)
 - [The Boost Library](lib_boost/)
