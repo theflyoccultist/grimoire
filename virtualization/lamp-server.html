@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Create an HMAC Server API for the VM - Debugging Grimoire</title>
+        <title>Set up a LAMP server - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,85 +175,219 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="create-an-hmac-server-api-with-python"><a class="header" href="#create-an-hmac-server-api-with-python">Create an HMAC Server API with Python</a></h2>
-<pre><code class="language-python">from fastapi import FastAPI, Request, HTTPException
-import hmac
-import hashlib
+                        <h1 id="set-up-a-lamp-server"><a class="header" href="#set-up-a-lamp-server">Set up a LAMP server</a></h1>
+<p>Prerequisites: Type 2 hypervisor. In this guide, we're going to use VirtualBox (but you can always use virt-manager on Linux).</p>
+<h3 id="configuring-a-debian-vm"><a class="header" href="#configuring-a-debian-vm">Configuring a Debian VM:</a></h3>
+<ul>
+<li>Downloading Debian on www.debian.org (this will be the operating system on which will run the virtual machine.</li>
+<li>Download, install and configure VirtualBox and VirtualBox Extension Pack</li>
+<li>For VirtualBox: accept everything and proceed.</li>
+</ul>
+<p><img src="lamp_img/debian.png" alt="Debian" /></p>
+<ul>
+<li>For VirtualBox Extensions Pack:</li>
+</ul>
+<ol>
+<li>Open the downloaded file</li>
+<li>Click on Installation</li>
+<li>Accept the terms of service</li>
+<li>Tools → Extensions hamburger menu to check that the extension is installed.</li>
+</ol>
+<hr />
+<ul>
+<li>Creation of the Debian Virtual Machine:</li>
+</ul>
+<p><img src="lamp_img/config_vm.png" alt="Debian VM" /></p>
+<ul>
+<li>Choose an appropriate name for the VM</li>
+<li>Choose the Debian ISO image you downloaded earlier</li>
+<li>Check "Skip Unattended Installation"</li>
+</ul>
+<p><img src="lamp_img/config_vm_2.png" alt="Debian VM 2" /></p>
+<ul>
+<li>Resources to be assigned: 2048MB of RAM, 1-2 CPUs and 10-20GB of hard drive.</li>
+<li>Click "Finish", and you should see the machine appear in the VM list if there are no problems.</li>
+</ul>
+<hr />
+<h3 id="additional-configurations"><a class="header" href="#additional-configurations">Additional Configurations:</a></h3>
+<ul>
+<li>Enable shared clipboard and drag and drop in General → Advanced</li>
+</ul>
+<p><img src="lamp_img/shared_clipboard.png" alt="Shared Clipboard" /></p>
+<ul>
+<li>Enable shared folders in Settings → Shared Folders (here I added a
+scripts folder)</li>
+</ul>
+<p><img src="lamp_img/shared_folders.png" alt="Shared Folders" /></p>
+<p>In the "System" tab, change the boot order to:</p>
+<ul>
+<li>Hard Drive (Checked)</li>
+<li>Optical Drive (Checked)</li>
+<li>Floppy Drive (Unchecked)</li>
+<li>Network Drive (Unchecked)</li>
+</ul>
+<p><img src="lamp_img/config_vm_3.png" alt="Debian VM 3" /></p>
+<ul>
+<li>In the "Display" tab → Screen, increase the "Video Memory" slider to 128MB and check the "Enable 3D Acceleration" box.</li>
+<li>In the "Network" tab, check that the "Enable Network Interface" and "Cable Connected" boxes are enabled. The network access mode must also be set to "NAT".</li>
+<li>In the "USB" tab, enable the USB controller and check the "USB 3.0 Controller (xHCI)" button.</li>
+</ul>
+<hr />
+<h3 id="you-may-finally-boot-up-the-debian-virtual-machine"><a class="header" href="#you-may-finally-boot-up-the-debian-virtual-machine">You may finally boot up the Debian Virtual Machine.</a></h3>
+<p><img src="lamp_img/initialization_goat.png" alt="Initialization" /></p>
+<ul>
+<li>Partition formatting: Yes.</li>
+<li>At the taskbar step, Debian will ask you to choose which software to pre-install. You must check "SSH Server," leave "Common System Utilities" checked, and check "XFCE Desktop", or a different one of your convenience.</li>
+<li>Install the GRUB boot program: Yes, and select the disk that appears.</li>
+</ul>
+<p><img src="lamp_img/guest_addons.png" alt="Guest Addons" /></p>
+<p>VirtualBox Guest Additions:</p>
+<ul>
+<li>In the menu bar, click "Devices", then "Insert Guest Additions CD Image".</li>
+<li>Access the optical drive that just appeared.</li>
+<li>Right-click → open a terminal.</li>
+<li>Become root by running the su command and entering your password.</li>
+<li>Enter the command sh ./VboxLinuxAdditions.run to start the installation of the "Guest Additions".</li>
+<li>Restart the VM.</li>
+<li>Make sure that in the "Devices" menu, "Shared Clipboard" and "Drag &amp; Drop" are checked to "Bidirectional".</li>
+<li>Right Ctrl + f: to enable/disable full screen.</li>
+</ul>
+<hr />
+<h3 id="glpi-installation"><a class="header" href="#glpi-installation">GLPI Installation</a></h3>
+<ul>
+<li>Once Debian is installed, create a Bash script called setup_glpi.sh that will set up
+the LAMP stack. This script requires root access.</li>
+<li>The LAMP stack consists of the Apache2 web server, a MariaDB database and the PHP language.</li>
+<li>If "sudo" doesn't work for some reason, you can use "su" instead for the time being. In my situation, I had to install it manually from apt and grant my own user to the sudo group.</li>
+</ul>
+<pre><code class="language-bash">#!/usr/bin/env bash
+# setup_glpi.sh
+set -e
+# before running the script, make sure to do chmod +x setup_glpi.sh
+# this script needs root permissions. run it with sudo ./setup_glpi.sh
+echo "Updating and upgrading..."
+apt update &amp;&amp; apt upgrade -y
 
-app = FastAPI()
+echo "Installing Apache..."
+apt install apache2 -y
 
+echo "Installing MariaDB..."
+apt install mariadb-server -y
 
-def calc_digest(key, message):
-    key = bytes(key, 'utf-8')
-    message = bytes(message, 'utf-8')
-    dig = hmac.new(key, message, hashlib.sha256)
-    return dig.hexdigest()
+echo "Securing MariaDB..."
+mysql_secure_installation
 
-# HMAC Server
-@app.post("/verify")
-async def verify_signature(request: Request):
-    body = await request.json()
-    recieved_mac = request.headers.get("X-HMAC-Signature")
-
-    if not recieved_mac:
-        raise HTTPException(status_code=400, detail="Missing HMAC header")
-
-    msg_string = f"{body['mac_address']}:{body['timestamp']}"
-    expected_mac = calc_digest('secret-key', msg_string)
-
-    if not hmac.compare_digest(recieved_mac, expected_mac):
-        raise HTTPException(status_code=403, detail="Invalid signature")
-
-    return {"status": "Verified"}
+echo "Installing PHP + extensions..."
+apt install php php-mysql php-xml php-mbstring php-curl php-gd php-ldap php-imap php-zip php-intl libapache2-mod-php -y
+echo "Restarting Apache..."
+systemctl restart apache2
 </code></pre>
-<h2 id="testing-hmac-protected-endpoints-with-curl-bash-script"><a class="header" href="#testing-hmac-protected-endpoints-with-curl-bash-script">Testing HMAC Protected Endpoints with curl (Bash Script)</a></h2>
-<pre><code class="language-bash">#!/bin/bash
-
-MESSAGE='{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}'
-SIGNATURE=$(echo -n '{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}' |
-  openssl dgst -sha256 -hmac "secret-key" | sed 's/^.* //')
-
-curl -X POST http://127.0.0.1:8000/verify \
-  -H "Content-Type: application/json" \
-  -H "X-HMAC-Signature: $SIGNATURE" \
-  -d "$MESSAGE"
+<ul>
+<li>Connect to the MariaDB database to create a database and user for GLPI</li>
+</ul>
+<pre><code class="language-bash">sudo mysql -u root -p
 </code></pre>
-<h2 id="establish-connection-with-an-hmac-client-for-example-with-ruby"><a class="header" href="#establish-connection-with-an-hmac-client-for-example-with-ruby">Establish connection with an HMAC client (for example, with Ruby)</a></h2>
-<pre><code class="language-ruby">require 'openssl/hmac'
-require 'mac-address'
-
-# HMAC Client
-class Hmac
-  def self.call
-    key = secret_key
-    mac_address = MacAddress.address
-    halt 404, 'Mac Address not found' if mac_address.nil?
-
-    timestamp = Time.now.to_i
-    message = "#{mac_address}:#{timestamp}"
-    mac = calc_digest(key, message)
-    { signature: mac, timestamp: timestamp, mac_address: mac_address }
-  end
-
-  def self.secret_key
-    ENV['API_DB_KEY'] || raise('Missing API_DB_KEY')
-  end
-
-  def self.calc_digest(key, message)
-    OpenSSL::HMAC.hexdigest('sha256', key, message)
-  end
-end
+<pre><code class="language-sql"># In the MySQL shell:
+CREATE DATABASE glpidb;
+CREATE USER 'glpiuser'@'localhost' IDENTIFIED BY 'pwatpwat';
+GRANT ALL PRIVILEGES ON glpidb.* TO 'glpiuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
 </code></pre>
+<ul>
+<li>Download and deploy GLPI to the virtual machine</li>
+</ul>
+<pre><code class="language-bash">cd /tmp
+wget https://github.com/glpi-project/glpi/releases/download/10.0.13/glpi-
+10.0.13.tgz
+tar -xvzf glpi-10.0.13.tgz
+
+# Move it to web root
+sudo mv glpi /var/www/html/
+
+# Set permissions
+sudo chown -R www-data:www-data /var/www/html/glpi
+sudo chmod -R 755 /var/www/html/glpi
+
+# Enable Apache mod_rewrite just in case
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+</code></pre>
+<ul>
+<li>Open your web browser</li>
+<li>Type <code>ip a | grep inet</code> in the terminal to find the machine's IP address</li>
+<li>Enter this IP address in your browser, and you should see the default Apache 2 page.</li>
+<li>Append /glpi to the address, and you should see the GLPI installation page.</li>
+</ul>
+<p>Problems that may arise during installation:</p>
+<ul>
+<li>If you forgot a PHP extension, the installer will error out. You will need to find it and install it in the terminal (<code>apt install php-xxx</code>) and then restart the Apache 2 server (<code>systemctl restart apache2</code>).</li>
+</ul>
+<p>Some example GLPI configuration:</p>
+<pre><code>GLPI Database:
+Server: localhost
+User: glpiuser
+Password: pwatpwat
+Use an existing database: glpidb
+</code></pre>
+<p>The default usernames and passwords are:</p>
+<ul>
+<li>glpi/glpi for the administrator account</li>
+<li>tech/tech for the technician account</li>
+<li>normal/normal for the normal account</li>
+<li>post-only/postonly for the postonly account</li>
+</ul>
+<p>You can delete or modify these accounts as well as the initial data. And with that, the GLPI server has been successfully installed!</p>
+<p><img src="lamp_img/glpi_installed.png" alt="GLPI Installed" /></p>
+<p>Once you are able to see a result similar to this screenshot, it is safe to remove the GLPI installation file with:</p>
+<pre><code class="language-bash">rm /var/www/html/glpi/install/install.php
+</code></pre>
+<hr />
+<h3 id="connect-to-glpi-from-a-computer-on-the-same-network"><a class="header" href="#connect-to-glpi-from-a-computer-on-the-same-network">Connect to GLPI from a computer on the same network</a></h3>
+<ul>
+<li>
+<p>From the VM, type <code>ip a</code> to find the IP address to connect to.</p>
+</li>
+<li>
+<p>Since NAT is used for the VM, in VirtualBox you will need to go to VM →
+Configuration → Network → Adapter 1 → Port Forwarding.</p>
+</li>
+<li>
+<p>Add a rule:</p>
+<pre><code>Name: HTTP
+Protocol: TCP
+Host IP (leave blank)
+Host port: 8080
+Guest IP (leave blank)
+Guest port: 80
+</code></pre>
+</li>
+<li>
+<p>Then, on the host machine, access the address: http://localhost:8080/glpi</p>
+</li>
+<li>
+<p>If all goes well, you have successfully connected to your VM's Apache server from the host machine. Log in with the Technician account, for example.</p>
+</li>
+</ul>
+<p><img src="lamp_img/final_connect.png" alt="Final Connect" /></p>
+<hr />
+<h3 id="create-a-snapshot"><a class="header" href="#create-a-snapshot">Create a snapshot</a></h3>
+<p>It's important to create snapshots regularly in case of mishandling.</p>
+<ul>
+<li>Click the VM's hamburger menu</li>
+<li>Snapshots</li>
+<li>Click "Take" and add a title and description.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/lamp-server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../virtualization/virt-manager.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -263,11 +397,11 @@ end
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../virtualization/postgres-gcloud-vm2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/lamp-server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../virtualization/virt-manager.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

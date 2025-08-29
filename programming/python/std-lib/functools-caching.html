@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Create an HMAC Server API for the VM - Debugging Grimoire</title>
+        <title>Functools: Caching - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,85 +175,148 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="create-an-hmac-server-api-with-python"><a class="header" href="#create-an-hmac-server-api-with-python">Create an HMAC Server API with Python</a></h2>
-<pre><code class="language-python">from fastapi import FastAPI, Request, HTTPException
-import hmac
-import hashlib
+                        <h1 id="functools-caching"><a class="header" href="#functools-caching">Functools: Caching</a></h1>
+<p>It's an interesting assortment of utilities that alters functions or methods in some way.</p>
+<h2 id="functoolscache"><a class="header" href="#functoolscache"><code>functools.cache</code></a></h2>
+<p>This has a memorizing power, that's why it's so good. It basically keeps some data allowing quicker lookup.</p>
+<pre><code class="language-python">
+from functools import cache
 
-app = FastAPI()
+
+@cache
+def factorial(n):
+    return n * factorial(n - 1) if n else 1
 
 
-def calc_digest(key, message):
-    key = bytes(key, 'utf-8')
-    message = bytes(message, 'utf-8')
-    dig = hmac.new(key, message, hashlib.sha256)
-    return dig.hexdigest()
+print(factorial(10))
+# 3628800 
+# new lookups: recursive calls.
 
-# HMAC Server
-@app.post("/verify")
-async def verify_signature(request: Request):
-    body = await request.json()
-    recieved_mac = request.headers.get("X-HMAC-Signature")
+print(factorial(5))
+# 120 just looks up cached value result
 
-    if not recieved_mac:
-        raise HTTPException(status_code=400, detail="Missing HMAC header")
-
-    msg_string = f"{body['mac_address']}:{body['timestamp']}"
-    expected_mac = calc_digest('secret-key', msg_string)
-
-    if not hmac.compare_digest(recieved_mac, expected_mac):
-        raise HTTPException(status_code=403, detail="Invalid signature")
-
-    return {"status": "Verified"}
+print(factorial(12))
+# 479001600 makes some new recursive call, and add new cached value result
 </code></pre>
-<h2 id="testing-hmac-protected-endpoints-with-curl-bash-script"><a class="header" href="#testing-hmac-protected-endpoints-with-curl-bash-script">Testing HMAC Protected Endpoints with curl (Bash Script)</a></h2>
-<pre><code class="language-bash">#!/bin/bash
+<h2 id="functoolscached_property"><a class="header" href="#functoolscached_property"><code>functools.cached_property</code></a></h2>
+<p>This would be much slower if evaluated without cache. With this simple change, you can dramatically improve performance for expensive operations.</p>
+<p>This computes once, stashes it and then reuses it.</p>
+<pre><code class="language-python">
+from functools import cached_property
 
-MESSAGE='{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}'
-SIGNATURE=$(echo -n '{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}' |
-  openssl dgst -sha256 -hmac "secret-key" | sed 's/^.* //')
 
-curl -X POST http://127.0.0.1:8000/verify \
-  -H "Content-Type: application/json" \
-  -H "X-HMAC-Signature: $SIGNATURE" \
-  -d "$MESSAGE"
+class DataSet:
+    def __init__(self, sequence_of_numbers):
+        self._data = sequence_of_numbers
+
+    @cached_property
+    def sum(self):
+        return (sum(self._data))
+
+
+ds = DataSet([1, 2, 3, 4, 5])
+print(ds.sum)   # computes statistics.stdev once
+print(ds.sum)   # instant lookup, no recomputation. It won't reevaluate.
+
+
+del ds.sum
+
+ds._data.append(7)
+print(ds.sum)   # needs manual deletion, otherwise it will always give the same result
 </code></pre>
-<h2 id="establish-connection-with-an-hmac-client-for-example-with-ruby"><a class="header" href="#establish-connection-with-an-hmac-client-for-example-with-ruby">Establish connection with an HMAC client (for example, with Ruby)</a></h2>
-<pre><code class="language-ruby">require 'openssl/hmac'
-require 'mac-address'
+<p>Example projects where you could use this: database connection and file processing.</p>
+<h3 id="database-connection"><a class="header" href="#database-connection">Database Connection</a></h3>
+<pre><code class="language-python">
+import sqlite3
+from functools import cached_property
 
-# HMAC Client
-class Hmac
-  def self.call
-    key = secret_key
-    mac_address = MacAddress.address
-    halt 404, 'Mac Address not found' if mac_address.nil?
+class DB:
+    def __init__(self, db_path):
+        self._path = db_path
 
-    timestamp = Time.now.to_i
-    message = "#{mac_address}:#{timestamp}"
-    mac = calc_digest(key, message)
-    { signature: mac, timestamp: timestamp, mac_address: mac_address }
-  end
+    @cached_property
+    def conn(self):
+        return sqlite3.connect(self._path)
 
-  def self.secret_key
-    ENV['API_DB_KEY'] || raise('Missing API_DB_KEY')
-  end
-
-  def self.calc_digest(key, message)
-    OpenSSL::HMAC.hexdigest('sha256', key, message)
-  end
-end
+    def get_conn(self):
+        """Return a working connection, refresh if dead."""
+        try:
+            # Quick sanity check: lightweight query
+            self.conn.execute("SELECT 1;")
+            return self.conn
+        except sqlite3.Error:
+            # Connection is stale -&gt; reset cache
+            if "conn" in self.__dict__:
+                del self.__dict__["conn"]
+            return self.conn  # triggers re-connect
 </code></pre>
+<h3 id="json-file-processing"><a class="header" href="#json-file-processing">JSON file processing</a></h3>
+<pre><code class="language-python">
+import json
+from functools import cached_property
+
+class Config:
+    def __init__(self, path):
+        self._path = path
+
+    @cached_property
+    def data(self):
+        with open(self._path, "r") as f:
+            return json.load(f)
+</code></pre>
+<h2 id="functoolslru_cache"><a class="header" href="#functoolslru_cache"><code>functools.lru_cache</code></a></h2>
+<p>Yet another function decorator, this one is more flexible than the default cache because you can set a max size or enable type hints (so it stores Ints and Doubles separately, for example).</p>
+<p><code>lru</code> means Least Recently Used, which means that when faced with new results, it will push out the oldest results if <code>maxsize</code> was reached.</p>
+<p>To not use in functions where there's side effects, with mutable objects on each call, or impure functions such as <code>time()</code> or <code>random()</code>. You should only use it when you want to reuse previously computed values.</p>
+<p>To help you tune the maxsize of the cache, this comes with a function called <code>cache_info()</code>. It's a good idea to tune it so that your cache does not grow without bound on long-running processes.</p>
+<pre><code>CacheInfo(hits=1, misses=3, maxsize=2, currsize=2)
+</code></pre>
+<p>What the terms in <code>cache_info()</code> means:</p>
+<ul>
+<li>misses: Number of times your function had to run, because it wasn't cached yet.</li>
+<li>hits: Number of times Python found the result already in the cache and just handed it back.</li>
+<li>maxsize: How many results you're allowed to keep (You could set it to <code>None</code> if you want infinite caching, but it's only recommended for small input domains.)</li>
+<li>currsize: How many results are actually in there right now.</li>
+</ul>
+<h3 id="fetching-articles-from-an-api"><a class="header" href="#fetching-articles-from-an-api">Fetching articles from an API</a></h3>
+<pre><code class="language-python">
+from functools import lru_cache
+
+@lru_cache(maxsize=2)
+def get_article(article_id):
+    print(f"Fetching article {article_id} from API...")
+    return {"id": article_id, "content": f"Article {article_id}"}
+
+# First two fetches -&gt; real calls
+get_article(1)
+get_article(2)
+
+# Cache hit for 1
+get_article(1)
+
+# New fetch -&gt; kicks out least recently used (2)
+get_article(3)
+
+print(get_article.cache_info())
+
+</code></pre>
+<p>Output:</p>
+<pre><code>Fetching article 1 from API...
+Fetching article 2 from API...
+Fetching article 3 from API...
+CacheInfo(hits=1, misses=3, maxsize=2, currsize=2)
+</code></pre>
+<p>In this example cache had room for only 2 articles at once, so it kicked out Article 2 since it was the least recently used.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/std-lib/itertools3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/lamp-server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/std-lib/functools-partial-reduce.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -263,11 +326,11 @@ end
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/std-lib/itertools3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/lamp-server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/std-lib/functools-partial-reduce.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -282,13 +345,13 @@ end
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

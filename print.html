@@ -867,6 +867,209 @@ class Hmac
   end
 end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="set-up-a-lamp-server"><a class="header" href="#set-up-a-lamp-server">Set up a LAMP server</a></h1>
+<p>Prerequisites: Type 2 hypervisor. In this guide, we're going to use VirtualBox (but you can always use virt-manager on Linux).</p>
+<h3 id="configuring-a-debian-vm"><a class="header" href="#configuring-a-debian-vm">Configuring a Debian VM:</a></h3>
+<ul>
+<li>Downloading Debian on www.debian.org (this will be the operating system on which will run the virtual machine.</li>
+<li>Download, install and configure VirtualBox and VirtualBox Extension Pack</li>
+<li>For VirtualBox: accept everything and proceed.</li>
+</ul>
+<p><img src="virtualization/lamp_img/debian.png" alt="Debian" /></p>
+<ul>
+<li>For VirtualBox Extensions Pack:</li>
+</ul>
+<ol>
+<li>Open the downloaded file</li>
+<li>Click on Installation</li>
+<li>Accept the terms of service</li>
+<li>Tools → Extensions hamburger menu to check that the extension is installed.</li>
+</ol>
+<hr />
+<ul>
+<li>Creation of the Debian Virtual Machine:</li>
+</ul>
+<p><img src="virtualization/lamp_img/config_vm.png" alt="Debian VM" /></p>
+<ul>
+<li>Choose an appropriate name for the VM</li>
+<li>Choose the Debian ISO image you downloaded earlier</li>
+<li>Check "Skip Unattended Installation"</li>
+</ul>
+<p><img src="virtualization/lamp_img/config_vm_2.png" alt="Debian VM 2" /></p>
+<ul>
+<li>Resources to be assigned: 2048MB of RAM, 1-2 CPUs and 10-20GB of hard drive.</li>
+<li>Click "Finish", and you should see the machine appear in the VM list if there are no problems.</li>
+</ul>
+<hr />
+<h3 id="additional-configurations"><a class="header" href="#additional-configurations">Additional Configurations:</a></h3>
+<ul>
+<li>Enable shared clipboard and drag and drop in General → Advanced</li>
+</ul>
+<p><img src="virtualization/lamp_img/shared_clipboard.png" alt="Shared Clipboard" /></p>
+<ul>
+<li>Enable shared folders in Settings → Shared Folders (here I added a
+scripts folder)</li>
+</ul>
+<p><img src="virtualization/lamp_img/shared_folders.png" alt="Shared Folders" /></p>
+<p>In the "System" tab, change the boot order to:</p>
+<ul>
+<li>Hard Drive (Checked)</li>
+<li>Optical Drive (Checked)</li>
+<li>Floppy Drive (Unchecked)</li>
+<li>Network Drive (Unchecked)</li>
+</ul>
+<p><img src="virtualization/lamp_img/config_vm_3.png" alt="Debian VM 3" /></p>
+<ul>
+<li>In the "Display" tab → Screen, increase the "Video Memory" slider to 128MB and check the "Enable 3D Acceleration" box.</li>
+<li>In the "Network" tab, check that the "Enable Network Interface" and "Cable Connected" boxes are enabled. The network access mode must also be set to "NAT".</li>
+<li>In the "USB" tab, enable the USB controller and check the "USB 3.0 Controller (xHCI)" button.</li>
+</ul>
+<hr />
+<h3 id="you-may-finally-boot-up-the-debian-virtual-machine"><a class="header" href="#you-may-finally-boot-up-the-debian-virtual-machine">You may finally boot up the Debian Virtual Machine.</a></h3>
+<p><img src="virtualization/lamp_img/initialization_goat.png" alt="Initialization" /></p>
+<ul>
+<li>Partition formatting: Yes.</li>
+<li>At the taskbar step, Debian will ask you to choose which software to pre-install. You must check "SSH Server," leave "Common System Utilities" checked, and check "XFCE Desktop", or a different one of your convenience.</li>
+<li>Install the GRUB boot program: Yes, and select the disk that appears.</li>
+</ul>
+<p><img src="virtualization/lamp_img/guest_addons.png" alt="Guest Addons" /></p>
+<p>VirtualBox Guest Additions:</p>
+<ul>
+<li>In the menu bar, click "Devices", then "Insert Guest Additions CD Image".</li>
+<li>Access the optical drive that just appeared.</li>
+<li>Right-click → open a terminal.</li>
+<li>Become root by running the su command and entering your password.</li>
+<li>Enter the command sh ./VboxLinuxAdditions.run to start the installation of the "Guest Additions".</li>
+<li>Restart the VM.</li>
+<li>Make sure that in the "Devices" menu, "Shared Clipboard" and "Drag &amp; Drop" are checked to "Bidirectional".</li>
+<li>Right Ctrl + f: to enable/disable full screen.</li>
+</ul>
+<hr />
+<h3 id="glpi-installation"><a class="header" href="#glpi-installation">GLPI Installation</a></h3>
+<ul>
+<li>Once Debian is installed, create a Bash script called setup_glpi.sh that will set up
+the LAMP stack. This script requires root access.</li>
+<li>The LAMP stack consists of the Apache2 web server, a MariaDB database and the PHP language.</li>
+<li>If "sudo" doesn't work for some reason, you can use "su" instead for the time being. In my situation, I had to install it manually from apt and grant my own user to the sudo group.</li>
+</ul>
+<pre><code class="language-bash">#!/usr/bin/env bash
+# setup_glpi.sh
+set -e
+# before running the script, make sure to do chmod +x setup_glpi.sh
+# this script needs root permissions. run it with sudo ./setup_glpi.sh
+echo "Updating and upgrading..."
+apt update &amp;&amp; apt upgrade -y
+
+echo "Installing Apache..."
+apt install apache2 -y
+
+echo "Installing MariaDB..."
+apt install mariadb-server -y
+
+echo "Securing MariaDB..."
+mysql_secure_installation
+
+echo "Installing PHP + extensions..."
+apt install php php-mysql php-xml php-mbstring php-curl php-gd php-ldap php-imap php-zip php-intl libapache2-mod-php -y
+echo "Restarting Apache..."
+systemctl restart apache2
+</code></pre>
+<ul>
+<li>Connect to the MariaDB database to create a database and user for GLPI</li>
+</ul>
+<pre><code class="language-bash">sudo mysql -u root -p
+</code></pre>
+<pre><code class="language-sql"># In the MySQL shell:
+CREATE DATABASE glpidb;
+CREATE USER 'glpiuser'@'localhost' IDENTIFIED BY 'pwatpwat';
+GRANT ALL PRIVILEGES ON glpidb.* TO 'glpiuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+</code></pre>
+<ul>
+<li>Download and deploy GLPI to the virtual machine</li>
+</ul>
+<pre><code class="language-bash">cd /tmp
+wget https://github.com/glpi-project/glpi/releases/download/10.0.13/glpi-
+10.0.13.tgz
+tar -xvzf glpi-10.0.13.tgz
+
+# Move it to web root
+sudo mv glpi /var/www/html/
+
+# Set permissions
+sudo chown -R www-data:www-data /var/www/html/glpi
+sudo chmod -R 755 /var/www/html/glpi
+
+# Enable Apache mod_rewrite just in case
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+</code></pre>
+<ul>
+<li>Open your web browser</li>
+<li>Type <code>ip a | grep inet</code> in the terminal to find the machine's IP address</li>
+<li>Enter this IP address in your browser, and you should see the default Apache 2 page.</li>
+<li>Append /glpi to the address, and you should see the GLPI installation page.</li>
+</ul>
+<p>Problems that may arise during installation:</p>
+<ul>
+<li>If you forgot a PHP extension, the installer will error out. You will need to find it and install it in the terminal (<code>apt install php-xxx</code>) and then restart the Apache 2 server (<code>systemctl restart apache2</code>).</li>
+</ul>
+<p>Some example GLPI configuration:</p>
+<pre><code>GLPI Database:
+Server: localhost
+User: glpiuser
+Password: pwatpwat
+Use an existing database: glpidb
+</code></pre>
+<p>The default usernames and passwords are:</p>
+<ul>
+<li>glpi/glpi for the administrator account</li>
+<li>tech/tech for the technician account</li>
+<li>normal/normal for the normal account</li>
+<li>post-only/postonly for the postonly account</li>
+</ul>
+<p>You can delete or modify these accounts as well as the initial data. And with that, the GLPI server has been successfully installed!</p>
+<p><img src="virtualization/lamp_img/glpi_installed.png" alt="GLPI Installed" /></p>
+<p>Once you are able to see a result similar to this screenshot, it is safe to remove the GLPI installation file with:</p>
+<pre><code class="language-bash">rm /var/www/html/glpi/install/install.php
+</code></pre>
+<hr />
+<h3 id="connect-to-glpi-from-a-computer-on-the-same-network"><a class="header" href="#connect-to-glpi-from-a-computer-on-the-same-network">Connect to GLPI from a computer on the same network</a></h3>
+<ul>
+<li>
+<p>From the VM, type <code>ip a</code> to find the IP address to connect to.</p>
+</li>
+<li>
+<p>Since NAT is used for the VM, in VirtualBox you will need to go to VM →
+Configuration → Network → Adapter 1 → Port Forwarding.</p>
+</li>
+<li>
+<p>Add a rule:</p>
+<pre><code>Name: HTTP
+Protocol: TCP
+Host IP (leave blank)
+Host port: 8080
+Guest IP (leave blank)
+Guest port: 80
+</code></pre>
+</li>
+<li>
+<p>Then, on the host machine, access the address: http://localhost:8080/glpi</p>
+</li>
+<li>
+<p>If all goes well, you have successfully connected to your VM's Apache server from the host machine. Log in with the Technician account, for example.</p>
+</li>
+</ul>
+<p><img src="virtualization/lamp_img/final_connect.png" alt="Final Connect" /></p>
+<hr />
+<h3 id="create-a-snapshot"><a class="header" href="#create-a-snapshot">Create a snapshot</a></h3>
+<p>It's important to create snapshots regularly in case of mishandling.</p>
+<ul>
+<li>Click the VM's hamburger menu</li>
+<li>Snapshots</li>
+<li>Click "Take" and add a title and description.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="virt-manager-install-on-arch-linux"><a class="header" href="#virt-manager-install-on-arch-linux">Virt Manager Install on Arch Linux</a></h2>
 <ol>
 <li>First, update the system:</li>
@@ -5369,6 +5572,7 @@ int main() {
 <ul>
 <li><a href="programming/cpp/fundamentals/">Fundamentals</a></li>
 <li><a href="programming/cpp/oop/">Object-Oriented Programming</a></li>
+<li><a href="programming/cpp/recursion/">Recursion</a></li>
 <li><a href="programming/cpp/algorithms/">Practical Algorithms</a></li>
 <li><a href="programming/cpp/features/">Modern C++ features (C++11 and later)</a></li>
 <li><a href="programming/cpp/lib_boost/">The Boost Library</a></li>
@@ -7232,7 +7436,9 @@ private:
 </div>
 <hr />
 <p>You want me to walk you through adapting your current class with <code>unique_ptr</code> line by line next? Or maybe go further into move-only types and real STL container internals? Just say the magic word, sorceress 🧙‍♀️✨</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="modern-c-features"><a class="header" href="#modern-c-features">Modern C++ Features</a></h1>
+<p>Some features that were added to C++ later down the line. Those would not really fit into fundamentals but are still important to know.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-objects-in-stl-algorithms"><a class="header" href="#functional-objects-in-stl-algorithms">Functional Objects in STL Algorithms</a></h1>
 <ul>
 <li>It's useful to have function objects to further leverage the STL library</li>
 <li>Numerical functions have built-in meaning using + or *, as well as user provided binary operators which could be passed in.</li>
@@ -7837,7 +8043,9 @@ if (auto lockedNode2 = node1-&gt;next.lock()) {
 <p>In this example, <code>node1-&gt;next</code> and <code>node2-&gt;next</code> are <code>std::weak_ptr</code> objects. Before accessing the shared object, validity is checked using the <code>expired()</code> function. Then, <code>lock()</code> is used to safely access the shared object. This approach ensures that dangling pointers are avoided when working with <code>std::weak_ptr</code>.</p>
 <h2 id="usage-advice"><a class="header" href="#usage-advice">Usage advice</a></h2>
 <p>Use smart pointers by default: <code>std::unique_ptr</code> for exclusive ownership and <code>std::shared_ptr</code> for shared ownership. Reserve raw pointers for non-owning references or when interfacing with legacy code. In most cases, <code>std::unique_ptr</code> is sufficient for exclusive ownership, as it offers lightweight memory management without the overhead of reference counting. <code>std::shared_ptr</code> should be used sparingly, as it introduces overhead and complexity unless true shared ownership is needed. <code>std::weak_ptr</code> is specialized for breaking cyclic dependencies or observing shared objects, but it's not commonly used.</p>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="example-algorithms"><a class="header" href="#example-algorithms">Example Algorithms</a></h1>
+<p>Some examples I have saved over time because I thought they were cool, either found on the internet or written myself.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dijkstras-algorithm-with-edge-list-c-edition"><a class="header" href="#dijkstras-algorithm-with-edge-list-c-edition">Dijkstra's Algorithm with Edge List (C++ Edition)</a></h1>
 <p>The graph is represented using an <strong>edge list</strong>, not an adjacency matrix, which is simpler to work with when dynamically generating graphs of varying densities.</p>
 <hr />
 <h2 id="-key-concepts"><a class="header" href="#-key-concepts">💻 Key Concepts</a></h2>
@@ -8822,6 +9030,7 @@ int main() {
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-boost-library"><a class="header" href="#the-boost-library">The Boost Library</a></h1>
+<p>Very famous C++ library that adds a lot of powerful extra features to C++.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="boostfilesystem-to-print-stats-about-files-and-directories"><a class="header" href="#boostfilesystem-to-print-stats-about-files-and-directories">Boost.filesystem to print stats about files and directories</a></h1>
 <p>In this tutorial we will see a command line tool to scan a directory and print stats about files, using <code>boost::filesystem</code></p>
 <p>Essentially, we are seeing a more high level version of the <code>ls</code> command you'd find in POSIX.</p>
@@ -12832,6 +13041,10 @@ insertIn x (y : ys) n = y : insertIn x ys (n - 1)
 <li><a href="programming/python/pyprojects/">Setting up a Python Project</a></li>
 <li><a href="programming/python/std-lib/">Standard Library Goodies</a></li>
 </ul>
+<p>How to get docstring from a function:</p>
+<ul>
+<li>Go to the Python interactive shell with <code>python -i myfile.py</code>, and type <code>help(my_func)</code> or <code>my_func.__doc__</code>.</li>
+</ul>
 <p>External Libraries:</p>
 <pre><code>paramiko, fabric, psutil, pyyaml/json, dotenv, pytest
 </code></pre>
@@ -15714,6 +15927,7 @@ source venv/bin/activate
 venv\scripts\activate
 </code></pre>
 <p>Now your shell will show <code>(venv)</code> before the prompt. That means you're inside the virtual prompt.</p>
+<p>This is also the command to do when you want to resume your venv session.</p>
 <h4 id="installing-packages"><a class="header" href="#installing-packages">Installing packages</a></h4>
 <pre><code class="language-bash">pip install requests
 </code></pre>
@@ -15923,9 +16137,18 @@ collections, functools, pathlib, concurrent.futures, datetime, os, sys, subproce
 types/typing, requests
 </code></pre>
 <ul>
-<li><a href="programming/python/std-lib/itertools.html">itertools pt.1</a></li>
-<li><a href="programming/python/std-lib/itertools2.html">itertools pt.2</a></li>
-<li><a href="programming/python/std-lib/itertools3.html">itertools pt.3</a></li>
+<li>
+<p><a href="programming/python/std-lib/itertools.html">itertools pt.1</a></p>
+</li>
+<li>
+<p><a href="programming/python/std-lib/itertools2.html">itertools pt.2</a></p>
+</li>
+<li>
+<p><a href="programming/python/std-lib/itertools3.html">itertools pt.3</a></p>
+</li>
+<li>
+<p><a href="programming/python/std-lib/functools-caching.html">functools: caching</a></p>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="typing-library-type-hints"><a class="header" href="#typing-library-type-hints">Typing Library: Type Hints</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="itertools"><a class="header" href="#itertools">Itertools</a></h1>
@@ -16452,7 +16675,7 @@ for key, group in person_group:
 <pre><code class="language-bash">tee file.txt
 some text
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functools"><a class="header" href="#functools">Functools</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functools-caching"><a class="header" href="#functools-caching">Functools: Caching</a></h1>
 <p>It's an interesting assortment of utilities that alters functions or methods in some way.</p>
 <h2 id="functoolscache"><a class="header" href="#functoolscache"><code>functools.cache</code></a></h2>
 <p>This has a memorizing power, that's why it's so good. It basically keeps some data allowing quicker lookup.</p>
@@ -16474,14 +16697,9 @@ print(factorial(5))
 
 print(factorial(12))
 # 479001600 makes some new recursive call, and add new cached value result
-
-# Crashes on those edge cases
-# print(-5)
-# print(1.5)
-
 </code></pre>
 <h2 id="functoolscached_property"><a class="header" href="#functoolscached_property"><code>functools.cached_property</code></a></h2>
-<p>This would be much slower if evaluated without cache. With this simple change, you can dramatically impact performance for expensive operations.</p>
+<p>This would be much slower if evaluated without cache. With this simple change, you can dramatically improve performance for expensive operations.</p>
 <p>This computes once, stashes it and then reuses it.</p>
 <pre><code class="language-python">
 from functools import cached_property
@@ -16503,12 +16721,236 @@ print(ds.sum)   # instant lookup, no recomputation. It won't reevaluate.
 
 del ds.sum
 
-ds._data.append(7)  # needs manual deletion to recalculate
-print(ds.sum)
+ds._data.append(7)
+print(ds.sum)   # needs manual deletion, otherwise it will always give the same result
+</code></pre>
+<p>Example projects where you could use this: database connection and file processing.</p>
+<h3 id="database-connection"><a class="header" href="#database-connection">Database Connection</a></h3>
+<pre><code class="language-python">
+import sqlite3
+from functools import cached_property
+
+class DB:
+    def __init__(self, db_path):
+        self._path = db_path
+
+    @cached_property
+    def conn(self):
+        return sqlite3.connect(self._path)
+
+    def get_conn(self):
+        """Return a working connection, refresh if dead."""
+        try:
+            # Quick sanity check: lightweight query
+            self.conn.execute("SELECT 1;")
+            return self.conn
+        except sqlite3.Error:
+            # Connection is stale -&gt; reset cache
+            if "conn" in self.__dict__:
+                del self.__dict__["conn"]
+            return self.conn  # triggers re-connect
+</code></pre>
+<h3 id="json-file-processing"><a class="header" href="#json-file-processing">JSON file processing</a></h3>
+<pre><code class="language-python">
+import json
+from functools import cached_property
+
+class Config:
+    def __init__(self, path):
+        self._path = path
+
+    @cached_property
+    def data(self):
+        with open(self._path, "r") as f:
+            return json.load(f)
+</code></pre>
+<h2 id="functoolslru_cache"><a class="header" href="#functoolslru_cache"><code>functools.lru_cache</code></a></h2>
+<p>Yet another function decorator, this one is more flexible than the default cache because you can set a max size or enable type hints (so it stores Ints and Doubles separately, for example).</p>
+<p><code>lru</code> means Least Recently Used, which means that when faced with new results, it will push out the oldest results if <code>maxsize</code> was reached.</p>
+<p>To not use in functions where there's side effects, with mutable objects on each call, or impure functions such as <code>time()</code> or <code>random()</code>. You should only use it when you want to reuse previously computed values.</p>
+<p>To help you tune the maxsize of the cache, this comes with a function called <code>cache_info()</code>. It's a good idea to tune it so that your cache does not grow without bound on long-running processes.</p>
+<pre><code>CacheInfo(hits=1, misses=3, maxsize=2, currsize=2)
+</code></pre>
+<p>What the terms in <code>cache_info()</code> means:</p>
+<ul>
+<li>misses: Number of times your function had to run, because it wasn't cached yet.</li>
+<li>hits: Number of times Python found the result already in the cache and just handed it back.</li>
+<li>maxsize: How many results you're allowed to keep (You could set it to <code>None</code> if you want infinite caching, but it's only recommended for small input domains.)</li>
+<li>currsize: How many results are actually in there right now.</li>
+</ul>
+<h3 id="fetching-articles-from-an-api"><a class="header" href="#fetching-articles-from-an-api">Fetching articles from an API</a></h3>
+<pre><code class="language-python">
+from functools import lru_cache
+
+@lru_cache(maxsize=2)
+def get_article(article_id):
+    print(f"Fetching article {article_id} from API...")
+    return {"id": article_id, "content": f"Article {article_id}"}
+
+# First two fetches -&gt; real calls
+get_article(1)
+get_article(2)
+
+# Cache hit for 1
+get_article(1)
+
+# New fetch -&gt; kicks out least recently used (2)
+get_article(3)
+
+print(get_article.cache_info())
 
 </code></pre>
-<p>Example projects where you could use this: simple calculator, database connection and file processing.</p>
-<h2 id="lru_cache"><a class="header" href="#lru_cache"><code>lru_cache</code></a></h2>
+<p>Output:</p>
+<pre><code>Fetching article 1 from API...
+Fetching article 2 from API...
+Fetching article 3 from API...
+CacheInfo(hits=1, misses=3, maxsize=2, currsize=2)
+</code></pre>
+<p>In this example cache had room for only 2 articles at once, so it kicked out Article 2 since it was the least recently used.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functools-partial--reduce"><a class="header" href="#functools-partial--reduce">Functools: Partial &amp; Reduce</a></h1>
+<h2 id="functoolspartial"><a class="header" href="#functoolspartial"><code>functools.partial</code></a></h2>
+<p>Partial: build an argument into a function, so you don't have to pass it again.</p>
+<p>Let's look at an example where this can be used:</p>
+<pre><code class="language-python">from functools import partial
+from urllib.request import urlopen
+
+
+def get_siteistatus(url):
+    try:
+        return urlopen(url).getcode()
+    except Exception as e:
+        return e
+
+
+google_status = partial(get_siteistatus, "http://google.com")
+fb_status = partial(get_siteistatus, "http://facebook.com")
+redhat_status = partial(get_siteistatus, "http://redhat.com")
+
+# run with python -i partial.py
+</code></pre>
+<p>Without <code>partial</code> being used, you would have to repetitively create a function for calling each website. This would not be as readable and not optimized. For example:</p>
+<pre><code class="language-python">def google_status():
+    return get_siteistatus("http://google.com")
+</code></pre>
+<h2 id="functoolspartialmethod"><a class="header" href="#functoolspartialmethod"><code>functools.partialmethod</code></a></h2>
+<p>Pretty similar thing, except this one has its use case when you use classes and methods.</p>
+<pre><code class="language-python">
+from functools import partialmethod
+
+
+class VMManager:
+    def toggle_power(self, to_state):
+        if to_state == "on":
+            print("Powering on VM")
+        elif to_state == "off":
+            print("Powering off VM")
+
+    power_on = partialmethod(toggle_power, "on")
+    power_off = partialmethod(toggle_power, "off")
+</code></pre>
+<p>Now when calling those methods, you can simply do:</p>
+<pre><code class="language-python">vm = VMManager()
+vm.power_on()
+vm.power_off()
+</code></pre>
+<p>Instead of the cumbersome and more error prone:</p>
+<pre><code class="language-python">vm.toggle_power("off")
+</code></pre>
+<h2 id="functoolsreduce"><a class="header" href="#functoolsreduce"><code>functools.reduce</code></a></h2>
+<p>This is a good one. It's not going to have a lot of use cases, but it is very nerdy. It essentially is Python pretending to be a functional language for a moment. For example, you could go like:</p>
+<pre><code class="language-python">from functools import reduce
+
+reduce(lambda x, y: x + y, [1, 2, 3, 4, 5], 0)
+</code></pre>
+<p>Which is the equivalent of Haskell:</p>
+<pre><code class="language-hs">foldl (+) 0 [1, 2, 3, 4, 5]
+</code></pre>
+<p>Differences to note:</p>
+<ul>
+<li>In Haskell, you must give an explicit starting accumulator (here <code>0</code>).</li>
+<li>In Python, if you don't give a <code>start</code> value, it just takes the first element of the list as the initial accumulator (<code>1</code> in this case).</li>
+</ul>
+<p>Some more examples:</p>
+<pre><code class="language-python">&gt;&gt;&gt; factorial = lambda n: reduce(lambda x, y: x * y, range(1, n + 1), 1)
+&gt;&gt;&gt; factorial(5)
+120
+</code></pre>
+<pre><code class="language-python">&gt;&gt;&gt; words = ["Hello", "world", "from", "reduce"]
+&gt;&gt;&gt; sentence = reduce(lambda a, b: a + " " + b, words)
+&gt;&gt;&gt; sentence
+"Hello world from reduce"
+</code></pre>
+<p>Syntax:</p>
+<pre><code class="language-python">reduce(function, iterable[, initial]) -&gt; value
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functools-wrappers"><a class="header" href="#functools-wrappers">Functools: Wrappers</a></h1>
+<ul>
+<li>Exclusively used when working with decorators.</li>
+</ul>
+<pre><code class="language-python">
+import time
+
+
+def print_time(f):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = f(*args, **kwargs)
+        print(f'function {f.__name__} took {
+              time.time() - start_time:.2f} seconds to execute')
+        return result
+    return wrapper
+
+
+def perfect_function():
+    """This is a perfect docstring"""
+    time.sleep(1)
+    print("Finished being perfect")
+
+</code></pre>
+<p>Without wraps, this would happen:</p>
+<pre><code class="language-python">&gt;&gt;&gt; perfect_function = print_time(perfect_function)
+&gt;&gt;&gt; perfect_function.__doc__
+
+&gt;&gt;&gt; perfect_function.__name__
+'wrapper'
+</code></pre>
+<p>It's because the decorator <code>print_time(f)</code> is replacing the perfect function with the wrapper.</p>
+<p>Here are some simple changes you can make to fix this:</p>
+<pre><code class="language-python">
+from functools import wraps
+import time
+
+
+def print_time(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = f(*args, **kwargs)
+        print(f'function {f.__name__} took {
+              time.time() - start_time:.2f} seconds to execute')
+        return result
+    return wrapper
+
+
+@print_time
+def perfect_function():
+    """This is a perfect docstring"""
+    time.sleep(1)
+    print("Finished being perfect")
+</code></pre>
+<p>Under the hood, this automatically does <code>perfect_function = print_time(perfect_function)</code>.</p>
+<p>And now run:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perfect_function.__doc__
+'This is a perfect docstring'
+&gt;&gt;&gt; perfect_function.__name__
+'perfect_function'
+&gt;&gt;&gt; perfect_function()
+Finished being perfect
+function perfect_function took 1.00 seconds to execute
+</code></pre>
+<p>This is useful when writing an API or a library, and someone wants to know what your function does and it's name. Instead of always showing the wrapper's name and docstring, it will point to the accurate one.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functools-dispatches-and-ordering"><a class="header" href="#functools-dispatches-and-ordering">Functools: Dispatches and Ordering</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ruby"><a class="header" href="#ruby">Ruby</a></h1>
 <p>Very nice, very well designed. In a parallel reality this has taken the place of Python as THE general purpose scripting language. But in this one, it's a guilty pleasure language that I'll continue indulging into.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ruby-cheat-sheet-"><a class="header" href="#ruby-cheat-sheet-">Ruby Cheat Sheet 💎</a></h1>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Functools - Debugging Grimoire</title>
+        <title>Functools: Partial &amp; Reduce - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -175,73 +175,92 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="functools"><a class="header" href="#functools">Functools</a></h1>
-<p>It's an interesting assortment of utilities that alters functions or methods in some way.</p>
-<h2 id="functoolscache"><a class="header" href="#functoolscache"><code>functools.cache</code></a></h2>
-<p>This has a memorizing power, that's why it's so good. It basically keeps some data allowing quicker lookup.</p>
-<pre><code class="language-python">
-from functools import cache
+                        <h1 id="functools-partial--reduce"><a class="header" href="#functools-partial--reduce">Functools: Partial &amp; Reduce</a></h1>
+<h2 id="functoolspartial"><a class="header" href="#functoolspartial"><code>functools.partial</code></a></h2>
+<p>Partial: build an argument into a function, so you don't have to pass it again.</p>
+<p>Let's look at an example where this can be used:</p>
+<pre><code class="language-python">from functools import partial
+from urllib.request import urlopen
 
 
-@cache
-def factorial(n):
-    return n * factorial(n - 1) if n else 1
+def get_siteistatus(url):
+    try:
+        return urlopen(url).getcode()
+    except Exception as e:
+        return e
 
 
-print(factorial(10))
-# 3628800 
-# new lookups: recursive calls.
+google_status = partial(get_siteistatus, "http://google.com")
+fb_status = partial(get_siteistatus, "http://facebook.com")
+redhat_status = partial(get_siteistatus, "http://redhat.com")
 
-print(factorial(5))
-# 120 just looks up cached value result
-
-print(factorial(12))
-# 479001600 makes some new recursive call, and add new cached value result
-
-# Crashes on those edge cases
-# print(-5)
-# print(1.5)
-
+# run with python -i partial.py
 </code></pre>
-<h2 id="functoolscached_property"><a class="header" href="#functoolscached_property"><code>functools.cached_property</code></a></h2>
-<p>This would be much slower if evaluated without cache. With this simple change, you can dramatically impact performance for expensive operations.</p>
-<p>This computes once, stashes it and then reuses it.</p>
-<pre><code class="language-python">
-from functools import cached_property
-
-
-class DataSet:
-    def __init__(self, sequence_of_numbers):
-        self._data = sequence_of_numbers
-
-    @cached_property
-    def sum(self):
-        return (sum(self._data))
-
-
-ds = DataSet([1, 2, 3, 4, 5])
-print(ds.sum)   # computes statistics.stdev once
-print(ds.sum)   # instant lookup, no recomputation. It won't reevaluate.
-
-
-del ds.sum
-
-ds._data.append(7)  # needs manual deletion to recalculate
-print(ds.sum)
-
+<p>Without <code>partial</code> being used, you would have to repetitively create a function for calling each website. This would not be as readable and not optimized. For example:</p>
+<pre><code class="language-python">def google_status():
+    return get_siteistatus("http://google.com")
 </code></pre>
-<p>Example projects where you could use this: simple calculator, database connection and file processing.</p>
-<h2 id="lru_cache"><a class="header" href="#lru_cache"><code>lru_cache</code></a></h2>
+<h2 id="functoolspartialmethod"><a class="header" href="#functoolspartialmethod"><code>functools.partialmethod</code></a></h2>
+<p>Pretty similar thing, except this one has its use case when you use classes and methods.</p>
+<pre><code class="language-python">
+from functools import partialmethod
+
+
+class VMManager:
+    def toggle_power(self, to_state):
+        if to_state == "on":
+            print("Powering on VM")
+        elif to_state == "off":
+            print("Powering off VM")
+
+    power_on = partialmethod(toggle_power, "on")
+    power_off = partialmethod(toggle_power, "off")
+</code></pre>
+<p>Now when calling those methods, you can simply do:</p>
+<pre><code class="language-python">vm = VMManager()
+vm.power_on()
+vm.power_off()
+</code></pre>
+<p>Instead of the cumbersome and more error prone:</p>
+<pre><code class="language-python">vm.toggle_power("off")
+</code></pre>
+<h2 id="functoolsreduce"><a class="header" href="#functoolsreduce"><code>functools.reduce</code></a></h2>
+<p>This is a good one. It's not going to have a lot of use cases, but it is very nerdy. It essentially is Python pretending to be a functional language for a moment. For example, you could go like:</p>
+<pre><code class="language-python">from functools import reduce
+
+reduce(lambda x, y: x + y, [1, 2, 3, 4, 5], 0)
+</code></pre>
+<p>Which is the equivalent of Haskell:</p>
+<pre><code class="language-hs">foldl (+) 0 [1, 2, 3, 4, 5]
+</code></pre>
+<p>Differences to note:</p>
+<ul>
+<li>In Haskell, you must give an explicit starting accumulator (here <code>0</code>).</li>
+<li>In Python, if you don't give a <code>start</code> value, it just takes the first element of the list as the initial accumulator (<code>1</code> in this case).</li>
+</ul>
+<p>Some more examples:</p>
+<pre><code class="language-python">&gt;&gt;&gt; factorial = lambda n: reduce(lambda x, y: x * y, range(1, n + 1), 1)
+&gt;&gt;&gt; factorial(5)
+120
+</code></pre>
+<pre><code class="language-python">&gt;&gt;&gt; words = ["Hello", "world", "from", "reduce"]
+&gt;&gt;&gt; sentence = reduce(lambda a, b: a + " " + b, words)
+&gt;&gt;&gt; sentence
+"Hello world from reduce"
+</code></pre>
+<p>Syntax:</p>
+<pre><code class="language-python">reduce(function, iterable[, initial]) -&gt; value
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../programming/python/std-lib/itertools3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/std-lib/functools-caching.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../programming/ruby/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/std-lib/functools-wrappers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -251,11 +270,11 @@ print(ds.sum)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../programming/python/std-lib/itertools3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/std-lib/functools-caching.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../programming/ruby/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/std-lib/functools-wrappers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

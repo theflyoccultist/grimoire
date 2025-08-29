@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Create an HMAC Server API for the VM - Debugging Grimoire</title>
+        <title>Functools: Wrappers - Debugging Grimoire</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex.js";
+            window.path_to_searchindex_js = "../../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Debugging Grimoire</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -175,85 +175,83 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="create-an-hmac-server-api-with-python"><a class="header" href="#create-an-hmac-server-api-with-python">Create an HMAC Server API with Python</a></h2>
-<pre><code class="language-python">from fastapi import FastAPI, Request, HTTPException
-import hmac
-import hashlib
+                        <h1 id="functools-wrappers"><a class="header" href="#functools-wrappers">Functools: Wrappers</a></h1>
+<ul>
+<li>Exclusively used when working with decorators.</li>
+</ul>
+<pre><code class="language-python">
+import time
 
-app = FastAPI()
+
+def print_time(f):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = f(*args, **kwargs)
+        print(f'function {f.__name__} took {
+              time.time() - start_time:.2f} seconds to execute')
+        return result
+    return wrapper
 
 
-def calc_digest(key, message):
-    key = bytes(key, 'utf-8')
-    message = bytes(message, 'utf-8')
-    dig = hmac.new(key, message, hashlib.sha256)
-    return dig.hexdigest()
+def perfect_function():
+    """This is a perfect docstring"""
+    time.sleep(1)
+    print("Finished being perfect")
 
-# HMAC Server
-@app.post("/verify")
-async def verify_signature(request: Request):
-    body = await request.json()
-    recieved_mac = request.headers.get("X-HMAC-Signature")
-
-    if not recieved_mac:
-        raise HTTPException(status_code=400, detail="Missing HMAC header")
-
-    msg_string = f"{body['mac_address']}:{body['timestamp']}"
-    expected_mac = calc_digest('secret-key', msg_string)
-
-    if not hmac.compare_digest(recieved_mac, expected_mac):
-        raise HTTPException(status_code=403, detail="Invalid signature")
-
-    return {"status": "Verified"}
 </code></pre>
-<h2 id="testing-hmac-protected-endpoints-with-curl-bash-script"><a class="header" href="#testing-hmac-protected-endpoints-with-curl-bash-script">Testing HMAC Protected Endpoints with curl (Bash Script)</a></h2>
-<pre><code class="language-bash">#!/bin/bash
+<p>Without wraps, this would happen:</p>
+<pre><code class="language-python">&gt;&gt;&gt; perfect_function = print_time(perfect_function)
+&gt;&gt;&gt; perfect_function.__doc__
 
-MESSAGE='{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}'
-SIGNATURE=$(echo -n '{"mac_address":"12:34:56:78:9a:bc","timestamp":"2025-04-30T15:00:00"}' |
-  openssl dgst -sha256 -hmac "secret-key" | sed 's/^.* //')
-
-curl -X POST http://127.0.0.1:8000/verify \
-  -H "Content-Type: application/json" \
-  -H "X-HMAC-Signature: $SIGNATURE" \
-  -d "$MESSAGE"
+&gt;&gt;&gt; perfect_function.__name__
+'wrapper'
 </code></pre>
-<h2 id="establish-connection-with-an-hmac-client-for-example-with-ruby"><a class="header" href="#establish-connection-with-an-hmac-client-for-example-with-ruby">Establish connection with an HMAC client (for example, with Ruby)</a></h2>
-<pre><code class="language-ruby">require 'openssl/hmac'
-require 'mac-address'
+<p>It's because the decorator <code>print_time(f)</code> is replacing the perfect function with the wrapper.</p>
+<p>Here are some simple changes you can make to fix this:</p>
+<pre><code class="language-python">
+from functools import wraps
+import time
 
-# HMAC Client
-class Hmac
-  def self.call
-    key = secret_key
-    mac_address = MacAddress.address
-    halt 404, 'Mac Address not found' if mac_address.nil?
 
-    timestamp = Time.now.to_i
-    message = "#{mac_address}:#{timestamp}"
-    mac = calc_digest(key, message)
-    { signature: mac, timestamp: timestamp, mac_address: mac_address }
-  end
+def print_time(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = f(*args, **kwargs)
+        print(f'function {f.__name__} took {
+              time.time() - start_time:.2f} seconds to execute')
+        return result
+    return wrapper
 
-  def self.secret_key
-    ENV['API_DB_KEY'] || raise('Missing API_DB_KEY')
-  end
 
-  def self.calc_digest(key, message)
-    OpenSSL::HMAC.hexdigest('sha256', key, message)
-  end
-end
+@print_time
+def perfect_function():
+    """This is a perfect docstring"""
+    time.sleep(1)
+    print("Finished being perfect")
 </code></pre>
+<p>Under the hood, this automatically does <code>perfect_function = print_time(perfect_function)</code>.</p>
+<p>And now run:</p>
+<pre><code class="language-python">
+&gt;&gt;&gt; perfect_function.__doc__
+'This is a perfect docstring'
+&gt;&gt;&gt; perfect_function.__name__
+'perfect_function'
+&gt;&gt;&gt; perfect_function()
+Finished being perfect
+function perfect_function took 1.00 seconds to execute
+</code></pre>
+<p>This is useful when writing an API or a library, and someone wants to know what your function does and it's name. Instead of always showing the wrapper's name and docstring, it will point to the accurate one.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../programming/python/std-lib/functools-partial-reduce.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../virtualization/lamp-server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../programming/python/std-lib/functools-dispatches-ordering.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -263,11 +261,11 @@ end
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../virtualization/postgres-gcloud-vm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../programming/python/std-lib/functools-partial-reduce.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../virtualization/lamp-server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../programming/python/std-lib/functools-dispatches-ordering.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -282,13 +280,13 @@ end
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
